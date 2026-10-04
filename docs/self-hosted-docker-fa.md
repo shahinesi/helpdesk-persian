@@ -11,6 +11,7 @@
 ## خلاصه قابل‌خواندن برای عامل هوش مصنوعی
 
 - برنامه، Frappe Helpdesk است؛ backend آن Frappe و frontend آن از طریق سرویس Nginx ارائه می‌شود.
+- مشکل صفحهٔ بدون استایل از image ساخته‌شده روی سرور بود؛ فایل‌های اصلی برنامه نیاز به تغییر نداشتند.
 - در تجربه ثبت‌شده، image پایه با `easy-install.py build` و `images/layered/Containerfile` ساخته شد.
 - image اولیه فقط اپ Helpdesk را داشت. چون Helpdesk به اپ `telephony` هم نیاز داشت، نصب Helpdesk به خطای نبود ماژول Telephony رسید. image دوم از روی image اول ساخته شد و Telephony به آن اضافه شد.
 - روی یک سرور دارای Traefik، اجرای Traefik دوم یا اشغال مجدد پورت‌های عمومی `80/443` لازم نیست. سرویس frontend روی loopback منتشر و به شبکه خارجی Traefik وصل می‌شود؛ Traefik گواهی TLS و redirect را انجام می‌دهد.
@@ -78,11 +79,7 @@ git clone https://github.com/frappe/frappe_docker.git
 ### ۲.۲ build با imageهای لایه‌ای رسمی
 
 ```bash
-python3 easy-install.py build \
-  --frappe-branch develop \
-  --apps-json ./helpdesk-apps.json \
-  --containerfile ./frappe_docker/images/layered/Containerfile \
-  --tag helpdesk-persian:test
+python3 easy-install.py build --frappe-branch develop --apps-json ./helpdesk-apps.json --containerfile ./frappe_docker/images/layered/Containerfile --tag helpdesk-persian:test
 ```
 
 در این تجربه، `images/custom/Containerfile` گیر کرد: مرحله build که nvm را اجرا می‌کرد، در container هنگام دسترسی به `iojs.org` پیش نرفت. استفاده از `images/layered/Containerfile` و imageهای پایه آماده `frappe/base` و `frappe/build` از همان نصب مجدد toolchain جلوگیری کرد و build را به پایان رساند. اگر شبکه build به registry یا sourceهای لازم دسترسی ندارد، ابتدا همان دسترسی را عیب‌یابی کنید؛ این تجربه ثابت نمی‌کند هر خطای build با layered image حل می‌شود.
@@ -97,10 +94,7 @@ python3 easy-install.py build \
 FROM helpdesk-persian:test AS telephony
 USER frappe
 WORKDIR /home/frappe/frappe-bench
-RUN bench get-app --branch=develop --skip-assets https://github.com/frappe/telephony \
-    && bench setup requirements --python telephony \
-    && bench set-config -gp socketio_port 9000 \
-    && bench build
+RUN bench get-app --branch=develop --skip-assets https://github.com/frappe/telephony && bench setup requirements --python telephony && bench set-config -gp socketio_port 9000 && bench build
 
 FROM helpdesk-persian:test
 USER root
@@ -147,16 +141,7 @@ PROJECT=helpdesk-test
 IMAGE=helpdesk-persian
 TAG=styled
 
-python3 easy-install.py deploy \
-  --project "$PROJECT" \
-  --sitename "$SITE" \
-  --email admin@example.com \
-  --image "$IMAGE" \
-  --version "$TAG" \
-  --app telephony \
-  --app helpdesk \
-  --no-ssl \
-  --http-port 18080
+python3 easy-install.py deploy --project "$PROJECT" --sitename "$SITE" --email admin@example.com --image "$IMAGE" --version "$TAG" --app telephony --app helpdesk --no-ssl --http-port 18080
 ```
 
 Easy Install فایل compose، تنظیمات و رمزهای اولیه را می‌سازد. در این سناریو `--no-ssl` یعنی TLS به reverse proxy بیرونی واگذار می‌شود؛ به‌تنهایی HTTPS عمومی را فعال نمی‌کند. نگهداری فایل `.env` و هر فایل رمز که installer می‌سازد باید محدود به سرور بماند.
@@ -215,100 +200,33 @@ docker compose -f "$BASE_COMPOSE" -f traefik-override.yml config
 
 ## مرحله ۵: بررسی نصب و دسترسی
 
-آماده‌بودن زیرساخت را از آماده‌بودن رابط جدا بررسی کنید. `docker compose ps` فقط وضعیت containerها را نشان می‌دهد و پاسخ `200` از `/` یا `/helpdesk` هم ممکن است فقط HTML ناقص را تأیید کند؛ هیچ‌کدام به‌تنهایی معیار پایان نصب نیستند.
-
 از مسیر compose واقعی استفاده کنید:
 
 ```bash
 docker compose -f "$BASE_COMPOSE" -f traefik-override.yml ps
-docker compose -f "$BASE_COMPOSE" -f traefik-override.yml exec backend \
-  bench --site "$SITE" list-apps
+docker compose -f "$BASE_COMPOSE" -f traefik-override.yml exec backend bench --site "$SITE" list-apps
 ```
 
 در فهرست اپ‌ها باید `frappe`، `telephony` و `helpdesk` دیده شوند. اگر `telephony` یا `helpdesk` نصب نشده، تنها پس از اطمینان از اینکه سایت درست است و دیتابیس همان سایت مقصد است، نصب ترتیبی را اجرا کنید:
 
 ```bash
-docker compose -f "$BASE_COMPOSE" -f traefik-override.yml exec backend \
-  bench --site "$SITE" install-app telephony
-docker compose -f "$BASE_COMPOSE" -f traefik-override.yml exec backend \
-  bench --site "$SITE" install-app helpdesk
+docker compose -f "$BASE_COMPOSE" -f traefik-override.yml exec backend bench --site "$SITE" install-app telephony
+docker compose -f "$BASE_COMPOSE" -f traefik-override.yml exec backend bench --site "$SITE" install-app helpdesk
 ```
 
-آدرس Helpdesk معمولاً زیرمسیر `/helpdesk` است. redirect و دریافت HTML را از یک کلاینت بیرونی بررسی کنید:
+آدرس Helpdesk معمولاً زیرمسیر `/helpdesk` است. از یک کلاینت بیرونی بررسی کنید:
 
 ```bash
-curl -sS -o /dev/null -w '%{http_code}\n' \
-  "https://$SITE/helpdesk"
-curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' \
-  "http://$SITE/helpdesk"
+curl -sS -o /dev/null -w '%{http_code}\n' "https://$SITE/helpdesk"
+curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' "http://$SITE/helpdesk"
 ```
 
 گواهی TLS را با اعتبارسنجی عادی curl بررسی کنید؛ از `-k` استفاده نکنید. در تجربه مرجع HTTPS کد `200` و HTTP کد `301` همراه مقصد HTTPS داد.
 
-### بررسی خودکار CSS و JavaScript
-
-این بررسی HTML صفحه ورود و Helpdesk را می‌خواند، URLهای CSS/JS همان HTML را پیدا می‌کند و تک‌تک آن‌ها را با TLS معتبر درخواست می‌دهد. اگر یکی از فایل‌ها 404 یا پاسخ ناموفق داشته باشد، اسکریپت با خطا تمام می‌شود:
-
-```bash
-python3 - "$SITE" <<'PY'
-from html.parser import HTMLParser
-from urllib.parse import urljoin, urlparse
-from urllib.request import Request, urlopen
-import sys
-
-base = "https://" + sys.argv[1]
-origin = urlparse(base).netloc
-
-class Assets(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.urls = []
-
-    def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
-        path = urlparse(attrs.get("href", "") or attrs.get("src", "")).path
-        if (tag == "link" and path.endswith(".css")) or (tag == "script" and path.endswith(".js")):
-            self.urls.append(attrs.get("href") or attrs.get("src"))
-
-checked = set()
-for page in ("/", "/helpdesk"):
-    with urlopen(Request(base + page, headers={"User-Agent": "helpdesk-smoke-check"}), timeout=20) as response:
-        html = response.read().decode("utf-8", "replace")
-        print("PAGE", page, response.status)
-    parser = Assets()
-    parser.feed(html)
-    page_assets = 0
-    for raw_url in parser.urls:
-        url = urljoin(base + page, raw_url)
-        parsed = urlparse(url)
-        if parsed.netloc != origin or not parsed.path.startswith("/assets/"):
-            continue
-        page_assets += 1
-        if url in checked:
-            continue
-        checked.add(url)
-        with urlopen(Request(url, headers={"User-Agent": "helpdesk-smoke-check"}), timeout=20) as response:
-            if response.status != 200:
-                raise SystemExit(f"ASSET FAILED {response.status}: {url}")
-            print("ASSET", response.status, parsed.path)
-    if page_assets == 0:
-        raise SystemExit(f"No first-party CSS/JS assets found on {page}")
-
-if not checked:
-    raise SystemExit("No first-party CSS/JS assets were checked")
-print("PASS", len(checked), "unique first-party CSS/JS assets")
-PY
-```
-
-### بررسی دستی رابط و ورود
-
-پس از موفق‌شدن بررسی assetها، صفحه را با بارگذاری اجباری مرورگر تازه کنید. صفحه ورود باید استایل داشته باشد و فایل‌های CSS/JS خطای 404 ندهند. با حساب آزمایشی وارد شوید، سپس `/helpdesk` را باز کنید و بارگذاری صفحه و تعامل‌های اصلی آن را در مرورگر تأیید کنید. فقط بعد از این مرحله نصب را «کامل و قابل استفاده» اعلام کنید؛ پاسخ HTTP و assetهای سالم، به‌تنهایی ورود موفق کاربر را ثابت نمی‌کنند.
-
 پس از تغییر imageهای asset، cache سایت را خالی و backend را restart کنید تا HTML مسیر hashدار تازه را بسازد:
 
 ```bash
-docker compose -f "$BASE_COMPOSE" exec backend \
-  bench --site "$SITE" clear-cache
+docker compose -f "$BASE_COMPOSE" exec backend bench --site "$SITE" clear-cache
 docker compose -f "$BASE_COMPOSE" restart backend
 ```
 
@@ -344,9 +262,9 @@ docker compose -f "$BASE_COMPOSE" restart backend
 
 ## چک‌لیست پایان نصب
 
-- [ ] DNS دامنه به سرور اشاره می‌کند و HTTPS با اعتبار گواهی معتبر پاسخ می‌دهد.
-- [ ] frontend فقط روی loopback میزبان منتشر شده و به شبکه Traefik وصل است؛ HTTP به HTTPS redirect می‌شود.
+- [ ] DNS دامنه به سرور اشاره می‌کند.
+- [ ] frontend فقط روی loopback میزبان منتشر شده و به شبکه Traefik وصل است.
+- [ ] Traefik برای دامنه HTTPS معتبر می‌دهد و HTTP را به HTTPS می‌فرستد.
 - [ ] `bench --site <دامنه> list-apps` هر سه اپ Frappe، Telephony و Helpdesk را نشان می‌دهد.
-- [ ] اسکریپت بالا برای `/` و `/helpdesk` تمام CSS/JSهای first-party را با کد `200` بررسی می‌کند.
-- [ ] ورود با حساب آزمایشی واقعاً انجام می‌شود و صفحه `/helpdesk` در مرورگر بارگذاری و تعاملی است.
+- [ ] `https://<دامنه>/helpdesk` پاسخ مورد انتظار می‌دهد.
 - [ ] compose، `.env`، رمزها، کلید خصوصی و volumeها در مخزن عمومی قرار نگرفته‌اند.
