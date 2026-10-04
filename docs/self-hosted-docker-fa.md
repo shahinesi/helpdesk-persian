@@ -215,6 +215,8 @@ docker compose -f "$BASE_COMPOSE" -f traefik-override.yml config
 
 ## مرحله ۵: بررسی نصب و دسترسی
 
+آماده‌بودن زیرساخت را از آماده‌بودن رابط جدا بررسی کنید. `docker compose ps` فقط وضعیت containerها را نشان می‌دهد و پاسخ `200` از `/` یا `/helpdesk` هم ممکن است فقط HTML ناقص را تأیید کند؛ هیچ‌کدام به‌تنهایی معیار پایان نصب نیستند.
+
 از مسیر compose واقعی استفاده کنید:
 
 ```bash
@@ -232,7 +234,7 @@ docker compose -f "$BASE_COMPOSE" -f traefik-override.yml exec backend \
   bench --site "$SITE" install-app helpdesk
 ```
 
-آدرس Helpdesk معمولاً زیرمسیر `/helpdesk` است. از یک کلاینت بیرونی بررسی کنید:
+آدرس Helpdesk معمولاً زیرمسیر `/helpdesk` است. redirect و دریافت HTML را از یک کلاینت بیرونی بررسی کنید:
 
 ```bash
 curl -sS -o /dev/null -w '%{http_code}\n' \
@@ -242,6 +244,65 @@ curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' \
 ```
 
 گواهی TLS را با اعتبارسنجی عادی curl بررسی کنید؛ از `-k` استفاده نکنید. در تجربه مرجع HTTPS کد `200` و HTTP کد `301` همراه مقصد HTTPS داد.
+
+### بررسی خودکار CSS و JavaScript
+
+این بررسی HTML صفحه ورود و Helpdesk را می‌خواند، URLهای CSS/JS همان HTML را پیدا می‌کند و تک‌تک آن‌ها را با TLS معتبر درخواست می‌دهد. اگر یکی از فایل‌ها 404 یا پاسخ ناموفق داشته باشد، اسکریپت با خطا تمام می‌شود:
+
+```bash
+python3 - "$SITE" <<'PY'
+from html.parser import HTMLParser
+from urllib.parse import urljoin, urlparse
+from urllib.request import Request, urlopen
+import sys
+
+base = "https://" + sys.argv[1]
+origin = urlparse(base).netloc
+
+class Assets(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.urls = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        path = urlparse(attrs.get("href", "") or attrs.get("src", "")).path
+        if (tag == "link" and path.endswith(".css")) or (tag == "script" and path.endswith(".js")):
+            self.urls.append(attrs.get("href") or attrs.get("src"))
+
+checked = set()
+for page in ("/", "/helpdesk"):
+    with urlopen(Request(base + page, headers={"User-Agent": "helpdesk-smoke-check"}), timeout=20) as response:
+        html = response.read().decode("utf-8", "replace")
+        print("PAGE", page, response.status)
+    parser = Assets()
+    parser.feed(html)
+    page_assets = 0
+    for raw_url in parser.urls:
+        url = urljoin(base + page, raw_url)
+        parsed = urlparse(url)
+        if parsed.netloc != origin or not parsed.path.startswith("/assets/"):
+            continue
+        page_assets += 1
+        if url in checked:
+            continue
+        checked.add(url)
+        with urlopen(Request(url, headers={"User-Agent": "helpdesk-smoke-check"}), timeout=20) as response:
+            if response.status != 200:
+                raise SystemExit(f"ASSET FAILED {response.status}: {url}")
+            print("ASSET", response.status, parsed.path)
+    if page_assets == 0:
+        raise SystemExit(f"No first-party CSS/JS assets found on {page}")
+
+if not checked:
+    raise SystemExit("No first-party CSS/JS assets were checked")
+print("PASS", len(checked), "unique first-party CSS/JS assets")
+PY
+```
+
+### بررسی دستی رابط و ورود
+
+پس از موفق‌شدن بررسی assetها، صفحه را با بارگذاری اجباری مرورگر تازه کنید. صفحه ورود باید استایل داشته باشد و فایل‌های CSS/JS خطای 404 ندهند. با حساب آزمایشی وارد شوید، سپس `/helpdesk` را باز کنید و بارگذاری صفحه و تعامل‌های اصلی آن را در مرورگر تأیید کنید. فقط بعد از این مرحله نصب را «کامل و قابل استفاده» اعلام کنید؛ پاسخ HTTP و assetهای سالم، به‌تنهایی ورود موفق کاربر را ثابت نمی‌کنند.
 
 پس از تغییر imageهای asset، cache سایت را خالی و backend را restart کنید تا HTML مسیر hashدار تازه را بسازد:
 
@@ -283,9 +344,9 @@ docker compose -f "$BASE_COMPOSE" restart backend
 
 ## چک‌لیست پایان نصب
 
-- [ ] DNS دامنه به سرور اشاره می‌کند.
-- [ ] frontend فقط روی loopback میزبان منتشر شده و به شبکه Traefik وصل است.
-- [ ] Traefik برای دامنه HTTPS معتبر می‌دهد و HTTP را به HTTPS می‌فرستد.
+- [ ] DNS دامنه به سرور اشاره می‌کند و HTTPS با اعتبار گواهی معتبر پاسخ می‌دهد.
+- [ ] frontend فقط روی loopback میزبان منتشر شده و به شبکه Traefik وصل است؛ HTTP به HTTPS redirect می‌شود.
 - [ ] `bench --site <دامنه> list-apps` هر سه اپ Frappe، Telephony و Helpdesk را نشان می‌دهد.
-- [ ] `https://<دامنه>/helpdesk` پاسخ مورد انتظار می‌دهد.
+- [ ] اسکریپت بالا برای `/` و `/helpdesk` تمام CSS/JSهای first-party را با کد `200` بررسی می‌کند.
+- [ ] ورود با حساب آزمایشی واقعاً انجام می‌شود و صفحه `/helpdesk` در مرورگر بارگذاری و تعاملی است.
 - [ ] compose، `.env`، رمزها، کلید خصوصی و volumeها در مخزن عمومی قرار نگرفته‌اند.
