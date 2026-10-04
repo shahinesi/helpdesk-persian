@@ -99,7 +99,8 @@ USER frappe
 WORKDIR /home/frappe/frappe-bench
 RUN bench get-app --branch=develop --skip-assets https://github.com/frappe/telephony \
     && bench setup requirements --python telephony \
-    && bench build --app telephony
+    && bench set-config -gp socketio_port 9000 \
+    && bench build
 
 FROM helpdesk-persian:test
 USER root
@@ -110,13 +111,31 @@ RUN cp -a /tmp/telephony-assets/. /home/frappe/frappe-bench/assets/ && rm -rf /t
 USER frappe
 ```
 
-Build نهایی:
+ساخت این image، bundle رابط Helpdesk را تولید می‌کند. برای صفحه ورود Frappe یک build جدا برای اپ `frappe` هم لازم است؛ اگر فقط مرحله بالا اجرا شود، ممکن است manifest assetها خالی بماند و مرورگر CSS/JS صفحه ورود را پیدا نکند. فایل `frappe-assets.Containerfile` را بسازید:
 
-```bash
-docker build -f telephony.Containerfile -t helpdesk-persian:with-telephony .
+```dockerfile
+FROM helpdesk-persian:with-assets AS asset-builder
+USER frappe
+WORKDIR /home/frappe/frappe-bench
+RUN bench set-config -gp socketio_port 9000 && bench build --apps frappe
+
+FROM helpdesk-persian:with-assets
+USER root
+COPY --from=asset-builder /home/frappe/frappe-bench/assets /tmp/frappe-assets
+RUN cp -a /tmp/frappe-assets/. /home/frappe/frappe-bench/assets/ && rm -rf /tmp/frappe-assets
+USER frappe
 ```
 
-این مرحله از image محلی قبلی استفاده می‌کند؛ به registry عمومی push نمی‌کند. برای نصب‌های بعدی می‌توان هر دو اپ را از ابتدا در image builder وارد کرد، اما ترتیب نصب را حفظ کنید: Telephony قبل از Helpdesk. آن مسیر جداگانه در تجربه مرجع اجرا و تأیید نشده است.
+`socketio_port` در build stage لازم است چون build فرانت‌اند Helpdesk آن را از `common_site_config.json` می‌خواند. تنظیم مرحله build فقط برای تولید bundle است؛ سرویس configurator مقدار runtime را زمان اجرای compose تنظیم می‌کند.
+
+ساخت imageها:
+
+```bash
+docker build -f telephony.Containerfile -t helpdesk-persian:with-assets .
+docker build -f frappe-assets.Containerfile -t helpdesk-persian:styled .
+```
+
+در مرحله دوم، کل پوشه `assets` شامل `assets.json` و symlinkهای اپ کپی می‌شود؛ کپی‌کردن تنها `sites/assets` برای صفحه ورود کافی نیست. هر دو image محلی هستند و به registry عمومی push نمی‌شوند.
 
 ## مرحله ۳: ایجاد سایت با Easy Install
 
@@ -126,7 +145,7 @@ docker build -f telephony.Containerfile -t helpdesk-persian:with-telephony .
 SITE=helpdesk.example.com
 PROJECT=helpdesk-test
 IMAGE=helpdesk-persian
-TAG=with-telephony
+TAG=styled
 
 python3 easy-install.py deploy \
   --project "$PROJECT" \
@@ -224,6 +243,16 @@ curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' \
 
 گواهی TLS را با اعتبارسنجی عادی curl بررسی کنید؛ از `-k` استفاده نکنید. در تجربه مرجع HTTPS کد `200` و HTTP کد `301` همراه مقصد HTTPS داد.
 
+پس از تغییر imageهای asset، cache سایت را خالی و backend را restart کنید تا HTML مسیر hashدار تازه را بسازد:
+
+```bash
+docker compose -f "$BASE_COMPOSE" exec backend \
+  bench --site "$SITE" clear-cache
+docker compose -f "$BASE_COMPOSE" restart backend
+```
+
+صفحه ورود باید به assetهایی مثل `/assets/frappe/dist/css/login.bundle.<hash>.css` و `/assets/frappe/dist/js/frappe-web.bundle.<hash>.js` اشاره کند. URLهای بدون hash مثل `/login.bundle.css` در این image مسیر درست نیستند. کد HTTP خود CSS و JS hashدار را هم جدا بررسی کنید.
+
 ## عیب‌یابی بر اساس نشانه
 
 | نشانه | معنی محتمل | اقدام محدود |
@@ -231,6 +260,7 @@ curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' \
 | `Remote branch <SHA> not found` | مقدار `branch` در apps JSON نام branch نیست | branch معتبر مثل `develop` بگذارید؛ SHA را در این فیلد قرار ندهید. |
 | Build روی درخواست `iojs.org` می‌ایستد | مرحله nvm/toolchain به منبعی دسترسی ندارد یا image custom آن را دوباره دانلود می‌کند | نام مرحله و log را ثبت کنید؛ برای این تجربه، build با layered Containerfile رسمی و imageهای base/build آماده شد. |
 | `KeyError: 'telephony'` یا `No module named 'telephony'` | image یا سایت اپ Telephony را ندارد | image نهایی را با Telephony بسازید؛ سپس در سایت ابتدا Telephony و بعد Helpdesk را نصب و `list-apps` را دوباره بررسی کنید. |
+| صفحه ورود بدون استایل است یا دکمه‌ها کار نمی‌کنند | CSS/JS یا `assets.json` در image نهایی موجود نیست، یا backend هنوز cache قدیمی دارد | `assets.json` و URLهای hashدار صفحه را بررسی کنید؛ `bench build --apps frappe` را در مرحله‌ای دارای Node اجرا و کل پوشه `assets` را به image نهایی کپی کنید، سپس cache را خالی و backend را restart کنید. |
 | Easy Install خروجی صفر می‌دهد ولی سایت بالا نمی‌آید | کد خروجی ابزار کافی نیست و ممکن است یکی از مراحل داخلی شکست خورده باشد | `docker compose ps`، log همان سرویس و `bench --site ... list-apps` را بررسی کنید. |
 | Traefik خطای شبکه می‌دهد | frontend به شبکه خارجی Traefik متصل نیست یا نام شبکه در label متفاوت است | وجود شبکه Docker، اتصال frontend به آن و مقدار `traefik.docker.network` را تطبیق دهید. |
 | گواهی صادر نمی‌شود | DNS، پورت‌های ورودی، resolver یا challenge در Traefik درست نیست | ابتدا دسترسی بیرونی دامنه و تنظیمات خود Traefik را بررسی کنید؛ گواهی را از داخل Helpdesk تنظیم نکنید. |
