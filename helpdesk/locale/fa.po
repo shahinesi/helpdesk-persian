@@ -200,7 +200,7 @@ msgstr "فعالیت"
 
 #: desk/src/components/tag/Tags.vue:43 desk/src/components/tag/Tags.vue:48
 msgid "Add"
-msgstr ""
+msgstr "افزودن"
 
 #: Rules/AssigneeSearch.vue:8 desk/src/components/Settings/Assignment
 msgid "Add Assignee"
@@ -364,7 +364,7 @@ msgstr "ادمین"
 #: helpdesk/helpdesk/doctype/hd_view/hd_view.json
 #: helpdesk/helpdesk/workspace/helpdesk/helpdesk.json
 msgid "Agent"
-msgstr "عامل"
+msgstr "کارشناس"
 
 #. Label of a Card Break in the Helpdesk Workspace
 #: helpdesk/helpdesk/workspace/helpdesk/helpdesk.json
@@ -423,7 +423,7 @@ msgstr ""
 #: desk/src/components/Settings/Agents.vue:3
 #: helpdesk/helpdesk/doctype/hd_ticket_template_field/hd_ticket_template_field.json
 msgid "Agents"
-msgstr "عوامل"
+msgstr "کارشناسان"
 
 #: desk/src/components/layouts/Sidebar.vue:380
 msgid "Agents & Teams"
@@ -675,7 +675,7 @@ msgstr ""
 #: desk/src/components/ticket-agent/BulkAssignModal.vue:2
 #: desk/src/pages/ticket/Tickets.vue:143
 msgid "Assign"
-msgstr ""
+msgstr "تخصیص"
 
 #: desk/src/components/layouts/Sidebar.vue:271
 msgid "Assign a ticket to an agent"
@@ -691,7 +691,7 @@ msgstr ""
 
 #: desk/src/pages/home/components/RecentActivity.vue:105
 msgid "Assigned"
-msgstr ""
+msgstr "تخصیص‌یافته"
 
 #: desk/src/components/customer/TicketsTab.vue:236
 #: helpdesk/helpdesk/report/ticket_analytics/ticket_analytics.js:62
@@ -726,7 +726,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'HD Notification'
 #: helpdesk/helpdesk/doctype/hd_notification/hd_notification.json
 msgid "Assignment"
-msgstr ""
+msgstr "تخصیص"
 
 #: Rules/AssignmentRuleView.vue:120 desk/src/components/Settings/Assignment
 msgid "Assignment Condition"
@@ -1060,7 +1060,7 @@ msgstr "CSV"
 
 #: desk/src/components/Settings/Holiday/HolidayView.vue:146
 msgid "Calendar"
-msgstr ""
+msgstr "تقویم"
 
 #: desk/src/pages/call-logs/CallLogDetailModal.vue:8
 msgid "Call Details"
@@ -1311,7 +1311,7 @@ msgstr "انتخاب کنید چه کسی تیکت‌ها را دریافت می
 #: desk/src/components/command-palette/CommandPalette.vue:261
 #: desk/src/components/frappe-ui/Link.vue:44
 msgid "Clear"
-msgstr ""
+msgstr "پاک‌کردن"
 
 #: desk/src/components/view-controls/SortBy.vue:155
 msgid "Clear Sort"
@@ -1666,7 +1666,7 @@ msgstr "ایجاد مشتری"
 
 #: desk/src/components/frappe-ui/Link.vue:59
 msgid "Create New"
-msgstr ""
+msgstr "ایجاد جدید"
 
 #: desk/src/pages/ticket/Tickets.vue:420 desk/src/pages/ticket/Tickets.vue:424
 msgid "Create View"
@@ -1698,7 +1698,7 @@ msgstr ""
 
 #: desk/src/components/ticket-agent/analytics/TicketTimeline.vue:226
 msgid "Created"
-msgstr ""
+msgstr "ایجاد شد"
 
 #: desk/src/components/Settings/FieldDependency/FieldDependencyList.vue:69
 msgid "Created by"
@@ -1830,7 +1830,7 @@ msgstr ""
 
 #: helpdesk/helpdesk/doctype/hd_ticket_template/hd_ticket_template.py:84
 msgid "Customize Form"
-msgstr ""
+msgstr "سفارشی‌سازی فرم"
 
 #: desk/src/components/Settings/EmailNotifications/NotificationList.vue:5
 msgid "Customize your email notification preferences to stay informed about important updates and activities."
@@ -2475,7 +2475,7 @@ msgstr "خطا هنگام اتصال به حساب ایمیل {0}"
 #. Field'
 #: helpdesk/helpdesk/doctype/hd_ticket_template_field/hd_ticket_template_field.json
 msgid "Everyone"
-msgstr ""
+msgstr "همه"
 
 #. Description of the 'Visible to' (Select) field in DocType 'HD Ticket
 #. Template Field'
@@ -2666,7 +2666,7 @@ msgstr ""
 #: desk/src/components/conditions-filter/CFCondition.vue:40
 #: desk/src/components/ticket-agent/BulkEditModal.vue:7
 msgid "Field"
-msgstr ""
+msgstr "فیلد"
 
 #. Label of the fieldname (Data) field in DocType 'HD Ticket Template Field'
 #: helpdesk/helpdesk/doctype/hd_ticket_template_field/hd_ticket_template_field.json
@@ -3193,7 +3193,7 @@ msgstr ""
 #. Option for the 'Level' (Select) field in DocType 'HD Ticket Priority'
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "High"
-msgstr ""
+msgstr "بالا"
 
 #. Option in a Select field in the tickets Web Form
 #: helpdesk/helpdesk/web_form/tickets/tickets.json
@@ -3597,7 +3597,7 @@ msgstr "میانبرهای صفحه کلید"
 #: desk/src/pages/knowledge-base/NewArticle.vue:179
 #: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
 msgid "Knowledge Base"
-msgstr "دانش محور"
+msgstr "پایگاه دانش"
 
 #. Label of the label (Data) field in DocType 'HD Ticket Feedback Option'
 #. Label of the label_agent (Data) field in DocType 'HD Ticket Status'
@@ -3710,7 +3710,7 @@ msgstr ""
 
 #: desk/src/components/banners/SidebarBanner.vue:13
 msgid "Learn more"
-msgstr ""
+msgstr "بیشتر بدانید"
 
 #: desk/src/components/banners/CustomerPortalPermissionBanner.vue:25
 msgid "Learn more in the"
@@ -3725,7 +3725,7 @@ msgstr ""
 #. Label of the level (Select) field in DocType 'HD Ticket Priority'
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "Level"
-msgstr ""
+msgstr "سطح"
 
 #: desk/src/pages/PersonaForm.vue:221
 msgid "LinkedIn"
@@ -3801,7 +3801,7 @@ msgstr ""
 #. Option for the 'Level' (Select) field in DocType 'HD Ticket Priority'
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "Low"
-msgstr ""
+msgstr "پایین"
 
 #. Description of the 'Rank' (Int) field in DocType 'HD Service Level
 #. Agreement'
@@ -3881,7 +3881,7 @@ msgstr ""
 #. Option for the 'Level' (Select) field in DocType 'HD Ticket Priority'
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "Medium"
-msgstr ""
+msgstr "متوسط"
 
 #: desk/src/components/Settings/Teams/NewTeam.vue:38
 msgid "Members"
@@ -4158,7 +4158,7 @@ msgstr "کاربران جدید باید به صورت دستی توسط مدی�
 
 #: desk/src/components/Questionnaire.vue:129
 msgid "Next"
-msgstr ""
+msgstr "بعدی"
 
 #: desk/src/components/modals/ShortcutsModal.vue:108
 msgid "Next ticket"
@@ -4390,7 +4390,7 @@ msgstr ""
 
 #: helpdesk/api/timeline.py:53
 msgid "Not permitted"
-msgstr ""
+msgstr "مجاز نیست"
 
 #: desk/src/components/command-palette/CommandPalette.vue:245
 msgid "Nothing left in {0}"
@@ -4550,7 +4550,7 @@ msgstr "اطلاعیه خارج از ساعات کاری"
 
 #: desk/src/components/ticket-agent/TicketDetailsTab.vue:30
 msgid "Overview"
-msgstr ""
+msgstr "نمای کلی"
 
 #: desk/src/components/Settings/SavedReplies/SavedRepliesList.vue:88
 msgid "Owner"
@@ -4685,7 +4685,7 @@ msgstr "یک گزینه را انتخاب کنید"
 #: desk/src/components/ticket-agent/timeline/TimelineCommentRow.vue:136
 #: desk/src/components/ticket-agent/timeline/TimelineCommentRow.vue:208
 msgid "Pin"
-msgstr ""
+msgstr "سنجاق‌کردن"
 
 #: desk/src/components/ViewModal.vue:43
 msgid "Pin to sidebar"
@@ -4787,7 +4787,7 @@ msgstr ""
 
 #: desk/src/pages/ticket/MobileTicketAgent.vue:157
 msgid "Portal"
-msgstr ""
+msgstr "پرتال"
 
 #: desk/src/components/contact/FeedbackList.vue:120
 msgid "Positive"
@@ -4946,7 +4946,7 @@ msgstr ""
 #. Option for the 'Color' (Select) field in DocType 'HD Ticket Status'
 #: helpdesk/helpdesk/doctype/hd_ticket_status/hd_ticket_status.json
 msgid "Purple"
-msgstr ""
+msgstr "بنفش"
 
 #: helpdesk/helpdesk/report/ticket_analytics/ticket_analytics.js:36
 msgid "Quarterly"
@@ -5245,7 +5245,7 @@ msgstr "بازنشانی به حالت پیش‌فرض"
 
 #: desk/src/components/SavedReplyActions/SavedReplyActionComment.vue:41
 msgid "Reset to default"
-msgstr ""
+msgstr "بازگردانی به پیش‌فرض"
 
 #. Label of the resolution_tab (Tab Break) field in DocType 'HD Ticket'
 #: desk/src/components/customer/TicketsTab.vue:230
@@ -5367,7 +5367,7 @@ msgstr ""
 #: desk/src/components/SavedReplyActions/SavedReplyActions.vue:233
 #: desk/src/components/ticket-agent/analytics/TicketAnalyticsTab.vue:23
 msgid "Retry"
-msgstr ""
+msgstr "تلاش دوباره"
 
 #: desk/src/pages/home/Home.vue:340
 #: desk/src/pages/home/components/RecentFeedback.vue:7
@@ -5790,7 +5790,7 @@ msgstr "روز تعطیل هفتگی خود را انتخاب کنید"
 #: desk/src/components/Settings/SavedReplies/components/ActionValue.vue:122
 #: desk/src/components/ticket-agent/BulkEditModal.vue:115
 msgid "Select {0}"
-msgstr ""
+msgstr "انتخاب {0}"
 
 #: desk/src/pages/ticket/TicketCustomer.vue:89
 msgid "Send"
@@ -6019,7 +6019,7 @@ msgstr ""
 
 #: desk/src/components/ticket-agent/TicketFeedback.vue:20
 msgid "Show more"
-msgstr ""
+msgstr "نمایش بیشتر"
 
 #: desk/src/pages/home/components/PendingTickets.vue:149
 msgid "Showing {0} of {1} {2}"
@@ -6092,7 +6092,7 @@ msgstr "مرتب‌سازی"
 
 #: desk/src/pages/ticket/MobileTicketAgent.vue:152
 msgid "Source"
-msgstr ""
+msgstr "منبع"
 
 #: helpdesk/api/knowledge_base.py:125
 msgid "Source and target category cannot be same"
@@ -6369,7 +6369,7 @@ msgstr ""
 
 #: helpdesk/api/dashboard_tags.py:48
 msgid "Tag"
-msgstr ""
+msgstr "برچسب"
 
 #: helpdesk/api/dashboard_tags.py:72
 msgid "Tag Trend"
@@ -7278,7 +7278,7 @@ msgstr "بنفش"
 
 #: desk/src/components/Settings/SavedReplies/SavedReplyView.vue:58
 msgid "Visibility"
-msgstr ""
+msgstr "قابلیت مشاهده"
 
 #. Label of the visible_to (Select) field in DocType 'HD Ticket Template Field'
 #: helpdesk/helpdesk/doctype/hd_ticket_template_field/hd_ticket_template_field.json
@@ -7470,7 +7470,7 @@ msgstr "شما مجاز به افزودن دیدگاه نیستید"
 
 #: helpdesk/helpdesk/doctype/hd_ticket/hd_ticket.py:675
 msgid "You are not permitted to reply as an agent"
-msgstr ""
+msgstr "شما اجازه ندارید به‌عنوان کارشناس پاسخ دهید."
 
 #: desk/src/App.vue:38
 msgid "You are now offline."
@@ -7780,7 +7780,7 @@ msgstr ""
 
 #: desk/src/components/ticket-agent/BulkEditModal.vue:126
 msgid "{0} is required"
-msgstr ""
+msgstr "وارد کردن {0} الزامی است."
 
 #: helpdesk/helpdesk/doctype/hd_ticket_template/hd_ticket_template.py:91
 msgid "{0} is successfully hidden from customers in the ticket form. Raise its permission level in {1} to hide it from the API layer. Read more about permission levels {2}."
