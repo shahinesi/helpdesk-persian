@@ -7851,6 +7851,9 @@ msgid "{0} · longest wait"
 msgstr ""
 
 # Frappe core Setup Wizard strings; Frappe merges installed-app catalogs.
+msgid "Iran"
+msgstr "ایران"
+
 msgid "Add More"
 msgstr "افزودن مورد دیگر"
 
