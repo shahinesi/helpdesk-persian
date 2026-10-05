@@ -3999,6 +3999,10 @@ msgstr "تیم‌های من"
 msgid "My Tickets"
 msgstr "تیکت‌های من"
 
+#: helpdesk/setup/default_views.py:84
+msgid "My Feedback"
+msgstr "بازخوردهای من"
+
 #. Label of the category_name (Data) field in DocType 'HD Article Category'
 #. Label of the contact_name (Link) field in DocType 'HD Customer Member'
 #. Label of the brand_name (Data) field in DocType 'HD Settings'
@@ -4993,7 +4997,7 @@ msgstr "تیکت‌های امتیازدهی‌شده"
 #: helpdesk/helpdesk/doctype/hd_ticket/hd_ticket.json
 #: helpdesk/helpdesk/doctype/hd_ticket_feedback_option/hd_ticket_feedback_option.json
 msgid "Rating"
-msgstr "امتیازدهی"
+msgstr "امتیاز"
 
 #: helpdesk/helpdesk/doctype/hd_ticket_feedback_option/hd_ticket_feedback_option.py:23
 msgid "Rating must be between 0.2 and 1.0"
@@ -5034,6 +5038,10 @@ msgstr "اخیر"
 #: desk/src/pages/home/components/PendingTickets.vue:228
 msgid "Recent Tickets"
 msgstr "تیکت‌های اخیر"
+
+#: helpdesk/setup/default_views.py:38
+msgid "Recently Assigned Tickets"
+msgstr "تیکت‌های تازه‌واگذارشده"
 
 #: desk/src/components/Settings/Telephony/ExotelSettings.vue:30
 #: desk/src/components/Settings/Telephony/TwilioSettings.vue:29
