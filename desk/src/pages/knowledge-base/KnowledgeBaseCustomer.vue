@@ -10,9 +10,15 @@
     <div
       class="max-w-4xl 2xl:max-w-5xl pt-4 sm:px-5 w-full flex flex-col gap-4"
     >
-      <SearchPopover :popoverClass="[ 'max-w-[310px] md:max-w-[856px] !top-1
-      md:min-w-[856px]', ]" v-model="query" :placeholder="__(\"Ask a
-      question...\")" size="md" :autofocus="true" />
+      <SearchPopover
+        :popoverClass="[
+          'max-w-[310px] md:max-w-[856px] !top-1 md:min-w-[856px]',
+        ]"
+        v-model="query"
+        :placeholder="__('Ask a question...')"
+        size="md"
+        :autofocus="true"
+      />
 
       <!-- Categories Folder -->
       <section class="flex flex-col gap-3">
