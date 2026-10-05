@@ -9,7 +9,7 @@
           <FormControl
             size="sm"
             type="text"
-            placeholder="My Open Tickets"
+            :placeholder="__(`My Open Tickets`)"
             v-model="view.label"
           />
         </div>

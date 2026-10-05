@@ -55,7 +55,7 @@ function revoke() {
 <style scoped>
 .invite-revoke-button {
   width: 1.75rem;
-  margin-left: auto;
+  margin-inline-start: auto;
   overflow: hidden;
   transition: width 0.22s ease;
 }

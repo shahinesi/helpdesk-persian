@@ -50,7 +50,7 @@
 
     <div
       v-if="isOpen"
-      class="absolute z-50 mt-2 w-64 divide-y divide-outline-elevation-2 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none start-0 origin-top-left"
+      class="absolute z-50 mt-2 w-64 divide-y divide-outline-elevation-2 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none start-0 origin-top-start"
     >
       <!-- Header -->
       <div class="py-1.5 px-1.5">
@@ -184,6 +184,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { Avatar, Button, Checkbox } from "frappe-ui";
 import {
   computed,
@@ -223,8 +224,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: "Select options...",
-  label: "Options",
+  placeholder: __("Select options..."),
+  label: __("Options"),
   selectionText: "items",
   options: () => [],
 });

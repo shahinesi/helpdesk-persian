@@ -172,6 +172,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { useTelephonyStore } from "@/stores/telephony";
 import { Call, Device } from "@twilio/voice-sdk";
 import { useDraggable, useWindowSize } from "@vueuse/core";
@@ -420,7 +421,7 @@ async function makeOutgoingCall(number) {
   } else {
     onCallFailed && onCallFailed();
     log.value = "Unable to make call.";
-    toast.error("Unable to make call.");
+    toast.error(__("Unable to make call."));
   }
 }
 

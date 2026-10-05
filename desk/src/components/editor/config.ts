@@ -32,6 +32,7 @@ import {
   type MenuItem,
 } from "frappe-ui/editor";
 import type { MaybeRefOrGetter } from "vue";
+import { __ } from "@/translation";
 
 /**
  * Build the extension list for a Helpdesk rich-text editor.
@@ -63,7 +64,7 @@ export function buildEditorExtensions(
 
 /** Clear-formatting toolbar button (ports the v0 `ClearFormattingUtility`). */
 export const ClearFormatting: CommandMenuItem = {
-  label: "Clear formatting",
+  label: __("Clear formatting"),
   icon: "lucide-brush-cleaning",
   action: (editor) =>
     editor.chain().focus().unsetAllMarks().clearNodes().cleanStyles().run(),
@@ -71,7 +72,7 @@ export const ClearFormatting: CommandMenuItem = {
 
 /** Code block button; frappe-ui ships the node but no toolbar item for it. */
 export const InsertCodeBlock: CommandMenuItem = {
-  label: "Code block",
+  label: __("Code block"),
   icon: "lucide-square-code",
   isActive: (editor) => editor.isActive("codeBlock"),
   action: (editor) => editor.chain().focus().toggleCodeBlock().run(),

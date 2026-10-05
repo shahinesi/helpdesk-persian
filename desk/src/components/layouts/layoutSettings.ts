@@ -23,7 +23,7 @@ export const agentPortalSidebarOptions = [
   {
     label: __("Dashboard"),
     icon: LucideLayoutDashboard,
-    to: "Dashboard"
+    to: "Dashboard",
   },
   {
     label: __("Tickets"),
@@ -36,7 +36,7 @@ export const agentPortalSidebarOptions = [
     to: "AgentKnowledgeBase",
   },
   {
-    label: "Customers",
+    label: __("Customers"),
     icon: OrganizationsIcon,
     to: "CustomerList",
   },

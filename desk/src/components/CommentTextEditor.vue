@@ -55,14 +55,14 @@
                     </button>
                   </template>
                 </FileUploader>
-                <div class="h-4 w-[2px] border-s ml-1" />
+                <div class="h-4 w-[2px] border-s ms-1" />
               </div>
               <EditorFixedMenu :items="fullToolbar" />
               <EditorTableMenu />
             </div>
             <div class="flex shrink-0 items-center justify-end gap-x-2">
               <Button
-                label="Discard"
+                :label="__(`Discard`)"
                 @click="
                   () => {
                     newComment = '';

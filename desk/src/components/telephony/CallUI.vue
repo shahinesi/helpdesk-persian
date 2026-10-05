@@ -3,10 +3,10 @@
   <ExotelCallUI ref="exotel" />
   <Dialog
     v-model:open="show"
-    title="Make call"
+    :title="__(`Make call`)"
     :actions="[
       {
-        label: `Call using ${callMedium}`,
+        label: __('Call using {0}', [callMedium]),
         variant: 'solid',
         onClick: makeCallUsing,
       },
@@ -14,7 +14,11 @@
   >
     <template #default>
       <div class="flex flex-col gap-4">
-        <FormControl type="text" v-model="mobileNumber" label="Mobile Number" />
+        <FormControl
+          type="text"
+          v-model="mobileNumber"
+          :label="__(`Mobile Number`)"
+        />
         <FormControl
           type="select"
           v-model="callMedium"

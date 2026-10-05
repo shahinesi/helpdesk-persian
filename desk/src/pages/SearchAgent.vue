@@ -332,7 +332,7 @@ const statusFilterOptions = computed(() => {
   const options = filterOptions.data?.statuses || {};
   return Object.entries(options).map(([value]) => ({
     value,
-    label: `${value}`,
+    label: __(value),
     // count,
   }));
 });
@@ -341,7 +341,7 @@ const priorityFilterOptions = computed(() => {
   const options = filterOptions.data?.priorities || {};
   return Object.entries(options).map(([value]) => ({
     value,
-    label: `${value}`,
+    label: __(value),
     // count,
   }));
 });

@@ -296,7 +296,7 @@ export function copyActivityLink(
 }
 
 export const ClearFormattingUtility = {
-  label: "Clear formatting",
+  label: __("Clear formatting"),
   icon: LucideBrushCleaning,
   action: (editor) => {
     editor.chain().focus().unsetAllMarks().clearNodes().cleanStyles().run();
@@ -421,8 +421,8 @@ function hasArabicContent(content: string) {
 
 export function getFontFamily(content: string) {
   const langMap = {
-    default: "!font-[Inter]",
-    arabic: "!font-[system-ui]",
+    default: "!font-[Vazirmatn]",
+    arabic: "!font-[Vazirmatn]",
   };
   let lang = "";
   if (hasArabicContent(content)) {
@@ -732,7 +732,7 @@ export function getFieldDependencyLabel(name: string) {
 export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
   return [
     {
-      label: "Delete",
+      label: __("Delete"),
       icon: "lucide-trash-2",
       // preventDefault keeps the menu open so the confirm row can replace this one
       onClick: (event) => {
@@ -742,7 +742,7 @@ export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
       condition: () => !isConfirmingDelete.value,
     },
     {
-      label: "Confirm Delete",
+      label: __("Confirm Delete"),
       icon: "lucide-trash-2",
       theme: "red",
       onClick: () => {
@@ -943,19 +943,19 @@ export function handleInviteUserSuccess(
 ) {
   let emailsStr = emailsToStr(data.invited_emails);
   if (emailsStr.trim() !== "") {
-    toast.success(`${emailsStr} invited successfully`);
+    toast.success(__("{0} invited successfully", [emailsStr]));
   }
   emailsStr = emailsToStr(data.disabled_user_emails);
   if (emailsStr.trim() !== "") {
-    toast.info(`${emailsStr} already present and disabled`);
+    toast.info(__("{0} already present and disabled", [emailsStr]));
   }
   emailsStr = emailsToStr(data.pending_invite_emails);
   if (emailsStr.trim() !== "") {
-    toast.info(`${emailsStr} already invited`);
+    toast.info(__("{0} already invited", [emailsStr]));
   }
   emailsStr = emailsToStr(data.accepted_invite_emails);
   if (emailsStr.trim() !== "") {
-    toast.info(`${emailsStr} already present`);
+    toast.info(__("{0} already present", [emailsStr]));
   }
 }
 

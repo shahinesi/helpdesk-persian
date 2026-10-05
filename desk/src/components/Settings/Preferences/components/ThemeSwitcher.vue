@@ -133,7 +133,7 @@ const themeOptions: {
 }[] = [
   {
     value: "light",
-    label: "Light",
+    label: __("Light"),
     bars: true,
     panes: [
       {
@@ -145,7 +145,7 @@ const themeOptions: {
   },
   {
     value: "dark",
-    label: "Dark",
+    label: __("Dark"),
     bars: true,
     panes: [
       {
@@ -157,7 +157,7 @@ const themeOptions: {
   },
   {
     value: "system",
-    label: "System",
+    label: __("System"),
     bars: false,
     panes: [
       {

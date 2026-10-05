@@ -185,13 +185,13 @@
                   <ZapIcon class="h-4 w-4" />
                 </button>
               </Tooltip>
-              <div class="h-4 w-[2px] border-s ml-1" />
+              <div class="h-4 w-[2px] border-s ms-1" />
             </div>
             <EditorFixedMenu :items="fullToolbar" />
             <EditorTableMenu />
           </div>
           <div class="flex shrink-0 items-center justify-end gap-x-2">
-            <Button label="Discard" @click="handleDiscard" />
+            <Button :label="__(`Discard`)" @click="handleDiscard" />
             <!-- A disabled button fires no pointer events, so the span
                  carries the hover for the tooltip -->
             <Tooltip

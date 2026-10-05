@@ -566,7 +566,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  document.title = "Helpdesk";
+  document.title = __("Helpdesk");
 });
 </script>
 <style scoped>

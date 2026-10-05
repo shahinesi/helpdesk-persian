@@ -10,11 +10,11 @@
     <div class="relative mx-4">
       <div
         v-show="showLeftFade"
-        class="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[var(--surface-base)] to-transparent"
+        class="pointer-events-none absolute start-0 inset-y-0 z-10 w-10 bg-gradient-to-r from-[var(--surface-base)] to-transparent rtl:bg-gradient-to-l"
       />
       <div
         v-show="showRightFade"
-        class="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[var(--surface-base)] to-transparent"
+        class="pointer-events-none absolute end-0 inset-y-0 z-10 w-10 bg-gradient-to-l from-[var(--surface-base)] to-transparent rtl:bg-gradient-to-r"
       />
       <div
         ref="scroller"
@@ -23,7 +23,7 @@
       >
         <div
           ref="rail"
-          class="flex w-max min-w-full items-start pl-12 pr-16 pb-16 pt-8"
+          class="flex w-max min-w-full items-start ps-12 pe-16 pb-16 pt-8"
         >
           <template v-for="(segment, index) in segments" :key="index">
             <Tooltip bare v-if="segment.kind === 'node'" :hover-delay="200">

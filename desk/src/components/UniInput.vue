@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { APIOptions, Field } from "@/types";
 import { parseApiOptions } from "@/utils";
 import { Link } from "@framework/ui";
@@ -107,8 +108,8 @@ const component = computed(() => {
     );
   } else if (props.field.fieldtype === "Check") {
     return select([
-      { label: "Yes", value: 1 },
-      { label: "No", value: 0 },
+      { label: __("Yes"), value: 1 },
+      { label: __("No"), value: 0 },
     ]);
   } else if (props.field.fieldtype === "Datetime") {
     return h(DateTimePicker, {

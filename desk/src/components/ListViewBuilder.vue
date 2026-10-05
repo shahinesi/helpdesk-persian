@@ -543,7 +543,7 @@ const quickFilters = createResource({
   },
   transform: (data) => {
     if (Boolean(data.length)) return;
-    data = [{ name: "name", label: "Name", fieldtype: "Data" }];
+    data = [{ name: "name", label: __("Name"), fieldtype: "Data" }];
     return data;
   },
 });

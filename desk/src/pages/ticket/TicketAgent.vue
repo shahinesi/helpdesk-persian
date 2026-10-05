@@ -38,7 +38,9 @@
         }}
       </div>
       <Button :route="{ name: 'TicketsAgent' }" variant="subtle">
-        <template #prefix><LucideArrowLeft class="size-4" /></template>
+        <template #prefix
+          ><LucideArrowLeft class="size-4 rtl:rotate-180"
+        /></template>
         {{ __("Back to Tickets") }}
       </Button>
     </div>
@@ -46,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import LucideArrowLeft from "~icons/lucide/arrow-left";
 import { recordTicketVisit } from "@/components/command-palette/recentTickets";
 import TicketIcon from "@/components/icons/TicketIcon.vue";
@@ -217,7 +220,9 @@ onMounted(() => {
   $socket.on("ticket_update", (data: TicketUpdateData) => {
     if (data.ticket_id === ticket.value?.name) {
       // Notify the user about the update
-      toast.info(`User ${data.user} updated ${data.field} to ${data.value}`);
+      toast.info(
+        __("User {0} updated {1} to {2}", [data.user, data.field, data.value])
+      );
     }
   });
 

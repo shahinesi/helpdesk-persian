@@ -33,12 +33,12 @@
             />
             <Link
               :label="__('Country')"
-              placeholder="India"
+              :placeholder="__(`India`)"
               doctype="Country"
               v-model="state.country"
             >
               <template #prefix>
-                <LucideMapPin class="size-4 mr-1.5" />
+                <LucideMapPin class="size-4 me-1.5" />
               </template>
             </Link>
           </div>
@@ -65,13 +65,13 @@
             <FormControl
               type="text"
               :label="__('First Name')"
-              placeholder="John"
+              :placeholder="__(`John`)"
               v-model="primaryContact.firstName"
             />
             <FormControl
               type="text"
               :label="__('Last Name')"
-              placeholder="Doe"
+              :placeholder="__(`Doe`)"
               v-model="primaryContact.lastName"
             />
           </div>

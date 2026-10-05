@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import FieldLabel from "@/components/FieldLabel.vue";
+import { __ } from "@/translation";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { APIOptions, Field, FieldValue } from "@/types";
 import { parseApiOptions } from "@/utils";
@@ -181,8 +182,8 @@ const component = computed(() => {
       : select(selectOptions.value);
   } else if (props.field.fieldtype === "Check") {
     return select([
-      { label: "Yes", value: 1 },
-      { label: "No", value: 0 },
+      { label: __("Yes"), value: 1 },
+      { label: __("No"), value: 0 },
     ]);
   } else if (textFields.includes(props.field.fieldtype)) {
     return textInput();
@@ -326,12 +327,14 @@ function handleRedirect(value: string) {
 
 :deep(button.form-control[data-slot="trigger"]:hover .lucide-chevron-down),
 :deep(button.form-control[data-slot="trigger"]:focus .lucide-chevron-down),
-:deep(button.form-control[data-slot="trigger"][data-state="open"]
-    .lucide-chevron-down) {
+:deep(
+    button.form-control[data-slot="trigger"][data-state="open"]
+      .lucide-chevron-down
+  ) {
   visibility: visible;
 }
 :deep(.form-control [type="checkbox"]) {
-  margin-left: 9px;
+  margin-inline-start: 9px;
   cursor: pointer;
 }
 

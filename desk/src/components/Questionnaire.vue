@@ -8,7 +8,7 @@
         v-if="current > 0"
         variant="ghost"
         icon="lucide-chevron-left"
-        class="!size-7 shrink-0 !rounded-5 absolute -left-11 mt-4"
+        class="!size-7 shrink-0 !rounded-5 absolute -start-11 mt-4 rtl:[&_svg]:rotate-180"
         @click="back"
       />
       <div

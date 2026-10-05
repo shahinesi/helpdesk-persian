@@ -1,5 +1,5 @@
 <template>
-  <Dialog title="Merge with another ticket" v-model:open="showDialog">
+  <Dialog :title="__(`Merge with another ticket`)" v-model:open="showDialog">
     <template #default>
       <div class="flex flex-col gap-4">
         <p class="text-p-base text-ink-gray-8">
@@ -26,7 +26,7 @@
                       __("Tickets must meet the following conditions:")
                     }}</span
                   >
-                  <ul class="list-disc pl-4 mt-1 space-y-1">
+                  <ul class="list-disc ps-4 mt-1 space-y-1">
                     <li
                       v-for="(condition, index) in mergeConditions"
                       :key="index"

@@ -19,8 +19,12 @@
           >
             <span class="flex items-center gap-1.5 text-sm font-medium">
               <span
-                class="lucide-chevron-right size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out -ml-0.5"
-                :class="{ 'rotate-90': isSectionOpen(section.label) }"
+                class="lucide-chevron-right size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out -ms-0.5"
+                :class="
+                  isSectionOpen(section.label)
+                    ? 'rotate-90 rtl:-rotate-90'
+                    : 'rtl:rotate-180'
+                "
               />
               <span class="truncate leading-snug">{{ section.label }}</span>
             </span>
@@ -47,7 +51,7 @@
                     v-if="
                       isCollapsed && item.key === 'notifications' && item.badge
                     "
-                    class="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-surface-gray-9"
+                    class="absolute -end-0.5 -top-0.5 size-1.5 rounded-full bg-surface-gray-9"
                   />
                 </span>
               </template>
@@ -68,7 +72,7 @@
                 />
                 <Dropdown
                   v-else-if="item.view"
-                  side="right"
+                  :side="isRtl ? 'left' : 'right'"
                   align="start"
                   :options="viewActions(item.view, viewDialogConfig)"
                 >
@@ -142,6 +146,7 @@ import {
   customerPortalSidebarOptions,
 } from "./layoutSettings";
 
+const isRtl = document.documentElement.dir === "rtl";
 const props = defineProps<{
   profileSettings: any[];
   mobile?: boolean;

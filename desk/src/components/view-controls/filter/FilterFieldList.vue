@@ -41,7 +41,7 @@
         <span :title="field.label" class="flex-1 truncate text-start">{{
           field.label
         }}</span>
-        <LucideChevronRight class="size-4 text-ink-gray-4" />
+        <LucideChevronRight class="size-4 text-ink-gray-4 rtl:rotate-180" />
       </button>
       <div
         v-if="!filteredFields.length"
@@ -72,7 +72,7 @@ interface E {
 }
 
 const props = withDefaults(defineProps<P>(), {
-  placeholder: "Search fields...",
+  placeholder: __("Search fields..."),
   showShortcutHint: false,
 });
 const emit = defineEmits<E>();

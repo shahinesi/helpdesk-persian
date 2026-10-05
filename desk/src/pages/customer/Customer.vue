@@ -4,7 +4,7 @@
   >
     <LayoutHeader>
       <template #left-header>
-        <Breadcrumbs :items="breadcrumbs" class="-ml-[2px]" />
+        <Breadcrumbs :items="breadcrumbs" class="-ms-[2px]" />
       </template>
     </LayoutHeader>
     <div
@@ -254,7 +254,7 @@ onMounted(() => {
 
 usePageMeta(() => {
   return {
-    title: `Customer: ${props.id}`,
+    title: __("Customer: {0}", [props.id]),
   };
 });
 </script>

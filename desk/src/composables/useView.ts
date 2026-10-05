@@ -5,12 +5,7 @@ import { __ } from "@/translation";
 import { View } from "@/types";
 import { getIcon, isCustomerPortal } from "@/utils";
 import { useDebounceFn } from "@vueuse/core";
-import {
-  call,
-  createListResource,
-  createResource,
-  toast,
-} from "frappe-ui";
+import { call, createListResource, createResource, toast } from "frappe-ui";
 import { Icon } from "frappe-ui/experimental";
 import { computed, h, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -39,7 +34,7 @@ export const views = createListResource({
 });
 
 export const currentView = ref({
-  label: "List",
+  label: __("List"),
   icon: LucideAlignJustify,
 });
 

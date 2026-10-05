@@ -152,11 +152,11 @@ let state = reactive({
 let fieldCriteriaState = reactive({
   display: {
     enabled: true,
-    value: [{ label: "Any", value: "Any" }],
+    value: [{ label: __("Any"), value: "Any" }],
   },
   mandatory: {
     enabled: true,
-    value: [{ label: "Any", value: "Any" }],
+    value: [{ label: __("Any"), value: "Any" }],
   },
 });
 
@@ -213,11 +213,11 @@ function parseFieldCriteria(data: string) {
   const criteria = JSON.parse(data || "{}");
   fieldCriteriaState.display = criteria.display || {
     enabled: true,
-    value: [{ label: "Any", value: "Any" }],
+    value: [{ label: __("Any"), value: "Any" }],
   };
   fieldCriteriaState.mandatory = criteria.mandatory || {
     enabled: true,
-    value: [{ label: "Any", value: "Any" }],
+    value: [{ label: __("Any"), value: "Any" }],
   };
 }
 

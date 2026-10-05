@@ -35,7 +35,7 @@
                 <!-- one Tooltip each: it wires only its first child -->
                 <Tooltip :hoverDelay="0" side="bottom" :text="uploadTooltip">
                   <div
-                    class="z-1 absolute top-0 left-0 flex h-9 cursor-pointer items-center justify-center rounded-full !size-16"
+                    class="z-1 absolute inset-0 flex h-9 cursor-pointer items-center justify-center rounded-full !size-16"
                     @click.stop="openFileSelector"
                   />
                 </Tooltip>
@@ -46,7 +46,7 @@
                   :text="__('Remove Photo')"
                 >
                   <div
-                    class="z-1 size-4 absolute -top-1 -right-1 flex cursor-pointer items-center justify-center rounded-full bg-surface-base opacity-0 duration-300 ease-in-out group-hover:opacity-100 [@media(hover:none)]:opacity-100 hover:bg-surface-gray-2 outline outline-black-overlay-50"
+                    class="z-1 size-4 absolute -top-1 -end-1 flex cursor-pointer items-center justify-center rounded-full bg-surface-base opacity-0 duration-300 ease-in-out group-hover:opacity-100 [@media(hover:none)]:opacity-100 hover:bg-surface-gray-2 outline outline-black-overlay-50"
                     @click.stop="updateImage()"
                   >
                     <LucideX class="size-3.5 cursor-pointer text-ink-gray-4" />
@@ -54,7 +54,7 @@
                 </Tooltip>
                 <div
                   v-if="uploading"
-                  class="w-full h-full top-0 left-0 absolute bg-surface-gray-10 bg-opacity-20 rounded-full flex items-center justify-center"
+                  class="absolute inset-0 flex h-full w-full items-center justify-center rounded-full bg-surface-gray-10 bg-opacity-20"
                 >
                   <LoadingIndicator class="size-4" />
                 </div>

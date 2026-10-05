@@ -135,7 +135,7 @@
                     <UserAvatar :name="agent.value" size="sm" />
                   </Tooltip>
                   <span
-                    class="absolute block translate-x-1/2 translate-y-1/2 transform rounded-full bottom-0.5 right-0.5"
+                    class="absolute end-0.5 bottom-0.5 block translate-x-1/2 translate-y-1/2 transform rounded-full rtl:-translate-x-1/2"
                   >
                     <span
                       class="block h-2 w-2 rounded-full border border-slate-2"

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Fail when the Persian catalog contains unfinished active translations."""
+"""Fail when active Persian translations are incomplete or alter placeholders."""
 
 import ast
+import collections
+import string
 import re
 import sys
 from pathlib import Path
@@ -90,12 +92,50 @@ def check(path):
         and entry not in fuzzy
         and entry not in incomplete_plural
     ]
+    placeholder_errors = []
+    for entry in entries:
+        for index, translated_text in entry["msgstr"].items():
+            if not translated_text:
+                continue
+            source = entry["msgid"]
+            if index != "0" and entry["plural"] is not None:
+                source = entry["plural"]
+            source_fields = collections.Counter(
+                field for _, field, _, _ in string.Formatter().parse(source) if field
+            )
+            printf_fields = collections.Counter(
+                re.findall(
+                    r"%(?:\([^)]+\))?[#0 +\-]?(?:\d+|\*)?(?:\.\d+|\.\*)?[a-zA-Z]",
+                    source,
+                )
+            )
+            try:
+                translated_fields = collections.Counter(
+                    field
+                    for _, field, _, _ in string.Formatter().parse(translated_text)
+                    if field
+                )
+            except ValueError:
+                placeholder_errors.append((entry["msgid"], index, "invalid brace format"))
+                continue
+            if source_fields != translated_fields:
+                placeholder_errors.append((entry["msgid"], index, "brace placeholders differ"))
+            if "python-format" in entry["flags"]:
+                translated_printf = collections.Counter(
+                    re.findall(
+                        r"%(?:\([^)]+\))?[#0 +\-]?(?:\d+|\*)?(?:\.\d+|\.\*)?[a-zA-Z]",
+                        translated_text,
+                    )
+                )
+                if printf_fields != translated_printf:
+                    placeholder_errors.append((entry["msgid"], index, "printf placeholders differ"))
 
     print(f"Total active entries: {len(entries)}")
     print(f"Translated: {len(translated)}")
     print(f"Untranslated: {len(untranslated)}")
     print(f"Fuzzy: {len(fuzzy)}")
     print(f"Plural incomplete: {len(incomplete_plural)}")
+    print(f"Placeholder errors: {len(placeholder_errors)}")
     print(f"Obsolete: {obsolete_count}")
     coverage = 100 * len(translated) / len(entries) if entries else 100
     print(f"Coverage: {coverage:.2f}%")
@@ -106,8 +146,10 @@ def check(path):
     ):
         for entry in problems[:5]:
             print(f"{label}: {entry['msgid']}", file=sys.stderr)
+    for msgid, index, reason in placeholder_errors[:10]:
+        print(f"placeholder error ({reason}, form {index}): {msgid}", file=sys.stderr)
 
-    return bool(untranslated or fuzzy or incomplete_plural)
+    return bool(untranslated or fuzzy or incomplete_plural or placeholder_errors)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@
     <!-- left box -->
     <div class="flex-1 flex flex-col gap-1.5">
       <span class="block text-xs text-ink-gray-5">
-        Select parent field value
+        {{ __("Select parent field value") }}
       </span>
       <div
         class="border border-outline-elevation-2 flex-1 border-e-0 rounded-s-4 p-2 flex flex-col gap-2"
@@ -58,7 +58,7 @@
           <div
             class="flex flex-col items-center mt-20 h-full text-ink-gray-4 text-sm"
           >
-            Please select a parent field first
+            {{ __("Please select a parent field first") }}
           </div>
         </template>
       </div>
@@ -66,7 +66,7 @@
     <!-- right box -->
     <div class="flex-1 flex flex-col gap-1.5">
       <span class="block text-xs text-ink-gray-5 ps-1.5">
-        Select child field value
+        {{ __("Select child field value") }}
       </span>
       <div
         class="border border-outline-elevation-2 flex-1 rounded-e-4 p-2 flex flex-col gap-2"
@@ -120,14 +120,14 @@
           <div
             class="flex flex-col items-center mt-20 h-full text-ink-gray-4 text-sm"
           >
-            Please select a child field first
+            {{ __("Please select a child field first") }}
           </div>
         </template>
         <template v-else>
           <div
             class="flex flex-col items-center mt-20 h-full text-ink-gray-4 text-sm"
           >
-            Please select a parent value first
+            {{ __("Please select a parent value first") }}
           </div>
         </template>
       </div>
@@ -136,6 +136,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { FieldCriteriaState } from "@/types";
 import { computed } from "vue";
 

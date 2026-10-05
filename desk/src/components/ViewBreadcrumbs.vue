@@ -6,7 +6,7 @@
     >
       {{ isMobileView ? "..." : label }}
     </router-link>
-    <span class="ml-0.5 text-base text-ink-gray-4" aria-hidden="true"> / </span>
+    <span class="ms-0.5 text-base text-ink-gray-4" aria-hidden="true"> / </span>
     <Dropdown v-model:open="isOpen" :options="options">
       <template #default="{ open }">
         <Button
@@ -48,7 +48,7 @@
             v-if="item.is_standard"
             class="ms-1 flex-shrink-0"
             size="sm"
-            label="Standard"
+            :label="__(`Standard`)"
           />
         </div>
       </template>

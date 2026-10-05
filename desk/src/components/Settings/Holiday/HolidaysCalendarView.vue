@@ -39,13 +39,15 @@
         <Button
           variant="ghost"
           icon="lucide-chevron-left"
+          class="rtl:[&_svg]:rotate-180"
           :disabled="visibleMonths === 'first-half'"
           @click="visibleMonths = 'first-half'"
         />
-        <Button variant="ghost" label="Today" @click="goToToday()" />
+        <Button variant="ghost" :label="__(`Today`)" @click="goToToday()" />
         <Button
           variant="ghost"
           icon="lucide-chevron-right"
+          class="rtl:[&_svg]:rotate-180"
           :disabled="visibleMonths === 'second-half'"
           @click="visibleMonths = 'second-half'"
         />

@@ -2,21 +2,17 @@
   <div class="p-5 pb-10 px-10 w-full overflow-scroll items-center relative">
     <LayoutHeader>
       <template #left-header>
-        <div class="text-lg-medium text-ink-gray-9">Knowledge Base</div>
+        <div class="text-lg-medium text-ink-gray-9">
+          {{ __("Knowledge Base") }}
+        </div>
       </template>
     </LayoutHeader>
     <div
       class="max-w-4xl 2xl:max-w-5xl pt-4 sm:px-5 w-full flex flex-col gap-4"
     >
-      <SearchPopover
-        :popoverClass="[
-          'max-w-[310px] md:max-w-[856px] !top-1 md:min-w-[856px]',
-        ]"
-        v-model="query"
-        placeholder="Ask a question..."
-        size="md"
-        :autofocus="true"
-      />
+      <SearchPopover :popoverClass="[ 'max-w-[310px] md:max-w-[856px] !top-1
+      md:min-w-[856px]', ]" v-model="query" :placeholder="__(\"Ask a
+      question...\")" size="md" :autofocus="true" />
 
       <!-- Categories Folder -->
       <section class="flex flex-col gap-3">
@@ -29,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { ref, onMounted } from "vue";
 import { usePageMeta } from "frappe-ui";
 
@@ -44,7 +41,7 @@ onMounted(() => {
 });
 usePageMeta(() => {
   return {
-    title: "Knowledge Base",
+    title: __("Knowledge Base"),
   };
 });
 </script>

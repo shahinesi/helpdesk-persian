@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { onMounted, computed } from "vue";
 import { categoryName } from "@/stores/knowledgeBase";
 import { Breadcrumbs, createResource, usePageMeta } from "frappe-ui";
@@ -65,7 +66,7 @@ const categoryTitle = computed(() => {
 const breadcrumbs = computed(() => {
   return [
     {
-      label: "Knowledge Base",
+      label: __("Knowledge Base"),
       route: {
         name: "CustomerKnowledgeBase",
       },
@@ -78,7 +79,7 @@ const breadcrumbs = computed(() => {
 
 usePageMeta(() => {
   return {
-    title: `${categoryTitle?.value}` + " - " + "Knowledge Base",
+    title: `${categoryTitle?.value} - ${__("Knowledge Base")}`,
   };
 });
 </script>

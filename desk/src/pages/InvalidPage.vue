@@ -20,7 +20,7 @@
       </div>
       <Button :route="{ name: 'TicketsAgent' }" variant="subtle">
         <template #prefix>
-          <LucideArrowLeft class="size-4" />
+          <LucideArrowLeft class="size-4 rtl:rotate-180" />
         </template>
         {{ __("Back to Tickets") }}
       </Button>

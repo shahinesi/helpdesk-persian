@@ -6,7 +6,7 @@
     <template #header-actions>
       <Button
         @click="() => setActiveSettingsTab('Invite Agents')"
-        label="New"
+        :label="__(`New`)"
         variant="solid"
         class="rtl:flex-row-reverse"
       >
@@ -87,7 +87,7 @@
           v-if="!agents.loading && !agents.data?.length"
           variant="badge"
           :icon="AgentIcon"
-          title="No agent found"
+          :title="__(`No agent found`)"
           :description="
             activeFilter.length
               ? 'Change your search terms or filters'
@@ -221,7 +221,7 @@ function updateRole(agent: string, newRole: string) {
     new_role: newRole,
   }).then(() => {
     updateUserRoleCache(agent, newRole);
-    toast.success(__(`Role updated to ${newRole} successfully.`));
+    toast.success(__("Role updated to {0} successfully.", [newRole]));
   });
 }
 
@@ -229,7 +229,7 @@ function getOptions(agent) {
   let filters = agentStore.filters;
   return [
     {
-      label: "Disable Agent",
+      label: __("Disable Agent"),
       icon: "lucide-x-circle",
       onClick: async () => {
         await agentStore.updateAgent(agent.name, 0);
@@ -238,7 +238,7 @@ function getOptions(agent) {
       condition: () => agent.is_active,
     },
     {
-      label: "Enable Agent",
+      label: __("Enable Agent"),
       icon: "lucide-check-circle",
       onClick: async () => {
         await agentStore.updateAgent(agent.name, 1);
@@ -251,21 +251,21 @@ function getOptions(agent) {
 
 const dropdownOptions = [
   {
-    label: "All",
+    label: __("All"),
     onClick: () => {
       agentStore.filters["is_active"] = ["in", [0, 1]];
       activeFilter.value = "All";
     },
   },
   {
-    label: "Active",
+    label: __("Active"),
     onClick: () => {
       agentStore.filters["is_active"] = ["=", 1];
       activeFilter.value = "Active";
     },
   },
   {
-    label: "Inactive",
+    label: __("Inactive"),
     onClick: () => {
       agentStore.filters["is_active"] = ["=", 0];
       activeFilter.value = "Inactive";

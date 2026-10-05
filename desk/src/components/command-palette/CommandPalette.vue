@@ -44,7 +44,7 @@
             @click="back"
           >
             {{ stepLabel }}
-            <LucideChevronRight class="size-3 text-ink-gray-4" />
+            <LucideChevronRight class="size-3 text-ink-gray-4 rtl:rotate-180" />
           </button>
           <FormControl
             type="text"

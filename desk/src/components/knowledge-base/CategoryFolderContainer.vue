@@ -11,7 +11,7 @@
   </div>
   <div
     v-if="!categories.loading && categories.data?.length < 1"
-    class="absolute left-0 top-0 w-full h-screen flex flex-col items-center justify-center"
+    class="absolute inset-x-0 top-0 flex h-screen w-full flex-col items-center justify-center"
   >
     <EmptyState
       :title="__('No categories available')"

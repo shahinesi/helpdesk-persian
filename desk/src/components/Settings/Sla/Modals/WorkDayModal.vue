@@ -2,7 +2,7 @@
   <Dialog
     v-model:open="dialog.show"
     @after-leave="resetForm"
-    :title="dialog.isEditing ? 'Edit workday' : 'Add workday'"
+    :title="dialog.isEditing ? __('Edit workday') : __('Add workday')"
   >
     <template #default>
       <div class="flex flex-col gap-4">
@@ -11,36 +11,36 @@
             :type="'select'"
             size="sm"
             variant="subtle"
-            placeholder="Select Workday"
-            label="Workday"
+            :placeholder="__(`Select Workday`)"
+            :label="__(`Workday`)"
             v-model="workDayData.workday"
             :options="[
               {
-                label: 'Monday',
+                label: __('Monday'),
                 value: 'Monday',
               },
               {
-                label: 'Tuesday',
+                label: __('Tuesday'),
                 value: 'Tuesday',
               },
               {
-                label: 'Wednesday',
+                label: __('Wednesday'),
                 value: 'Wednesday',
               },
               {
-                label: 'Thursday',
+                label: __('Thursday'),
                 value: 'Thursday',
               },
               {
-                label: 'Friday',
+                label: __('Friday'),
                 value: 'Friday',
               },
               {
-                label: 'Saturday',
+                label: __('Saturday'),
                 value: 'Saturday',
               },
               {
-                label: 'Sunday',
+                label: __('Sunday'),
                 value: 'Sunday',
               },
             ]"
@@ -55,8 +55,8 @@
             :type="'time'"
             size="sm"
             variant="subtle"
-            placeholder="Start Time"
-            label="Start Time"
+            :placeholder="__(`Start Time`)"
+            :label="__(`Start Time`)"
             v-model="workDayData.start_time"
             :class="{ 'border-outline-red-4': errors.start_time }"
             @blur="validateField('start_time')"
@@ -69,8 +69,8 @@
             :type="'time'"
             size="sm"
             variant="subtle"
-            placeholder="End Time"
-            label="End Time"
+            :placeholder="__(`End Time`)"
+            :label="__(`End Time`)"
             v-model="workDayData.end_time"
             :class="{ 'border-outline-red-4': errors.end_time }"
             @blur="validateTimeRange"
@@ -101,9 +101,9 @@
             variant="subtle"
             theme="gray"
             @click="dialog.show = false"
-            label="Cancel"
+            :label="__(`Cancel`)"
           />
-          <Button variant="solid" @click="onSave" label="Save" />
+          <Button variant="solid" @click="onSave" :label="__(`Save`)" />
         </div>
       </div>
     </template>
@@ -275,7 +275,7 @@ const onSave = () => {
     }
     dialog.value.show = false;
   } catch (error) {
-    toast.error(__(`Failed to save workday: ${error}`));
+    toast.error(__("Failed to save workday: {0}", [error]));
   }
 };
 

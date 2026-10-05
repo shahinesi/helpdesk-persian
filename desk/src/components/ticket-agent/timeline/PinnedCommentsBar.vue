@@ -10,7 +10,7 @@
     <button
       v-if="comments.length"
       type="button"
-      class="flex items-center gap-2.5 bg-surface-gray-1 px-5 py-2.5 text-left after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-3 after:bg-gradient-to-b after:from-surface-base"
+      class="flex items-center gap-2.5 bg-surface-gray-1 px-5 py-2.5 text-start after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-3 after:bg-gradient-to-b after:from-surface-base"
       :aria-label="__('Go to pinned comment {0}', [current + 1])"
       @click="select"
     >

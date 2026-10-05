@@ -11,10 +11,10 @@
         :style="{ height: 'calc(100vh - 8rem)' }"
       >
         <div
-          class="flex-col rounded-l-6 w-56 shrink-0 ps-1 py-1 bg-surface-sidebar overflow-y-auto hide-scrollbar"
+          class="flex-col rounded-s-6 w-56 shrink-0 ps-1 py-1 bg-surface-sidebar overflow-y-auto hide-scrollbar"
         >
           <h1
-            class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ml-1"
+            class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ms-1"
           >
             {{ __("Account") }}
           </h1>
@@ -23,14 +23,14 @@
 
             <div
               v-if="!tab.hideLabel"
-              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ml-1"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ms-1"
             >
-              <Tooltip :text="__(tab.label)" side="right">
+              <Tooltip :text="__(tab.label)" :side="isRtl ? 'left' : 'right'">
                 <span class="truncate">{{ __(tab.label) }}</span>
               </Tooltip>
             </div>
 
-            <nav class="space-y-[3px] pr-2 pl-1">
+            <nav class="space-y-[3px] pe-2 ps-1">
               <button
                 v-for="item in tab.items"
                 :key="item.label"
@@ -46,7 +46,10 @@
                   :is="item.icon"
                   class="h-4 w-4 text-ink-gray-7 shrink-0"
                 />
-                <Tooltip :text="__(item.label)" side="right">
+                <Tooltip
+                  :text="__(item.label)"
+                  :side="isRtl ? 'left' : 'right'"
+                >
                   <span class="text-p-sm text-ink-gray-8 truncate">
                     {{ __(item.label) }}
                   </span>
@@ -101,6 +104,7 @@ import {
   tabs,
 } from "./settingsModal";
 
+const isRtl = document.documentElement.dir === "rtl";
 const show: ModelRef<boolean> = defineModel();
 
 const showConfirmDialog = ref(false);
