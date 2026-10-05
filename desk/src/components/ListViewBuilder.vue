@@ -903,7 +903,9 @@ onMounted(async () => {
     if (route.query.view) {
       const currentView = findCurrentView();
       if (!currentView) return;
-      headerView.value.label = currentView.label || __("List");
+      headerView.value.label = currentView.is_standard
+        ? __(currentView.label || "List")
+        : currentView.label || __("List");
       headerView.value.icon = getIcon(currentView.icon);
     }
     return;

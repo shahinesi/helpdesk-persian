@@ -34,9 +34,15 @@ export const views = createListResource({
 });
 
 export const currentView = ref({
-  label: __("List"),
+  label: "List",
   icon: LucideAlignJustify,
+  is_standard: true,
 });
+
+export function getViewLabel(view: Pick<View, "label" | "is_standard">) {
+  const label = view.label ?? "";
+  return view.is_standard ? __(label) : label;
+}
 
 export function useView(dt: string = null) {
   const auth = useAuthStore();
@@ -170,7 +176,7 @@ export function useView(dt: string = null) {
 
   function parseView(view: View) {
     return {
-      label: view.label,
+      label: getViewLabel(view),
       name: view.name,
       icon: getIcon(view.icon),
       route_name: view.route_name,
@@ -361,6 +367,7 @@ export function useView(dt: string = null) {
       currentView.value = {
         label: viewInfo.label,
         icon: getIcon(viewInfo.icon),
+        is_standard: false,
       };
       return;
     } else if (action === "duplicate") {
@@ -397,6 +404,7 @@ export function useView(dt: string = null) {
       currentView.value = {
         label: d.label || __("List"),
         icon: getIcon(d.icon),
+        is_standard: false,
       };
       router.push({
         name: isCustomerPortal.value ? "TicketsCustomer" : "TicketsAgent",

@@ -81,15 +81,15 @@ import ExportModal from "@/components/ticket/ExportModal.vue";
 import ViewBreadcrumbs from "@/components/ViewBreadcrumbs.vue";
 import { normalizeFilters } from "@/components/view-controls/filter";
 import ViewModal from "@/components/ViewModal.vue";
-import { currentView, useView } from "@/composables/useView";
+import { currentView, getViewLabel, useView } from "@/composables/useView";
 import { useAuthStore } from "@/stores/auth";
 import { globalStore } from "@/stores/globalStore";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
 import { View } from "@/types";
-import { isCustomerPortal, shortDuration } from "@/utils";
+import { getIcon, isCustomerPortal, shortDuration } from "@/utils";
 import { Badge, dayjsLocal, Tooltip, usePageMeta } from "frappe-ui";
-import { computed, h, onMounted, onUnmounted, reactive, ref } from "vue";
+import { computed, h, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
@@ -107,6 +107,25 @@ const {
 } = useView("HD Ticket");
 
 const activeView = computed(() => findView(route.query.view as string).value);
+watch(
+  activeView,
+  (view) => {
+    if (view) {
+      currentView.value = {
+        label: getViewLabel(view),
+        icon: getIcon(view.icon),
+        is_standard: Boolean(view.is_standard),
+      };
+    } else if (!route.query.view) {
+      currentView.value = {
+        label: __("List"),
+        icon: LucideAlignJustify,
+        is_standard: true,
+      };
+    }
+  },
+  { immediate: true }
+);
 const hasActiveFilters = computed(
   () => Object.keys(listViewRef.value?.list?.params?.filters || {}).length > 0
 );
@@ -440,8 +459,9 @@ function parseViews(views: View[]) {
       ...view,
       onClick: () => {
         currentView.value = {
-          label: view.label,
+          label: getViewLabel(view),
           icon: view.icon,
+          is_standard: Boolean(view.is_standard),
         };
         router.push({
           name: view.route_name,
@@ -459,12 +479,6 @@ function onViewModalUpdate(viewInfo: any, action: string) {
 }
 
 onMounted(() => {
-  if (!route.query.view) {
-    currentView.value = {
-      label: __("List"),
-      icon: LucideAlignJustify,
-    };
-  }
   if (!isCustomerPortal.value) {
     $socket.on("helpdesk:new-ticket", () => {
       listViewRef.value?.reload();

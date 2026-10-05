@@ -2,13 +2,17 @@
   <Sidebar
     v-model:collapsed="collapsed"
     :collapsible="!mobile"
-    class="border-e border-outline-gray-1"
+    class="helpdesk-sidebar border-e border-outline-gray-1"
     :class="{ '!bg-surface-base': mobile }"
   >
     <div class="flex h-full flex-col p-2">
       <UserMenu :options="profileSettings" :is-collapsed="isCollapsed" />
 
-      <ScrollArea class="mt-2 min-h-0 flex-1 -mx-2" viewport-class="px-2">
+      <ScrollArea
+        dir="rtl"
+        class="mt-2 min-h-0 flex-1 -mx-2"
+        viewport-class="px-2"
+      >
         <template v-for="(section, index) in sections" :key="index">
           <SidebarLabel
             v-if="section.label"
@@ -21,9 +25,7 @@
               <span
                 class="lucide-chevron-right size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out -ms-0.5"
                 :class="
-                  isSectionOpen(section.label)
-                    ? 'rotate-90 rtl:-rotate-90'
-                    : 'rtl:rotate-180'
+                  isSectionOpen(section.label) ? 'rotate-90' : 'rtl:rotate-180'
                 "
               />
               <span class="truncate leading-snug">{{ section.label }}</span>
@@ -37,7 +39,13 @@
               v-for="item in section.items"
               :key="item.key"
               :id="item.id"
-              :label="__(item.label)"
+              :label="
+                item.view
+                  ? item.view.is_standard
+                    ? __(item.label)
+                    : item.label
+                  : __(item.label)
+              "
               :active="item.isActive"
               :class="item.spacedTop && 'mt-4'"
               @click="item.onClick && item.onClick()"
@@ -98,7 +106,18 @@
 
       <div class="mt-auto flex flex-col gap-2">
         <slot name="footer" :is-collapsed="isCollapsed" />
-        <SidebarCollapseToggle v-if="!mobile" />
+        <SidebarItem
+          v-if="!mobile"
+          :label="collapsed ? __('Expand') : __('Collapse')"
+          @click="collapsed = !collapsed"
+        >
+          <template #prefix>
+            <LucideChevronRight
+              class="size-4 transition-transform"
+              :class="collapsed ? 'rtl:rotate-180' : 'rotate-180 rtl:rotate-0'"
+            />
+          </template>
+        </SidebarItem>
       </div>
     </div>
   </Sidebar>
@@ -131,7 +150,6 @@ import {
   Dropdown,
   ScrollArea,
   Sidebar,
-  SidebarCollapseToggle,
   SidebarItem,
   SidebarLabel,
 } from "frappe-ui";
@@ -207,7 +225,7 @@ const navItems = computed(() => {
     ? customerPortalSidebarOptions
     : agentPortalSidebarOptions;
   return options
-    .filter((item) => isCallingEnabled.value || item.label !== __("Call Logs"))
+    .filter((item) => isCallingEnabled.value || item.label !== "Call Logs")
     .map((option, index) => ({
       label: option.label,
       icon: option.icon,
@@ -279,7 +297,7 @@ const sections = computed(() => {
 
 function parseViews(views: any[]) {
   return views.map((view) => ({
-    label: view.label,
+    label: view.is_standard ? __(view.label) : view.label,
     icon: getIcon(view.icon),
     isActive: activeItem.value === view.name,
     onClick: () =>
@@ -287,7 +305,11 @@ function parseViews(views: any[]) {
         view.name,
         { name: view.route_name, query: { view: view.name } },
         () => {
-          currentView.value = { label: view.label, icon: view.icon };
+          currentView.value = {
+            label: view.label,
+            icon: view.icon,
+            is_standard: Boolean(view.is_standard),
+          };
         }
       ),
     key: view.name,

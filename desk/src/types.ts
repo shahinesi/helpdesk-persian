@@ -393,6 +393,7 @@ export interface View {
   is_default?: boolean;
   pinned?: boolean;
   public?: boolean;
+  is_standard?: boolean;
   group_by_field?: string;
   name: string;
   is_customer_portal?: boolean;
@@ -411,7 +412,6 @@ export interface Breadcrumb {
     params?: Record<string, string>;
   };
 }
-
 
 export interface FieldCriteriaState {
   selectedParentField: string;

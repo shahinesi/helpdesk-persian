@@ -35,10 +35,68 @@ html {
   }
 }
 
+/* frappe-ui's sidebar row hardcodes LTR direction, physical padding, and
+   text-left. Keep the correction scoped to Helpdesk's composed sidebar. */
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-item"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-item"] > :is(button, a) {
+  direction: rtl;
+  padding-left: 0;
+  padding-inline-start: 0.5rem;
+  text-align: start;
+}
+
+html[dir="rtl"]
+  .helpdesk-sidebar
+  [data-slot="sidebar-item"]
+  > :is(button, a)
+  > span.flex-1 {
+  margin-left: 0;
+  margin-inline-start: 0.5rem;
+}
+
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-label"] {
+  direction: rtl;
+  padding-left: 0;
+  padding-inline-start: 0.5rem;
+  text-align: start;
+}
+
 /* The caption field, hidden by its stable data attribute - the placeholder
    text it used to be keyed on has changed twice. */
 .tiptap [data-media-text-field] {
   display: none !important;
+}
+
+/* frappe-ui's sidebar row hardcodes LTR direction, physical padding, and
+   text-left. Keep the correction scoped to Helpdesk's composed sidebar. */
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-item"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-item"] > :is(button, a) {
+  direction: rtl;
+  padding-left: 0;
+  padding-inline-start: 0.5rem;
+  text-align: start;
+}
+
+html[dir="rtl"]
+  .helpdesk-sidebar
+  [data-slot="sidebar-item"]
+  > :is(button, a)
+  > span.flex-1 {
+  margin-left: 0;
+  margin-inline-start: 0.5rem;
+}
+
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-label"] {
+  direction: rtl;
+  padding-left: 0;
+  padding-inline-start: 0.5rem;
+  text-align: start;
 }
 
 html,
