@@ -152,6 +152,7 @@ ignore_links_on_delete = [
 # setup wizard
 before_request = ["helpdesk.setup.setup_wizard.set_fresh_setup_language"]
 setup_wizard_requires = "assets/helpdesk/js/setup_wizard.js"
+web_include_css = "/assets/helpdesk/css/persian-font.css"
 # setup_wizard_stages = "helpdesk.setup.setup_wizard.get_setup_stages"
 setup_wizard_complete = "helpdesk.setup.setup_wizard.setup_complete"
 
