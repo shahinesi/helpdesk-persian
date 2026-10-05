@@ -1,50 +1,48 @@
 ---
-name: Feature Request
-description: Suggest an idea to improve Frappe Helpdesk
+name: پیشنهاد قابلیت
+description: پیشنهاد ایده‌ای برای بهبود هلپ‌دسک
 labels: ["feature-request"]
 
 body:
   - type: markdown
     attributes:
       value: |
-        Welcome to Frappe Helpdesk issue tracker! Before submitting a request, please consider the following:
+        به بخش ثبت پیشنهاد هلپ‌دسک خوش آمدید. پیش از ثبت، این موارد را بخوانید:
 
-        1. This tracker should only be used to report bugs and request features / enhancements to Frappe Helpdesk
-            - For questions and general support, checkout the [documentation](https://docs.frappe.io/helpdesk) or use the [forum](https://discuss.frappe.io) to get inputs from the open source community.
-        2. Use the search function before creating a new issue. Duplicates will be closed and directed to
-          the original discussion.
-        3. When making a feature request, make sure to be as verbose as possible. The better you convey your message, the greater the drive to make it happen.
+        ۱. از این بخش فقط برای گزارش ایراد یا پیشنهاد قابلیت و بهبود هلپ‌دسک استفاده کنید.
+            - برای پرسش و پشتیبانی عمومی، [مستندات](https://docs.frappe.io/helpdesk) یا [انجمن](https://discuss.frappe.io) را ببینید.
+        ۲. پیش از ثبت، جست‌وجو کنید؛ پیشنهادهای تکراری بسته می‌شوند و به گفت‌وگوی اصلی ارجاع داده خواهند شد.
+        ۳. مسئله و راهکار پیشنهادی را تا جای ممکن دقیق توضیح دهید.
 
 
-        Please keep in mind that we get many many requests and we can't possibly work on all of them, we prioritize development based on the goals of the product and organization. Feature requests are still welcome as it helps us in research when we do decide to work on the requested feature.
+        تعداد پیشنهادها زیاد است و امکان پیاده‌سازی همهٔ آن‌ها وجود ندارد. اولویت توسعه براساس هدف‌های محصول و سازمان تعیین می‌شود؛ بااین‌حال پیشنهادها به تصمیم‌گیری‌های آینده کمک می‌کنند.
 
-        If you're in urgent need to a feature, please try the following channels to get paid developments done quickly:
-        1. Certified Frappe partners: https://frappe.io/partners
-        2. Developer community on Frappe forums: https://discuss.frappe.io/c/developers/5
-        3. Telegram group for Frappe Helpdesk development work: https://t.me/+eBnEZm7urwEwYTc1
+        اگر برای قابلیتی زمان‌بندی فوری دارید، برای توسعهٔ سفارشی می‌توانید از این مسیرها کمک بگیرید:
+        ۱. همکاران تأییدشدهٔ Frappe: https://frappe.io/partners
+        ۲. انجمن توسعه‌دهندگان Frappe: https://discuss.frappe.io/c/developers/5
+        ۳. گروه تلگرام توسعهٔ Frappe Helpdesk: https://t.me/+eBnEZm7urwEwYTc1
 
   - type: textarea
     id: problem-info
     attributes:
-      label: Is your feature request related to a problem? Please describe.
-      description: A clear and concise description of what the problem is. Eg. I'm always frustrated when [...]
-      placeholder: Please provide as much information as possible.
+      label: آیا این پیشنهاد به مشکلی مربوط است؟ آن را شرح دهید.
+      description: مشکل را روشن و کوتاه توضیح دهید؛ مثلاً «هر بار که ... کلافه می‌شوم».
+      placeholder: لطفاً جزئیات لازم را بنویسید.
 
   - type: textarea
     id: solution-info
     attributes:
-      label: Describe the solution you'd like
-      description: A clear and concise description of what you want to happen.
+      label: راهکار پیشنهادی
+      description: توضیح دهید دوست دارید چه اتفاقی بیفتد.
 
   - type: textarea
     id: alternatives-info
     attributes:
-      label: Describe the alternatives you've considered
-      description: A clear and concise description of any alternative solutions or features you've considered.
+      label: راهکارهای جایگزینی که بررسی کرده‌اید
+      description: گزینه‌های دیگری را که در نظر گرفته‌اید توضیح دهید.
 
   - type: textarea
     id: additional-info
     attributes:
-      label: Additional context
-      description: Add any other context or screenshots about the feature request here.
-...
+      label: اطلاعات تکمیلی
+      description: توضیحات یا تصویرهای دیگری را که به درک پیشنهاد کمک می‌کنند اضافه کنید.
