@@ -1,0 +1,15 @@
+.git
+**/.git
+**/node_modules
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/venv
+**/.DS_Store
+**/dist
+**/build
+helpdesk/public/desk
+helpdesk/public/frontend
+helpdesk/public/node_modules
+helpdesk/www/helpdesk/index.html
+desk/stats.html
