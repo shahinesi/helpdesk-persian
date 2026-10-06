@@ -16,7 +16,7 @@ diff --git a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue b/node_
 @@ -54,1 +59,2 @@
  import { computed, onScopeDispose, useAttrs } from 'vue'
 +import { useTextDirection } from '@vueuse/core'
-@@ -86,0 +92 @@
+@@ -88,0 +94 @@
 +const textDirection = useTextDirection({ observe: true })
 diff --git a/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue b/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue
 --- a/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue
@@ -25,5 +25,5 @@ diff --git a/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.v
 +    :dir="textDirection"
 @@ -43,0 +44 @@
 +import { useTextDirection } from '@vueuse/core'
-@@ -62,0 +64 @@
+@@ -60,0 +63 @@
 +const textDirection = useTextDirection({ observe: true })
