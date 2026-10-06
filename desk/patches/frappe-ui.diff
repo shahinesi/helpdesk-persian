@@ -43,3 +43,46 @@ diff --git a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.api.md b/no
 +    required: false,
 +    type: '"ltr" | "rtl"'
 +  },
+diff --git a/node_modules/frappe-ui/src/components/Charts/types.ts b/node_modules/frappe-ui/src/components/Charts/types.ts
+--- a/node_modules/frappe-ui/src/components/Charts/types.ts
++++ b/node_modules/frappe-ui/src/components/Charts/types.ts
+@@ -5,5 +5,6 @@
+   title: string
+   subtitle?: string
+   colors?: string[]
++  fontFamily?: string | string[]
+   /** Forces layout direction; defaults to document.documentElement.dir */
+   dir?: 'rtl' | 'ltr'
+@@ -74,5 +75,6 @@
+   title: string
+   subtitle?: string
+   colors?: string[]
++  fontFamily?: string | string[]
+   /** Forces layout direction; defaults to document.documentElement.dir */
+   dir?: 'rtl' | 'ltr'
+diff --git a/node_modules/frappe-ui/src/components/Charts/eChartOptions.ts b/node_modules/frappe-ui/src/components/Charts/eChartOptions.ts
+--- a/node_modules/frappe-ui/src/components/Charts/eChartOptions.ts
++++ b/node_modules/frappe-ui/src/components/Charts/eChartOptions.ts
+@@ -27,5 +27,7 @@
+   return {
+     animation: true,
+     animationDuration: 700,
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: {
++      fontFamily: config.fontFamily ?? ['InterVar', 'sans-serif'],
++    },
+     title: getTitleOptions(title, subtitle, isRTL),
+     color: config.colors,
+diff --git a/node_modules/frappe-ui/src/components/Charts/donutChartOptions.ts b/node_modules/frappe-ui/src/components/Charts/donutChartOptions.ts
+--- a/node_modules/frappe-ui/src/components/Charts/donutChartOptions.ts
++++ b/node_modules/frappe-ui/src/components/Charts/donutChartOptions.ts
+@@ -44,5 +44,7 @@
+     animation: true,
+     animationDuration: 700,
+     color: config.colors,
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: {
++      fontFamily: config.fontFamily ?? ['InterVar', 'sans-serif'],
++    },
+     title: getTitleOptions(config.title, config.subtitle, isRTL),
+     dataset: {

@@ -509,15 +509,19 @@ const loading = computed(() => {
 });
 
 function getChartType(chart: any) {
-  chart.colors = colors;
+  const config = {
+    ...chart,
+    colors,
+    fontFamily: '"Vazirmatn", sans-serif',
+  };
   if (chart["type"] === "axis") {
     return h(AxisChart, {
-      config: chart,
+      config,
     });
   }
   if (chart["type"] === "pie") {
     return h(DonutChart, {
-      config: chart,
+      config,
     });
   }
 }
