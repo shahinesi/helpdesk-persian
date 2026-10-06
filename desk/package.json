@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "git -C ../../frappe/ui apply --unidiff-zero -p1 \"$PWD/patches/framework-ui.diff\" && git -C node_modules/frappe-ui apply --unidiff-zero -p3 \"$PWD/patches/frappe-ui-sidebar.diff\" && vite build",
+    "build": "(git -C ../../frappe/ui apply --reverse --check --unidiff-zero -p1 \"$PWD/patches/framework-ui.diff\" || git -C ../../frappe/ui apply --unidiff-zero -p1 \"$PWD/patches/framework-ui.diff\") && (git -C node_modules/frappe-ui apply --reverse --check --unidiff-zero -p3 \"$PWD/patches/frappe-ui.diff\" || git -C node_modules/frappe-ui apply --unidiff-zero -p3 \"$PWD/patches/frappe-ui.diff\") && vite build",
     "serve": "vite preview",
     "postinstall": "patch-package"
   },
