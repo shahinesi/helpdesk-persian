@@ -40,7 +40,10 @@
           >
             <div class="flex items-center">
               <slot name="bottom-left" />
-              <EditorFixedMenu :items="ticketToolbar" />
+              <EditorFixedMenu
+                :items="ticketToolbar"
+                class="min-w-0 max-w-full flex-wrap"
+              />
             </div>
             <div class="flex items-center gap-2">
               <Button
