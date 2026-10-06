@@ -1,0 +1,6 @@
+diff --git a/node_modules/frappe-ui/src/charts/measureText.ts b/node_modules/frappe-ui/src/charts/measureText.ts
+--- a/node_modules/frappe-ui/src/charts/measureText.ts
++++ b/node_modules/frappe-ui/src/charts/measureText.ts
+@@ -19 +19 @@
+-export const CHART_FONT_FAMILY = 'InterVar, Inter, sans-serif'
++export const CHART_FONT_FAMILY = 'Vazirmatn, InterVar, Inter, sans-serif'
