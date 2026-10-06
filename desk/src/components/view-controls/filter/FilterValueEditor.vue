@@ -241,8 +241,8 @@ const options = computed<Array<{ label: string; value: string }>>(() => {
       ? ["Yes", "No"]
       : getSelectOptions(props.field.options);
   return values
-    .filter(matches)
-    .map((option) => ({ label: option, value: option }));
+    .map((value) => ({ label: __(value), value }))
+    .filter((option) => matches(option.label));
 });
 
 const dateRangeValue = computed(() =>

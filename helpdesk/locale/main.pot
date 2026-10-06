@@ -8746,3 +8746,31 @@ msgstr ""
 #: desk/src/components/command-palette/commands.ts
 msgid "Keyboard shortcuts"
 msgstr ""
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Assigned to"
+msgstr ""
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Assigned on"
+msgstr ""
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Created By"
+msgstr ""
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Last Updated By"
+msgstr ""
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Created On"
+msgstr ""
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Last Updated On"
+msgstr ""
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Tags"
+msgstr ""

@@ -323,6 +323,12 @@ export function filterSummary(filter: ActiveFilter): string {
 
 function displayValue(filter: ActiveFilter): string {
   const value = filter.value;
+  if ([...typeSelect, ...typeCheck].includes(filter.field.fieldtype)) {
+    const translateOption = (option: any) => __(String(option));
+    return Array.isArray(value)
+      ? value.map(translateOption).join(", ")
+      : translateOption(value);
+  }
   // ratings are stored as a 0..1 fraction; show numeric ones as star counts
   // (×5). "is" uses set / not set, so leave those (and any non-numeric) alone.
   if (filter.field.fieldtype === "Rating" && filter.operator !== "is") {

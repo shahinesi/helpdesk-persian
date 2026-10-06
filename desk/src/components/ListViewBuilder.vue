@@ -65,7 +65,7 @@
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
-        :item="column"
+        :item="{ ...column, label: __(column.label) }"
         @columnWidthUpdated="handleColumnResize"
       />
     </ListHeader>
@@ -516,9 +516,9 @@ const filterableFields = createResource({
   transform: (data) => {
     data = data.map((field) => {
       return {
-        label: field.label,
-        value: field.fieldname,
         ...field,
+        label: __(field.label),
+        value: field.fieldname,
       };
     });
     return data;
@@ -532,6 +532,8 @@ const sortableFields = createResource({
     doctype: options.value.doctype,
     show_customer_portal_fields: defaultParams.show_customer_portal_fields,
   },
+  transform: (data) =>
+    data.map((field) => ({ ...field, label: __(field.label) })),
 });
 
 const quickFilters = createResource({
@@ -542,9 +544,19 @@ const quickFilters = createResource({
     show_customer_portal_fields: defaultParams.show_customer_portal_fields,
   },
   transform: (data) => {
-    if (Boolean(data.length)) return;
-    data = [{ name: "name", label: __("Name"), fieldtype: "Data" }];
-    return data;
+    if (!data?.length) {
+      data = [{ name: "name", label: __("Name"), fieldtype: "Data" }];
+    }
+    return data.map((filter) => ({
+      ...filter,
+      label: __(filter.label),
+      options: Array.isArray(filter.options)
+        ? filter.options.map((option) => ({
+            ...option,
+            label: __(option.label ?? option.value),
+          }))
+        : filter.options,
+    }));
   },
 });
 

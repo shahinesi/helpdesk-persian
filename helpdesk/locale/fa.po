@@ -8757,3 +8757,31 @@ msgstr "تغییر وضعیت حضور"
 #: desk/src/components/command-palette/commands.ts
 msgid "Keyboard shortcuts"
 msgstr "میان‌برهای صفحه‌کلید"
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Assigned to"
+msgstr "واگذار شده به"
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Assigned on"
+msgstr "تاریخ واگذاری"
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Created By"
+msgstr "ایجادکننده"
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Last Updated By"
+msgstr "آخرین ویرایش توسط"
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Created On"
+msgstr "تاریخ ایجاد"
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Last Updated On"
+msgstr "آخرین به‌روزرسانی"
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Tags"
+msgstr "برچسب‌ها"
