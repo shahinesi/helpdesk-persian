@@ -64,6 +64,18 @@ html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-label"] {
   text-align: start;
 }
 
+@media (max-width: 639px) {
+  .helpdesk-editor-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .helpdesk-editor-toolbar [data-slot="fixed-menu"] {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
 /* The caption field, hidden by its stable data attribute - the placeholder
    text it used to be keyed on has changed twice. */
 .tiptap [data-media-text-field] {

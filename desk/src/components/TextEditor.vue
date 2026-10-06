@@ -38,12 +38,9 @@
           <div
             class="flex flex-col space-y-1.5 overflow-auto sm:flex-row sm:justify-between"
           >
-            <div class="flex items-center">
+            <div class="helpdesk-editor-toolbar flex items-center">
               <slot name="bottom-left" />
-              <EditorFixedMenu
-                :items="ticketToolbar"
-                class="min-w-0 max-w-full flex-wrap"
-              />
+              <EditorFixedMenu :items="ticketToolbar" />
             </div>
             <div class="flex items-center gap-2">
               <Button
