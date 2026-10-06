@@ -17,6 +17,11 @@ html {
     "Segoe UI", sans-serif !important;
 }
 
+html[lang="fa"],
+html[lang="fa"] * {
+  font-feature-settings: "ss01";
+}
+
 @layer components {
   .prose-f {
     @apply break-normal max-w-none prose prose-code:break-all prose-code:whitespace-pre-wrap prose-img:border prose-img:rounded-6 prose-sm;
