@@ -39,13 +39,7 @@
               v-for="item in section.items"
               :key="item.key"
               :id="item.id"
-              :label="
-                item.view
-                  ? item.view.is_standard
-                    ? __(item.label)
-                    : item.label
-                  : __(item.label)
-              "
+              :label="item.view ? item.label : __(item.label)"
               :active="item.isActive"
               :class="item.spacedTop && 'mt-4'"
               @click="item.onClick && item.onClick()"
@@ -138,7 +132,7 @@ import {
 import UserMenu from "@/components/UserMenu.vue";
 import ViewModal from "@/components/ViewModal.vue";
 import { useDevice } from "@/composables";
-import { currentView, useView } from "@/composables/useView";
+import { currentView, getViewLabel, useView } from "@/composables/useView";
 import { useNotificationStore } from "@/stores/notification";
 import { useSidebarStore } from "@/stores/sidebar";
 import { useTelephonyStore } from "@/stores/telephony";
@@ -297,7 +291,7 @@ const sections = computed(() => {
 
 function parseViews(views: any[]) {
   return views.map((view) => ({
-    label: view.is_standard ? __(view.label) : view.label,
+    label: getViewLabel(view),
     icon: getIcon(view.icon),
     isActive: activeItem.value === view.name,
     onClick: () =>

@@ -41,7 +41,22 @@ export const currentView = ref({
 
 export function getViewLabel(view: Pick<View, "label" | "is_standard">) {
   const label = view.label ?? "";
-  return view.is_standard ? __(label) : label;
+  if (!view.is_standard) return label;
+
+  // Standard labels arrive as runtime data, so keep their gettext keys
+  // explicit for extraction. User-created labels stay untouched.
+  switch (label) {
+    case "My Feedback":
+      return __("My Feedback");
+    case "Pending Tickets":
+      return __("Pending Tickets");
+    case "Recently Assigned Tickets":
+      return __("Recently Assigned Tickets");
+    case "SLA Alerts":
+      return __("SLA Alerts");
+    default:
+      return __(label);
+  }
 }
 
 export function useView(dt: string = null) {

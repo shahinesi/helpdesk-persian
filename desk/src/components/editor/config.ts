@@ -139,6 +139,10 @@ const editorLabel = (label: string) => {
       return __("Heading 3");
     case "Heading 4":
       return __("Heading 4");
+    case "Heading 5":
+      return __("Heading 5");
+    case "Heading 6":
+      return __("Heading 6");
     case "Paragraph":
       return __("Paragraph");
     case "Bold":
