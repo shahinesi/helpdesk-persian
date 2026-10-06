@@ -84,9 +84,9 @@ const cards = computed<SLACard[]>(() =>
 );
 
 function cardValue(card: SLACard): string {
-  if (card.metric.state !== "fulfilled") return __(card.metric.value);
+  if (card.metric.state !== "fulfilled") return card.metric.value;
   if (!card.metric.fulfilledIn) return __(card.fulfilledLabel);
-  return `${__(card.fulfilledLabel)} ${__("in")} ${card.metric.fulfilledIn}`;
+  return __("Fulfilled in {0}", [card.metric.fulfilledIn]);
 }
 
 function cardDetails(card: SLACard) {

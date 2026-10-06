@@ -27,7 +27,8 @@ import { __ } from "@/translation";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { APIOptions, Field, FieldValue } from "@/types";
 import { parseApiOptions } from "@/utils";
-import { Link } from "@framework/ui";
+import { Link as FrameworkLink } from "@framework/ui";
+import HelpdeskLink from "@/components/frappe-ui/Link.vue";
 import {
   Combobox,
   createResource,
@@ -97,8 +98,10 @@ const isSearchableSelect = computed(
 
 // the Combobox feeds one placeholder to both trigger and search box, so it
 // gets none and its prefix slot carries the empty state instead
-const emptyLabel = computed(
-  () => props.field.placeholder || `Add ${props.field.label}`
+const emptyLabel = computed(() =>
+  props.field.placeholder
+    ? __(props.field.placeholder)
+    : __("Add {0}", [__(props.field.label)])
 );
 
 const usesCombobox = computed(
@@ -157,25 +160,34 @@ const component = computed(() => {
       redirectable: props.field.options in REDIRECT_ROUTES,
       class: "!w-full !bg-surface-base !border-transparent !text-base",
       onRedirect: handleRedirect,
+      placeholder: placeholder.value,
     };
     // item-prefix drives both the options and the control, so one slot puts
     // the level icon everywhere
     if (props.field.options === "HD Ticket Priority") {
-      return h(Link, linkProps, {
-        "item-prefix": ({ item }: { item: { value: string } }) =>
-          h(TicketPriority, { priority: item.value, iconOnly: true }),
-        // typing can drop the committed value from the options, so the
-        // control falls back here; keep its icon until it changes
-        prefix: () =>
-          props.value
-            ? h(TicketPriority, {
-                priority: String(props.value),
-                iconOnly: true,
-              })
-            : null,
-      });
+      return h(
+        HelpdeskLink,
+        {
+          doctype: props.field.options,
+          class: linkProps.class,
+          placeholder: linkProps.placeholder,
+        },
+        {
+          "item-prefix": ({ item }: { item: { value: string } }) =>
+            h(TicketPriority, { priority: item.value, iconOnly: true }),
+          // typing can drop the committed value from the options, so the
+          // control falls back here; keep its icon until it changes
+          prefix: () =>
+            props.value
+              ? h(TicketPriority, {
+                  priority: String(props.value),
+                  iconOnly: true,
+                })
+              : null,
+        }
+      );
     }
-    return h(Link, linkProps);
+    return h(FrameworkLink, linkProps);
   } else if (props.field.fieldtype === "Select") {
     return isSearchableSelect.value
       ? combobox(selectOptions.value)

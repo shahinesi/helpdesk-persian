@@ -56,14 +56,15 @@
         />
       </svg>
     </span>
-    <span v-if="!iconOnly" :title="priority" class="truncate">{{
-      priority
+    <span v-if="!iconOnly" :title="__(priority)" class="truncate">{{
+      __(priority)
     }}</span>
   </span>
 </template>
 
 <script setup lang="ts">
 import { useTicketPriorityStore } from "@/stores/ticketPriority";
+import { __ } from "@/translation";
 import { computed } from "vue";
 
 const props = defineProps<{

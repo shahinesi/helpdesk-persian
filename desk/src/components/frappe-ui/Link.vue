@@ -135,13 +135,26 @@ const linkOptions = computed(() => {
   const rows = props.showDescription
     ? data
     : data.map(({ description, ...rest }) => rest);
+  const displayRows = rows.map((row) => ({
+    ...row,
+    label: props.doctype === "HD Ticket Priority" ? __(row.value) : row.label,
+  }));
   // The button trigger prints only an option it has loaded, and the search
   // returns one page. A value saved outside that page needs a row of its own
   // or the field reads as empty.
-  if (value.value && !rows.some((row) => row.value === value.value)) {
-    return [{ label: value.value, value: value.value }, ...rows];
+  if (value.value && !displayRows.some((row) => row.value === value.value)) {
+    return [
+      {
+        label:
+          props.doctype === "HD Ticket Priority"
+            ? __(value.value)
+            : value.value,
+        value: value.value,
+      },
+      ...displayRows,
+    ];
   }
-  return rows;
+  return displayRows;
 });
 
 // Listening to the query at all makes Combobox treat it as consumer-owned, so

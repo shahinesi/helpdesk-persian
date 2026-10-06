@@ -780,7 +780,7 @@ msgstr "{0} تیکت واگذار شد"
 
 #: desk/src/components/ticket-agent/AssignTo.vue:11
 msgid "Assignee"
-msgstr "گیرنده تخصیص"
+msgstr "کارشناس مسئول"
 
 #: Rules/AssigneeRules.vue:5 desk/src/components/Settings/Assignment
 msgid "Assignee Rules"
@@ -3503,7 +3503,7 @@ msgstr "پنهان‌کردن اقدام‌ها"
 #: desk/src/components/Settings/Assignment
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "High"
-msgstr "بالا"
+msgstr "زیاد"
 
 #: desk/src/translationLabels.js:60
 msgid "Highlight"
@@ -4182,7 +4182,7 @@ msgstr "بیشترین زمان انتظار"
 #: desk/src/components/Settings/Assignment
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "Low"
-msgstr "پایین"
+msgstr "کم"
 
 #: Rules/AssignmentRuleListItem.vue:106 Rules/AssignmentRuleView.vue:565
 #: desk/src/components/Settings/Assignment
@@ -8785,3 +8785,59 @@ msgstr "آخرین به‌روزرسانی"
 #: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
 msgid "Tags"
 msgstr "برچسب‌ها"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "Due in {0}"
+msgstr "مهلت باقی‌مانده: {0}"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "Overdue by {0}"
+msgstr "{0} از سررسید گذشته"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "Fulfilled in {0}"
+msgstr "پس از {0} انجام شد"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "Failed by {0}"
+msgstr "تأخیر: {0}"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "On Hold"
+msgstr "در انتظار"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "{0}y {1}mo"
+msgstr "{0} سال و {1} ماه"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "{0}mo {1}d"
+msgstr "{0} ماه و {1} روز"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "{0}d {1}h"
+msgstr "{0} روز و {1} ساعت"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "{0}h {1}m"
+msgstr "{0} ساعت و {1} دقیقه"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "{0}m {1}s"
+msgstr "{0} دقیقه و {1} ثانیه"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "{0}m"
+msgstr "{0} دقیقه"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "{0}s"
+msgstr "{0} ثانیه"
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "Set {0}..."
+msgstr "انتخاب {0}..."
+
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+msgid "Add {0}"
+msgstr "افزودن {0}"
