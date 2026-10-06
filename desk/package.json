@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "patch-package --error-on-fail && vite build",
+    "build": "patch-package --error-on-fail @framework/ui && patch -p1 --forward -i patches/frappe-ui-sidebar.diff && vite build",
     "serve": "vite preview",
     "postinstall": "patch-package"
   },
