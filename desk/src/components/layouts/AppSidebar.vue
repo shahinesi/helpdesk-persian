@@ -100,18 +100,7 @@
 
       <div class="mt-auto flex flex-col gap-2">
         <slot name="footer" :is-collapsed="isCollapsed" />
-        <SidebarItem
-          v-if="!mobile"
-          :label="collapsed ? __('Expand') : __('Collapse')"
-          @click="collapsed = !collapsed"
-        >
-          <template #prefix>
-            <LucideChevronRight
-              class="size-4 transition-transform"
-              :class="collapsed ? 'rtl:rotate-180' : 'rotate-180 rtl:rotate-0'"
-            />
-          </template>
-        </SidebarItem>
+        <SidebarCollapseToggle v-if="!mobile" />
       </div>
     </div>
   </Sidebar>
@@ -144,6 +133,7 @@ import {
   Dropdown,
   ScrollArea,
   Sidebar,
+  SidebarCollapseToggle,
   SidebarItem,
   SidebarLabel,
 } from "frappe-ui";
