@@ -1,3 +1,14 @@
+diff --git a/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue b/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
+index d4e2a29..d5633a8 100644
+--- a/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
++++ b/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
+@@ -1,5 +1,5 @@
+ <template>
+-  <SidebarItem :label="isCollapsed ? 'Expand' : 'Collapse'" @click="toggle">
++  <SidebarItem :label="isCollapsed ? __('Expand') : __('Collapse')" @click="toggle">
+     <template #prefix>
+       <span
+         class="lucide-panel-right-open size-4 text-ink-gray-6 transition-transform duration-300 ease-in-out"
 diff --git a/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts b/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts
 index 91c8dc4..2883b93 100644
 --- a/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts

@@ -1462,6 +1462,8 @@ msgstr ""
 #: desk/src/components/command-palette/CommandPalette.vue:263
 #: desk/src/pages/ticket/MobileTicketAgent.vue:236
 #: desk/src/pages/ticket/TicketCustomer.vue:14
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
 msgid "Close"
 msgstr ""
 
@@ -1488,6 +1490,7 @@ msgid "Code block"
 msgstr ""
 
 #: desk/src/components/layouts/AppSidebar.vue:105
+#: frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
 msgid "Collapse"
 msgstr ""
 
@@ -2736,6 +2739,7 @@ msgid "Exotel"
 msgstr ""
 
 #: desk/src/components/layouts/AppSidebar.vue:105
+#: frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
 msgid "Expand"
 msgstr ""
 
@@ -4243,6 +4247,7 @@ msgstr ""
 
 #: desk/src/pages/MobileNotifications.vue:11
 #: desk/src/pages/MobileNotifications.vue:14
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
 msgid "Mark all as read"
 msgstr ""
 
@@ -4902,6 +4907,7 @@ msgstr ""
 #: desk/src/components/layouts/AppSidebar.vue:256
 #: desk/src/components/notifications/Notifications.vue:15
 #: desk/src/pages/MobileNotifications.vue:6
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
 msgid "Notifications"
 msgstr ""
 
@@ -8606,3 +8612,128 @@ msgstr ""
 msgid "{0} · longest wait"
 msgstr ""
 
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Getting started"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "{0}/{1} steps"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "You are all set"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "All steps are completed successfully"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "Start now"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "Continue"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "Welcome to {0}"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "{0}/{1} steps completed"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "{0}% completed"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "Reset all"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "Skip all"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "Skip"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "You need to complete \"{0}\" first."
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Help center"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Help centre"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Reset onboarding steps"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "More options"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Minimize"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Maximize"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpCenter.vue
+msgid "Search articles..."
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpCenter.vue
+msgid "All articles"
+msgstr ""
+
+#: frappe/ui/src/components/Onboarding/HelpCenter.vue
+msgid "Open docs"
+msgstr ""
+
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
+#: frappe/ui/src/components/ActivityTimeline/LoadMoreButton.vue
+msgid "Load more"
+msgstr ""
+
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
+msgid "Couldn't load notifications"
+msgstr ""
+
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
+msgid "No notifications to show"
+msgstr ""
+
+#: frappe/ui/src/components/Notifications/NotificationItem.vue
+msgid "Unread"
+msgstr ""
+
+#: frappe/ui/src/components/Fields/CodeEditorField.vue
+msgid "Collapse code"
+msgstr ""
+
+#: frappe/ui/src/components/Fields/CodeEditorField.vue
+msgid "Expand code"
+msgstr ""
+
+#: desk/src/components/command-palette/paletteTypes.ts
+msgid "Recent tickets"
+msgstr ""
+
+#: desk/src/components/command-palette/commands.ts
+msgid "Set availability"
+msgstr ""
+
+#: desk/src/components/command-palette/commands.ts
+msgid "Keyboard shortcuts"
+msgstr ""

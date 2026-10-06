@@ -1463,6 +1463,8 @@ msgstr "برای کپی‌کردن کلیک کنید"
 #: desk/src/components/command-palette/CommandPalette.vue:263
 #: desk/src/pages/ticket/MobileTicketAgent.vue:236
 #: desk/src/pages/ticket/TicketCustomer.vue:14
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
 msgid "Close"
 msgstr "بستن"
 
@@ -1489,6 +1491,7 @@ msgid "Code block"
 msgstr "بلوک کد"
 
 #: desk/src/components/layouts/AppSidebar.vue:105
+#: frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
 msgid "Collapse"
 msgstr "جمع‌کردن نوار کناری"
 
@@ -2732,6 +2735,7 @@ msgid "Exotel"
 msgstr "Exotel"
 
 #: desk/src/components/layouts/AppSidebar.vue:105
+#: frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
 msgid "Expand"
 msgstr "بازکردن نوار کناری"
 
@@ -4245,8 +4249,9 @@ msgstr "مدیریت گفتگوهای مشتریان در کانال‌های م
 
 #: desk/src/pages/MobileNotifications.vue:11
 #: desk/src/pages/MobileNotifications.vue:14
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
 msgid "Mark all as read"
-msgstr "همه را به عنوان خوانده شده علامت بزن"
+msgstr "همه را خوانده‌شده کن"
 
 #: desk/src/components/layouts/Sidebar.vue:397
 msgid "Masters"
@@ -4905,6 +4910,7 @@ msgstr "تنظیمات اعلان"
 #: desk/src/components/layouts/AppSidebar.vue:256
 #: desk/src/components/notifications/Notifications.vue:15
 #: desk/src/pages/MobileNotifications.vue:6
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
 msgid "Notifications"
 msgstr "اعلان‌ها"
 
@@ -8616,3 +8622,129 @@ msgstr "{0} · آخرین فعالیت: {1}"
 #: desk/src/components/ticket-agent/analytics/TicketTimeline.vue:564
 msgid "{0} · longest wait"
 msgstr "{0} · طولانی‌ترین زمان انتظار"
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Getting started"
+msgstr "شروع کار"
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "{0}/{1} steps"
+msgstr "{0} از {1} مرحله"
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "You are all set"
+msgstr "همه‌چیز آماده است"
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "All steps are completed successfully"
+msgstr "همهٔ مراحل با موفقیت انجام شد."
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "Start now"
+msgstr "همین حالا شروع کنید"
+
+#: frappe/ui/src/components/Onboarding/GettingStartedBanner.vue
+msgid "Continue"
+msgstr "ادامه"
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "Welcome to {0}"
+msgstr "به {0} خوش آمدید"
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "{0}/{1} steps completed"
+msgstr "تکمیل {0} از {1} مرحله"
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "{0}% completed"
+msgstr "{0}٪ تکمیل شده"
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "Reset all"
+msgstr "بازنشانی همه"
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "Skip all"
+msgstr "رد کردن همه"
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "Skip"
+msgstr "رد کردن"
+
+#: frappe/ui/src/components/Onboarding/OnboardingSteps.vue
+msgid "You need to complete \"{0}\" first."
+msgstr "ابتدا باید «{0}» را تکمیل کنید."
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Help center"
+msgstr "مرکز راهنما"
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Help centre"
+msgstr "مرکز راهنما"
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Reset onboarding steps"
+msgstr "بازنشانی مراحل شروع کار"
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "More options"
+msgstr "گزینه‌های بیشتر"
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Minimize"
+msgstr "کوچک‌کردن"
+
+#: frappe/ui/src/components/Onboarding/HelpModal.vue
+msgid "Maximize"
+msgstr "بزرگ‌کردن"
+
+#: frappe/ui/src/components/Onboarding/HelpCenter.vue
+msgid "Search articles..."
+msgstr "جست‌وجوی مقاله‌ها..."
+
+#: frappe/ui/src/components/Onboarding/HelpCenter.vue
+msgid "All articles"
+msgstr "همهٔ مقاله‌ها"
+
+#: frappe/ui/src/components/Onboarding/HelpCenter.vue
+msgid "Open docs"
+msgstr "باز کردن مستندات"
+
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
+#: frappe/ui/src/components/ActivityTimeline/LoadMoreButton.vue
+msgid "Load more"
+msgstr "بارگذاری بیشتر"
+
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
+msgid "Couldn't load notifications"
+msgstr "بارگذاری اعلان‌ها ممکن نبود."
+
+#: frappe/ui/src/components/Notifications/NotificationPanel.vue
+msgid "No notifications to show"
+msgstr "اعلانی برای نمایش نیست."
+
+#: frappe/ui/src/components/Notifications/NotificationItem.vue
+msgid "Unread"
+msgstr "خوانده‌نشده"
+
+#: frappe/ui/src/components/Fields/CodeEditorField.vue
+msgid "Collapse code"
+msgstr "جمع‌کردن کد"
+
+#: frappe/ui/src/components/Fields/CodeEditorField.vue
+msgid "Expand code"
+msgstr "گسترش کد"
+
+#: desk/src/components/command-palette/paletteTypes.ts
+msgid "Recent tickets"
+msgstr "تیکت‌های اخیر"
+
+#: desk/src/components/command-palette/commands.ts
+msgid "Set availability"
+msgstr "تغییر وضعیت حضور"
+
+#: desk/src/components/command-palette/commands.ts
+msgid "Keyboard shortcuts"
+msgstr "میان‌برهای صفحه‌کلید"
