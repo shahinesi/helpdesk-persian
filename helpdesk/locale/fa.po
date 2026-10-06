@@ -4703,6 +4703,10 @@ msgstr "حساب ایمیلی پیدا نشد."
 msgid "No feedback"
 msgstr "بازخوردی ثبت نشده است."
 
+#: desk/src/pages/home/components/RecentFeedback.vue:278
+msgid "You haven't received any feedback yet"
+msgstr "هنوز بازخوردی دریافت نکرده‌اید."
+
 #: desk/src/pages/dashboard/Dashboard.vue:304
 msgid "No feedback data"
 msgstr "هنوز بازخوردی ثبت نشده است"

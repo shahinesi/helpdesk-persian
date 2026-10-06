@@ -4700,6 +4700,10 @@ msgstr ""
 msgid "No feedback"
 msgstr ""
 
+#: desk/src/pages/home/components/RecentFeedback.vue:278
+msgid "You haven't received any feedback yet"
+msgstr ""
+
 #: desk/src/pages/dashboard/Dashboard.vue:304
 msgid "No feedback data"
 msgstr ""
