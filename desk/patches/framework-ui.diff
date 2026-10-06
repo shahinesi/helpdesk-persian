@@ -1,24 +1,24 @@
-diff --git a/node_modules/@framework/ui/src/components/ActivityTimeline/LoadMoreButton.vue b/node_modules/@framework/ui/src/components/ActivityTimeline/LoadMoreButton.vue
+diff --git a/src/components/ActivityTimeline/LoadMoreButton.vue b/src/components/ActivityTimeline/LoadMoreButton.vue
 index b2a777d..2d84654 100644
---- a/node_modules/@framework/ui/src/components/ActivityTimeline/LoadMoreButton.vue
-+++ b/node_modules/@framework/ui/src/components/ActivityTimeline/LoadMoreButton.vue
+--- a/src/components/ActivityTimeline/LoadMoreButton.vue
++++ b/src/components/ActivityTimeline/LoadMoreButton.vue
 @@ -4 +4 @@
 -		{{ label ?? "Load more" }}
 +		{{ label ?? __("Load more") }}
 @@ -12,0 +13,2 @@ import type { Component } from "vue";
 +const __ = (window as any).__;
 +
-diff --git a/node_modules/@framework/ui/src/components/Fields/CodeEditorField.vue b/node_modules/@framework/ui/src/components/Fields/CodeEditorField.vue
+diff --git a/src/components/Fields/CodeEditorField.vue b/src/components/Fields/CodeEditorField.vue
 index ef168bc..3c3e521 100644
---- a/node_modules/@framework/ui/src/components/Fields/CodeEditorField.vue
-+++ b/node_modules/@framework/ui/src/components/Fields/CodeEditorField.vue
+--- a/src/components/Fields/CodeEditorField.vue
++++ b/src/components/Fields/CodeEditorField.vue
 @@ -51 +51 @@
 -					:label="expanded ? 'Collapse' : 'Expand'"
 +					:label="expanded ? __('Collapse code') : __('Expand code')"
-diff --git a/node_modules/@framework/ui/src/components/Notifications/NotificationItem.vue b/node_modules/@framework/ui/src/components/Notifications/NotificationItem.vue
+diff --git a/src/components/Notifications/NotificationItem.vue b/src/components/Notifications/NotificationItem.vue
 index e572e22..171cd18 100644
---- a/node_modules/@framework/ui/src/components/Notifications/NotificationItem.vue
-+++ b/node_modules/@framework/ui/src/components/Notifications/NotificationItem.vue
+--- a/src/components/Notifications/NotificationItem.vue
++++ b/src/components/Notifications/NotificationItem.vue
 @@ -5,0 +6,2 @@ import type { NotificationItemProps, NotificationLog } from "./types";
 +const __ = (window as any).__;
 +
@@ -29,10 +29,10 @@ index e572e22..171cd18 100644
 @@ -51 +52 @@ function activate() {
 -				<span class="sr-only">Unread</span>
 +				<span class="sr-only">{{ __("Unread") }}</span>
-diff --git a/node_modules/@framework/ui/src/components/Notifications/NotificationPanel.vue b/node_modules/@framework/ui/src/components/Notifications/NotificationPanel.vue
+diff --git a/src/components/Notifications/NotificationPanel.vue b/src/components/Notifications/NotificationPanel.vue
 index 9301441..58183fc 100644
---- a/node_modules/@framework/ui/src/components/Notifications/NotificationPanel.vue
-+++ b/node_modules/@framework/ui/src/components/Notifications/NotificationPanel.vue
+--- a/src/components/Notifications/NotificationPanel.vue
++++ b/src/components/Notifications/NotificationPanel.vue
 @@ -14 +14 @@ const props = withDefaults(defineProps<NotificationPanelProps>(), {
 -	title: "Notifications",
 +	title: undefined,
@@ -65,10 +65,10 @@ index 9301441..58183fc 100644
 @@ -182 +185 @@ const activeTabSlot = computed(() => (activeTab.value ? `tab-${activeTab.value}`
 -						No notifications to show
 +						{{ __("No notifications to show") }}
-diff --git a/node_modules/@framework/ui/src/components/Onboarding/GettingStartedBanner.vue b/node_modules/@framework/ui/src/components/Onboarding/GettingStartedBanner.vue
+diff --git a/src/components/Onboarding/GettingStartedBanner.vue b/src/components/Onboarding/GettingStartedBanner.vue
 index 703ca8a..cf3d354 100644
---- a/node_modules/@framework/ui/src/components/Onboarding/GettingStartedBanner.vue
-+++ b/node_modules/@framework/ui/src/components/Onboarding/GettingStartedBanner.vue
+--- a/src/components/Onboarding/GettingStartedBanner.vue
++++ b/src/components/Onboarding/GettingStartedBanner.vue
 @@ -10 +10 @@
 -					{{ "Getting started" }}
 +					{{ __("Getting started") }}
@@ -93,10 +93,10 @@ index 703ca8a..cf3d354 100644
 @@ -67,0 +68,2 @@ import type { GettingStartedBannerProps } from "./types";
 +const __ = (window as any).__;
 +
-diff --git a/node_modules/@framework/ui/src/components/Onboarding/HelpCenter.vue b/node_modules/@framework/ui/src/components/Onboarding/HelpCenter.vue
+diff --git a/src/components/Onboarding/HelpCenter.vue b/src/components/Onboarding/HelpCenter.vue
 index 88a53f1..387cbd6 100644
---- a/node_modules/@framework/ui/src/components/Onboarding/HelpCenter.vue
-+++ b/node_modules/@framework/ui/src/components/Onboarding/HelpCenter.vue
+--- a/src/components/Onboarding/HelpCenter.vue
++++ b/src/components/Onboarding/HelpCenter.vue
 @@ -6 +6 @@
 -				:placeholder="'Search articles...'"
 +				:placeholder="__('Search articles...')"
@@ -114,10 +114,10 @@ index 88a53f1..387cbd6 100644
 @@ -66,0 +67,2 @@ import type { HelpArticle, HelpCenterProps } from "./types";
 +const __ = (window as any).__;
 +
-diff --git a/node_modules/@framework/ui/src/components/Onboarding/HelpModal.vue b/node_modules/@framework/ui/src/components/Onboarding/HelpModal.vue
+diff --git a/src/components/Onboarding/HelpModal.vue b/src/components/Onboarding/HelpModal.vue
 index 891b59a..7353287 100644
---- a/node_modules/@framework/ui/src/components/Onboarding/HelpModal.vue
-+++ b/node_modules/@framework/ui/src/components/Onboarding/HelpModal.vue
+--- a/src/components/Onboarding/HelpModal.vue
++++ b/src/components/Onboarding/HelpModal.vue
 @@ -4 +4 @@
 -		class="fixed z-50 right-0 w-80 h-[calc(100%_-_80px)] text-ink-gray-9 m-5 mt-[62px] p-3 flex gap-2 flex-col justify-between rounded-6 bg-surface-elevation-2 shadow-2xl"
 +		class="fixed z-50 end-0 w-80 h-[calc(100%_-_80px)] text-ink-gray-9 m-5 mt-[62px] p-3 flex gap-2 flex-col justify-between rounded-6 bg-surface-elevation-2 shadow-2xl"
@@ -148,10 +148,10 @@ index 891b59a..7353287 100644
 @@ -109 +111 @@ const footerItems = computed(() => {
 -			label: "Getting started",
 +			label: __("Getting started"),
-diff --git a/node_modules/@framework/ui/src/components/Onboarding/OnboardingSteps.vue b/node_modules/@framework/ui/src/components/Onboarding/OnboardingSteps.vue
+diff --git a/src/components/Onboarding/OnboardingSteps.vue b/src/components/Onboarding/OnboardingSteps.vue
 index b3a775c..acf01a6 100644
---- a/node_modules/@framework/ui/src/components/Onboarding/OnboardingSteps.vue
-+++ b/node_modules/@framework/ui/src/components/Onboarding/OnboardingSteps.vue
+--- a/src/components/Onboarding/OnboardingSteps.vue
++++ b/src/components/Onboarding/OnboardingSteps.vue
 @@ -5 +5 @@
 -			{{ "Welcome to " + title }}
 +			{{ __("Welcome to {0}", title) }}
