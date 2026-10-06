@@ -4,3 +4,9 @@ diff --git a/node_modules/frappe-ui/src/charts/measureText.ts b/node_modules/fra
 @@ -19 +19 @@
 -export const CHART_FONT_FAMILY = 'InterVar, Inter, sans-serif'
 +export const CHART_FONT_FAMILY = 'Vazirmatn, InterVar, Inter, sans-serif'
+diff --git a/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue b/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
+--- a/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
++++ b/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
+@@ -2 +2 @@
+-  <SidebarItem :label="isCollapsed ? 'Expand' : 'Collapse'" @click="toggle">
++  <SidebarItem :label="isCollapsed ? __('Expand') : __('Collapse')" @click="toggle">

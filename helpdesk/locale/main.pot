@@ -8830,3 +8830,147 @@ msgstr ""
 #: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "Add {0}"
 msgstr ""
+
+#: desk/src/utils.ts
+msgid "Now"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} m"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "in {0} m"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} h"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "in {0} h"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "Tomorrow"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "in {0} d"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "in {0} w"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "in {0} M"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "in {0} y"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} d"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} w"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} M"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} y"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "Just now"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "1 minute ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} minutes ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "1 hour ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} hours ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In 1 minute"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In {0} minutes"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In 1 hour"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In {0} hours"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In {0} days"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In {0} weeks"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In {0} months"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In 1 year"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "In {0} years"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "Yesterday"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} days ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "1 week ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} weeks ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "1 month ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} months ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "1 year ago"
+msgstr ""
+
+#: desk/src/utils.ts
+msgid "{0} years ago"
+msgstr ""

@@ -8841,3 +8841,147 @@ msgstr "انتخاب {0}..."
 #: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "Add {0}"
 msgstr "افزودن {0}"
+
+#: desk/src/utils.ts
+msgid "Now"
+msgstr "اکنون"
+
+#: desk/src/utils.ts
+msgid "{0} m"
+msgstr "{0} دقیقه"
+
+#: desk/src/utils.ts
+msgid "in {0} m"
+msgstr "{0} دقیقه دیگر"
+
+#: desk/src/utils.ts
+msgid "{0} h"
+msgstr "{0} ساعت"
+
+#: desk/src/utils.ts
+msgid "in {0} h"
+msgstr "{0} ساعت دیگر"
+
+#: desk/src/utils.ts
+msgid "Tomorrow"
+msgstr "فردا"
+
+#: desk/src/utils.ts
+msgid "in {0} d"
+msgstr "{0} روز دیگر"
+
+#: desk/src/utils.ts
+msgid "in {0} w"
+msgstr "{0} هفته دیگر"
+
+#: desk/src/utils.ts
+msgid "in {0} M"
+msgstr "{0} ماه دیگر"
+
+#: desk/src/utils.ts
+msgid "in {0} y"
+msgstr "{0} سال دیگر"
+
+#: desk/src/utils.ts
+msgid "{0} d"
+msgstr "{0} روز"
+
+#: desk/src/utils.ts
+msgid "{0} w"
+msgstr "{0} هفته"
+
+#: desk/src/utils.ts
+msgid "{0} M"
+msgstr "{0} ماه"
+
+#: desk/src/utils.ts
+msgid "{0} y"
+msgstr "{0} سال"
+
+#: desk/src/utils.ts
+msgid "Just now"
+msgstr "همین حالا"
+
+#: desk/src/utils.ts
+msgid "1 minute ago"
+msgstr "۱ دقیقه پیش"
+
+#: desk/src/utils.ts
+msgid "{0} minutes ago"
+msgstr "{0} دقیقه پیش"
+
+#: desk/src/utils.ts
+msgid "1 hour ago"
+msgstr "۱ ساعت پیش"
+
+#: desk/src/utils.ts
+msgid "{0} hours ago"
+msgstr "{0} ساعت پیش"
+
+#: desk/src/utils.ts
+msgid "In 1 minute"
+msgstr "تا ۱ دقیقه دیگر"
+
+#: desk/src/utils.ts
+msgid "In {0} minutes"
+msgstr "تا {0} دقیقه دیگر"
+
+#: desk/src/utils.ts
+msgid "In 1 hour"
+msgstr "تا ۱ ساعت دیگر"
+
+#: desk/src/utils.ts
+msgid "In {0} hours"
+msgstr "تا {0} ساعت دیگر"
+
+#: desk/src/utils.ts
+msgid "In {0} days"
+msgstr "تا {0} روز دیگر"
+
+#: desk/src/utils.ts
+msgid "In {0} weeks"
+msgstr "تا {0} هفته دیگر"
+
+#: desk/src/utils.ts
+msgid "In {0} months"
+msgstr "تا {0} ماه دیگر"
+
+#: desk/src/utils.ts
+msgid "In 1 year"
+msgstr "تا ۱ سال دیگر"
+
+#: desk/src/utils.ts
+msgid "In {0} years"
+msgstr "تا {0} سال دیگر"
+
+#: desk/src/utils.ts
+msgid "Yesterday"
+msgstr "دیروز"
+
+#: desk/src/utils.ts
+msgid "{0} days ago"
+msgstr "{0} روز پیش"
+
+#: desk/src/utils.ts
+msgid "1 week ago"
+msgstr "۱ هفته پیش"
+
+#: desk/src/utils.ts
+msgid "{0} weeks ago"
+msgstr "{0} هفته پیش"
+
+#: desk/src/utils.ts
+msgid "1 month ago"
+msgstr "۱ ماه پیش"
+
+#: desk/src/utils.ts
+msgid "{0} months ago"
+msgstr "{0} ماه پیش"
+
+#: desk/src/utils.ts
+msgid "1 year ago"
+msgstr "۱ سال پیش"
+
+#: desk/src/utils.ts
+msgid "{0} years ago"
+msgstr "{0} سال پیش"
