@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: هلپ‌دسک فارسی VERSION\n"
 "Report-Msgid-Bugs-To: hello@frappe.io\n"
-"POT-Creation-Date: 2026-10-05 13:39+0000\n"
-"PO-Revision-Date: 2026-10-05 13:39+0000\n"
+"POT-Creation-Date: 2026-10-06 05:52+0000\n"
+"PO-Revision-Date: 2026-10-06 05:52+0000\n"
 "Last-Translator: hello@frappe.io\n"
 "Language-Team: hello@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -456,6 +456,18 @@ msgstr ""
 
 #: desk/src/components/Settings/General/components/TicketSettings.vue:70
 msgid "Agents will no longer be able to view and create saved replies with global scope."
+msgstr ""
+
+#: desk/src/translationLabels.js:54
+msgid "Align Center"
+msgstr ""
+
+#: desk/src/translationLabels.js:52
+msgid "Align Left"
+msgstr ""
+
+#: desk/src/translationLabels.js:56
+msgid "Align Right"
 msgstr ""
 
 #: desk/src/components/SavedRepliesSelectorModal.vue:185
@@ -1087,11 +1099,19 @@ msgstr ""
 msgid "Black"
 msgstr ""
 
+#: desk/src/translationLabels.js:50
+msgid "Blockquote"
+msgstr ""
+
 #. Option for the 'Color' (Select) field in DocType 'HD Agent Status'
 #. Option for the 'Color' (Select) field in DocType 'HD Ticket Status'
 #: helpdesk/helpdesk/doctype/hd_agent_status/hd_agent_status.json
 #: helpdesk/helpdesk/doctype/hd_ticket_status/hd_ticket_status.json
 msgid "Blue"
+msgstr ""
+
+#: desk/src/translationLabels.js:38
+msgid "Bold"
 msgstr ""
 
 #: desk/src/components/Settings/General/components/Branding.vue:10
@@ -1118,6 +1138,10 @@ msgstr ""
 
 #: desk/src/components/ticket-agent/BulkReplyModal.vue:105
 msgid "Bulk reply sent successfully to {0} tickets."
+msgstr ""
+
+#: desk/src/translationLabels.js:46
+msgid "Bullet List"
 msgstr ""
 
 #: desk/src/components/Settings/Holiday/Holidays.vue:3
@@ -1419,6 +1443,10 @@ msgstr ""
 msgid "Clear all filters"
 msgstr ""
 
+#: desk/src/translationLabels.js:72
+msgid "Clear formatting"
+msgstr ""
+
 #: helpdesk/helpdesk/doctype/hd_service_holiday_list/hd_service_holiday_list.js:46
 msgid "Click on Add to Holidays. This will populate the holidays table with all the dates that fall on the selected weekly off. Repeat the process for populating the dates for all your weekly holidays"
 msgstr ""
@@ -1451,7 +1479,15 @@ msgstr ""
 msgid "Closed or rated tickets cannot be updated by non-agents"
 msgstr ""
 
-#: desk/src/components/layouts/AppSidebar.vue:111
+#: desk/src/translationLabels.js:44
+msgid "Code"
+msgstr ""
+
+#: desk/src/translationLabels.js:74
+msgid "Code block"
+msgstr ""
+
+#: desk/src/components/layouts/AppSidebar.vue:105
 msgid "Collapse"
 msgstr ""
 
@@ -2699,7 +2735,7 @@ msgstr ""
 msgid "Exotel"
 msgstr ""
 
-#: desk/src/components/layouts/AppSidebar.vue:111
+#: desk/src/components/layouts/AppSidebar.vue:105
 msgid "Expand"
 msgstr ""
 
@@ -3019,6 +3055,10 @@ msgstr ""
 
 #: desk/src/components/ticket-agent/analytics/TicketTimeline.vue:567
 msgid "Follow-up"
+msgstr ""
+
+#: desk/src/translationLabels.js:58
+msgid "Font Color"
 msgstr ""
 
 #. Option for the 'Apply To' (Select) field in DocType 'HD Form Script'
@@ -3379,6 +3419,30 @@ msgstr ""
 msgid "HD View"
 msgstr ""
 
+#: desk/src/translationLabels.js:24
+msgid "Heading"
+msgstr ""
+
+#: desk/src/translationLabels.js:26
+msgid "Heading 2"
+msgstr ""
+
+#: desk/src/translationLabels.js:28
+msgid "Heading 3"
+msgstr ""
+
+#: desk/src/translationLabels.js:30
+msgid "Heading 4"
+msgstr ""
+
+#: desk/src/translationLabels.js:32
+msgid "Heading 5"
+msgstr ""
+
+#: desk/src/translationLabels.js:34
+msgid "Heading 6"
+msgstr ""
+
 #. Label of the headings_weight (Int) field in DocType 'HD Settings'
 #: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
 msgid "Headings Weight"
@@ -3429,6 +3493,10 @@ msgstr ""
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:568
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "High"
+msgstr ""
+
+#: desk/src/translationLabels.js:60
+msgid "Highlight"
 msgstr ""
 
 #. Option in a Select field in the tickets Web Form
@@ -3484,6 +3552,10 @@ msgstr ""
 
 #: desk/src/pages/home/Home.vue:5
 msgid "Home"
+msgstr ""
+
+#: desk/src/translationLabels.js:70
+msgid "Horizontal rule"
 msgstr ""
 
 #: desk/src/pages/PersonaForm.vue:109
@@ -3580,6 +3652,10 @@ msgstr ""
 #: helpdesk/helpdesk/doctype/hd_agent/hd_agent.json
 #: helpdesk/helpdesk/doctype/hd_customer/hd_customer.json
 msgid "Image"
+msgstr ""
+
+#: desk/src/translationLabels.js:62
+msgid "Image / Gallery"
 msgstr ""
 
 #: desk/src/components/Settings/General/components/Branding.vue:80
@@ -3827,6 +3903,10 @@ msgstr ""
 msgid "Is setup complete"
 msgstr ""
 
+#: desk/src/translationLabels.js:40
+msgid "Italic"
+msgstr ""
+
 #: desk/src/pages/PersonaForm.vue:131
 msgid "Jira Service Management"
 msgstr ""
@@ -4010,6 +4090,10 @@ msgstr ""
 #: desk/src/components/conditions-filter/CFCondition.vue:384
 #: desk/src/components/conditions-filter/CFCondition.vue:398
 msgid "Like"
+msgstr ""
+
+#: desk/src/translationLabels.js:66
+msgid "Link"
 msgstr ""
 
 #: desk/src/pages/PersonaForm.vue:221
@@ -4280,6 +4364,10 @@ msgstr ""
 
 #: desk/src/pages/dashboard/Dashboard.vue:272
 msgid "My Dashboard"
+msgstr ""
+
+#: desk/src/translationLabels.js:9
+msgid "My Feedback"
 msgstr ""
 
 #: desk/src/pages/dashboard/Dashboard.vue:364
@@ -4810,8 +4898,8 @@ msgstr ""
 msgid "Notification Settings"
 msgstr ""
 
-#: desk/src/components/layouts/AppSidebar.vue:253
-#: desk/src/components/layouts/AppSidebar.vue:262
+#: desk/src/components/layouts/AppSidebar.vue:247
+#: desk/src/components/layouts/AppSidebar.vue:256
 #: desk/src/components/notifications/Notifications.vue:15
 #: desk/src/pages/MobileNotifications.vue:6
 msgid "Notifications"
@@ -4943,6 +5031,10 @@ msgstr ""
 msgid "Order By"
 msgstr ""
 
+#: desk/src/translationLabels.js:48
+msgid "Ordered List"
+msgstr ""
+
 #: desk/src/pages/dashboard/Dashboard.vue:272
 msgid "Organization Dashboard"
 msgstr ""
@@ -4975,6 +5067,10 @@ msgstr ""
 
 #: desk/src/pages/InvalidPage.vue:11
 msgid "Page not found"
+msgstr ""
+
+#: desk/src/translationLabels.js:36
+msgid "Paragraph"
 msgstr ""
 
 #: desk/src/components/Settings/FieldDependency/FieldDependencyFieldsSelection.vue:5
@@ -5040,6 +5136,7 @@ msgstr ""
 #: desk/src/pages/home/Home.vue:352
 #: desk/src/pages/home/components/PendingTickets.vue:229
 #: desk/src/pages/home/components/PendingTickets.vue:233
+#: desk/src/translationLabels.js:11
 msgid "Pending Tickets"
 msgstr ""
 
@@ -5348,7 +5445,7 @@ msgstr ""
 msgid "Priority {0} has been repeated."
 msgstr ""
 
-#: desk/src/components/layouts/AppSidebar.vue:290
+#: desk/src/components/layouts/AppSidebar.vue:284
 #: desk/src/pages/ticket/Tickets.vue:419
 msgid "Private Views"
 msgstr ""
@@ -5375,7 +5472,7 @@ msgstr ""
 msgid "Public"
 msgstr ""
 
-#: desk/src/components/layouts/AppSidebar.vue:283
+#: desk/src/components/layouts/AppSidebar.vue:277
 #: desk/src/pages/ticket/Tickets.vue:434
 msgid "Public Views"
 msgstr ""
@@ -5496,6 +5593,10 @@ msgstr ""
 #: desk/src/components/ticket-agent/TicketDetailsTab.vue:289
 #: desk/src/pages/home/components/PendingTickets.vue:228
 msgid "Recent Tickets"
+msgstr ""
+
+#: desk/src/translationLabels.js:13
+msgid "Recently Assigned Tickets"
 msgstr ""
 
 #: desk/src/components/Settings/Telephony/ExotelSettings.vue:30
@@ -5924,6 +6025,7 @@ msgid "SLA"
 msgstr ""
 
 #: desk/src/pages/home/components/PendingTickets.vue:227
+#: desk/src/translationLabels.js:15
 msgid "SLA Alerts"
 msgstr ""
 
@@ -6093,7 +6195,7 @@ msgstr ""
 #: desk/src/components/Settings/SavedReplies/SavedRepliesList.vue:26
 #: desk/src/components/Settings/Sla/SlaPolicies.vue:41
 #: desk/src/components/Settings/Teams/TeamsList.vue:26
-#: desk/src/components/layouts/AppSidebar.vue:241
+#: desk/src/components/layouts/AppSidebar.vue:235
 #: desk/src/pages/SearchAgent.vue:7
 #: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
 msgid "Search"
@@ -6745,6 +6847,10 @@ msgstr ""
 msgid "Status of the ticket, when it is created in the system."
 msgstr ""
 
+#: desk/src/translationLabels.js:42
+msgid "Strike"
+msgstr ""
+
 #. Label of the subject (Data) field in DocType 'HD Ticket'
 #. Label of a field in the tickets Web Form
 #: desk/src/components/customer/TicketsTab.vue:219
@@ -6901,6 +7007,10 @@ msgstr ""
 
 #: helpdesk/helpdesk/doctype/hd_ticket_type/hd_ticket_type.py:12
 msgid "System types can not be deleted"
+msgstr ""
+
+#: desk/src/translationLabels.js:68
+msgid "Table"
 msgstr ""
 
 #: helpdesk/api/dashboard_tags.py:48
@@ -7854,6 +7964,10 @@ msgstr ""
 
 #: desk/src/pages/PersonaForm.vue:169
 msgid "Via email"
+msgstr ""
+
+#: desk/src/translationLabels.js:64
+msgid "Video"
 msgstr ""
 
 #: desk/src/components/SearchArticles.vue:15

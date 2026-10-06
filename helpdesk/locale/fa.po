@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  frappe\n"
 "Report-Msgid-Bugs-To: hello@frappe.io\n"
-"POT-Creation-Date: 2026-10-05 13:39+0000\n"
+"POT-Creation-Date: 2026-10-06 05:52+0000\n"
 "PO-Revision-Date: 2026-07-06 08:52+0000\n"
 "Last-Translator: hello@frappe.io\n"
 "Language: fa_IR\n"
@@ -458,6 +458,18 @@ msgstr "کارشناسان مشارکت‌کننده"
 #: desk/src/components/Settings/General/components/TicketSettings.vue:70
 msgid "Agents will no longer be able to view and create saved replies with global scope."
 msgstr "کارشناسان دیگر نمی‌توانند پاسخ‌های آمادهٔ سراسری را ببینند یا ایجاد کنند."
+
+#: desk/src/translationLabels.js:54
+msgid "Align Center"
+msgstr "وسط‌چین"
+
+#: desk/src/translationLabels.js:52
+msgid "Align Left"
+msgstr "چپ‌چین"
+
+#: desk/src/translationLabels.js:56
+msgid "Align Right"
+msgstr "راست‌چین"
 
 #: desk/src/components/SavedRepliesSelectorModal.vue:185
 #: desk/src/components/Settings/Agents.vue:254
@@ -1088,12 +1100,20 @@ msgstr "بین"
 msgid "Black"
 msgstr "مشکی"
 
+#: desk/src/translationLabels.js:50
+msgid "Blockquote"
+msgstr "نقل‌قول"
+
 #. Option for the 'Color' (Select) field in DocType 'HD Agent Status'
 #. Option for the 'Color' (Select) field in DocType 'HD Ticket Status'
 #: helpdesk/helpdesk/doctype/hd_agent_status/hd_agent_status.json
 #: helpdesk/helpdesk/doctype/hd_ticket_status/hd_ticket_status.json
 msgid "Blue"
 msgstr "آبی"
+
+#: desk/src/translationLabels.js:38
+msgid "Bold"
+msgstr "پررنگ"
 
 #: desk/src/components/Settings/General/components/Branding.vue:10
 msgid "Brand name"
@@ -1120,6 +1140,10 @@ msgstr "پاسخ گروهی برای ۱ تیکت ارسال شد."
 #: desk/src/components/ticket-agent/BulkReplyModal.vue:105
 msgid "Bulk reply sent successfully to {0} tickets."
 msgstr "پاسخ گروهی برای {0} تیکت ارسال شد."
+
+#: desk/src/translationLabels.js:46
+msgid "Bullet List"
+msgstr "فهرست نشانه‌دار"
 
 #: desk/src/components/Settings/Holiday/Holidays.vue:3
 msgid "Business Holidays"
@@ -1420,6 +1444,10 @@ msgstr "پاک‌کردن همهٔ اقدام‌ها"
 msgid "Clear all filters"
 msgstr "پاک کردن همه فیلترها"
 
+#: desk/src/translationLabels.js:72
+msgid "Clear formatting"
+msgstr "پاک‌کردن قالب‌بندی"
+
 #: helpdesk/helpdesk/doctype/hd_service_holiday_list/hd_service_holiday_list.js:46
 msgid "Click on Add to Holidays. This will populate the holidays table with all the dates that fall on the selected weekly off. Repeat the process for populating the dates for all your weekly holidays"
 msgstr "روی افزودن به تعطیلات کلیک کنید. با این کار جدول تعطیلات با تمام تاریخ‌هایی که در تعطیلات هفتگی انتخاب شده قرار می گیرند پر می‌کند. فرآیند پر کردن تاریخ‌ها را برای تمام تعطیلات هفتگی خود تکرار کنید"
@@ -1452,7 +1480,15 @@ msgstr "بسته‌شده"
 msgid "Closed or rated tickets cannot be updated by non-agents"
 msgstr "کاربران عادی نمی‌توانند تیکت‌های بسته‌شده یا امتیازدهی‌شده را تغییر دهند."
 
-#: desk/src/components/layouts/AppSidebar.vue:111
+#: desk/src/translationLabels.js:44
+msgid "Code"
+msgstr "کد"
+
+#: desk/src/translationLabels.js:74
+msgid "Code block"
+msgstr "بلوک کد"
+
+#: desk/src/components/layouts/AppSidebar.vue:105
 msgid "Collapse"
 msgstr "جمع‌کردن نوار کناری"
 
@@ -2695,7 +2731,7 @@ msgstr "کاربران موجود فوراً اضافه می‌شوند؛ برا
 msgid "Exotel"
 msgstr "Exotel"
 
-#: desk/src/components/layouts/AppSidebar.vue:111
+#: desk/src/components/layouts/AppSidebar.vue:105
 msgid "Expand"
 msgstr "بازکردن نوار کناری"
 
@@ -3016,6 +3052,10 @@ msgstr "زمان پاسخ اولیه"
 #: desk/src/components/ticket-agent/analytics/TicketTimeline.vue:567
 msgid "Follow-up"
 msgstr "پیگیری"
+
+#: desk/src/translationLabels.js:58
+msgid "Font Color"
+msgstr "رنگ قلم"
 
 #. Option for the 'Apply To' (Select) field in DocType 'HD Form Script'
 #: helpdesk/helpdesk/doctype/hd_form_script/hd_form_script.json
@@ -3375,6 +3415,30 @@ msgstr "نوع تیکت"
 msgid "HD View"
 msgstr "نما"
 
+#: desk/src/translationLabels.js:24
+msgid "Heading"
+msgstr "سرفصل"
+
+#: desk/src/translationLabels.js:26
+msgid "Heading 2"
+msgstr "عنوان ۲"
+
+#: desk/src/translationLabels.js:28
+msgid "Heading 3"
+msgstr "عنوان ۳"
+
+#: desk/src/translationLabels.js:30
+msgid "Heading 4"
+msgstr "عنوان ۴"
+
+#: desk/src/translationLabels.js:32
+msgid "Heading 5"
+msgstr "عنوان ۵"
+
+#: desk/src/translationLabels.js:34
+msgid "Heading 6"
+msgstr "عنوان ۶"
+
 #. Label of the headings_weight (Int) field in DocType 'HD Settings'
 #: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
 msgid "Headings Weight"
@@ -3433,6 +3497,10 @@ msgstr "پنهان‌کردن اقدام‌ها"
 msgid "High"
 msgstr "بالا"
 
+#: desk/src/translationLabels.js:60
+msgid "Highlight"
+msgstr "برجسته‌سازی"
+
 #. Option in a Select field in the tickets Web Form
 #: helpdesk/helpdesk/web_form/tickets/tickets.json
 msgid "Hold"
@@ -3487,6 +3555,10 @@ msgstr "تعطیلات"
 #: desk/src/pages/home/Home.vue:5
 msgid "Home"
 msgstr "صفحه اصلی"
+
+#: desk/src/translationLabels.js:70
+msgid "Horizontal rule"
+msgstr "خط جداکننده"
 
 #: desk/src/pages/PersonaForm.vue:109
 msgid "How big is your support team?"
@@ -3583,6 +3655,10 @@ msgstr "نادیده‌گرفتن محدودیت‌ها"
 #: helpdesk/helpdesk/doctype/hd_customer/hd_customer.json
 msgid "Image"
 msgstr "تصویر"
+
+#: desk/src/translationLabels.js:62
+msgid "Image / Gallery"
+msgstr "تصویر یا گالری"
 
 #: desk/src/components/Settings/General/components/Branding.vue:80
 msgid "Image removed successfully."
@@ -3829,6 +3905,10 @@ msgstr "سنجاق شده است"
 msgid "Is setup complete"
 msgstr "راه‌اندازی کامل شده است"
 
+#: desk/src/translationLabels.js:40
+msgid "Italic"
+msgstr "ایتالیک"
+
 #: desk/src/pages/PersonaForm.vue:131
 msgid "Jira Service Management"
 msgstr "Jira Service Management"
@@ -4013,6 +4093,10 @@ msgstr "روشن"
 #: desk/src/components/conditions-filter/CFCondition.vue:398
 msgid "Like"
 msgstr "شامل"
+
+#: desk/src/translationLabels.js:66
+msgid "Link"
+msgstr "پیوند"
 
 #: desk/src/pages/PersonaForm.vue:221
 msgid "LinkedIn"
@@ -4283,6 +4367,10 @@ msgstr "حرکت به"
 #: desk/src/pages/dashboard/Dashboard.vue:272
 msgid "My Dashboard"
 msgstr "داشبورد من"
+
+#: desk/src/translationLabels.js:9
+msgid "My Feedback"
+msgstr "بازخوردهای من"
 
 #: desk/src/pages/dashboard/Dashboard.vue:364
 #: desk/src/pages/dashboard/Dashboard.vue:378
@@ -4813,8 +4901,8 @@ msgstr "چیزی در {0} باقی نمانده است."
 msgid "Notification Settings"
 msgstr "تنظیمات اعلان"
 
-#: desk/src/components/layouts/AppSidebar.vue:253
-#: desk/src/components/layouts/AppSidebar.vue:262
+#: desk/src/components/layouts/AppSidebar.vue:247
+#: desk/src/components/layouts/AppSidebar.vue:256
 #: desk/src/components/notifications/Notifications.vue:15
 #: desk/src/pages/MobileNotifications.vue:6
 msgid "Notifications"
@@ -4949,6 +5037,10 @@ msgstr "ترتیب"
 msgid "Order By"
 msgstr "سفارش توسط"
 
+#: desk/src/translationLabels.js:48
+msgid "Ordered List"
+msgstr "فهرست شماره‌دار"
+
 #: desk/src/pages/dashboard/Dashboard.vue:272
 msgid "Organization Dashboard"
 msgstr "داشبورد سازمان"
@@ -4982,6 +5074,10 @@ msgstr "مالک"
 #: desk/src/pages/InvalidPage.vue:11
 msgid "Page not found"
 msgstr "صفحه یافت نشد"
+
+#: desk/src/translationLabels.js:36
+msgid "Paragraph"
+msgstr "پاراگراف"
 
 #: desk/src/components/Settings/FieldDependency/FieldDependencyFieldsSelection.vue:5
 msgid "Parent field"
@@ -5046,6 +5142,7 @@ msgstr "دعوت‌های در انتظار"
 #: desk/src/pages/home/Home.vue:352
 #: desk/src/pages/home/components/PendingTickets.vue:229
 #: desk/src/pages/home/components/PendingTickets.vue:233
+#: desk/src/translationLabels.js:11
 msgid "Pending Tickets"
 msgstr "تیکت‌های در انتظار"
 
@@ -5354,7 +5451,7 @@ msgstr "اولویت در حال استفاده است"
 msgid "Priority {0} has been repeated."
 msgstr "اولویت {0} تکرار شده است."
 
-#: desk/src/components/layouts/AppSidebar.vue:290
+#: desk/src/components/layouts/AppSidebar.vue:284
 #: desk/src/pages/ticket/Tickets.vue:419
 msgid "Private Views"
 msgstr "نماهای خصوصی"
@@ -5381,7 +5478,7 @@ msgstr "نمایه با موفقیت به‌روزرسانی شد."
 msgid "Public"
 msgstr "عمومی"
 
-#: desk/src/components/layouts/AppSidebar.vue:283
+#: desk/src/components/layouts/AppSidebar.vue:277
 #: desk/src/pages/ticket/Tickets.vue:434
 msgid "Public Views"
 msgstr "نماهای عمومی"
@@ -5503,6 +5600,10 @@ msgstr "اخیر"
 #: desk/src/pages/home/components/PendingTickets.vue:228
 msgid "Recent Tickets"
 msgstr "تیکت‌های اخیر"
+
+#: desk/src/translationLabels.js:13
+msgid "Recently Assigned Tickets"
+msgstr "تیکت‌های واگذارشدهٔ اخیر"
 
 #: desk/src/components/Settings/Telephony/ExotelSettings.vue:30
 #: desk/src/components/Settings/Telephony/TwilioSettings.vue:29
@@ -5930,6 +6031,7 @@ msgid "SLA"
 msgstr "SLA"
 
 #: desk/src/pages/home/components/PendingTickets.vue:227
+#: desk/src/translationLabels.js:15
 msgid "SLA Alerts"
 msgstr "هشدارهای SLA"
 
@@ -6099,7 +6201,7 @@ msgstr "اسکریپت"
 #: desk/src/components/Settings/SavedReplies/SavedRepliesList.vue:26
 #: desk/src/components/Settings/Sla/SlaPolicies.vue:41
 #: desk/src/components/Settings/Teams/TeamsList.vue:26
-#: desk/src/components/layouts/AppSidebar.vue:241
+#: desk/src/components/layouts/AppSidebar.vue:235
 #: desk/src/pages/SearchAgent.vue:7
 #: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
 msgid "Search"
@@ -6756,6 +6858,10 @@ msgstr ""
 msgid "Status of the ticket, when it is created in the system."
 msgstr "وضعیت تیکت هنگام ایجاد در سامانه."
 
+#: desk/src/translationLabels.js:42
+msgid "Strike"
+msgstr "خط‌خورده"
+
 #. Label of the subject (Data) field in DocType 'HD Ticket'
 #. Label of a field in the tickets Web Form
 #: desk/src/components/customer/TicketsTab.vue:219
@@ -6913,6 +7019,10 @@ msgstr "مدیر سیستم"
 #: helpdesk/helpdesk/doctype/hd_ticket_type/hd_ticket_type.py:12
 msgid "System types can not be deleted"
 msgstr "نوع‌های سیستمی را نمی‌توان حذف کرد."
+
+#: desk/src/translationLabels.js:68
+msgid "Table"
+msgstr "جدول"
 
 #: helpdesk/api/dashboard_tags.py:48
 msgid "Tag"
@@ -7866,6 +7976,10 @@ msgstr "از طریق WhatsApp"
 #: desk/src/pages/PersonaForm.vue:169
 msgid "Via email"
 msgstr "از طریق ایمیل"
+
+#: desk/src/translationLabels.js:64
+msgid "Video"
+msgstr "ویدئو"
 
 #: desk/src/components/SearchArticles.vue:15
 msgid "View All"
