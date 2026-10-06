@@ -2,6 +2,7 @@ import { EditIcon, PinIcon, UnpinIcon } from "@/components/icons";
 import { useAuthStore } from "@/stores/auth";
 import { globalStore } from "@/stores/globalStore";
 import { __ } from "@/translation";
+import { translateViewLabel } from "@/translationLabels";
 import { View } from "@/types";
 import { getIcon, isCustomerPortal } from "@/utils";
 import { useDebounceFn } from "@vueuse/core";
@@ -40,23 +41,7 @@ export const currentView = ref({
 });
 
 export function getViewLabel(view: Pick<View, "label" | "is_standard">) {
-  const label = view.label ?? "";
-  if (!view.is_standard) return label;
-
-  // Standard labels arrive as runtime data, so keep their gettext keys
-  // explicit for extraction. User-created labels stay untouched.
-  switch (label) {
-    case "My Feedback":
-      return __("My Feedback");
-    case "Pending Tickets":
-      return __("Pending Tickets");
-    case "Recently Assigned Tickets":
-      return __("Recently Assigned Tickets");
-    case "SLA Alerts":
-      return __("SLA Alerts");
-    default:
-      return __(label);
-  }
+  return translateViewLabel(view);
 }
 
 export function useView(dt: string = null) {
