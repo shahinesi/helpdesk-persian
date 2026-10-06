@@ -1099,6 +1099,10 @@ msgstr ""
 msgid "Black"
 msgstr ""
 
+#: desk/src/pages/dashboard/Dashboard.vue
+msgid "Billing"
+msgstr ""
+
 #: desk/src/translationLabels.js:50
 msgid "Blockquote"
 msgstr ""
@@ -5462,6 +5466,7 @@ msgstr ""
 
 #: desk/src/components/Settings/Teams/NewTeam.vue:30
 #: desk/src/components/Settings/Teams/RenameTeamModal.vue:11
+#: desk/src/pages/dashboard/Dashboard.vue
 msgid "Product Experts"
 msgstr ""
 

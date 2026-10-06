@@ -60,7 +60,7 @@
           </template>
           <!-- One line per row: the filter only needs the name. -->
           <template #item-label="{ item }">
-            <div class="truncate">{{ item.label }}</div>
+            <div class="truncate">{{ translateDefaultTeam(item.label) }}</div>
           </template>
         </Link>
         <Link
@@ -231,6 +231,12 @@ import { computed, h, onMounted, reactive, ref, watch } from "vue";
 import LucideBuilding2 from "~icons/lucide/building-2";
 import LucideUser from "~icons/lucide/user";
 const { isMobileView } = useScreenSize();
+
+function translateDefaultTeam(label: string) {
+  if (label === "Billing") return __("Billing");
+  if (label === "Product Experts") return __("Product Experts");
+  return label;
+}
 
 interface NumberCardData {
   title: string;

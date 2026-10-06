@@ -1100,6 +1100,10 @@ msgstr "بین"
 msgid "Black"
 msgstr "مشکی"
 
+#: desk/src/pages/dashboard/Dashboard.vue
+msgid "Billing"
+msgstr "امور مالی"
+
 #: desk/src/translationLabels.js:50
 msgid "Blockquote"
 msgstr "نقل‌قول"
@@ -5468,6 +5472,7 @@ msgstr "نماهای خصوصی"
 
 #: desk/src/components/Settings/Teams/NewTeam.vue:30
 #: desk/src/components/Settings/Teams/RenameTeamModal.vue:11
+#: desk/src/pages/dashboard/Dashboard.vue
 msgid "Product Experts"
 msgstr "کارشناسان محصول"
 
