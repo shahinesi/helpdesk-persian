@@ -7,3 +7,4 @@ COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/helpdesk/
 
 USER frappe
 WORKDIR /home/frappe/frappe-bench
+RUN cd apps/helpdesk/desk && yarn install --frozen-lockfile --non-interactive
