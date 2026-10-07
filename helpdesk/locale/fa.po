@@ -712,8 +712,9 @@ msgid "Content for your Article"
 msgstr "محتوای مقالهٔ شما"
 
 #: desk/src/pages/knowledge-base/Article.vue
+#: desk/src/components/Settings/FieldDependency/FieldDependencyList.vue:69
 msgid "Created by"
-msgstr "ایجادشده توسط"
+msgstr "ایجادکننده"
 
 #: desk/src/pages/knowledge-base/Article.vue
 msgid "Published by"
@@ -1868,10 +1869,6 @@ msgstr "ایجاد تعطیلی کاری جدید"
 #: desk/src/components/ticket-agent/analytics/TicketTimeline.vue:226
 msgid "Created"
 msgstr "ایجاد شد"
-
-#: desk/src/components/Settings/FieldDependency/FieldDependencyList.vue:69
-msgid "Created by"
-msgstr "ایجادکننده"
 
 #: desk/src/components/layouts/Sidebar.vue:372
 msgid "Creating a ticket"
@@ -9158,3 +9155,115 @@ msgstr "پرسش"
 #: desk/src/utils/displayLinkOption.ts
 msgid "Unspecified"
 msgstr "مشخص‌نشده"
+
+#: frappe/frappe/www/login.html
+msgid "Login"
+msgstr "ورود"
+
+#: frappe/frappe/www/login.html
+msgid "Sign In"
+msgstr "ورود"
+
+#: frappe/frappe/www/login.html
+msgid "Welcome! Please sign in to continue."
+msgstr "خوش آمدید! برای ادامه وارد شوید."
+
+#: frappe/frappe/www/login.html
+msgid "Forgot password?"
+msgstr "رمز عبور را فراموش کرده‌اید؟"
+
+#: frappe/frappe/www/login.html
+msgid "Forgot Password?"
+msgstr "فراموشی رمز عبور"
+
+#: frappe/frappe/www/login.html
+msgid "Please enter your email, we'll send you password reset link"
+msgstr "ایمیل خود را وارد کنید تا پیوند بازنشانی رمز عبور را برایتان بفرستیم."
+
+#: frappe/frappe/www/login.html
+msgid "Login with Email Link"
+msgstr "ورود با پیوند ایمیل"
+
+#: frappe/frappe/www/login.html
+msgid "Send Link"
+msgstr "ارسال پیوند"
+
+#: frappe/frappe/www/login.html
+msgid "Back to sign in"
+msgstr "بازگشت به ورود"
+
+#: frappe/frappe/www/login.html
+msgid "Please check your email."
+msgstr "ایمیلتان را بررسی کنید."
+
+#: frappe/frappe/www/login.html
+msgid "Didn't receive the link?"
+msgstr "پیوند را دریافت نکرده‌اید؟"
+
+#: frappe/frappe/www/login.html
+msgid "Resend"
+msgstr "ارسال دوباره"
+
+#: frappe/frappe/www/login.html
+msgid "Send login link"
+msgstr "ارسال پیوند ورود"
+
+#: frappe/frappe/www/login.html
+msgid "Login with password"
+msgstr "ورود با رمز عبور"
+
+#: frappe/frappe/www/login.html
+msgid "jane@example.com"
+msgstr "نام@example.com"
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Email is required."
+msgstr "ایمیل الزامی است."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Password is required."
+msgstr "رمز عبور الزامی است."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Invalid Email."
+msgstr "نشانی ایمیل معتبر نیست."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Sent"
+msgstr "ارسال شد."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Both login and password required"
+msgstr "نام کاربری و رمز عبور را وارد کنید."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Success"
+msgstr "با موفقیت انجام شد."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Reset link emailed"
+msgstr "پیوند بازنشانی رمز عبور برایتان ایمیل شد."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Invalid credentials, try again."
+msgstr "اطلاعات ورود نادرست است؛ دوباره تلاش کنید."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Oops! Something went wrong."
+msgstr "متأسفانه مشکلی پیش آمد."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Too many requests. Please try again later."
+msgstr "درخواست‌های زیادی ارسال شده است. کمی بعد دوباره تلاش کنید."
+
+#: frappe/frappe/templates/includes/login/login.js
+msgid "Something went wrong."
+msgstr "مشکلی پیش آمد."
+
+#: frappe/frappe/www/login.html
+msgid "Don't have an account?"
+msgstr "حساب کاربری ندارید؟"
+
+#: frappe/frappe/www/login.html
+msgid "Sign up"
+msgstr "ثبت‌نام"

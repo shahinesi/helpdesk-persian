@@ -4,8 +4,17 @@ import frappe
 
 
 def set_fresh_setup_language():
-    """Use Persian for the unconfigured setup wizard request without saving it."""
+    """Default first-time setup and guest login to Persian without saving it."""
     request = getattr(frappe.local, "request", None)
+    if (
+        request
+        and request.path.rstrip("/") == "/login"
+        and not frappe.form_dict.get("_lang")
+        and not request.cookies.get("preferred_language")
+    ):
+        frappe.form_dict._lang = "fa"
+        return
+
     if (
         not request
         or not request.path.startswith("/desk/")
