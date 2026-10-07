@@ -79,7 +79,10 @@ import BulkEditModal from "@/components/ticket-agent/BulkEditModal.vue";
 import BulkReplyModal from "@/components/ticket-agent/BulkReplyModal.vue";
 import ExportModal from "@/components/ticket/ExportModal.vue";
 import ViewBreadcrumbs from "@/components/ViewBreadcrumbs.vue";
-import { normalizeFilters } from "@/components/view-controls/filter";
+import {
+  displayLinkOption,
+  normalizeFilters,
+} from "@/components/view-controls/filter";
 import ViewModal from "@/components/ViewModal.vue";
 import { currentView, getViewLabel, useView } from "@/composables/useView";
 import { useAuthStore } from "@/stores/auth";
@@ -222,6 +225,14 @@ const options = computed(() => ({
     },
     priority: {
       custom: ({ item }) => h(TicketPriority, { priority: item }),
+    },
+    ticket_type: {
+      custom: ({ item }) =>
+        h(
+          "span",
+          { class: "truncate flex-1" },
+          displayLinkOption("HD Ticket Type", String(item || ""))
+        ),
     },
     agreement_status: {
       custom: ({ item }) => {
