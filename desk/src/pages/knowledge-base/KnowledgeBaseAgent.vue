@@ -401,6 +401,11 @@ const options = computed(() => {
     },
     columnConfig: {
       title: {
+        custom: ({ item }) =>
+          h("span", {
+            class: "truncate",
+            textContent: item === "Introduction" ? __("Introduction") : item,
+          }),
         prefix: () => {
           return h(Icon, {
             icon: "lucide-file-text",
