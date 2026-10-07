@@ -8768,6 +8768,10 @@ msgid "Created On"
 msgstr ""
 
 #: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Last Modified"
+msgstr ""
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
 msgid "Last Updated On"
 msgstr ""
 

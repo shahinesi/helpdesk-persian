@@ -868,30 +868,31 @@ const YEAR = 365 * DAY;
 
 /**
  * Compact relative duration between `target` and now, ignoring direction.
- * Examples: `1y`, `4 days 4h`, `2h 20m`, `5m`.
+ * Examples: `1y 0mo`, `4d 4h`, `2h 20m`, `5m`.
  */
 export function shortDuration(target: string): string {
   const seconds = Math.abs(dayjsLocal(target).diff(dayjsLocal(), "second"));
   if (seconds >= YEAR) {
     const years = Math.floor(seconds / YEAR);
-    return `${years} ${years === 1 ? "year" : "years"}`;
+    const months = Math.floor((seconds % YEAR) / MONTH);
+    return __("{0}y {1}mo", [years, months]);
   }
   if (seconds >= MONTH) {
     const months = Math.floor(seconds / MONTH);
-    return `${months} ${months === 1 ? "month" : "months"}`;
+    const days = Math.floor((seconds % MONTH) / DAY);
+    return __("{0}mo {1}d", [months, days]);
   }
   if (seconds >= DAY) {
     const days = Math.floor(seconds / DAY);
     const hours = Math.floor((seconds % DAY) / HOUR);
-    const dayLabel = `${days} ${days === 1 ? "day" : "days"}`;
-    return hours ? `${dayLabel} ${hours}h` : dayLabel;
+    return __("{0}d {1}h", [days, hours]);
   }
   if (seconds >= HOUR) {
     const hours = Math.floor(seconds / HOUR);
     const minutes = Math.floor((seconds % HOUR) / MINUTE);
-    return minutes ? `${hours}h ${minutes}m` : `${hours}h`;
+    return __("{0}h {1}m", [hours, minutes]);
   }
-  return `${Math.floor(seconds / MINUTE)}m`;
+  return __("{0}m", [Math.floor(seconds / MINUTE)]);
 }
 
 export function buildPercentageChange(

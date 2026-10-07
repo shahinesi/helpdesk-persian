@@ -209,12 +209,13 @@ const options = computed(() => ({
         const label = isCustomerPortal.value
           ? status?.["label_customer"]
           : status?.["label_agent"];
+        const displayLabel = __(label || item);
         return h(
           "div",
           { class: "flex items-center gap-1.5 justify-start w-full" },
           [
             h(IndicatorIcon, { class: status?.["parsed_color"] }),
-            h("span", { class: "truncate flex-1 text-base" }, label),
+            h("span", { class: "truncate flex-1 text-base" }, displayLabel),
           ]
         );
       },

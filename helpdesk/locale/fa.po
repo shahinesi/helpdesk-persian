@@ -8779,6 +8779,10 @@ msgid "Created On"
 msgstr "تاریخ ایجاد"
 
 #: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
+msgid "Last Modified"
+msgstr "آخرین تغییر"
+
+#: helpdesk/api/doc.py desk/src/components/ListViewBuilder.vue
 msgid "Last Updated On"
 msgstr "آخرین به‌روزرسانی"
 
