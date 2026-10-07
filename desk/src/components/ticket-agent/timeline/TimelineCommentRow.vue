@@ -1,6 +1,7 @@
 <template>
   <CommentItem
     :comment="activity"
+    :editor-class="editorClass"
     :editable="editing"
     @save="saveContent"
     @discard="editing = false"
@@ -63,6 +64,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
 import { __ } from "@/translation";
+import { getFontFamily } from "@/utils";
 import {
   ConfirmDelete,
   copyActivityLink,
@@ -113,6 +115,10 @@ const { enableCommentReactions: reactionsEnabled } = storeToRefs(
 
 const editing = ref(false);
 const isConfirmingDelete = ref(false);
+const editorClass = computed(() => [
+  "prose-f max-w-none",
+  getFontFamily(props.activity.data.content),
+]);
 
 // author.email is the resolved address; userId may be the raw session user
 // ("Administrator"), so match either form

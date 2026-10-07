@@ -186,3 +186,10 @@ index 2bb0d45..2bb0d45 100644
 @@ -10 +10 @@
 -			<span v-if="from != null || showEmptyFrom" class="text-ink-gray-5">→</span>
 +			<span v-if="from != null || showEmptyFrom" class="text-ink-gray-5 rtl:rotate-180">→</span>
+diff --git a/src/components/ActivityTimeline/CommentItem.vue b/src/components/ActivityTimeline/CommentItem.vue
+index 85d9b98..85d9b98 100644
+--- a/src/components/ActivityTimeline/CommentItem.vue
++++ b/src/components/ActivityTimeline/CommentItem.vue
+@@ -39,1 +39,1 @@
+-				<EditorContent :class="editorClass" />
++				<EditorContent dir="auto" :class="editorClass" />
