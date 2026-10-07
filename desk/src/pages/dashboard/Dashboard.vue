@@ -217,7 +217,7 @@ import { useScreenSize } from "@/composables/screen";
 import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
-import { formatLocalizedDate } from "@/utils";
+import { formatLocalizedDate, formatLocalizedDateRange } from "@/utils";
 import { Link } from "@framework/ui";
 import { useStorage } from "@vueuse/core";
 import {
@@ -642,14 +642,10 @@ function formatter(range: string) {
     return preset.value;
   }
   let [from, to] = range.split(",");
-  return `${formatRange(from)} to ${formatRange(to)}`;
-}
-
-function formatRange(date: string) {
   const sameYear =
-    formatLocalizedDate(date, "YYYY") ===
+    formatLocalizedDate(from, "YYYY") ===
     formatLocalizedDate(new Date(), "YYYY");
-  return formatLocalizedDate(date, sameYear ? "MMM D" : "MMM D, YYYY");
+  return formatLocalizedDateRange(from, to, sameYear ? "MMM D" : "MMM D, YYYY");
 }
 
 watch(

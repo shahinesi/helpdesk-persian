@@ -142,6 +142,40 @@ export function formatLocalizedDate(
   return digitsEnToFa(value.format(localizedFormat));
 }
 
+export function formatLocalizedDateRange(
+  from: string | Date | Dayjs,
+  to: string | Date | Dayjs,
+  format = getDateFormat()
+) {
+  if (dayjs.locale().split("-")[0] !== "fa") {
+    return `${formatLocalizedDate(from, format)} to ${formatLocalizedDate(
+      to,
+      format
+    )}`;
+  }
+
+  const toIntlDate = (date: string | Date | Dayjs) => {
+    const value =
+      date instanceof Date
+        ? dayjs(date)
+        : typeof date === "object" && "$isDayjsObject" in date
+        ? (date as Dayjs)
+        : /^\d{4}-\d{2}-\d{2}$/.test(date)
+        ? dayjs(date)
+        : dayjsLocal(date);
+    if (!value.isValid()) return new Date(NaN);
+    return new Date(Date.UTC(value.year(), value.month(), value.date(), 12));
+  };
+
+  return new Intl.DateTimeFormat("fa-u-ca-persian-nu-arabext", {
+    calendar: "persian",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).formatRange(toIntlDate(from), toIntlDate(to));
+}
+
 export function timeAgo(date) {
   return prettyDate(date);
 }
