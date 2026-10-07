@@ -12,7 +12,7 @@ def set_fresh_setup_language():
         and not frappe.form_dict.get("_lang")
         and not request.cookies.get("preferred_language")
     ):
-        frappe.form_dict._lang = "fa"
+        frappe.local.lang = "fa"
         return
 
     if (
