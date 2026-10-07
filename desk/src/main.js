@@ -7,6 +7,7 @@ import {
   FormControl,
   frappeRequest,
   FrappeUI,
+  dayjs,
   setConfig,
   TextInput,
   toast,
@@ -30,6 +31,13 @@ const globalComponents = {
 
 async function bootstrap() {
   await loadTranslations();
+
+  const locale = (window.lang || document.documentElement.lang || "en")
+    .toLowerCase()
+    .split("-")[0];
+  if (locale === "fa") await import("dayjs/esm/locale/fa");
+  else if (locale === "ar") await import("dayjs/esm/locale/ar");
+  dayjs.locale(locale === "fa" || locale === "ar" ? locale : "en");
 
   const { isCustomerPortal } = await import("@/utils");
 
