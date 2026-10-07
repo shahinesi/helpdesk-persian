@@ -84,7 +84,7 @@ const chartData = computed(() => {
     _data?.data?.map((item) =>
       props.type === "Time" ? item.avg_time : item.count
     ) || [];
-  const _percentageChange = _data?.percentage_change || 0;
+  const _percentageChange = _data?.percentage_change ?? null;
   const percentageChange = buildPercentageChange(_percentageChange);
 
   // for time take average and for count take total

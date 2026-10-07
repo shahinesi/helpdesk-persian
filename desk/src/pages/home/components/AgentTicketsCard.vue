@@ -40,7 +40,7 @@ const chartData = computed(() => {
     ? getAgentTicketsResource.data
     : props.data;
 
-  const _percentageChange = _data?.percentage_change || 0;
+  const _percentageChange = _data?.percentage_change ?? null;
   const total = _data?.total || 0;
   const dates = _data?.data?.map((item) => item.date) || [];
   const counts = _data?.data?.map((item) => item.count) || [];

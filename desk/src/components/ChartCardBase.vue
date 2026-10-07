@@ -27,7 +27,11 @@
               :class="percentageChange.icon"
               class="size-4"
             />
-            <div>{{ percentageChange.value }}%</div>
+            <div>
+              <bdi dir="ltr">{{
+                formatPercentage(percentageChange.value)
+              }}</bdi>
+            </div>
           </div>
           <Dropdown :options="durationOptions">
             <div
@@ -85,7 +89,9 @@
             :class="percentageChange.icon"
             class="size-4"
           />
-          <div>{{ percentageChange.value }}%</div>
+          <div>
+            <bdi dir="ltr">{{ formatPercentage(percentageChange.value) }}</bdi>
+          </div>
         </div>
         <Dropdown :options="durationOptions">
           <div
@@ -123,6 +129,8 @@ import { EChartsOption } from "echarts";
 import { Dropdown } from "frappe-ui";
 import { ECharts } from "frappe-ui/experimental";
 import { computed, type PropType } from "vue";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { dayjs } from "frappe-ui";
 
 const props = defineProps({
   title: {
@@ -164,10 +172,20 @@ const emit = defineEmits(["changeDuration"]);
 // period, so only the label goes through __()
 const DURATIONS = ["Last week", "Last month", "Last 3 months"];
 
-const durationOptions = DURATIONS.map((duration) => ({
-  label: __(duration),
-  onClick: () => {
-    if (currentDuration.value !== duration) emit("changeDuration", duration);
-  },
-}));
+const durationOptions = computed(() =>
+  DURATIONS.map((duration) => ({
+    label: __(duration),
+    onClick: () => {
+      if (currentDuration.value !== duration) emit("changeDuration", duration);
+    },
+  }))
+);
+
+function formatPercentage(value: string) {
+  if (value === "—") return value;
+  const formatted = `${value}%`;
+  return dayjs.locale().split("-")[0] === "fa"
+    ? digitsEnToFa(formatted)
+    : formatted;
+}
 </script>

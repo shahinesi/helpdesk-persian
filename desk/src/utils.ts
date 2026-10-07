@@ -1012,7 +1012,10 @@ export function buildPercentageChange(
   negativeIsBetter: boolean = true
 ) {
   // No change (or no comparison): stay neutral — never green/red, no up/down arrow.
-  if (value === null || value === undefined || value === 0) {
+  if (value === null || value === undefined) {
+    return { icon: "", value: "—", color: "text-ink-gray-5" };
+  }
+  if (value === 0) {
     return { icon: "", value: "0", color: "text-ink-gray-5" };
   }
   const isPositive = value > 0;

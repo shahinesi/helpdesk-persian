@@ -69,11 +69,8 @@ def _resolve_window(period: str):
     current_to = frappe.utils.nowdate()
     current_from = frappe.utils.add_days(current_to, -(days - 1))
 
-    diff = frappe.utils.date_diff(current_to, current_from)
-    if diff == 0:
-        diff = 1
-    previous_from = frappe.utils.add_days(current_from, -diff)
     previous_to = frappe.utils.add_days(current_from, -1)
+    previous_from = frappe.utils.add_days(previous_to, -(days - 1))
 
     return current_from, current_to, previous_from, previous_to
 

@@ -102,7 +102,7 @@ const chartData = computed(() => {
     : [];
   const labels = timeData.map((item) => item.date);
   const counts = timeData.map((item) => item.count);
-  const _percentageChange = _data?.percentage_change || 0;
+  const _percentageChange = _data?.percentage_change ?? null;
   const percentageChange = buildPercentageChange(
     _percentageChange,
     props.negativeIsBetter
