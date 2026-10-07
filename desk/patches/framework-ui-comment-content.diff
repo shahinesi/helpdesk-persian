@@ -1,0 +1,7 @@
+diff --git a/src/components/ActivityTimeline/CommentItem.vue b/src/components/ActivityTimeline/CommentItem.vue
+index 85d9b98..85d9b98 100644
+--- a/src/components/ActivityTimeline/CommentItem.vue
++++ b/src/components/ActivityTimeline/CommentItem.vue
+@@ -39,1 +39,1 @@
+-				<EditorContent :class="editorClass" />
++				<EditorContent dir="auto" :class="editorClass" />
