@@ -296,6 +296,13 @@ class HelpdeskDashboard:
         )
 
         result = query.run(as_dict=True)
+        closed_label = _(closed_status)
+        open_label = _(open_status)
+        sla_fulfilled_label = _(sla_fulfilled_status)
+        for row in result:
+            row[closed_label] = row.pop(closed_status)
+            row[open_label] = row.pop(open_status)
+            row[sla_fulfilled_label] = row.pop(sla_fulfilled_status)
         avg_tickets = self.get_avg_tickets_per_day()
         subtitle = _("Average tickets per day is around {0}").format(
             "{:.0f}".format(avg_tickets)
@@ -309,11 +316,10 @@ class HelpdeskDashboard:
             {"key": "date", "type": "time", "title": "Date", "timeGrain": "day"},
             _("Tickets"),
             [
-                {"name": closed_status, "label": _(closed_status), "type": "bar"},
-                {"name": open_status, "label": _(open_status), "type": "bar"},
+                {"name": closed_label, "type": "bar"},
+                {"name": open_label, "type": "bar"},
                 {
-                    "name": sla_fulfilled_status,
-                    "label": _(sla_fulfilled_status),
+                    "name": sla_fulfilled_label,
                     "type": "line",
                     "showDataPoints": True,
                     "axis": "y2",
