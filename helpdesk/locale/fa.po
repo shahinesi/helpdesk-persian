@@ -782,6 +782,10 @@ msgstr "{0} تیکت واگذار شد"
 msgid "Assignee"
 msgstr "کارشناس مسئول"
 
+#: frappe/desk/form/activity.py:580
+msgid "changed {0}"
+msgstr "{0} را تغییر داد:"
+
 #: Rules/AssigneeRules.vue:5 desk/src/components/Settings/Assignment
 msgid "Assignee Rules"
 msgstr "قواعد واگذاری به کارشناسان"
@@ -6505,7 +6509,7 @@ msgstr "تنظیم"
 
 #: desk/src/components/ticket-agent/AssignTo.vue:44
 msgid "Set Assignee"
-msgstr "تعیین کارشناس"
+msgstr "انتخاب کارشناس"
 
 #: desk/src/components/ticket/SetContactPhoneModal.vue:4
 #: desk/src/components/ticket/SetContactPhoneModal.vue:7

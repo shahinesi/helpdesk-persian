@@ -155,6 +155,8 @@ import {
   type CustomActivity,
   type EmailActivity,
   type LogActivity,
+  type VersionActivity,
+  type VersionChange,
 } from "@framework/ui/ActivityTimeline";
 import { Button, Dropdown, call } from "frappe-ui";
 import {
@@ -236,9 +238,44 @@ const filtered = computed(() => {
     (a) =>
       !(a.type === "log" && ["edited", "created"].includes(a.data?.subtype))
   );
-  if (props.tab === "activity") return rows;
-  return rows.filter((a) => a.type === props.tab);
+  return rows
+    .filter((a) => props.tab === "activity" || a.type === props.tab)
+    .map((activity) =>
+      activity.type === "version" ? localizePriorityValues(activity) : activity
+    );
 });
+
+const STANDARD_PRIORITIES = new Set(["Low", "Medium", "High", "Urgent"]);
+
+function localizePriorityValue(value: string | undefined): string | undefined {
+  return value && STANDARD_PRIORITIES.has(value) ? __(value) : value;
+}
+
+function localizePriorityValues(activity: VersionActivity): VersionActivity {
+  const localizeChange = (change: VersionChange): VersionChange => {
+    if (change.type !== "diff" || change.fieldname !== "priority") {
+      return change;
+    }
+    return {
+      ...change,
+      from: localizePriorityValue(change.from),
+      to: localizePriorityValue(change.to) ?? change.to,
+      history: change.history?.map((entry) => ({
+        ...entry,
+        from: localizePriorityValue(entry.from) ?? entry.from,
+        to: localizePriorityValue(entry.to) ?? entry.to,
+      })),
+    };
+  };
+
+  return {
+    ...activity,
+    data: {
+      ...localizeChange(activity.data),
+      group: activity.data.group?.map(localizeChange),
+    },
+  };
+}
 
 const emptyIcon = computed(
   () =>
