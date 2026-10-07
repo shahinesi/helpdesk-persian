@@ -248,13 +248,13 @@ const timeAverages = computed(() => {
         day: true,
         hour: true,
         minute: true,
-      }) || "0m",
+      }) || __("0m"),
     resolution:
       formatTime(_averageResolution, {
         day: true,
         hour: true,
         minute: true,
-      }) || "0m",
+      }) || __("0m"),
   };
 });
 

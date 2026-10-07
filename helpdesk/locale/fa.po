@@ -9001,3 +9001,68 @@ msgstr "نقض‌شده"
 #: helpdesk/api/dashboard.py
 msgid "SLA Fulfilled"
 msgstr "انجام‌شده در مهلت SLA"
+
+#: desk/src/components/ChartCardBase.vue
+msgid "Last week"
+msgstr "هفتهٔ گذشته"
+
+#: desk/src/components/ChartCardBase.vue
+msgid "Last 3 months"
+msgstr "سه ماه گذشته"
+
+#: desk/src/utils.ts
+msgid "{0}d"
+msgstr "{0} روز"
+
+#: desk/src/utils.ts
+msgid "{0}h"
+msgstr "{0} ساعت"
+
+#: desk/src/utils.ts desk/src/pages/home/components/AvgTimeMetrics.vue
+#: desk/src/components/LineChartCard.vue
+msgid "0m"
+msgstr "۰ دقیقه"
+
+#: helpdesk/utils.py
+msgid "1 day ago"
+msgstr "۱ روز پیش"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "status"
+msgstr "وضعیت"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "priority"
+msgstr "اولویت"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "team"
+msgstr "تیم"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "type"
+msgstr "نوع"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Set {0} to {1}"
+msgstr "{0} به {1} تغییر کرد"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Cleared {0}"
+msgstr "{0} پاک شد"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Resolution due in {0}"
+msgstr "مهلت حل تیکت تا {0}"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Response due in {0}"
+msgstr "مهلت پاسخ تا {0}"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Response overdue"
+msgstr "مهلت پاسخ گذشته است."
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Pending for {0}"
+msgstr "مدت انتظار: {0}"

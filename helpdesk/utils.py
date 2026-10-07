@@ -518,7 +518,7 @@ def format_time_difference(dt, context="ago"):
         past_label = "overdue"
     else:
         diff = now - dt
-        past_label = "0m"
+        past_label = _("Just now")
 
     total_seconds = diff.total_seconds()
 
@@ -526,11 +526,30 @@ def format_time_difference(dt, context="ago"):
         return past_label
 
     if total_seconds < 3600:
-        return f"{int(total_seconds // 60)}m"
+        value, unit = int(total_seconds // 60), "minute"
     elif total_seconds < 86400:
-        return f"{int(total_seconds // 3600)}h"
+        value, unit = int(total_seconds // 3600), "hour"
     else:
-        return f"{int(total_seconds // 86400)}d"
+        value, unit = int(total_seconds // 86400), "day"
+
+    if context == "ago":
+        if value == 1:
+            return {
+                "minute": _("1 minute ago"),
+                "hour": _("1 hour ago"),
+                "day": _("1 day ago"),
+            }[unit]
+        return {
+            "minute": _("{0} minutes ago").format(value),
+            "hour": _("{0} hours ago").format(value),
+            "day": _("{0} days ago").format(value),
+        }[unit]
+
+    return {
+        "minute": _("{0}m").format(value),
+        "hour": _("{0}h").format(value),
+        "day": _("{0}d").format(value),
+    }[unit]
 
 
 def get_country_from_timezone(time_zone: str):

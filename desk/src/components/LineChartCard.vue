@@ -95,7 +95,7 @@ const chartData = computed(() => {
           hour: true,
           minute: true,
           maxUnits: 2,
-        }) || "0m"
+        }) || __("0m")
       : _data?.total || 0;
 
   return {
@@ -174,7 +174,7 @@ const chartConfig = computed<EChartsOption>(() => {
                 hour: true,
                 minute: true,
                 maxUnits: 2,
-              }) || "0m"
+              }) || __("0m")
             : p.value;
         return `<span style="font-size:12px;color:#6b7280">${p.name}: <b style="color:#374151">${value}</b></span>`;
       },

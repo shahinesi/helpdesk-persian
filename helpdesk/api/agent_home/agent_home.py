@@ -450,17 +450,17 @@ def _get_upcoming_sla_tickets(limit=10):
             due_time = ticket.get("resolution_by")
             time_until = format_time_difference(due_time, context="until")
             reason_text = (
-                f"Resolution due in {time_until}"
+                _("Resolution due in {0}").format(time_until)
                 if time_until != "overdue"
-                else "Resolution overdue"
+                else _("Resolution overdue")
             )
         else:
             due_time = ticket.get("response_by")
             time_until = format_time_difference(due_time, context="until")
             reason_text = (
-                f"Response due in {time_until}"
+                _("Response due in {0}").format(time_until)
                 if time_until != "overdue"
-                else "Response overdue"
+                else _("Response overdue")
             )
 
         # Calculate seconds until due for frontend urgency coloring
@@ -561,10 +561,12 @@ def _get_pending_response_tickets(limit=10):
     total_count = get_ticket_count(filters)
 
     for t in tickets:
-        time_ago = format_time_difference(t.get("last_customer_response"))
+        time_ago = format_time_difference(
+            t.get("last_customer_response"), context="duration"
+        )
         t["reason"] = {
             "type": "pending",
-            "text": f"Pending for {time_ago}",
+            "text": _("Pending for {0}").format(time_ago),
         }
 
     return tickets, total_count
@@ -718,6 +720,9 @@ def _updated_label(data: str | None) -> str | None:
         if field not in changed:
             continue
         new = changed[field]
-        text = f"set {label} to {new}" if new else f"cleared {label}"
-        return text[:1].upper() + text[1:]
+        display_label = _(label)
+        if new:
+            value = _(str(new)) if field in {"status", "priority"} else str(new)
+            return _("Set {0} to {1}").format(display_label, value)
+        return _("Cleared {0}").format(display_label)
     return None

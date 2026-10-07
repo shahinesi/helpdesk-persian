@@ -212,26 +212,26 @@ export function formatTime(
   const parts: string[] = [];
 
   if (config.day && days > 0) {
-    parts.push(`${days}d`);
+    parts.push(__("{0}d", [days]));
   }
 
   if (config.hour && (hours > 0 || days > 0)) {
-    parts.push(`${hours}h`);
+    parts.push(__("{0}h", [hours]));
   }
 
   if (config.minute && (minutes > 0 || hours > 0 || days > 0)) {
-    parts.push(`${minutes}m`);
+    parts.push(__("{0}m", [minutes]));
   }
 
   if (config.second) {
     parts.push(
-      `${
+      __("{0}s", [
         remainingSeconds >= 10
           ? remainingSeconds
           : remainingSeconds > 1
           ? "0" + remainingSeconds
-          : "0"
-      }s`
+          : "0",
+      ])
     );
   }
 
