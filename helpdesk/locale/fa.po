@@ -711,6 +711,18 @@ msgstr "متن مقاله نمی‌تواند خالی باشد."
 msgid "Content for your Article"
 msgstr "محتوای مقالهٔ شما"
 
+#: desk/src/pages/knowledge-base/Article.vue
+msgid "Created by"
+msgstr "ایجادشده توسط"
+
+#: desk/src/pages/knowledge-base/Article.vue
+msgid "Published by"
+msgstr "منتشرشده توسط"
+
+#: desk/src/pages/knowledge-base/Article.vue
+msgid "{0} views"
+msgstr "{0} بازدید"
+
 #: desk/src/pages/knowledge-base/NewArticle.vue:127
 msgid "Article created successfully."
 msgstr "مقاله با موفقیت ایجاد شد."

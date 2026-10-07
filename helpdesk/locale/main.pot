@@ -710,6 +710,18 @@ msgstr ""
 msgid "Content for your Article"
 msgstr ""
 
+#: desk/src/pages/knowledge-base/Article.vue
+msgid "Created by"
+msgstr ""
+
+#: desk/src/pages/knowledge-base/Article.vue
+msgid "Published by"
+msgstr ""
+
+#: desk/src/pages/knowledge-base/Article.vue
+msgid "{0} views"
+msgstr ""
+
 #: desk/src/pages/knowledge-base/NewArticle.vue:127
 msgid "Article created successfully."
 msgstr ""

@@ -83,7 +83,7 @@
                 v-if="!editable && !isCustomerPortal && !isMobileView"
                 class="text-p-sm text-ink-gray-4 items-center"
               >
-                <span>{{ views }} {{ __("views") }}</span>
+                <span>{{ __("{0} views", [views]) }}</span>
               </div>
             </div>
             <div class="flex gap-4 justify-between sm:items-start">
@@ -202,7 +202,11 @@
             <div class="flex flex-col justify-start gap-1">
               <p class="truncate capitalize text-p-base-medium text-ink-gray-9">
                 <span class="text-base text-ink-gray-5"
-                  >{{ __("published by") }}
+                  >{{
+                    article.data?.status === "Draft"
+                      ? __("Created by")
+                      : __("Published by")
+                  }}
                 </span>
                 {{ article.data.author.name }}
               </p>
@@ -220,7 +224,7 @@
                 <span
                   v-if="!editable && !isCustomerPortal && isMobileView"
                   class="text-p-xs text-ink-gray-4 items-center"
-                  >{{ views }} views</span
+                  >{{ __("{0} views", [views]) }}</span
                 >
               </div>
             </div>
