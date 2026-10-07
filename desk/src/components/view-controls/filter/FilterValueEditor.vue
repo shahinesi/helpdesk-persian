@@ -122,6 +122,7 @@
 import BackButton from "@/components/BackButton.vue";
 import { useDevice } from "@/composables";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { useDebounceFn, useEventListener } from "@vueuse/core";
 import {
   DatePicker,
@@ -136,7 +137,6 @@ import {
   ActiveFilter,
   FilterField,
   multiValueFields,
-  displayLinkOption,
   useFilter,
   useLinkSearch,
 } from "./filter";
