@@ -144,7 +144,6 @@
               </Dropdown>
               <DateRangePicker
                 :today-label="__('Today')"
-                :range-separator="__('to')"
                 v-if="showDatePicker || currentPeriod === 'custom_range'"
                 ref="datePickerRef"
                 :model-value="customDateRange ? customDateRange.split(',') : []"

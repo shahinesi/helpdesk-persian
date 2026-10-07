@@ -281,10 +281,7 @@ function getValueControl() {
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: "number" });
   } else if (typeDate.includes(fieldtype) && operator == "between") {
-    return h(DateRangePicker, {
-      todayLabel: __("Today"),
-      rangeSeparator: __("to"),
-    });
+    return h(DateRangePicker, { todayLabel: __("Today") });
   } else if (typeDate.includes(fieldtype)) {
     return h(fieldtype == "Date" ? DatePicker : DateTimePicker);
   } else if (typeRating.includes(fieldtype)) {

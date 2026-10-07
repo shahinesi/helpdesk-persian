@@ -34,7 +34,6 @@
           v-else
           class="!w-48"
           :today-label="__('Today')"
-          :range-separator="__('to')"
           ref="datePickerRef"
           v-model="periodRange"
           variant="outline"
