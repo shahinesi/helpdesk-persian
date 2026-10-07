@@ -8,4 +8,5 @@ COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/helpdesk/
 USER frappe
 WORKDIR /home/frappe/frappe-bench
 RUN cd apps/helpdesk/desk && yarn install --frozen-lockfile --non-interactive
-RUN bench set-config -gp socketio_port 9000
+RUN mkdir -p sites && printf '{}' > sites/common_site_config.json \
+    && bench set-config -gp socketio_port 9000
