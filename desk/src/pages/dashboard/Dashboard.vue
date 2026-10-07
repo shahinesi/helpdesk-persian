@@ -522,7 +522,7 @@ function getChartType(chart: any) {
           ...row,
           [chart.categoryColumn]: displayLinkOption(
             "HD Ticket Type",
-            row[chart.categoryColumn]
+            row[chart.categoryColumn] || "Unspecified"
           ),
         }))
       : chart.data;
