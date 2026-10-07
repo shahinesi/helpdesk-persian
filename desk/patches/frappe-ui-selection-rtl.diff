@@ -1,0 +1,53 @@
+--- a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
++++ b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
+@@ -2,0 +3 @@
++import { useTextDirection } from '@vueuse/core'
+@@ -78,0 +80,2 @@
++const textDirection = useTextDirection({ observe: true })
++
+@@ -487,0 +491 @@
++        :dir="textDirection"
+@@ -590 +594 @@
+-                  'min-w-0 flex-1 truncate text-left font-normal leading-tighter',
++                  'min-w-0 flex-1 truncate text-start font-normal leading-tighter',
+@@ -674,0 +679 @@
++            :dir="textDirection"
+
+--- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
++++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
+@@ -274 +274 @@
+-                    class="ml-1 inline-flex items-center justify-center"
++                    class="ms-1 inline-flex items-center justify-center"
+
+--- a/node_modules/frappe-ui/src/components/Select/Select.vue
++++ b/node_modules/frappe-ui/src/components/Select/Select.vue
+@@ -2,0 +3 @@
++import { useTextDirection } from '@vueuse/core'
+@@ -68,0 +70,2 @@
++const textDirection = useTextDirection({ observe: true })
++
+@@ -327 +330,6 @@
+-    <SelectRoot v-model="internalModel" v-model:open="open" v-bind="rootAttrs">
++    <SelectRoot
++      v-model="internalModel"
++      v-model:open="open"
++      :dir="textDirection"
++      v-bind="rootAttrs"
++    >
+@@ -400 +408 @@
+-          <div class="grid min-w-0 text-left truncate">
++          <div class="grid min-w-0 text-start truncate">
+@@ -424 +432 @@
+-              class="lucide-chevron-down ml-auto size-4 shrink-0 text-ink-gray-4"
++              class="lucide-chevron-down ms-auto size-4 shrink-0 text-ink-gray-4"
+@@ -432,0 +441 @@
++          :dir="textDirection"
+@@ -562 +571 @@
+-                        class="ml-1 inline-flex items-center justify-center"
++                        class="ms-1 inline-flex items-center justify-center"
+
+--- a/node_modules/frappe-ui/src/components/Select/utils.ts
++++ b/node_modules/frappe-ui/src/components/Select/utils.ts
+@@ -72 +72 @@
+-  'relative inline-flex items-center gap-2 text-left transition-[background-color,border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-[state=open]:outline-none text-ink-gray-7 data-[placeholder]:text-ink-gray-4 data-[disabled]:text-ink-gray-4'
++  'relative inline-flex items-center gap-2 text-start transition-[background-color,border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-[state=open]:outline-none text-ink-gray-7 data-[placeholder]:text-ink-gray-4 data-[disabled]:text-ink-gray-4'
