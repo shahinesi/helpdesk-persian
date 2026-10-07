@@ -7711,11 +7711,11 @@ msgstr "برای کسب اطلاعات بیشتر در مورد تنظیم حس�
 msgid "Today"
 msgstr "امروز"
 
-#: desk/src/components/conditions-filter/CFCondition.vue
-#: desk/src/components/view-controls/filter/FilterValueEditor.vue
-#: desk/src/pages/dashboard/Dashboard.vue
-#: desk/src/pages/home/components/AvgTimeMetrics.vue
-#: desk/src/pages/home/components/RecentFeedback.vue
+#: desk/src/components/conditions-filter/CFCondition.vue:286
+#: desk/src/components/view-controls/filter/FilterValueEditor.vue:97
+#: desk/src/pages/dashboard/Dashboard.vue:37
+#: desk/src/pages/home/components/AvgTimeMetrics.vue:34
+#: desk/src/pages/home/components/RecentFeedback.vue:147
 msgid "to"
 msgstr "تا"
 
