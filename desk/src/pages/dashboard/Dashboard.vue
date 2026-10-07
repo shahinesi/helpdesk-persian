@@ -215,6 +215,7 @@
 import { useScreenSize } from "@/composables/screen";
 import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { Link } from "@framework/ui";
 import { useStorage } from "@vueuse/core";
 import {
@@ -515,8 +516,19 @@ const loading = computed(() => {
 });
 
 function getChartType(chart: any) {
+  const data =
+    chart.key === "tickets_by_type"
+      ? chart.data.map((row: any) => ({
+          ...row,
+          [chart.categoryColumn]: displayLinkOption(
+            "HD Ticket Type",
+            row[chart.categoryColumn]
+          ),
+        }))
+      : chart.data;
   const config = {
     ...chart,
+    data,
     colors,
     fontFamily: '"Vazirmatn", sans-serif',
   };
