@@ -264,9 +264,8 @@ function localizeStandardValues(activity: VersionActivity): VersionActivity {
     ) {
       return change;
     }
-    const fieldLabel = __(
-      change.fieldname === "priority" ? "Priority" : "Type"
-    );
+    const fieldLabel =
+      change.fieldname === "priority" ? __("Priority") : __("Ticket Type");
     return {
       ...change,
       prefix: change.from
