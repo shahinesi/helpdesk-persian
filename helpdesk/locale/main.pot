@@ -706,6 +706,10 @@ msgstr ""
 msgid "Article body cannot be set as empty."
 msgstr ""
 
+#: desk/src/pages/knowledge-base/Article.vue
+msgid "Content for your Article"
+msgstr ""
+
 #: desk/src/pages/knowledge-base/NewArticle.vue:127
 msgid "Article created successfully."
 msgstr ""

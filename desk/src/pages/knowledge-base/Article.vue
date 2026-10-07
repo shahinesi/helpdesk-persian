@@ -9,7 +9,7 @@
             variant="subtle"
             :theme="article.data?.status === 'Draft' ? 'amber' : 'green'"
             size="md"
-            >{{ article.data?.status }}</Badge
+            >{{ displayArticleStatus }}</Badge
           >
         </div>
       </template>
@@ -44,7 +44,8 @@
               <textarea
                 ref="titleRef"
                 class="w-full resize-none border-0 text-3xl-bold bg-transparent placeholder-ink-gray-3 p-0 focus:ring-0 overflow-hidden"
-                v-model="title"
+                :value="editable ? title : displayArticleTitle"
+                @input="updateTitle"
                 :placeholder="__('Title')"
                 rows="1"
                 wrap="soft"
@@ -418,6 +419,26 @@ const article: Resource<Article> = createResource({
   },
 });
 
+const isDefaultIntroductionArticle = computed(
+  () =>
+    article.data?.title === "Introduction" &&
+    article.data?.content === "Content for your Article"
+);
+const displayArticleTitle = computed(() =>
+  !editable.value && isDefaultIntroductionArticle.value
+    ? __("Introduction")
+    : title.value
+);
+const displayArticleStatus = computed(() =>
+  ["Draft", "Published", "Archived"].includes(article.data?.status)
+    ? __(article.data.status)
+    : article.data?.status
+);
+
+function updateTitle(event: Event) {
+  title.value = (event.target as HTMLTextAreaElement).value;
+}
+
 const articleStats = createResource({
   url: "helpdesk.api.article.get_article_stats",
   params: { article_name: props.articleId },
@@ -572,10 +593,14 @@ function handleDelete() {
 }
 const textEditorContentWithIDs = ref(null);
 watch(
-  () => article.data?.content,
-  (newContent) => {
+  [() => article.data?.content, () => editable.value],
+  ([newContent]) => {
     if (newContent) {
-      textEditorContentWithIDs.value = addLinksToHeadings(newContent);
+      const displayContent =
+        !editable.value && isDefaultIntroductionArticle.value
+          ? __("Content for your Article")
+          : newContent;
+      textEditorContentWithIDs.value = addLinksToHeadings(displayContent);
     }
   },
   { immediate: true }
@@ -689,7 +714,10 @@ const breadcrumbs = computed(() => {
   ];
   if (article.data?.category_name) {
     let item = {
-      label: article.data?.category_name,
+      label:
+        article.data?.category_name === "General"
+          ? __("General")
+          : article.data?.category_name,
     };
     if (isCustomerPortal.value) {
       item["route"] = {
@@ -707,7 +735,7 @@ const breadcrumbs = computed(() => {
   }
   if (article.data?.title) {
     items.push({
-      label: article.data?.title,
+      label: displayArticleTitle.value,
       route: { name: "Article" },
     });
   }
@@ -722,7 +750,9 @@ onMounted(() => {
 
 usePageMeta(() => {
   return {
-    title: article.data?.title + ` - ${article.data?.category_name} `,
+    title: `${displayArticleTitle.value} - ${
+      breadcrumbs.value.at(-2)?.label ?? ""
+    }`,
   };
 });
 </script>
