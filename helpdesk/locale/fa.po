@@ -8355,7 +8355,7 @@ msgstr "سفارشی‌سازی {0}"
 
 #: helpdesk/api/dashboard.py:225 helpdesk/api/dashboard.py:227
 msgid "days"
-msgstr "روزها"
+msgstr "روز"
 
 #: Rules/AssignmentRuleView.vue:170 Rules/AssignmentRuleView.vue:253
 #: desk/src/components/Settings/Assignment
@@ -8997,3 +8997,7 @@ msgstr "{0} از {1}"
 #: desk/src/pages/ticket/Tickets.vue
 msgid "SLA breached"
 msgstr "نقض‌شده"
+
+#: helpdesk/api/dashboard.py
+msgid "SLA Fulfilled"
+msgstr "انجام‌شده در مهلت SLA"

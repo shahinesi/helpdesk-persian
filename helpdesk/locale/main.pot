@@ -8986,3 +8986,7 @@ msgstr ""
 #: desk/src/pages/ticket/Tickets.vue
 msgid "SLA breached"
 msgstr ""
+
+#: helpdesk/api/dashboard.py
+msgid "SLA Fulfilled"
+msgstr ""
