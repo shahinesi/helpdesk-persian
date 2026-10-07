@@ -151,6 +151,11 @@ const props = defineProps<{
   events: TimelineEvent[];
 }>();
 
+const locale = ((window as any).lang || document.documentElement.lang || "en")
+  .toLowerCase()
+  .split("-")[0];
+const isRtlLocale = locale === "fa" || locale === "ar";
+
 const scroller = ref<HTMLElement>();
 const rail = ref<HTMLElement>();
 const showLeftFade = ref(false);
@@ -248,7 +253,7 @@ const segments = computed<RailSegment[]>(() => {
     );
   result.push(...drainMarkers(markers, null, IDLE));
   if (!resolutionMarkers.value.length) result.push(...getEndingSegments());
-  hideRepeatedDates(result);
+  if (!isRtlLocale) hideRepeatedDates(result);
   preventLabelOverlap(result);
   return result;
 });
@@ -395,7 +400,7 @@ function getOverdueTailSegments(
     kind: "node",
     colorClass: TODAY,
     tooltip: [],
-    label: getLabel(__("Today"), dayjsLocal().format("MMM D")),
+    label: getLabel(__("Today"), formatDate(dayjsLocal())),
   });
   return result;
 }
@@ -548,7 +553,7 @@ function getEventNode(event: TimelineEvent, dayTitle?: string): RailNode {
     colorClass: isSlowest ? RED : colorClass,
     tooltip: getEventTooltip(event, isSlowest),
     label: dayTitle
-      ? { title: dayTitle, subtitle: dayjsLocal(event.at).format("h:mm a") }
+      ? { title: dayTitle, subtitle: formatTime(dayjsLocal(event.at)) }
       : undefined,
   };
 }
@@ -743,10 +748,22 @@ function formatDateTime(timestamp: string): string;
 function formatDateTime(timestamp?: string | null): string | undefined;
 function formatDateTime(timestamp?: string | null): string | undefined {
   if (!timestamp) return undefined;
-  const at = dayjsLocal(timestamp);
+  const at = dayjsLocal(timestamp).locale(locale);
   return at.year() === dayjsLocal().year()
-    ? at.format("MMM D, h:mm a")
+    ? isRtlLocale
+      ? at.format("D MMM، HH:mm")
+      : at.format("MMM D, h:mm a")
+    : isRtlLocale
+    ? at.format("D MMM YYYY، HH:mm")
     : at.format("MMM D, YYYY, h:mm a");
+}
+
+function formatDate(date: ReturnType<typeof dayjsLocal>): string {
+  return date.locale(locale).format(isRtlLocale ? "D MMM" : "MMM D");
+}
+
+function formatTime(date: ReturnType<typeof dayjsLocal>): string {
+  return date.locale(locale).format(isRtlLocale ? "HH:mm" : "h:mm a");
 }
 
 // the first label is centered under its dot but its left edge must sit on the
