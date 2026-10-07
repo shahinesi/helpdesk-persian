@@ -136,6 +136,7 @@ import {
   ActiveFilter,
   FilterField,
   multiValueFields,
+  displayLinkOption,
   useFilter,
   useLinkSearch,
 } from "./filter";
@@ -235,7 +236,13 @@ const options = computed<Array<{ label: string; value: string }>>(() => {
   }
   if (isDate.value)
     return timespanOptions.filter((option) => matches(option.label));
-  if (isLink.value) return linkSearch.results.data || [];
+  if (isLink.value) {
+    const doctype = linkDoctype(props.field);
+    return (linkSearch.results.data || []).map((option) => ({
+      ...option,
+      label: displayLinkOption(doctype, option.value),
+    }));
+  }
   const values =
     props.field.fieldtype === "Check"
       ? ["Yes", "No"]

@@ -181,6 +181,30 @@ export function useLinkSearch(doctype: string, filters?: Record<string, any>) {
   return { results, search };
 }
 
+const standardLinkLabels: Record<string, Record<string, string>> = {
+  "HD Ticket Status": {
+    Open: __("Open"),
+    Replied: __("Replied"),
+    Resolved: __("Resolved"),
+    Closed: __("Closed"),
+  },
+  "HD Ticket Priority": {
+    Low: __("Low"),
+    Medium: __("Medium"),
+    High: __("High"),
+    Urgent: __("Urgent"),
+  },
+  "HD Ticket Type": {
+    Question: __("Question"),
+    Bug: __("Bug"),
+    Incident: __("Incident"),
+  },
+};
+
+export function displayLinkOption(doctype: string, option: string) {
+  return standardLinkLabels[doctype]?.[option] || option;
+}
+
 function buildCondition(
   field: FilterField,
   operator: string,
@@ -302,13 +326,13 @@ export function fieldIcon(field: FilterField): Component {
 
 export function filterSummary(filter: ActiveFilter): string {
   const operatorLabels: Record<string, string> = {
-    equals: __("is"),
-    "not equals": __("is not"),
+    equals: __("Equals"),
+    "not equals": __("Not Equals"),
     like: __("contains"),
     "not like": __("doesn't contain"),
     in: __("in"),
     "not in": __("not in"),
-    is: __("is"),
+    is: __("Is"),
     between: __("between"),
     timespan: __("in"),
     ">": __("greater than"),
@@ -329,16 +353,9 @@ function displayValue(filter: ActiveFilter): string {
       ? value.map(translateOption).join(", ")
       : translateOption(value);
   }
-  const standardLinkOptions: Record<string, string[]> = {
-    "HD Ticket Status": ["Open", "Replied", "Resolved", "Closed"],
-    "HD Ticket Priority": ["Low", "Medium", "High", "Urgent"],
-  };
-  const linkOptions = standardLinkOptions[filter.field.options || ""];
-  if (filter.field.fieldtype === "Link" && linkOptions) {
+  if (filter.field.fieldtype === "Link") {
     const translateOption = (option: any) =>
-      linkOptions.includes(String(option))
-        ? __(String(option))
-        : String(option);
+      displayLinkOption(filter.field.options || "", String(option));
     return Array.isArray(value)
       ? value.map(translateOption).join(", ")
       : translateOption(value);

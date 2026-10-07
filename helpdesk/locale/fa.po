@@ -2689,7 +2689,7 @@ msgstr "نام مخاطب اصلی را وارد کنید."
 #: desk/src/components/conditions-filter/CFCondition.vue:409
 #: desk/src/components/conditions-filter/CFCondition.vue:423
 msgid "Equals"
-msgstr "برابر است"
+msgstr "برابر است با"
 
 #: helpdesk/api/knowledge_base.py:86
 msgid "Error moving article to category"
@@ -3871,7 +3871,7 @@ msgstr "دعوت‌کننده:"
 #: desk/src/components/conditions-filter/CFCondition.vue:411
 #: desk/src/components/conditions-filter/CFCondition.vue:425
 msgid "Is"
-msgstr "وضعیت"
+msgstr "است"
 
 #. Label of the is_active (Check) field in DocType 'HD Agent'
 #: helpdesk/helpdesk/doctype/hd_agent/hd_agent.json
@@ -4872,7 +4872,7 @@ msgstr "واگذار نشده"
 #: desk/src/components/conditions-filter/CFCondition.vue:410
 #: desk/src/components/conditions-filter/CFCondition.vue:424
 msgid "Not Equals"
-msgstr "برابر نیست"
+msgstr "برابر نیست با"
 
 #: desk/src/components/conditions-filter/CFCondition.vue:339
 #: desk/src/components/conditions-filter/CFCondition.vue:359
@@ -9122,3 +9122,15 @@ msgstr "نوامبر"
 #: helpdesk/api/agent_home/agent_home.py
 msgid "Dec"
 msgstr "دسامبر"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Bug"
+msgstr "اشکال"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Incident"
+msgstr "رخداد"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Question"
+msgstr "پرسش"
