@@ -27,7 +27,11 @@
       :key="data.title"
       class="flex items-center gap-4"
     >
-      <Tooltip :text="dayjs(data.value).format('LLLL')">
+      <Tooltip
+        :text="
+          formatLocalizedDate(dayjs(data.value), 'dddd, MMM D, YYYY h:mm A')
+        "
+      >
         <span class="w-[150px] shrink-0 text-p-sm text-ink-gray-5">{{
           data.title
         }}</span>
@@ -55,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatLocalizedDate } from "@/utils";
 import { dayjs } from "frappe-ui";
 import {
   slaLabel,

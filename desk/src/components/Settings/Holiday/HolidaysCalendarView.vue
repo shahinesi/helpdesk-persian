@@ -7,7 +7,7 @@
             <Button
               class="flex items-center gap-2 text-xl-semibold cursor-pointer select-none"
               variant="ghost"
-              :label="currentYear + ''"
+              :label="yearLabel(currentYear)"
               icon-right="lucide-chevron-down"
             />
           </template>
@@ -21,7 +21,7 @@
                   class="cursor-pointer px-3 py-1.5 text-sm hover:bg-surface-gray-2 flex items-center justify-between"
                   @click="onYearChange(closePopover, year)"
                 >
-                  {{ year }}
+                  {{ yearLabel(year) }}
                   <LucideCheck class="size-4" v-if="year === currentYear" />
                 </div>
               </div>
@@ -32,7 +32,7 @@
           v-else
           class="flex items-center gap-2 px-2 text-xl-semibold select-none"
         >
-          {{ startYear }}
+          {{ yearLabel(startYear) }}
         </div>
       </div>
       <div class="flex gap-2 items-center">
@@ -107,13 +107,27 @@ import { computed, ref, watch } from "vue";
 import HLCalender from "./HLCalender.vue";
 import { holidayData } from "@/stores/holidayList";
 import { Button, dayjs, Popover } from "frappe-ui";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { toJalaali } from "jalaali-js";
 
 const visibleMonths = ref<"first-half" | "second-half">("first-half");
 const months = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-const currentYear = ref(dayjs().year());
+const isPersianCalendar = () => dayjs.locale().split("-")[0] === "fa";
+const calendarParts = (date) =>
+  isPersianCalendar()
+    ? toJalaali(date.year(), date.month() + 1, date.date())
+    : { jy: date.year(), jm: date.month() + 1 };
+const yearLabel = (year: number) =>
+  isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
+const currentDate = calendarParts(dayjs());
+const currentYear = ref(currentDate.jy);
 
-const startYear = ref(dayjs(holidayData.value.from_date || dayjs()).year());
-const endYear = ref(dayjs(holidayData.value.to_date || dayjs()).year());
+const startYear = ref(
+  calendarParts(dayjs(holidayData.value.from_date || dayjs())).jy
+);
+const endYear = ref(
+  calendarParts(dayjs(holidayData.value.to_date || dayjs())).jy
+);
 
 const yearsList = computed(() => {
   const yearList = [];
@@ -125,12 +139,14 @@ const yearsList = computed(() => {
 
 const onYearChange = (closePopover: () => void, year: number) => {
   currentYear.value = year;
-  if (year === dayjs(holidayData.value.from_date).year()) {
-    if (dayjs(holidayData.value.from_date).month() >= 6) {
+  const from = calendarParts(dayjs(holidayData.value.from_date));
+  const to = calendarParts(dayjs(holidayData.value.to_date));
+  if (year === from.jy) {
+    if (from.jm >= 7) {
       visibleMonths.value = "second-half";
     }
-  } else if (year === dayjs(holidayData.value.to_date).year()) {
-    if (dayjs(holidayData.value.to_date).month() >= 6) {
+  } else if (year === to.jy) {
+    if (to.jm >= 7) {
       visibleMonths.value = "first-half";
     }
   } else {
@@ -140,20 +156,20 @@ const onYearChange = (closePopover: () => void, year: number) => {
 };
 
 const goToToday = () => {
-  const today = dayjs();
-  currentYear.value = today.year();
-  visibleMonths.value = today.month() >= 6 ? "second-half" : "first-half";
+  const today = calendarParts(dayjs());
+  currentYear.value = today.jy;
+  visibleMonths.value = today.jm >= 7 ? "second-half" : "first-half";
 };
 
 watch(
   () => [holidayData.value.from_date, holidayData.value.to_date],
   ([fromDate, toDate]) => {
-    fromDate = dayjs(fromDate || dayjs());
-    toDate = dayjs(toDate || dayjs());
-    startYear.value = fromDate.year();
-    endYear.value = toDate.year();
-    currentYear.value = fromDate.year();
-    visibleMonths.value = fromDate.month() >= 6 ? "second-half" : "first-half";
+    fromDate = calendarParts(dayjs(fromDate || dayjs()));
+    toDate = calendarParts(dayjs(toDate || dayjs()));
+    startYear.value = fromDate.jy;
+    endYear.value = toDate.jy;
+    currentYear.value = fromDate.jy;
+    visibleMonths.value = fromDate.jm >= 7 ? "second-half" : "first-half";
   },
   // The list is loaded before this view mounts, so a change-only watch never fires.
   { immediate: true }

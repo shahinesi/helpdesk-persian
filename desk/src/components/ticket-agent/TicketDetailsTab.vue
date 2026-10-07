@@ -156,6 +156,7 @@ import { useShortcut } from "@/composables/shortcuts";
 import { getMeta } from "@/stores/meta";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation.ts";
+import { formatLocalizedDate } from "@/utils";
 import {
   AssigneeSymbol,
   CustomizationSymbol,
@@ -310,7 +311,7 @@ function getStatusColor(status: string) {
 }
 
 function formatDate(date: string) {
-  return dayjs(date).format(dateFormat.toUpperCase());
+  return formatLocalizedDate(dayjs(date), dateFormat.toUpperCase());
 }
 
 function openTicket(name: string) {

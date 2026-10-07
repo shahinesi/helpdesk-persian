@@ -33,7 +33,7 @@
             class="!bg-surface-base w-full text-base px-0 focus:!ring-0 border-none hover:bg-surface-base outline-none no-underline focus:!outline-none"
           />
           <div v-else>
-            {{ dayjs(holiday[column.key]).format("DD MMM YYYY") }}
+            {{ getFormattedDate(holiday[column.key]) }}
           </div>
         </div>
         <div class="flex justify-end">
@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { __ } from "@/translation";
 import { computed, ref } from "vue";
-import { ConfirmDelete, getFormattedDate } from "@/utils";
+import { ConfirmDelete, getDateKey, getFormattedDate } from "@/utils";
 import { holidayData } from "@/stores/holidayList";
 import AddHolidayModal from "./Modals/AddHolidayModal.vue";
 import { dayjs, Dropdown } from "frappe-ui";
@@ -122,8 +122,8 @@ const deleteHoliday = (holidayToDelete?: Holiday) => {
     return;
   }
   const index = holidayData.value.holidays.findIndex((h: Holiday) => {
-    const holidayDate = getFormattedDate(h.holiday_date);
-    const editDate = getFormattedDate(holidayToDelete?.holiday_date);
+    const holidayDate = getDateKey(h.holiday_date);
+    const editDate = getDateKey(holidayToDelete?.holiday_date);
     return holidayDate === editDate;
   });
 

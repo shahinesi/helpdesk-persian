@@ -293,6 +293,7 @@ const transValue = computed(() => {
     return props.value ? 1 : 0;
   } else if (fieldtype === "Date") {
     if (!props.value) return props.value;
+    if (dayjs.locale().split("-")[0] === "fa") return props.value;
     return dayjs(props.value).format(window.date_format.toUpperCase());
   }
   // else if (fieldtype === "Duration") {

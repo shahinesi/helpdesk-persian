@@ -101,8 +101,7 @@ import CheckCircleIcon from "@/components/icons/CheckCircleIcon.vue";
 import TicketIcon from "@/components/icons/TicketIcon.vue";
 import { Avatar, Tooltip, createResource, dayjs } from "frappe-ui";
 import { computed, h, nextTick, ref, watch } from "vue";
-import { formatDate } from "@vueuse/core";
-import { timeAgo } from "@/utils";
+import { formatLocalizedDate, timeAgo } from "@/utils";
 import { statusColorMap, statusLabelMap, statusTextColorMap } from "./utils";
 import { useAuthStore } from "@/stores/auth";
 
@@ -239,7 +238,7 @@ function getCallLogDetail(row, log, columns = []) {
     };
   } else if (["modified", "creation"].includes(row)) {
     return {
-      label: dayjs(log[row]).format("ddd, MMM D, YYYY h:mm a"),
+      label: formatLocalizedDate(log[row], "ddd, MMM D, YYYY h:mm a"),
       timeAgo: timeAgo(log[row]),
     };
   }
@@ -247,7 +246,7 @@ function getCallLogDetail(row, log, columns = []) {
   let fieldType = columns?.find((col) => (col.key || col.value) == row)?.type;
 
   if (fieldType && ["Date", "Datetime"].includes(fieldType)) {
-    return formatDate(log[row], "");
+    return formatLocalizedDate(log[row], "DD MMM YYYY");
   }
 
   return log[row];

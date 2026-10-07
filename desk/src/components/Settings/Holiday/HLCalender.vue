@@ -7,14 +7,14 @@
       <div class="flex items-center text-xs uppercase">
         <div
           class="flex size-7.5 items-center justify-center text-center text-ink-gray-5"
-          v-for="(d, i) in ['s', 'm', 't', 'w', 't', 'f', 's']"
+          v-for="(d, i) in weekdays"
           :key="i"
         >
           {{ d }}
         </div>
       </div>
       <div class="flex items-center" v-for="(week, i) in datesAsWeeks" :key="i">
-        <div v-for="date in week" :key="getFormattedDate(date)">
+        <div v-for="date in week" :key="getDateKey(date)">
           <Popover v-if="isHoliday(date)">
             <template #trigger="{ close, setOpen }">
               <!--
@@ -28,11 +28,9 @@
                     '!text-ink-gray-4 !bg-surface-gray-2': isWeekOff(date),
                   }"
                   @mouseover="
-                    handleMouseEnter(getFormattedDate(date), () =>
-                      setOpen(true)
-                    )
+                    handleMouseEnter(getDateKey(date), () => setOpen(true))
                   "
-                  @mouseleave="handleMouseLeave(getFormattedDate(date), close)"
+                  @mouseleave="handleMouseLeave(getDateKey(date), close)"
                   @click.stop="
                     () => {
                       if (isWeekOff(date)) return;
@@ -41,7 +39,7 @@
                     }
                   "
                 >
-                  {{ date.getDate() }}
+                  {{ dayLabel(date) }}
                 </div>
               </div>
             </template>
@@ -67,7 +65,7 @@
                     {{ getHolidayDescription(date) }}
                   </div>
                   <div class="text-xs mt-1">
-                    {{ date.toLocaleDateString() }}
+                    {{ getFormattedDate(date) }}
                   </div>
                 </div>
                 <Popover
@@ -79,10 +77,7 @@
                       icon="lucide-more-horizontal"
                       variant="ghost"
                       @mouseleave="
-                        handleMouseLeave(
-                          getFormattedDate(date) + 'dropdown',
-                          close
-                        )
+                        handleMouseLeave(getDateKey(date) + 'dropdown', close)
                       "
                     />
                   </template>
@@ -95,18 +90,17 @@
                     <div
                       class="p-2 flex flex-col gap-1 w-40 text-ink-gray-9 border border-outline-gray-1 rounded-5"
                       @mouseover="
-                        handleMouseEnter(getFormattedDate(date), () =>
+                        handleMouseEnter(getDateKey(date), () =>
                           setPopoverOpen(true)
                         );
-                        handleMouseEnter(
-                          getFormattedDate(date) + 'dropdown',
-                          () => setDropdownOpen(true)
+                        handleMouseEnter(getDateKey(date) + 'dropdown', () =>
+                          setDropdownOpen(true)
                         );
                       "
                       @mouseleave="
-                        handleMouseLeave(getFormattedDate(date), closePopover);
+                        handleMouseLeave(getDateKey(date), closePopover);
                         handleMouseLeave(
-                          getFormattedDate(date) + 'dropdown',
+                          getDateKey(date) + 'dropdown',
                           closeDropdown
                         );
                       "
@@ -154,14 +148,14 @@
               'cursor-pointer hover:bg-surface-gray-2': isDateInRange(date),
               'text-ink-gray-3':
                 // @ts-ignore
-                date.getMonth() !== currentMonth - 1 || !isDateInRange(date),
+                !isInCurrentMonth(date) || !isDateInRange(date),
               'bg-surface-gray-10 text-ink-base hover:!bg-surface-gray-10/80 hover:text-ink-base':
-                getFormattedDate(date) === dateValue && isDateInRange(date),
+                getDateKey(date) === dateValue && isDateInRange(date),
               'opacity-50 cursor-not-allowed': !isDateInRange(date),
             }"
             @click="isDateInRange(date) ? addHoliday(date) : null"
           >
-            {{ date.getDate() }}
+            {{ dayLabel(date) }}
           </div>
         </div>
       </div>
@@ -172,7 +166,7 @@
 
 <script setup lang="ts">
 import { holidayData } from "@/stores/holidayList";
-import { getFormattedDate, htmlToText } from "@/utils";
+import { getDateKey, getFormattedDate, htmlToText } from "@/utils";
 import { dayjs, Popover } from "frappe-ui";
 import { useDatePicker } from "@/composables/useDatePicker";
 import { ref, watch } from "vue";
@@ -191,6 +185,9 @@ const {
   today,
   datesAsWeeks: daw,
   formattedMonth,
+  weekdays,
+  isInCurrentMonth,
+  dayLabel,
 } = useDatePicker();
 // Workaround to fix type errors
 const datesAsWeeks = daw as unknown as Date[][];
@@ -212,7 +209,7 @@ const props = defineProps({
   },
 });
 
-const dateValue = ref(getFormattedDate(today.value));
+const dateValue = ref(getDateKey(today.value));
 
 const handleMouseEnter = (date, callback) => {
   if (popoverTimeouts.value[date]) {
@@ -276,8 +273,8 @@ const isWeekOff = (date: Date): boolean => {
 
 const editHoliday = (date) => {
   const holiday = props.holidays.find((h) => {
-    const holidayDate = getFormattedDate(h.holiday_date);
-    const editDate = getFormattedDate(date);
+    const holidayDate = getDateKey(h.holiday_date);
+    const editDate = getDateKey(date);
     return holidayDate === editDate;
   });
   dialog.value = {
@@ -296,13 +293,13 @@ const deleteHoliday = (event, date, callback) => {
     return;
   }
   const holidayToDelete = props.holidays.find((h) => {
-    const holidayDate = getFormattedDate(h.holiday_date);
-    const editDate = getFormattedDate(date);
+    const holidayDate = getDateKey(h.holiday_date);
+    const editDate = getDateKey(date);
     return holidayDate === editDate;
   });
   const index = props.holidays.findIndex((h) => {
-    const holidayDate = getFormattedDate(h.holiday_date);
-    const editDate = getFormattedDate(holidayToDelete.holiday_date);
+    const holidayDate = getDateKey(h.holiday_date);
+    const editDate = getDateKey(holidayToDelete.holiday_date);
     return holidayDate === editDate;
   });
 
@@ -319,8 +316,8 @@ const deleteHoliday = (event, date, callback) => {
 
 const getHolidayDescription = (date: Date): string => {
   const holiday = props.holidays.find((h) => {
-    const holidayDate = getFormattedDate(h.holiday_date);
-    const editDate = getFormattedDate(date);
+    const holidayDate = getDateKey(h.holiday_date);
+    const editDate = getDateKey(date);
     return holidayDate === editDate;
   });
 

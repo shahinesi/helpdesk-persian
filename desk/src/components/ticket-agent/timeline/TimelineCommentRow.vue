@@ -18,7 +18,7 @@
           </Badge>
         </div>
         <div class="flex items-center gap-2">
-          <Tooltip :text="postedAt.format(TOOLTIP_DATE_FORMAT)">
+          <Tooltip :text="formatLocalizedDate(postedAt, TOOLTIP_DATE_FORMAT)">
             <span class="whitespace-nowrap text-sm leading-6 text-ink-gray-5">
               {{ timeAgo(postedAt) }}
             </span>
@@ -64,7 +64,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
 import { __ } from "@/translation";
-import { getFontFamily } from "@/utils";
+import { formatLocalizedDate, getFontFamily } from "@/utils";
 import {
   ConfirmDelete,
   copyActivityLink,

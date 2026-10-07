@@ -2,7 +2,10 @@ import { router } from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import type { DropdownOption } from "@/types";
 import { useClipboard } from "@vueuse/core";
-import { call, dayjsLocal, toast, useFileUpload } from "frappe-ui";
+import { call, dayjs, dayjsLocal, toast, useFileUpload } from "frappe-ui";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { toJalaali } from "jalaali-js";
+import type { Dayjs } from "dayjs/esm";
 import { h, ref } from "vue";
 import zod from "zod";
 import LucideBrushCleaning from "~icons/lucide/brush-cleaning";
@@ -64,11 +67,79 @@ export function getTimeFormat(): string {
   return (window as any).time_format || "HH:mm:ss";
 }
 
-export function dateFormat(date, format?: string) {
+export function dateFormat(
+  date: string | number | Date | Dayjs | null | undefined,
+  format?: string
+) {
   const _format = format || `${getDateFormat()} ${getTimeFormat()}`;
   if (!date) return "";
-  const tzDate = dayjsLocal(date);
-  return tzDate.format(_format);
+  return formatLocalizedDate(date, _format);
+}
+
+/** Format Gregorian API dates in the active display calendar. */
+export function formatLocalizedDate(
+  date: string | number | Date | Dayjs | null | undefined,
+  format = getDateFormat()
+) {
+  const value =
+    date instanceof Date
+      ? dayjs(date)
+      : date && typeof date === "object" && "$isDayjsObject" in date
+      ? (date as Dayjs)
+      : typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)
+      ? dayjs(date)
+      : dayjsLocal(date as string);
+  if (!value.isValid()) return "";
+  if (dayjs.locale().split("-")[0] !== "fa") return value.format(format);
+
+  const { jy, jm, jd } = toJalaali(
+    value.year(),
+    value.month() + 1,
+    value.date()
+  );
+  const intlDate = new Date(
+    Date.UTC(value.year(), value.month(), value.date(), 12)
+  );
+  const locale = "fa-u-ca-persian-nu-arabext";
+  const month = new Intl.DateTimeFormat(locale, {
+    month: "long",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const shortMonth = new Intl.DateTimeFormat(locale, {
+    month: "short",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const weekday = new Intl.DateTimeFormat(locale, {
+    weekday: "long",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const shortWeekday = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const narrowWeekday = new Intl.DateTimeFormat(locale, {
+    weekday: "narrow",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const values: Record<string, string> = {
+    YYYY: String(jy),
+    YY: String(jy).slice(-2),
+    MMMM: month,
+    MMM: shortMonth,
+    MM: String(jm).padStart(2, "0"),
+    M: String(jm),
+    DD: String(jd).padStart(2, "0"),
+    D: String(jd),
+    dddd: weekday,
+    ddd: shortWeekday,
+    dd: narrowWeekday,
+    d: String(value.day()),
+  };
+  const localizedFormat = format.replace(
+    /\[[^\]]+\]|YYYY|MMMM|dddd|MMM|ddd|YY|MM|DD|M|D|dd|d/g,
+    (token) => (token.startsWith("[") ? token : `[${values[token]}]`)
+  );
+  return digitsEnToFa(value.format(localizedFormat));
 }
 
 export function timeAgo(date) {
@@ -466,7 +537,14 @@ export function getFormattedDate(date) {
   const dateObj = dayjsLocal(date);
   if (!dateObj.isValid()) return "";
 
-  return dateObj.format(getDateFormat());
+  return formatLocalizedDate(dateObj, getDateFormat());
+}
+
+/** Stable Gregorian key for date comparisons and API-facing calendar state. */
+export function getDateKey(date) {
+  if (!date) return "";
+  const value = dayjs(date);
+  return value.isValid() ? value.format("YYYY-MM-DD") : "";
 }
 
 export function TemplateOption({ active, option, variant, icon, onClick }) {

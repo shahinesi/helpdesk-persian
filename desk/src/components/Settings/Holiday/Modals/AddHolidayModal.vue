@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
-import { getDateFormat, getFormattedDate } from "@/utils";
+import { getDateFormat, getDateKey, getFormattedDate } from "@/utils";
 import {
   Dialog,
   FormControl,
@@ -111,7 +111,10 @@ const onSave = () => {
     return;
   }
 
-  const holidayDate = dayjs(dialog.value.holiday_date).startOf("day");
+  const holidayDateValue = dayjs(dialog.value.holiday_date).format(
+    "YYYY-MM-DD"
+  );
+  const holidayDate = dayjs(holidayDateValue).startOf("day");
   const fromDate = dayjs(holidayData.value.from_date).startOf("day");
   const toDate = dayjs(holidayData.value.to_date).startOf("day");
 
@@ -127,15 +130,14 @@ const onSave = () => {
   if (dialog.value.editing) {
     const holidayExists = holidayData.value.holidays.find(
       (h) =>
-        getFormattedDate(h.holiday_date) ===
-        getFormattedDate(dialog.value.holiday_date)
+        getDateKey(h.holiday_date) === getDateKey(dialog.value.holiday_date)
     );
 
     // If the holiday exists and user is trying to add a new holiday on the same date, show error
     if (
       holidayExists &&
-      getFormattedDate(holidayExists.holiday_date) !==
-        getFormattedDate(dialog.value.editing.holiday_date)
+      getDateKey(holidayExists.holiday_date) !==
+        getDateKey(dialog.value.editing.holiday_date)
     ) {
       toast.error(__("Holiday already exists"));
       return;
@@ -145,13 +147,13 @@ const onSave = () => {
     );
     holidayData.value.holidays.splice(holidayIndex, 1, {
       ...dialog.value,
+      holiday_date: holidayDateValue,
       weekly_off: 0,
     });
   } else {
     const index = holidayData.value.holidays.findIndex(
       (h) =>
-        getFormattedDate(h.holiday_date) ===
-        getFormattedDate(dialog.value.holiday_date)
+        getDateKey(h.holiday_date) === getDateKey(dialog.value.holiday_date)
     );
     if (index !== -1) {
       toast.error(__("Holiday already exists"));
@@ -159,6 +161,7 @@ const onSave = () => {
     }
     holidayData.value.holidays.push({
       ...dialog.value,
+      holiday_date: holidayDateValue,
       weekly_off: 0,
     });
   }

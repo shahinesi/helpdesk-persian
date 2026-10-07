@@ -52,7 +52,14 @@
                 ticket.subject
               }}</span>
             </p>
-            <Tooltip :text="dayjs(ticket.modified).format('LLL')">
+            <Tooltip
+              :text="
+                formatLocalizedDate(
+                  dayjs(ticket.modified),
+                  'ddd, MMM D, YYYY h:mm A'
+                )
+              "
+            >
               <span class="shrink-0 text-xs text-ink-gray-5">
                 {{ dayjs(ticket.modified).fromNow() }}
               </span>
@@ -88,6 +95,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatLocalizedDate } from "@/utils";
 import { useContactFeedback } from "@/composables/contact";
 import { __ } from "@/translation";
 import { dayjs, LoadingIndicator, TabButtons, Tooltip } from "frappe-ui";

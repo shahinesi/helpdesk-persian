@@ -90,7 +90,12 @@ import { globalStore } from "@/stores/globalStore";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
 import { View } from "@/types";
-import { getIcon, isCustomerPortal, shortDuration } from "@/utils";
+import {
+  formatLocalizedDate,
+  getIcon,
+  isCustomerPortal,
+  shortDuration,
+} from "@/utils";
 import { Badge, dayjsLocal, Tooltip, usePageMeta } from "frappe-ui";
 import { computed, h, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -291,7 +296,7 @@ function handleResponseByField(row: any, item: string) {
   return h(
     Tooltip,
     {
-      text: dayjsLocal(item).format("LLLL"),
+      text: formatLocalizedDate(dayjsLocal(item), "dddd, MMM D, YYYY h:mm A"),
     },
     h(Badge, {
       label: shortDuration(item),
@@ -331,7 +336,7 @@ function handleResolutionByField(row: any, item: string) {
   return h(
     Tooltip,
     {
-      text: dayjsLocal(item).format("LLLL"),
+      text: formatLocalizedDate(dayjsLocal(item), "dddd, MMM D, YYYY h:mm A"),
     },
     h(Badge, {
       label: shortDuration(item),

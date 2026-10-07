@@ -1,0 +1,2165 @@
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue b/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
+index 22b644f..f87ef8c 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
+@@ -15 +15 @@
+-        {{ months[currentMonth] }} {{ currentYear }}
++        {{ monthYearLabel }}
+@@ -33 +33 @@
+-        {{ months[currentMonth] }} {{ currentYear }}
++        {{ monthYearLabel }}
+@@ -116 +116,4 @@
+-                  shiftFocus(cell.date.subtract(cell.date.day(), 'day'), -1)
++                  shiftFocus(
++                    cell.date.subtract(calendarWeekdayIndex(cell.date), 'day'),
++                    -1
++                  )
+@@ -119 +122,4 @@
+-                  shiftFocus(cell.date.add(6 - cell.date.day(), 'day'), 1)
++                  shiftFocus(
++                    cell.date.add(6 - calendarWeekdayIndex(cell.date), 'day'),
++                    1
++                  )
+@@ -123,4 +129,6 @@
+-                    $event.shiftKey
+-                      ? cell.date.subtract(1, 'year')
+-                      : cell.date.subtract(1, 'month'),
+-                    -1,
++                    shiftCalendarDate(
++                      cell.date,
++                      $event.shiftKey ? -1 : 0,
++                      $event.shiftKey ? 0 : -1
++                    ),
++                    -1
+@@ -131,4 +139,6 @@
+-                    $event.shiftKey
+-                      ? cell.date.add(1, 'year')
+-                      : cell.date.add(1, 'month'),
+-                    1,
++                    shiftCalendarDate(
++                      cell.date,
++                      $event.shiftKey ? 1 : 0,
++                      $event.shiftKey ? 0 : 1
++                    ),
++                    1
+@@ -144 +154 @@
+-                {{ cell.date.date() }}
++                {{ cell.calendarDay || cell.date.date() }}
+@@ -171 +181 @@
+-            {{ y }}
++            {{ calendarYear(y) }}
+@@ -181 +191 @@
+-            v-for="(m, i) in months"
++            v-for="(m, i) in displayMonths"
+@@ -203,4 +213,14 @@
+-import { computed, nextTick, ref, watch } from 'vue'
+-import type { Dayjs } from 'dayjs/esm'
+-import { Button } from '../Button'
+-import { months } from './utils'
++import { computed, nextTick, ref, watch } from "vue";
++import type { Dayjs } from "dayjs/esm";
++import { Button } from "../Button";
++import { dayjs } from "../../utils/dayjs";
++import {
++  calendarMonths,
++  calendarMonthYear,
++  calendarWeekdays,
++  calendarYear,
++  calendarWeekdayIndex,
++  isPersianCalendar,
++  shiftCalendarDate,
++  toCalendarDate,
++} from "./jalali";
+@@ -211 +231 @@ import type {
+-} from './calendarTypes'
++} from "./calendarTypes";
+@@ -214 +234 @@ const props = withDefaults(defineProps<CalendarPanelProps>(), {
+-  todayLabel: '',
++  todayLabel: "",
+@@ -220 +240,7 @@ const props = withDefaults(defineProps<CalendarPanelProps>(), {
+-})
++});
++
++const monthYearLabel = computed(() =>
++  calendarMonthYear(props.currentYear, props.currentMonth)
++);
++const displayMonths = computed(() => calendarMonths(props.currentYear));
++const WEEKDAYS = computed(() => calendarWeekdays());
+@@ -223,8 +249,8 @@ const emit = defineEmits<{
+-  (e: 'prev'): void
+-  (e: 'next'): void
+-  (e: 'today'): void
+-  (e: 'cycleView'): void
+-  (e: 'selectMonth', i: number): void
+-  (e: 'selectYear', y: number): void
+-  (e: 'selectDate', d: Dayjs): void
+-  (e: 'hoverCell', d: Dayjs | null): void
++  (e: "prev"): void;
++  (e: "next"): void;
++  (e: "today"): void;
++  (e: "cycleView"): void;
++  (e: "selectMonth", i: number): void;
++  (e: "selectYear", y: number): void;
++  (e: "selectDate", d: Dayjs): void;
++  (e: "hoverCell", d: Dayjs | null): void;
+@@ -235 +261 @@ const emit = defineEmits<{
+-  (e: 'navigate', d: Dayjs): void
++  (e: "navigate", d: Dayjs): void;
+@@ -238,2 +264,2 @@ const emit = defineEmits<{
+-  (e: 'update:focusedDate', d: Dayjs): void
+-}>()
++  (e: "update:focusedDate", d: Dayjs): void;
++}>();
+@@ -246,7 +272,15 @@ const years = computed<number[]>(() => {
+-  const current = props.currentYear
+-  const minY = props.min ? Number(props.min.slice(0, 4)) : current - 100
+-  const maxY = props.max ? Number(props.max.slice(0, 4)) : current + 10
+-  const start = Math.min(minY, current)
+-  const end = Math.max(maxY, current)
+-  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+-})
++  const current = props.currentYear;
++  const minY = props.min
++    ? isPersianCalendar()
++      ? toCalendarDate(dayjs(props.min)).jy
++      : Number(props.min.slice(0, 4))
++    : current - 100;
++  const maxY = props.max
++    ? isPersianCalendar()
++      ? toCalendarDate(dayjs(props.max)).jy
++      : Number(props.max.slice(0, 4))
++    : current + 10;
++  const start = Math.min(minY, current);
++  const end = Math.max(maxY, current);
++  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
++});
+@@ -254,2 +288,2 @@ const years = computed<number[]>(() => {
+-const yearListRef = ref<HTMLElement | null>(null)
+-const monthListRef = ref<HTMLElement | null>(null)
++const yearListRef = ref<HTMLElement | null>(null);
++const monthListRef = ref<HTMLElement | null>(null);
+@@ -262,2 +296,2 @@ function centerSelected(container: HTMLElement | null) {
+-  const el = container?.querySelector<HTMLElement>('[data-selected]')
+-  if (!container || !el) return
++  const el = container?.querySelector<HTMLElement>("[data-selected]");
++  if (!container || !el) return;
+@@ -265 +299 @@ function centerSelected(container: HTMLElement | null) {
+-    el.offsetTop - container.clientHeight / 2 + el.clientHeight / 2
++    el.offsetTop - container.clientHeight / 2 + el.clientHeight / 2;
+@@ -271 +305 @@ watch(
+-    if (view !== 'monthYear') return
++    if (view !== "monthYear") return;
+@@ -273,5 +307,5 @@ watch(
+-      centerSelected(yearListRef.value)
+-      centerSelected(monthListRef.value)
+-    })
+-  },
+-)
++      centerSelected(yearListRef.value);
++      centerSelected(monthListRef.value);
++    });
++  }
++);
+@@ -287 +321 @@ watch(
+-const gridRef = ref<HTMLElement | null>(null)
++const gridRef = ref<HTMLElement | null>(null);
+@@ -290 +324 @@ function isFocusedCell(cell: CalendarPanelCell): boolean {
+-  return !!props.focusedDate && cell.date.isSame(props.focusedDate, 'day')
++  return !!props.focusedDate && cell.date.isSame(props.focusedDate, "day");
+@@ -294 +328 @@ function pickInitialFocusDate(weeks: CalendarPanelCell[][]): Dayjs | null {
+-  const flat = weeks.flat()
++  const flat = weeks.flat();
+@@ -299,7 +333,7 @@ function pickInitialFocusDate(weeks: CalendarPanelCell[][]): Dayjs | null {
+-      c.inMonth,
+-  )
+-  if (selected) return selected.date
+-  const today = flat.find((c) => c.isToday && c.inMonth && !c.isUnavailable)
+-  if (today) return today.date
+-  const firstAvailable = flat.find((c) => c.inMonth && !c.isUnavailable)
+-  return firstAvailable?.date ?? null
++      c.inMonth
++  );
++  if (selected) return selected.date;
++  const today = flat.find((c) => c.isToday && c.inMonth && !c.isUnavailable);
++  if (today) return today.date;
++  const firstAvailable = flat.find((c) => c.inMonth && !c.isUnavailable);
++  return firstAvailable?.date ?? null;
+@@ -315 +349 @@ watch(
+-    if (!val) return
++    if (!val) return;
+@@ -317 +351 @@ watch(
+-      const key = val.format('YYYY-MM-DD')
++      const key = val.format("YYYY-MM-DD");
+@@ -319,9 +353,9 @@ watch(
+-        `[data-value='${key}']:not([data-outside-view])`,
+-      ) as HTMLButtonElement | null
+-      if (!el) return
+-      const active = document.activeElement
+-      const focusInSomePanel = active?.hasAttribute('data-value')
+-      if (focusInSomePanel) el.focus()
+-    })
+-  },
+-)
++        `[data-value='${key}']:not([data-outside-view])`
++      ) as HTMLButtonElement | null;
++      if (!el) return;
++      const active = document.activeElement;
++      const focusInSomePanel = active?.hasAttribute("data-value");
++      if (focusInSomePanel) el.focus();
++    });
++  }
++);
+@@ -332 +366 @@ watch(
+-const MAX_SKIP_DISABLED_STEPS = 366
++const MAX_SKIP_DISABLED_STEPS = 366;
+@@ -338,3 +372,3 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+-  if (props.min && target.isBefore(props.min, 'day')) return
+-  if (props.max && target.isAfter(props.max, 'day')) return
+-  if (steps > MAX_SKIP_DISABLED_STEPS) return
++  if (props.min && target.isBefore(props.min, "day")) return;
++  if (props.max && target.isAfter(props.max, "day")) return;
++  if (steps > MAX_SKIP_DISABLED_STEPS) return;
+@@ -342 +376 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+-  const key = target.format('YYYY-MM-DD')
++  const key = target.format("YYYY-MM-DD");
+@@ -344,2 +378,2 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+-    `[data-value='${key}']:not([data-outside-view])`,
+-  ) as HTMLButtonElement | null
++    `[data-value='${key}']:not([data-outside-view])`
++  ) as HTMLButtonElement | null;
+@@ -353,4 +387,4 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+-    if (retried) return
+-    emit('navigate', target)
+-    nextTick(() => shiftFocus(target, dir, true, steps))
+-    return
++    if (retried) return;
++    emit("navigate", target);
++    nextTick(() => shiftFocus(target, dir, true, steps));
++    return;
+@@ -359 +393 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+-  if (el.hasAttribute('data-disabled')) {
++  if (el.hasAttribute("data-disabled")) {
+@@ -362,2 +396,2 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+-    shiftFocus(target.add(dir, 'day'), dir, false, steps + 1)
+-    return
++    shiftFocus(target.add(dir, "day"), dir, false, steps + 1);
++    return;
+@@ -366,2 +400,2 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+-  emit('update:focusedDate', target)
+-  el.focus()
++  emit("update:focusedDate", target);
++  el.focus();
+@@ -376,3 +410,3 @@ function focusInitialCell() {
+-  const target = props.focusedDate ?? pickInitialFocusDate(props.weeks)
+-  if (!target) return
+-  emit('update:focusedDate', target)
++  const target = props.focusedDate ?? pickInitialFocusDate(props.weeks);
++  if (!target) return;
++  emit("update:focusedDate", target);
+@@ -380 +414 @@ function focusInitialCell() {
+-    const key = target.format('YYYY-MM-DD')
++    const key = target.format("YYYY-MM-DD");
+@@ -382,4 +416,4 @@ function focusInitialCell() {
+-      `[data-value='${key}']:not([data-outside-view])`,
+-    ) as HTMLButtonElement | null
+-    el?.focus()
+-  })
++      `[data-value='${key}']:not([data-outside-view])`
++    ) as HTMLButtonElement | null;
++    el?.focus();
++  });
+@@ -388,3 +422 @@ function focusInitialCell() {
+-defineExpose<CalendarPanelExposed>({ focusInitialCell })
+-
+-const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
++defineExpose<CalendarPanelExposed>({ focusInitialCell });
+@@ -392 +424 @@ const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+-function ariaSelected(cell: CalendarPanelCell): 'true' | 'false' {
++function ariaSelected(cell: CalendarPanelCell): "true" | "false" {
+@@ -394,2 +426,2 @@ function ariaSelected(cell: CalendarPanelCell): 'true' | 'false' {
+-    ? 'true'
+-    : 'false'
++    ? "true"
++    : "false";
+@@ -399 +431 @@ function ariaLabel(cell: CalendarPanelCell): string {
+-  return cell.date.format('YYYY-MM-DD') + (cell.isToday ? ' (Today)' : '')
++  return cell.date.format("YYYY-MM-DD") + (cell.isToday ? " (Today)" : "");
+@@ -405 +437 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-  const todayFont = cell.isToday ? 'font-semibold' : ''
++  const todayFont = cell.isToday ? "font-semibold" : "";
+@@ -410,3 +442,3 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-    cell.inMonth ? 'text-ink-gray-8' : 'text-ink-gray-3',
+-    cell.isToday ? 'text-ink-gray-9' : '',
+-  ]
++    cell.inMonth ? "text-ink-gray-8" : "text-ink-gray-3",
++    cell.isToday ? "text-ink-gray-9" : "",
++  ];
+@@ -416 +448 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-      'rounded-4',
++      "rounded-4",
+@@ -419,2 +451,2 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-      'opacity-30 cursor-not-allowed',
+-    ]
++      "opacity-30 cursor-not-allowed",
++    ];
+@@ -425 +457 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-      'rounded-4',
++      "rounded-4",
+@@ -427,2 +459,2 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-      'bg-surface-gray-9 text-ink-base hover:bg-surface-gray-9 cursor-pointer',
+-    ]
++      "bg-surface-gray-9 text-ink-base hover:bg-surface-gray-9 cursor-pointer",
++    ];
+@@ -433 +465 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-      'rounded-4',
++      "rounded-4",
+@@ -436,2 +468,2 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-      'bg-surface-gray-3 hover:bg-surface-gray-3 cursor-pointer',
+-    ]
++      "bg-surface-gray-3 hover:bg-surface-gray-3 cursor-pointer",
++    ];
+@@ -441 +473 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-    'rounded-4',
++    "rounded-4",
+@@ -444,2 +476,2 @@ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+-    'hover:bg-surface-gray-2 cursor-pointer',
+-  ]
++    "hover:bg-surface-gray-2 cursor-pointer",
++  ];
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
+index 4c5c7d9..323a076 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
+@@ -81,4 +81,4 @@
+-import { ref, computed, nextTick, watch } from 'vue'
+-import { dayjs, dayjsLocal } from '../../utils/dayjs'
+-import DateCalendar from './DateCalendar.vue'
+-import PickerShell from '../shared/picker/PickerShell.vue'
++import { ref, computed, nextTick, watch } from "vue";
++import { dayjs, dayjsLocal } from "../../utils/dayjs";
++import DateCalendar from "./DateCalendar.vue";
++import PickerShell from "../shared/picker/PickerShell.vue";
+@@ -91,4 +91,2 @@ import {
+-} from './composables'
+-import type { Dayjs } from 'dayjs/esm'
+-import type { DatePickerProps, DatePickerEmits, DatePickerSlots } from './types'
+-import type { DateCalendarExposed } from './calendarTypes'
++} from "./composables";
++import type { Dayjs } from "dayjs/esm";
+@@ -96,3 +94,11 @@ import type {
+-  PickerExposed,
+-  PickerShellExposed,
+-} from '../shared/picker/types'
++  DatePickerProps,
++  DatePickerEmits,
++  DatePickerSlots,
++} from "./types";
++import type { DateCalendarExposed } from "./calendarTypes";
++import {
++  formatCalendarDate,
++  isPersianCalendar,
++  parseCalendarDate,
++} from "./jalali";
++import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
+@@ -101,3 +107,3 @@ const props = withDefaults(defineProps<DatePickerProps>(), {
+-  modelValue: '',
+-  variant: 'subtle',
+-  placeholder: 'Select date',
++  modelValue: "",
++  variant: "subtle",
++  placeholder: "Select date",
+@@ -109,2 +115,2 @@ const props = withDefaults(defineProps<DatePickerProps>(), {
+-})
+-const emit = defineEmits<DatePickerEmits>()
++});
++const emit = defineEmits<DatePickerEmits>();
+@@ -112 +118 @@ const emit = defineEmits<DatePickerEmits>()
+-defineSlots<DatePickerSlots>()
++defineSlots<DatePickerSlots>();
+@@ -116 +122 @@ defineSlots<DatePickerSlots>()
+-const shellRef = ref<PickerShellExposed | null>(null)
++const shellRef = ref<PickerShellExposed | null>(null);
+@@ -119 +125 @@ const shellRef = ref<PickerShellExposed | null>(null)
+-const isOpen = ref(props.open === true)
++const isOpen = ref(props.open === true);
+@@ -124,2 +130,2 @@ watch(
+-    if (typeof val === 'boolean' && val !== isOpen.value) {
+-      isOpen.value = val
++    if (typeof val === "boolean" && val !== isOpen.value) {
++      isOpen.value = val;
+@@ -127,2 +133,2 @@ watch(
+-  },
+-)
++  }
++);
+@@ -131,2 +137,2 @@ watch(isOpen, (val) => {
+-  emit('update:open', val)
+-})
++  emit("update:open", val);
++});
+@@ -135 +141 @@ function onShellOpen() {
+-  initFromValue()
++  initFromValue();
+@@ -140,2 +146,2 @@ function onShellClose() {
+-    commitInput()
+-    isTyping.value = false
++    commitInput();
++    isTyping.value = false;
+@@ -145 +151 @@ function onShellClose() {
+-const calendarRef = ref<DateCalendarExposed | null>(null)
++const calendarRef = ref<DateCalendarExposed | null>(null);
+@@ -149 +155 @@ function onShellRequestFocus() {
+-  nextTick(() => calendarRef.value?.focus())
++  nextTick(() => calendarRef.value?.focus());
+@@ -158 +164 @@ defineExpose<PickerExposed>({
+-})
++});
+@@ -163,3 +169,3 @@ const { resolvedSide, resolvedAlign, resolvedOffset } =
+-  usePopoverPositioning(props)
+-const shouldKeepOpen = useKeepOpen(props)
+-const inputReadonly = useTypeable(props)
++  usePopoverPositioning(props);
++const shouldKeepOpen = useKeepOpen(props);
++const inputReadonly = useTypeable(props);
+@@ -169,3 +175,3 @@ const inputReadonly = useTypeable(props)
+-const DATE_FORMAT = 'YYYY-MM-DD'
+-const selected = ref<string>('')
+-const initialValue = ref(props.modelValue || '')
++const DATE_FORMAT = "YYYY-MM-DD";
++const selected = ref<string>("");
++const initialValue = ref(props.modelValue || "");
+@@ -176,2 +182,2 @@ const checkUnavailable = makeUnavailableCheck(
+-  () => props.isDateUnavailable,
+-)
++  () => props.isDateUnavailable
++);
+@@ -179 +185 @@ const checkUnavailable = makeUnavailableCheck(
+-const coerceToDayjs = useDateCoercion(() => props.format)
++const coerceToDayjs = useDateCoercion(() => props.format);
+@@ -184 +190 @@ function syncFromValue(val?: string): void {
+-      selected.value = dayjsLocal().format(DATE_FORMAT)
++      selected.value = dayjsLocal().format(DATE_FORMAT);
+@@ -186 +192 @@ function syncFromValue(val?: string): void {
+-      selected.value = ''
++      selected.value = "";
+@@ -188 +194 @@ function syncFromValue(val?: string): void {
+-    return
++    return;
+@@ -190 +196 @@ function syncFromValue(val?: string): void {
+-  const d = coerceToDayjs(val)
++  const d = coerceToDayjs(val);
+@@ -192,2 +198,2 @@ function syncFromValue(val?: string): void {
+-    selected.value = ''
+-    return
++    selected.value = "";
++    return;
+@@ -195 +201 @@ function syncFromValue(val?: string): void {
+-  selected.value = d.format(DATE_FORMAT)
++  selected.value = d.format(DATE_FORMAT);
+@@ -198 +204 @@ function syncFromValue(val?: string): void {
+-syncFromValue(initialValue.value)
++syncFromValue(initialValue.value);
+@@ -201 +207 @@ function initFromValue(): void {
+-  syncFromValue(props.modelValue)
++  syncFromValue(props.modelValue);
+@@ -207,3 +213,3 @@ watch(
+-    syncFromValue(m)
+-  },
+-)
++    syncFromValue(m);
++  }
++);
+@@ -214,2 +220,2 @@ const displayLabel = computed<string>(() =>
+-  props.format ? formatter(selected.value, props.format) : selected.value,
+-)
++  selected.value ? formatter(selected.value, props.format || DATE_FORMAT) : ""
++);
+@@ -218,3 +224,4 @@ function formatter(dateStr: string, format: string): string {
+-  const d = dayjs(dateStr)
+-  if (!d.isValid()) return dateStr
+-  return d.format(format)
++  const d = dayjs(dateStr);
++  if (!d.isValid()) return dateStr;
++  if (isPersianCalendar()) return formatCalendarDate(d);
++  return d.format(format);
+@@ -223,2 +230,2 @@ function formatter(dateStr: string, format: string): string {
+-const inputValue = ref<string>(displayLabel.value)
+-const isTyping = ref(false)
++const inputValue = ref<string>(displayLabel.value);
++const isTyping = ref(false);
+@@ -227,2 +234,2 @@ watch(displayLabel, (val) => {
+-  if (!isTyping.value) inputValue.value = val
+-})
++  if (!isTyping.value) inputValue.value = val;
++});
+@@ -233,6 +240,6 @@ function clearSelection() {
+-  if (!selected.value) return
+-  selected.value = ''
+-  emit('update:modelValue', '')
+-  emit('change', '')
+-  initialValue.value = ''
+-  inputValue.value = ''
++  if (!selected.value) return;
++  selected.value = "";
++  emit("update:modelValue", "");
++  emit("change", "");
++  initialValue.value = "";
++  inputValue.value = "";
+@@ -242 +249 @@ function commitInput(close = false): void {
+-  const raw = inputValue.value.trim()
++  const raw = inputValue.value.trim();
+@@ -245,2 +252,2 @@ function commitInput(close = false): void {
+-      selectDate(dayjsLocal())
+-      if (close && !shouldKeepOpen.value) isOpen.value = false
++      selectDate(dayjsLocal());
++      if (close && !shouldKeepOpen.value) isOpen.value = false;
+@@ -248,2 +255,2 @@ function commitInput(close = false): void {
+-      clearSelection()
+-      if (close && !shouldKeepOpen.value) isOpen.value = false
++      clearSelection();
++      if (close && !shouldKeepOpen.value) isOpen.value = false;
+@@ -251 +258 @@ function commitInput(close = false): void {
+-    return
++    return;
+@@ -253 +260 @@ function commitInput(close = false): void {
+-  const d = coerceToDayjs(raw)
++  const d = parseCalendarDate(raw) ?? coerceToDayjs(raw);
+@@ -255,2 +262,2 @@ function commitInput(close = false): void {
+-    selectDate(d)
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
++    selectDate(d);
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
+@@ -258 +265 @@ function commitInput(close = false): void {
+-    inputValue.value = displayLabel.value
++    inputValue.value = displayLabel.value;
+@@ -263,5 +270,5 @@ function selectDate(date: string | Date | Dayjs): void {
+-  const d = dayjs(date as any)
+-  if (!d.isValid()) return
+-  if (checkUnavailable(d)) return
+-  const prev = selected.value
+-  selected.value = d.format(DATE_FORMAT)
++  const d = dayjs(date as any);
++  if (!d.isValid()) return;
++  if (checkUnavailable(d)) return;
++  const prev = selected.value;
++  selected.value = d.format(DATE_FORMAT);
+@@ -270,3 +277,3 @@ function selectDate(date: string | Date | Dayjs): void {
+-    emit('update:modelValue', selected.value)
+-    if (selected.value !== prev) emit('change', selected.value)
+-    initialValue.value = selected.value
++    emit("update:modelValue", selected.value);
++    if (selected.value !== prev) emit("change", selected.value);
++    initialValue.value = selected.value;
+@@ -276,3 +283 @@ function selectDate(date: string | Date | Dayjs): void {
+-    inputValue.value = props.format
+-      ? formatter(selected.value, props.format)
+-      : selected.value
++    inputValue.value = formatter(selected.value, props.format || DATE_FORMAT);
+@@ -283,3 +288,3 @@ function handleDateCellClick(date: string | Date | Dayjs) {
+-  selectDate(date)
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  selectDate(date);
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+@@ -289,3 +294,3 @@ function handleClearClick() {
+-  clearSelection()
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  clearSelection();
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateRangeCalendar.vue b/node_modules/frappe-ui/src/components/DatePicker/DateRangeCalendar.vue
+index 77fb912..2fc3052 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateRangeCalendar.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateRangeCalendar.vue
+@@ -53,4 +53,4 @@
+-import { computed, ref } from 'vue'
+-import type { Dayjs } from 'dayjs/esm'
+-import { dayjs, dayjsLocal } from '../../utils/dayjs'
+-import CalendarPanel from './CalendarPanel.vue'
++import { computed, ref } from "vue";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs, dayjsLocal } from "../../utils/dayjs";
++import CalendarPanel from "./CalendarPanel.vue";
+@@ -61,2 +61,3 @@ import {
+-} from './composables'
+-import { generateRangeWeeks, rangeKey, stepRange } from './utils'
++} from "./composables";
++import { generateRangeWeeks, rangeKey, stepRange } from "./utils";
++import { shiftCalendarMonth, toCalendarDate } from "./jalali";
+@@ -69,2 +70,2 @@ import type {
+-} from './calendarTypes'
+-import type { DateRangeValue } from './types'
++} from "./calendarTypes";
++import type { DateRangeValue } from "./types";
+@@ -73 +74 @@ const props = withDefaults(defineProps<DateRangeCalendarProps>(), {
+-  todayLabel: 'Today',
++  todayLabel: "Today",
+@@ -75 +76 @@ const props = withDefaults(defineProps<DateRangeCalendarProps>(), {
+-})
++});
+@@ -77 +78 @@ const props = withDefaults(defineProps<DateRangeCalendarProps>(), {
+-const emit = defineEmits<DateRangeCalendarEmits>()
++const emit = defineEmits<DateRangeCalendarEmits>();
+@@ -80 +81 @@ const emit = defineEmits<DateRangeCalendarEmits>()
+-const model = defineModel<DateRangeValue>({ default: () => [] })
++const model = defineModel<DateRangeValue>({ default: () => [] });
+@@ -82 +83 @@ const model = defineModel<DateRangeValue>({ default: () => [] })
+-const DATE_FORMAT = 'YYYY-MM-DD'
++const DATE_FORMAT = "YYYY-MM-DD";
+@@ -84,2 +85,2 @@ const DATE_FORMAT = 'YYYY-MM-DD'
+-const fromDate = computed<string>(() => model.value[0] ?? '')
+-const toDate = computed<string>(() => model.value[1] ?? '')
++const fromDate = computed<string>(() => model.value[0] ?? "");
++const toDate = computed<string>(() => model.value[1] ?? "");
+@@ -98 +99 @@ const {
+-} = useCalendarView()
++} = useCalendarView();
+@@ -103,2 +104,2 @@ const checkUnavailable = makeUnavailableCheck(
+-  () => props.isDateUnavailable,
+-)
++  () => props.isDateUnavailable
++);
+@@ -107 +108 @@ const checkUnavailable = makeUnavailableCheck(
+-const hoverDate = ref<Dayjs | null>(null)
++const hoverDate = ref<Dayjs | null>(null);
+@@ -120 +121 @@ function buildRangeWeeks(year: number, month: number): CalendarPanelCell[][] {
+-  })
++  });
+@@ -124,2 +125,2 @@ const weeks = computed<CalendarPanelCell[][]>(() =>
+-  buildRangeWeeks(currentYear.value, currentMonth.value),
+-)
++  buildRangeWeeks(currentYear.value, currentMonth.value)
++);
+@@ -131 +132,3 @@ const weeks = computed<CalendarPanelCell[][]>(() =>
+-const isDualPaneActive = computed(() => props.dualPane && view.value === 'date')
++const isDualPaneActive = computed(
++  () => props.dualPane && view.value === "date"
++);
+@@ -133,5 +136,5 @@ const isDualPaneActive = computed(() => props.dualPane && view.value === 'date')
+-const rightAnchor = computed(() =>
+-  dayjs().year(currentYear.value).month(currentMonth.value).add(1, 'month'),
+-)
+-const rightYear = computed(() => rightAnchor.value.year())
+-const rightMonth = computed(() => rightAnchor.value.month())
++const rightMonthState = computed(() =>
++  shiftCalendarMonth(currentYear.value, currentMonth.value, 1)
++);
++const rightYear = computed(() => rightMonthState.value.year);
++const rightMonth = computed(() => rightMonthState.value.month);
+@@ -139,2 +142,2 @@ const rightWeeks = computed<CalendarPanelCell[][]>(() =>
+-  buildRangeWeeks(rightYear.value, rightMonth.value),
+-)
++  buildRangeWeeks(rightYear.value, rightMonth.value)
++);
+@@ -144,2 +147,2 @@ const rightWeeks = computed<CalendarPanelCell[][]>(() =>
+-const leftPanelRef = ref<CalendarPanelExposed | null>(null)
+-const rightPanelRef = ref<CalendarPanelExposed | null>(null)
++const leftPanelRef = ref<CalendarPanelExposed | null>(null);
++const rightPanelRef = ref<CalendarPanelExposed | null>(null);
+@@ -161 +164 @@ const { focusedDate, markOwnCommit, focus } = useFocusedDate({
+-})
++});
+@@ -166,0 +170 @@ function onPanelNavigate(target: Dayjs): void {
++    const targetDate = toCalendarDate(target);
+@@ -168,2 +172,2 @@ function onPanelNavigate(target: Dayjs): void {
+-      target.month() === currentMonth.value &&
+-      target.year() === currentYear.value
++      targetDate.jm - 1 === currentMonth.value &&
++      targetDate.jy === currentYear.value;
+@@ -171 +175,2 @@ function onPanelNavigate(target: Dayjs): void {
+-      target.month() === rightMonth.value && target.year() === rightYear.value
++      targetDate.jm - 1 === rightMonth.value &&
++      targetDate.jy === rightYear.value;
+@@ -173,2 +178,2 @@ function onPanelNavigate(target: Dayjs): void {
+-      focusedDate.value = target
+-      return
++      focusedDate.value = target;
++      return;
+@@ -177 +182 @@ function onPanelNavigate(target: Dayjs): void {
+-  focusOn(target)
++  focusOn(target);
+@@ -185,3 +190,3 @@ function commit(range: DateRangeValue): void {
+-  if (range[0] && range[1]) hoverDate.value = null
+-  markOwnCommit(rangeKey(range))
+-  model.value = range
++  if (range[0] && range[1]) hoverDate.value = null;
++  markOwnCommit(rangeKey(range));
++  model.value = range;
+@@ -191,4 +196,4 @@ function select(date: Dayjs): void {
+-  if (checkUnavailable(date)) return
+-  const range = stepRange([fromDate.value, toDate.value], date)
+-  commit(range)
+-  emit('select', range)
++  if (checkUnavailable(date)) return;
++  const range = stepRange([fromDate.value, toDate.value], date);
++  commit(range);
++  emit("select", range);
+@@ -198,6 +203,6 @@ function selectToday(): void {
+-  const today = dayjsLocal().startOf('day')
+-  if (checkUnavailable(today)) return
+-  const value = today.format(DATE_FORMAT)
+-  const range: DateRangeValue = [value, value]
+-  commit(range)
+-  emit('today', range)
++  const today = dayjsLocal().startOf("day");
++  if (checkUnavailable(today)) return;
++  const value = today.format(DATE_FORMAT);
++  const range: DateRangeValue = [value, value];
++  commit(range);
++  emit("today", range);
+@@ -207 +212 @@ function onCellHover(d: Dayjs | null): void {
+-  hoverDate.value = fromDate.value && !toDate.value ? d : null
++  hoverDate.value = fromDate.value && !toDate.value ? d : null;
+@@ -210 +215 @@ function onCellHover(d: Dayjs | null): void {
+-defineExpose<DateRangeCalendarExposed>({ focus })
++defineExpose<DateRangeCalendarExposed>({ focus });
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
+index bd682fa..6f9583a 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
+@@ -82,5 +82,5 @@
+-import { ref, computed, nextTick, watch } from 'vue'
+-import { dayjs } from '../../utils/dayjs'
+-import { orderRange, rangeKey, stepRange } from './utils'
+-import DateRangeCalendar from './DateRangeCalendar.vue'
+-import PickerShell from '../shared/picker/PickerShell.vue'
++import { ref, computed, nextTick, watch } from "vue";
++import { dayjs } from "../../utils/dayjs";
++import { orderRange, rangeKey, stepRange } from "./utils";
++import DateRangeCalendar from "./DateRangeCalendar.vue";
++import PickerShell from "../shared/picker/PickerShell.vue";
+@@ -93,2 +93,2 @@ import {
+-} from './composables'
+-import type { Dayjs } from 'dayjs/esm'
++} from "./composables";
++import type { Dayjs } from "dayjs/esm";
+@@ -100,6 +100,9 @@ import type {
+-} from './types'
+-import type { DateRangeCalendarExposed } from './calendarTypes'
+-import type {
+-  PickerExposed,
+-  PickerShellExposed,
+-} from '../shared/picker/types'
++} from "./types";
++import type { DateRangeCalendarExposed } from "./calendarTypes";
++import {
++  formatCalendarDate,
++  formatCalendarRange,
++  isPersianCalendar,
++  parseCalendarDate,
++} from "./jalali";
++import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
+@@ -109,2 +112,2 @@ const props = withDefaults(defineProps<DateRangePickerProps>(), {
+-  variant: 'subtle',
+-  placeholder: 'Select range',
++  variant: "subtle",
++  placeholder: "Select range",
+@@ -117,2 +120,2 @@ const props = withDefaults(defineProps<DateRangePickerProps>(), {
+-})
+-const emit = defineEmits<DateRangePickerEmits>()
++});
++const emit = defineEmits<DateRangePickerEmits>();
+@@ -120 +123 @@ const emit = defineEmits<DateRangePickerEmits>()
+-defineSlots<DateRangePickerSlots>()
++defineSlots<DateRangePickerSlots>();
+@@ -124 +127 @@ defineSlots<DateRangePickerSlots>()
+-const shellRef = ref<PickerShellExposed | null>(null)
++const shellRef = ref<PickerShellExposed | null>(null);
+@@ -127 +130 @@ const shellRef = ref<PickerShellExposed | null>(null)
+-const isOpen = ref(props.open === true)
++const isOpen = ref(props.open === true);
+@@ -132,2 +135,2 @@ watch(
+-    if (typeof val === 'boolean' && val !== isOpen.value) {
+-      isOpen.value = val
++    if (typeof val === "boolean" && val !== isOpen.value) {
++      isOpen.value = val;
+@@ -135,2 +138,2 @@ watch(
+-  },
+-)
++  }
++);
+@@ -139,2 +142,2 @@ watch(isOpen, (val) => {
+-  emit('update:open', val)
+-})
++  emit("update:open", val);
++});
+@@ -143 +146 @@ function onShellOpen() {
+-  initFromValue()
++  initFromValue();
+@@ -148,2 +151,2 @@ function onShellClose() {
+-    commitInput()
+-    isTyping.value = false
++    commitInput();
++    isTyping.value = false;
+@@ -153 +156 @@ function onShellClose() {
+-const calendarRef = ref<DateRangeCalendarExposed | null>(null)
++const calendarRef = ref<DateRangeCalendarExposed | null>(null);
+@@ -157 +160 @@ function onShellRequestFocus() {
+-  nextTick(() => calendarRef.value?.focus())
++  nextTick(() => calendarRef.value?.focus());
+@@ -166 +169 @@ defineExpose<PickerExposed>({
+-})
++});
+@@ -171,3 +174,3 @@ const { resolvedSide, resolvedAlign, resolvedOffset } =
+-  usePopoverPositioning(props)
+-const shouldKeepOpen = useKeepOpen(props)
+-const inputReadonly = useTypeable(props)
++  usePopoverPositioning(props);
++const shouldKeepOpen = useKeepOpen(props);
++const inputReadonly = useTypeable(props);
+@@ -177,3 +180,3 @@ const inputReadonly = useTypeable(props)
+-const DATE_FORMAT = 'YYYY-MM-DD'
+-const fromDate = ref<string>('')
+-const toDate = ref<string>('')
++const DATE_FORMAT = "YYYY-MM-DD";
++const fromDate = ref<string>("");
++const toDate = ref<string>("");
+@@ -184,2 +187,2 @@ const checkUnavailable = makeUnavailableCheck(
+-  () => props.isDateUnavailable,
+-)
++  () => props.isDateUnavailable
++);
+@@ -187 +190 @@ const checkUnavailable = makeUnavailableCheck(
+-const coerceToDayjs = useDateCoercion(() => props.format)
++const coerceToDayjs = useDateCoercion(() => props.format);
+@@ -192,4 +195,4 @@ function normalizeIncoming(val?: string[] | null): [string, string] {
+-  if (!val || !val.length) return ['', '']
+-  const from = coerceToDayjs(val[0] || '')
+-  const to = coerceToDayjs(val[1] || '')
+-  return [from?.format(DATE_FORMAT) || '', to?.format(DATE_FORMAT) || '']
++  if (!val || !val.length) return ["", ""];
++  const from = coerceToDayjs(val[0] || "");
++  const to = coerceToDayjs(val[1] || "");
++  return [from?.format(DATE_FORMAT) || "", to?.format(DATE_FORMAT) || ""];
+@@ -199,2 +202,2 @@ function parseRangeInput(raw: string): [Dayjs | null, Dayjs | null] {
+-  if (!raw.trim()) return [null, null]
+-  const normalized = raw.replace(/\s+to\s+/i, ',').replace(/\s+-\s+/g, ',')
++  if (!raw.trim()) return [null, null];
++  const normalized = raw.replace(/\s+to\s+/i, ",").replace(/\s+-\s+/g, ",");
+@@ -202 +205 @@ function parseRangeInput(raw: string): [Dayjs | null, Dayjs | null] {
+-    .split(',')
++    .split(/,|\s+to\s+|\s+تا\s+|\s+[–—-]\s+/i)
+@@ -204,3 +207,6 @@ function parseRangeInput(raw: string): [Dayjs | null, Dayjs | null] {
+-    .filter(Boolean)
+-  if (!parts.length) return [null, null]
+-  return [coerceToDayjs(parts[0]), coerceToDayjs(parts[1])]
++    .filter(Boolean);
++  if (!parts.length) return [null, null];
++  return [
++    parseCalendarDate(parts[0]) ?? coerceToDayjs(parts[0]),
++    parseCalendarDate(parts[1] || "") ?? coerceToDayjs(parts[1] || ""),
++  ];
+@@ -210 +216 @@ function pickIncoming(): string[] {
+-  return props.modelValue && props.modelValue.length ? props.modelValue : []
++  return props.modelValue && props.modelValue.length ? props.modelValue : [];
+@@ -214,3 +220,3 @@ function syncFromValue(val?: string[]): void {
+-  const [f, t] = normalizeIncoming(val)
+-  fromDate.value = f
+-  toDate.value = t
++  const [f, t] = normalizeIncoming(val);
++  fromDate.value = f;
++  toDate.value = t;
+@@ -219,3 +225,3 @@ function syncFromValue(val?: string[]): void {
+-const initialValue = ref<string>('')
+-syncFromValue(pickIncoming())
+-initialValue.value = rangeKey([fromDate.value, toDate.value])
++const initialValue = ref<string>("");
++syncFromValue(pickIncoming());
++initialValue.value = rangeKey([fromDate.value, toDate.value]);
+@@ -224 +230 @@ function initFromValue(): void {
+-  syncFromValue(pickIncoming())
++  syncFromValue(pickIncoming());
+@@ -230,3 +236,3 @@ watch(
+-    syncFromValue(pickIncoming())
+-  },
+-)
++    syncFromValue(pickIncoming());
++  }
++);
+@@ -237,2 +243,2 @@ const displayLabel = computed<string>(() =>
+-  formatDisplay(fromDate.value, toDate.value),
+-)
++  formatDisplay(fromDate.value, toDate.value)
++);
+@@ -241,4 +247,5 @@ function formatOne(dateStr: string): string {
+-  if (!dateStr) return ''
+-  const d = dayjs(dateStr)
+-  if (!d.isValid()) return dateStr
+-  return props.format ? d.format(props.format) : dateStr
++  if (!dateStr) return "";
++  const d = dayjs(dateStr);
++  if (!d.isValid()) return dateStr;
++  if (isPersianCalendar()) return formatCalendarDate(d);
++  return props.format ? d.format(props.format) : dateStr;
+@@ -247,3 +254,4 @@ function formatDisplay(from: string, to: string): string {
+-  if (!from && !to) return ''
+-  if (from && !to) return formatOne(from)
+-  return `${formatOne(from)} to ${formatOne(to)}`
++  if (!from && !to) return "";
++  if (from && !to) return formatOne(from);
++  if (isPersianCalendar()) return formatCalendarRange(dayjs(from), dayjs(to));
++  return `${formatOne(from)} to ${formatOne(to)}`;
+@@ -252,2 +260,2 @@ function formatDisplay(from: string, to: string): string {
+-const inputValue = ref<string>(displayLabel.value)
+-const isTyping = ref(false)
++const inputValue = ref<string>(displayLabel.value);
++const isTyping = ref(false);
+@@ -255,2 +263,2 @@ watch(displayLabel, (val) => {
+-  if (!isTyping.value) inputValue.value = val
+-})
++  if (!isTyping.value) inputValue.value = val;
++});
+@@ -261 +269 @@ function commitInput(close = false): void {
+-  const raw = inputValue.value.trim()
++  const raw = inputValue.value.trim();
+@@ -263,3 +271,3 @@ function commitInput(close = false): void {
+-    clearSelection()
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
+-    return
++    clearSelection();
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
++    return;
+@@ -267,7 +275,7 @@ function commitInput(close = false): void {
+-  const [f, t] = parseRangeInput(raw)
+-  if (f && !checkUnavailable(f)) fromDate.value = f.format(DATE_FORMAT)
+-  if (t && !checkUnavailable(t)) toDate.value = t.format(DATE_FORMAT)
+-  else if (!t) toDate.value = ''
+-  setOrdered([fromDate.value, toDate.value])
+-  emitIfChanged()
+-  inputValue.value = displayLabel.value
++  const [f, t] = parseRangeInput(raw);
++  if (f && !checkUnavailable(f)) fromDate.value = f.format(DATE_FORMAT);
++  if (t && !checkUnavailable(t)) toDate.value = t.format(DATE_FORMAT);
++  else if (!t) toDate.value = "";
++  setOrdered([fromDate.value, toDate.value]);
++  emitIfChanged();
++  inputValue.value = displayLabel.value;
+@@ -275 +283 @@ function commitInput(close = false): void {
+-    isOpen.value = false
++    isOpen.value = false;
+@@ -282,2 +290,2 @@ function handleRangeSelect(range: DateRangeValue) {
+-  fromDate.value = range[0] ?? ''
+-  toDate.value = range[1] ?? ''
++  fromDate.value = range[0] ?? "";
++  toDate.value = range[1] ?? "";
+@@ -285,2 +293,2 @@ function handleRangeSelect(range: DateRangeValue) {
+-    emitIfChanged()
+-    if (!shouldKeepOpen.value) isOpen.value = false
++    emitIfChanged();
++    if (!shouldKeepOpen.value) isOpen.value = false;
+@@ -288 +296 @@ function handleRangeSelect(range: DateRangeValue) {
+-  isTyping.value = false
++  isTyping.value = false;
+@@ -292,3 +300,3 @@ function handleDateCellClick(date: string | Date | Dayjs) {
+-  const d = dayjs(date as any)
+-  if (!d.isValid() || checkUnavailable(d)) return
+-  handleRangeSelect(stepRange([fromDate.value, toDate.value], d))
++  const d = dayjs(date as any);
++  if (!d.isValid() || checkUnavailable(d)) return;
++  handleRangeSelect(stepRange([fromDate.value, toDate.value], d));
+@@ -298,3 +306,3 @@ function setOrdered(range: [string, string]): void {
+-  const [from, to] = orderRange(range)
+-  fromDate.value = from
+-  toDate.value = to
++  const [from, to] = orderRange(range);
++  fromDate.value = from;
++  toDate.value = to;
+@@ -304,2 +312,2 @@ function emitIfChanged() {
+-  const next = rangeKey([fromDate.value, toDate.value])
+-  if (next === initialValue.value) return
++  const next = rangeKey([fromDate.value, toDate.value]);
++  if (next === initialValue.value) return;
+@@ -307,4 +315,4 @@ function emitIfChanged() {
+-    fromDate.value && toDate.value ? [fromDate.value, toDate.value] : []
+-  emit('update:modelValue', payload)
+-  emit('change', payload)
+-  initialValue.value = next
++    fromDate.value && toDate.value ? [fromDate.value, toDate.value] : [];
++  emit("update:modelValue", payload);
++  emit("change", payload);
++  initialValue.value = next;
+@@ -314,5 +322,5 @@ function clearSelection() {
+-  if (!fromDate.value && !toDate.value) return
+-  fromDate.value = ''
+-  toDate.value = ''
+-  emitIfChanged()
+-  inputValue.value = ''
++  if (!fromDate.value && !toDate.value) return;
++  fromDate.value = "";
++  toDate.value = "";
++  emitIfChanged();
++  inputValue.value = "";
+@@ -322,3 +330,3 @@ function handleClearClick() {
+-  clearSelection()
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  clearSelection();
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+@@ -328,7 +336,7 @@ function handleSetRange(range: [string | Date | Dayjs, string | Date | Dayjs]) {
+-  const a = dayjs(range[0])
+-  const b = dayjs(range[1])
+-  if (!a.isValid() || !b.isValid()) return
+-  if (checkUnavailable(a) || checkUnavailable(b)) return
+-  setOrdered([a.format(DATE_FORMAT), b.format(DATE_FORMAT)])
+-  emitIfChanged()
+-  isTyping.value = false
++  const a = dayjs(range[0]);
++  const b = dayjs(range[1]);
++  if (!a.isValid() || !b.isValid()) return;
++  if (checkUnavailable(a) || checkUnavailable(b)) return;
++  setOrdered([a.format(DATE_FORMAT), b.format(DATE_FORMAT)]);
++  emitIfChanged();
++  isTyping.value = false;
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
+index ca8ae34..4212efe 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
+@@ -97,5 +97,5 @@
+-import { ref, computed, nextTick, watch } from 'vue'
+-import TimePicker from '../TimePicker/TimePicker.vue'
+-import { dayjs, dayjsLocal, dayjsSystem } from '../../utils/dayjs'
+-import DateCalendar from './DateCalendar.vue'
+-import PickerShell from '../shared/picker/PickerShell.vue'
++import { ref, computed, nextTick, watch } from "vue";
++import TimePicker from "../TimePicker/TimePicker.vue";
++import { dayjs, dayjsLocal, dayjsSystem } from "../../utils/dayjs";
++import DateCalendar from "./DateCalendar.vue";
++import PickerShell from "../shared/picker/PickerShell.vue";
+@@ -107,2 +107,2 @@ import {
+-} from './composables'
+-import type { Dayjs } from 'dayjs/esm'
++} from "./composables";
++import type { Dayjs } from "dayjs/esm";
+@@ -113,6 +113,8 @@ import type {
+-} from './types'
+-import type { DateCalendarExposed } from './calendarTypes'
+-import type {
+-  PickerExposed,
+-  PickerShellExposed,
+-} from '../shared/picker/types'
++} from "./types";
++import type { DateCalendarExposed } from "./calendarTypes";
++import {
++  formatCalendarDateTime,
++  isPersianCalendar,
++  parseCalendarDateTime,
++} from "./jalali";
++import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
+@@ -121,3 +123,3 @@ const props = withDefaults(defineProps<DateTimePickerProps>(), {
+-  modelValue: '',
+-  variant: 'subtle',
+-  placeholder: 'Select date & time',
++  modelValue: "",
++  variant: "subtle",
++  placeholder: "Select date & time",
+@@ -129,2 +131,2 @@ const props = withDefaults(defineProps<DateTimePickerProps>(), {
+-})
+-const emit = defineEmits<DateTimePickerEmits>()
++});
++const emit = defineEmits<DateTimePickerEmits>();
+@@ -132 +134 @@ const emit = defineEmits<DateTimePickerEmits>()
+-defineSlots<DateTimePickerSlots>()
++defineSlots<DateTimePickerSlots>();
+@@ -136 +138 @@ defineSlots<DateTimePickerSlots>()
+-const shellRef = ref<PickerShellExposed | null>(null)
++const shellRef = ref<PickerShellExposed | null>(null);
+@@ -139 +141 @@ const shellRef = ref<PickerShellExposed | null>(null)
+-const isOpen = ref(props.open === true)
++const isOpen = ref(props.open === true);
+@@ -144,2 +146,2 @@ watch(
+-    if (typeof val === 'boolean' && val !== isOpen.value) {
+-      isOpen.value = val
++    if (typeof val === "boolean" && val !== isOpen.value) {
++      isOpen.value = val;
+@@ -147,2 +149,2 @@ watch(
+-  },
+-)
++  }
++);
+@@ -151,2 +153,2 @@ watch(isOpen, (val) => {
+-  emit('update:open', val)
+-})
++  emit("update:open", val);
++});
+@@ -155 +157 @@ function onShellOpen() {
+-  initFromValue()
++  initFromValue();
+@@ -160,2 +162,2 @@ function onShellClose() {
+-    commitInput()
+-    isTyping.value = false
++    commitInput();
++    isTyping.value = false;
+@@ -171 +173 @@ defineExpose<PickerExposed>({
+-})
++});
+@@ -173,2 +175,2 @@ defineExpose<PickerExposed>({
+-const calendarRef = ref<DateCalendarExposed | null>(null)
+-const timePickerRef = ref<{ focus: () => void } | null>(null)
++const calendarRef = ref<DateCalendarExposed | null>(null);
++const timePickerRef = ref<{ focus: () => void } | null>(null);
+@@ -178 +180 @@ function onShellRequestFocus() {
+-  nextTick(() => calendarRef.value?.focus())
++  nextTick(() => calendarRef.value?.focus());
+@@ -184,3 +186,3 @@ const { resolvedSide, resolvedAlign, resolvedOffset } =
+-  usePopoverPositioning(props)
+-const shouldKeepOpen = useKeepOpen(props)
+-const inputReadonly = useTypeable(props)
++  usePopoverPositioning(props);
++const shouldKeepOpen = useKeepOpen(props);
++const inputReadonly = useTypeable(props);
+@@ -190,2 +192,2 @@ const inputReadonly = useTypeable(props)
+-const DATE_FORMAT = 'YYYY-MM-DD'
+-const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
++const DATE_FORMAT = "YYYY-MM-DD";
++const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+@@ -193,2 +195,2 @@ const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
+-const selectedDate = ref<string>('')
+-const timeValue = ref<string>('')
++const selectedDate = ref<string>("");
++const timeValue = ref<string>("");
+@@ -196 +198 @@ const timeValue = ref<string>('')
+-const initialValue = ref(props.modelValue || '')
++const initialValue = ref(props.modelValue || "");
+@@ -198 +200 @@ const initialValue = ref(props.modelValue || '')
+-const coerceToDayjs = useDateCoercion(() => props.format)
++const coerceToDayjs = useDateCoercion(() => props.format);
+@@ -205,2 +207,2 @@ const coerceToDayjs = useDateCoercion(() => props.format)
+-const resolvedMin = computed<string | undefined>(() => props.min)
+-const resolvedMax = computed<string | undefined>(() => props.max)
++const resolvedMin = computed<string | undefined>(() => props.min);
++const resolvedMax = computed<string | undefined>(() => props.max);
+@@ -209,2 +211,2 @@ const minDT = computed<Dayjs | null>(() =>
+-  resolvedMin.value ? coerceToDayjs(resolvedMin.value) : null,
+-)
++  resolvedMin.value ? coerceToDayjs(resolvedMin.value) : null
++);
+@@ -212,2 +214,2 @@ const maxDT = computed<Dayjs | null>(() =>
+-  resolvedMax.value ? coerceToDayjs(resolvedMax.value) : null,
+-)
++  resolvedMax.value ? coerceToDayjs(resolvedMax.value) : null
++);
+@@ -216,4 +218,4 @@ function checkUnavailable(d: Dayjs): boolean {
+-  if (props.isDateUnavailable?.(d)) return true
+-  if (minDT.value && d.endOf('day').isBefore(minDT.value)) return true
+-  if (maxDT.value && d.startOf('day').isAfter(maxDT.value)) return true
+-  return false
++  if (props.isDateUnavailable?.(d)) return true;
++  if (minDT.value && d.endOf("day").isBefore(minDT.value)) return true;
++  if (maxDT.value && d.startOf("day").isAfter(maxDT.value)) return true;
++  return false;
+@@ -227,3 +229,3 @@ function syncFromValue(val?: string): void {
+-      const now = dayjsLocal()
+-      selectedDate.value = now.format(DATE_FORMAT)
+-      timeValue.value = now.format('HH:mm:ss')
++      const now = dayjsLocal();
++      selectedDate.value = now.format(DATE_FORMAT);
++      timeValue.value = now.format("HH:mm:ss");
+@@ -231,2 +233,2 @@ function syncFromValue(val?: string): void {
+-      selectedDate.value = ''
+-      timeValue.value = ''
++      selectedDate.value = "";
++      timeValue.value = "";
+@@ -234 +236 @@ function syncFromValue(val?: string): void {
+-    return
++    return;
+@@ -236 +238 @@ function syncFromValue(val?: string): void {
+-  const d = coerceToDayjs(val)
++  const d = coerceToDayjs(val);
+@@ -238,3 +240,3 @@ function syncFromValue(val?: string): void {
+-    selectedDate.value = ''
+-    timeValue.value = ''
+-    return
++    selectedDate.value = "";
++    timeValue.value = "";
++    return;
+@@ -242,2 +244,2 @@ function syncFromValue(val?: string): void {
+-  selectedDate.value = d.format(DATE_FORMAT)
+-  timeValue.value = d.format('HH:mm:ss')
++  selectedDate.value = d.format(DATE_FORMAT);
++  timeValue.value = d.format("HH:mm:ss");
+@@ -246 +248 @@ function syncFromValue(val?: string): void {
+-syncFromValue(initialValue.value)
++syncFromValue(initialValue.value);
+@@ -249 +251 @@ function initFromValue(): void {
+-  syncFromValue(props.modelValue)
++  syncFromValue(props.modelValue);
+@@ -255,3 +257,3 @@ watch(
+-    syncFromValue(m)
+-  },
+-)
++    syncFromValue(m);
++  }
++);
+@@ -262,6 +264,6 @@ const combinedValue = computed<string>(() => {
+-  if (!selectedDate.value) return ''
+-  const base = `${selectedDate.value} ${timeValue.value || '00:00:00'}`
+-  const local = dayjs(base)
+-  if (!local.isValid()) return ''
+-  return local.format(DATE_TIME_FORMAT)
+-})
++  if (!selectedDate.value) return "";
++  const base = `${selectedDate.value} ${timeValue.value || "00:00:00"}`;
++  const local = dayjs(base);
++  if (!local.isValid()) return "";
++  return local.format(DATE_TIME_FORMAT);
++});
+@@ -270,7 +272,9 @@ const displayLabel = computed<string>(() => {
+-  if (!combinedValue.value) return ''
+-  if (props.format) return dayjs(combinedValue.value).format(props.format)
+-  return combinedValue.value
+-})
+-
+-const inputValue = ref<string>(displayLabel.value)
+-const isTyping = ref(false)
++  if (!combinedValue.value) return "";
++  if (isPersianCalendar())
++    return formatCalendarDateTime(dayjs(combinedValue.value));
++  if (props.format) return dayjs(combinedValue.value).format(props.format);
++  return combinedValue.value;
++});
++
++const inputValue = ref<string>(displayLabel.value);
++const isTyping = ref(false);
+@@ -278,2 +282,2 @@ watch(displayLabel, (val) => {
+-  if (!isTyping.value) inputValue.value = val
+-})
++  if (!isTyping.value) inputValue.value = val;
++});
+@@ -282,5 +286,5 @@ const computedMinTime = computed<string>(() => {
+-  if (!minDT.value || !selectedDate.value) return ''
+-  if (dayjs(selectedDate.value).isSame(minDT.value, 'day'))
+-    return minDT.value.format('HH:mm:ss')
+-  return ''
+-})
++  if (!minDT.value || !selectedDate.value) return "";
++  if (dayjs(selectedDate.value).isSame(minDT.value, "day"))
++    return minDT.value.format("HH:mm:ss");
++  return "";
++});
+@@ -288,5 +292,5 @@ const computedMaxTime = computed<string>(() => {
+-  if (!maxDT.value || !selectedDate.value) return ''
+-  if (dayjs(selectedDate.value).isSame(maxDT.value, 'day'))
+-    return maxDT.value.format('HH:mm:ss')
+-  return ''
+-})
++  if (!maxDT.value || !selectedDate.value) return "";
++  if (dayjs(selectedDate.value).isSame(maxDT.value, "day"))
++    return maxDT.value.format("HH:mm:ss");
++  return "";
++});
+@@ -295,2 +299,2 @@ watch([computedMinTime, computedMaxTime, timeValue, selectedDate], () => {
+-  if (!selectedDate.value || !timeValue.value) return
+-  const cur = dayjs(`${selectedDate.value} ${timeValue.value}`)
++  if (!selectedDate.value || !timeValue.value) return;
++  const cur = dayjs(`${selectedDate.value} ${timeValue.value}`);
+@@ -298 +302 @@ watch([computedMinTime, computedMaxTime, timeValue, selectedDate], () => {
+-    timeValue.value = computedMinTime.value || timeValue.value
++    timeValue.value = computedMinTime.value || timeValue.value;
+@@ -300,2 +304,2 @@ watch([computedMinTime, computedMaxTime, timeValue, selectedDate], () => {
+-    timeValue.value = computedMaxTime.value || timeValue.value
+-})
++    timeValue.value = computedMaxTime.value || timeValue.value;
++});
+@@ -306 +310 @@ function commitInput(close = false): void {
+-  const raw = inputValue.value.trim()
++  const raw = inputValue.value.trim();
+@@ -309,4 +313,4 @@ function commitInput(close = false): void {
+-      const now = dayjsLocal()
+-      selectDate(now)
+-      timeValue.value = now.format('HH:mm:ss')
+-      emitChange()
++      const now = dayjsLocal();
++      selectDate(now);
++      timeValue.value = now.format("HH:mm:ss");
++      emitChange();
+@@ -314 +318 @@ function commitInput(close = false): void {
+-      clearSelection()
++      clearSelection();
+@@ -316,2 +320,2 @@ function commitInput(close = false): void {
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
+-    return
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
++    return;
+@@ -319 +323 @@ function commitInput(close = false): void {
+-  const parsed = coerceToDayjs(raw)
++  const parsed = parseCalendarDateTime(raw) ?? coerceToDayjs(raw);
+@@ -321,4 +325,4 @@ function commitInput(close = false): void {
+-    selectDate(parsed)
+-    timeValue.value = parsed.format('HH:mm:ss')
+-    emitChange()
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
++    selectDate(parsed);
++    timeValue.value = parsed.format("HH:mm:ss");
++    emitChange();
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
+@@ -326 +330 @@ function commitInput(close = false): void {
+-    inputValue.value = displayLabel.value
++    inputValue.value = displayLabel.value;
+@@ -331,3 +335,3 @@ function selectDate(date: string | Date | Dayjs): void {
+-  const d = dayjs(date as any)
+-  if (!d.isValid() || checkUnavailable(d)) return
+-  selectedDate.value = d.format(DATE_FORMAT)
++  const d = dayjs(date as any);
++  if (!d.isValid() || checkUnavailable(d)) return;
++  selectedDate.value = d.format(DATE_FORMAT);
+@@ -337,3 +341,3 @@ function handleDateCellClick(date: string | Date | Dayjs) {
+-  selectDate(date)
+-  emitChange()
+-  isTyping.value = false
++  selectDate(date);
++  emitChange();
++  isTyping.value = false;
+@@ -342 +346 @@ function handleDateCellClick(date: string | Date | Dayjs) {
+-  nextTick(() => timePickerRef.value?.focus?.())
++  nextTick(() => timePickerRef.value?.focus?.());
+@@ -346,3 +350,3 @@ function onTimeChange(val: string) {
+-  timeValue.value = val
+-  isTyping.value = false
+-  if (selectedDate.value) emitChange()
++  timeValue.value = val;
++  isTyping.value = false;
++  if (selectedDate.value) emitChange();
+@@ -353,2 +357,2 @@ function emitChange() {
+-    clearSelection()
+-    return
++    clearSelection();
++    return;
+@@ -357,2 +361,2 @@ function emitChange() {
+-  const localDateTime = combinedValue.value
+-  const systemDateTime = dayjsSystem(localDateTime).format(DATE_TIME_FORMAT)
++  const localDateTime = combinedValue.value;
++  const systemDateTime = dayjsSystem(localDateTime).format(DATE_TIME_FORMAT);
+@@ -361,3 +365,3 @@ function emitChange() {
+-    emit('update:modelValue', systemDateTime)
+-    emit('change', systemDateTime)
+-    initialValue.value = systemDateTime
++    emit("update:modelValue", systemDateTime);
++    emit("change", systemDateTime);
++    initialValue.value = systemDateTime;
+@@ -366 +370 @@ function emitChange() {
+-  if (!isTyping.value) inputValue.value = displayLabel.value
++  if (!isTyping.value) inputValue.value = displayLabel.value;
+@@ -370,7 +374,7 @@ function clearSelection() {
+-  if (!selectedDate.value && !timeValue.value) return
+-  selectedDate.value = ''
+-  timeValue.value = ''
+-  emit('update:modelValue', '')
+-  emit('change', '')
+-  initialValue.value = ''
+-  inputValue.value = ''
++  if (!selectedDate.value && !timeValue.value) return;
++  selectedDate.value = "";
++  timeValue.value = "";
++  emit("update:modelValue", "");
++  emit("change", "");
++  initialValue.value = "";
++  inputValue.value = "";
+@@ -381,5 +385,5 @@ function handleNowClick(date: string) {
+-  selectDate(date)
+-  timeValue.value = dayjsLocal().format('HH:mm:ss')
+-  emitChange()
+-  isTyping.value = false
+-  if (!shouldKeepOpen.value) isOpen.value = false
++  selectDate(date);
++  timeValue.value = dayjsLocal().format("HH:mm:ss");
++  emitChange();
++  isTyping.value = false;
++  if (!shouldKeepOpen.value) isOpen.value = false;
+@@ -389,3 +393,3 @@ function handleClearClick() {
+-  clearSelection()
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  clearSelection();
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/composables.ts b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
+index 553986b..438efd8 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/composables.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
+@@ -1,5 +1,6 @@
+-import { ref, computed, watch } from 'vue'
+-import type { Dayjs } from 'dayjs/esm'
+-import { dayjs } from '../../utils/dayjs'
+-import { generateWeeks, monthStart, getDateValue } from './utils'
+-import type { CalendarPanelExposed } from './calendarTypes'
++import { ref, computed, watch } from "vue";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs } from "../../utils/dayjs";
++import { generateWeeks, monthStart, getDateValue } from "./utils";
++import type { CalendarPanelExposed } from "./calendarTypes";
++import { shiftCalendarMonth, toCalendarDate } from "./jalali";
+@@ -11 +12 @@ import type {
+-} from './types'
++} from "./types";
+@@ -15,3 +16,5 @@ export function useCalendarView() {
+-  const view = ref<ViewMode>('date')
+-  const currentYear = ref<number>(dayjs().year())
+-  const currentMonth = ref<number>(dayjs().month())
++  const view = ref<ViewMode>("date");
++  const today = dayjs();
++  const initial = toCalendarDate(today);
++  const currentYear = ref<number>(initial.jy);
++  const currentMonth = ref<number>(initial.jm - 1);
+@@ -22,6 +25,3 @@ export function useCalendarView() {
+-    const m = monthStart(currentYear.value, currentMonth.value).subtract(
+-      1,
+-      'month',
+-    )
+-    currentYear.value = m.year()
+-    currentMonth.value = m.month()
++    const value = shiftCalendarMonth(currentYear.value, currentMonth.value, -1);
++    currentYear.value = value.year;
++    currentMonth.value = value.month;
+@@ -31,3 +31,3 @@ export function useCalendarView() {
+-    const m = monthStart(currentYear.value, currentMonth.value).add(1, 'month')
+-    currentYear.value = m.year()
+-    currentMonth.value = m.month()
++    const value = shiftCalendarMonth(currentYear.value, currentMonth.value, 1);
++    currentYear.value = value.year;
++    currentMonth.value = value.month;
+@@ -38 +38 @@ export function useCalendarView() {
+-    view.value = view.value === 'date' ? 'monthYear' : 'date'
++    view.value = view.value === "date" ? "monthYear" : "date";
+@@ -43,2 +43,2 @@ export function useCalendarView() {
+-    currentMonth.value = i
+-    view.value = 'date'
++    currentMonth.value = i;
++    view.value = "date";
+@@ -49 +49 @@ export function useCalendarView() {
+-    currentYear.value = y
++    currentYear.value = y;
+@@ -53,2 +53,3 @@ export function useCalendarView() {
+-    currentYear.value = d.year()
+-    currentMonth.value = d.month()
++    const value = toCalendarDate(d);
++    currentYear.value = value.jy;
++    currentMonth.value = value.jm - 1;
+@@ -58 +59 @@ export function useCalendarView() {
+-    view.value = 'date'
++    view.value = "date";
+@@ -72 +73 @@ export function useCalendarView() {
+-  }
++  };
+@@ -77,4 +78,4 @@ export function usePopoverPositioning(props: CommonDatePickerProps) {
+-  const resolvedSide = computed<PopoverSide>(() => props.side ?? 'bottom')
+-  const resolvedAlign = computed<PopoverAlign>(() => props.align ?? 'start')
+-  const resolvedOffset = computed(() => props.offset ?? 4)
+-  return { resolvedSide, resolvedAlign, resolvedOffset }
++  const resolvedSide = computed<PopoverSide>(() => props.side ?? "bottom");
++  const resolvedAlign = computed<PopoverAlign>(() => props.align ?? "start");
++  const resolvedOffset = computed(() => props.offset ?? 4);
++  return { resolvedSide, resolvedAlign, resolvedOffset };
+@@ -88 +89 @@ export function useTypeable(props: { typeable?: boolean }) {
+-  return computed<boolean>(() => props.typeable === false)
++  return computed<boolean>(() => props.typeable === false);
+@@ -93 +94 @@ export function useKeepOpen(props: CommonDatePickerProps) {
+-  return computed(() => props.keepOpen === true)
++  return computed(() => props.keepOpen === true);
+@@ -99,4 +100,4 @@ export function useDateCoercion(getFormat: () => string | undefined) {
+-    if (!val) return null
+-    const raw = String(val).trim()
+-    if (!raw) return null
+-    const format = getFormat()
++    if (!val) return null;
++    const raw = String(val).trim();
++    if (!raw) return null;
++    const format = getFormat();
+@@ -104,2 +105,2 @@ export function useDateCoercion(getFormat: () => string | undefined) {
+-      const dStrict = dayjs(raw, format, true)
+-      if (dStrict.isValid()) return dStrict
++      const dStrict = dayjs(raw, format, true);
++      if (dStrict.isValid()) return dStrict;
+@@ -107,3 +108,3 @@ export function useDateCoercion(getFormat: () => string | undefined) {
+-    const dLoose = dayjs(raw)
+-    if (dLoose.isValid()) return dLoose
+-    const normalized = getDateValue(raw)
++    const dLoose = dayjs(raw);
++    if (dLoose.isValid()) return dLoose;
++    const normalized = getDateValue(raw);
+@@ -111,2 +112,2 @@ export function useDateCoercion(getFormat: () => string | undefined) {
+-      const dNorm = dayjs(normalized)
+-      if (dNorm.isValid()) return dNorm
++      const dNorm = dayjs(normalized);
++      if (dNorm.isValid()) return dNorm;
+@@ -114,2 +115,2 @@ export function useDateCoercion(getFormat: () => string | undefined) {
+-    return null
+-  }
++    return null;
++  };
+@@ -122 +123 @@ export function makeUnavailableCheck(
+-  getIsUnavailable: () => ((d: Dayjs) => boolean) | undefined,
++  getIsUnavailable: () => ((d: Dayjs) => boolean) | undefined
+@@ -125,8 +126,8 @@ export function makeUnavailableCheck(
+-    const min = getMin()
+-    const max = getMax()
+-    const isUnavailable = getIsUnavailable()
+-    if (min && d.isBefore(dayjs(min), 'day')) return true
+-    if (max && d.isAfter(dayjs(max), 'day')) return true
+-    if (isUnavailable?.(d)) return true
+-    return false
+-  }
++    const min = getMin();
++    const max = getMax();
++    const isUnavailable = getIsUnavailable();
++    if (min && d.isBefore(dayjs(min), "day")) return true;
++    if (max && d.isAfter(dayjs(max), "day")) return true;
++    if (isUnavailable?.(d)) return true;
++    return false;
++  };
+@@ -137 +138 @@ export interface UseFocusedDateOptions {
+-  key: () => string
++  key: () => string;
+@@ -139 +140 @@ export interface UseFocusedDateOptions {
+-  anchor: () => Dayjs | null
++  anchor: () => Dayjs | null;
+@@ -141,5 +142,5 @@ export interface UseFocusedDateOptions {
+-  months: () => Array<{ year: number; month: number }>
+-  isUnavailable: (date: Dayjs) => boolean
+-  focusOn: (date: Dayjs) => void
+-  resetView: () => void
+-  panels: () => Array<CalendarPanelExposed | null | undefined>
++  months: () => Array<{ year: number; month: number }>;
++  isUnavailable: (date: Dayjs) => boolean;
++  focusOn: (date: Dayjs) => void;
++  resetView: () => void;
++  panels: () => Array<CalendarPanelExposed | null | undefined>;
+@@ -152,2 +153,2 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-  const focusedDate = ref<Dayjs | null>(null)
+-  let ownKey: string | null = null
++  const focusedDate = ref<Dayjs | null>(null);
++  let ownKey: string | null = null;
+@@ -156 +157 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-    const anchor = options.anchor()
++    const anchor = options.anchor();
+@@ -158,2 +159,2 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-      focusedDate.value = anchor
+-      return
++      focusedDate.value = anchor;
++      return;
+@@ -163,4 +164,4 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-      .flatMap(({ year, month }) => generateWeeks(year, month, '').flat())
+-      .filter((cell) => cell.inMonth && !options.isUnavailable(cell.date))
+-    const target = cells.find((cell) => cell.isToday) ?? cells[0]
+-    if (target) focusedDate.value = target.date
++      .flatMap(({ year, month }) => generateWeeks(year, month, "").flat())
++      .filter((cell) => cell.inMonth && !options.isUnavailable(cell.date));
++    const target = cells.find((cell) => cell.isToday) ?? cells[0];
++    if (target) focusedDate.value = target.date;
+@@ -175,5 +176,5 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-      if (key === ownKey) return
+-      options.resetView()
+-      const anchor = options.anchor()
+-      if (anchor?.isValid()) options.focusOn(anchor)
+-      seed()
++      if (key === ownKey) return;
++      options.resetView();
++      const anchor = options.anchor();
++      if (anchor?.isValid()) options.focusOn(anchor);
++      seed();
+@@ -181,2 +182,2 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-    { immediate: true },
+-  )
++    { immediate: true }
++  );
+@@ -186 +187 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-    ownKey = key
++    ownKey = key;
+@@ -191 +192 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-    for (const panel of options.panels()) panel?.focusInitialCell()
++    for (const panel of options.panels()) panel?.focusInitialCell();
+@@ -194 +195 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+-  return { focusedDate, markOwnCommit, focus }
++  return { focusedDate, markOwnCommit, focus };
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/jalali.ts b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+new file mode 100644
+index 0000000..453be18
+--- /dev/null
++++ b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+@@ -0,0 +1,188 @@
++import {
++  digitsEnToFa,
++  digitsFaToEn,
++  digitsArToFa,
++} from "@persian-tools/persian-tools";
++import {
++  isValidJalaaliDate,
++  jalaaliMonthLength,
++  jalaaliWeek,
++  toGregorian,
++  toJalaali,
++} from "jalaali-js";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs } from "../../utils/dayjs";
++
++const intlLocale = "fa-IR-u-ca-persian-nu-arabext";
++
++export function isPersianCalendar(): boolean {
++  return dayjs.locale().split("-")[0] === "fa";
++}
++
++export function toCalendarDate(date: Dayjs) {
++  return isPersianCalendar()
++    ? toJalaali(date.year(), date.month() + 1, date.date())
++    : { jy: date.year(), jm: date.month() + 1, jd: date.date() };
++}
++
++export function fromCalendarDate(
++  year: number,
++  monthIndex: number,
++  day: number
++): Dayjs {
++  if (isPersianCalendar()) {
++    const date = toGregorian(year, monthIndex + 1, day);
++    return dayjs(
++      `${date.gy}-${String(date.gm).padStart(2, "0")}-${String(date.gd).padStart(2, "0")}`
++    );
++  }
++  return dayjs(
++    `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(
++      2,
++      "0"
++    )}`
++  );
++}
++
++export function shiftCalendarMonth(
++  year: number,
++  monthIndex: number,
++  amount: number
++) {
++  if (isPersianCalendar()) {
++    const month = monthIndex + amount;
++    return {
++      year: year + Math.floor(month / 12),
++      month: ((month % 12) + 12) % 12,
++    };
++  }
++  const date = dayjs(
++    `${year}-${String(monthIndex + 1).padStart(2, "0")}-01`
++  ).add(amount, "month");
++  return { year: date.year(), month: date.month() };
++}
++
++export function shiftCalendarDate(
++  date: Dayjs,
++  years: number,
++  months: number
++): Dayjs {
++  if (!isPersianCalendar()) return date.add(years, "year").add(months, "month");
++  const current = toJalaali(date.year(), date.month() + 1, date.date());
++  let year = current.jy + years;
++  let month = current.jm - 1 + months;
++  year += Math.floor(month / 12);
++  month = ((month % 12) + 12) % 12;
++  const day = Math.min(current.jd, jalaaliMonthLength(year, month + 1));
++  return fromCalendarDate(year, month, day);
++}
++
++export function calendarMonths(year: number): string[] {
++  return Array.from({ length: 12 }, (_, monthIndex) => {
++    const date = fromCalendarDate(year, monthIndex, 1);
++    if (!isPersianCalendar()) return date.format("MMM");
++    return new Intl.DateTimeFormat(intlLocale, {
++      month: "long",
++      timeZone: "UTC",
++    }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++  });
++}
++
++export function calendarYear(year: number): string {
++  return isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
++}
++
++export function calendarMonthYear(year: number, monthIndex: number): string {
++  const date = fromCalendarDate(year, monthIndex, 1);
++  if (!isPersianCalendar()) return date.format("MMM YYYY");
++  return new Intl.DateTimeFormat(intlLocale, {
++    month: "long",
++    year: "numeric",
++    timeZone: "UTC",
++  }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++}
++
++export function calendarWeekdays(): string[] {
++  if (!isPersianCalendar()) return ["S", "M", "T", "W", "T", "F", "S"];
++  const now = dayjs();
++  const today = toJalaali(now.year(), now.month() + 1, now.date());
++  const saturday = jalaaliWeek(today.jy, today.jm, today.jd).saturday;
++  const gregorian = toGregorian(saturday.jy, saturday.jm, saturday.jd);
++  const start = new Date(
++    Date.UTC(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12)
++  );
++  const weekday = new Intl.DateTimeFormat(intlLocale, {
++    weekday: "narrow",
++    timeZone: "UTC",
++  });
++  return Array.from({ length: 7 }, (_, index) => {
++    const date = new Date(start);
++    date.setUTCDate(date.getUTCDate() + index);
++    return weekday.format(date);
++  });
++}
++
++export function calendarDay(date: Dayjs): string {
++  const { jd } = toCalendarDate(date);
++  return isPersianCalendar() ? digitsEnToFa(String(jd)) : String(jd);
++}
++
++export function calendarWeekdayIndex(date: Dayjs): number {
++  if (!isPersianCalendar()) return date.day();
++  const { jy, jm, jd } = toCalendarDate(date);
++  const saturday = jalaaliWeek(jy, jm, jd).saturday;
++  return date.startOf("day").diff(
++    fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd),
++    "day"
++  );
++}
++
++export function startOfCalendarWeek(date: Dayjs): Dayjs {
++  if (!isPersianCalendar()) return date.startOf("week");
++  const { jy, jm, jd } = toCalendarDate(date);
++  const saturday = jalaaliWeek(jy, jm, jd).saturday;
++  return fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd);
++}
++
++export function formatCalendarRange(from: Dayjs, to: Dayjs): string {
++  if (!isPersianCalendar())
++    return `${from.format("YYYY-MM-DD")} to ${to.format("YYYY-MM-DD")}`;
++  return `${formatCalendarDate(from)} – ${formatCalendarDate(to)}`;
++}
++
++export function formatCalendarDate(date: Dayjs): string {
++  if (!isPersianCalendar()) return date.format("YYYY-MM-DD");
++  const { jy, jm, jd } = toJalaali(date.year(), date.month() + 1, date.date());
++  return digitsEnToFa(
++    `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`
++  );
++}
++
++export function formatCalendarDateTime(date: Dayjs): string {
++  if (!isPersianCalendar()) return date.format("YYYY-MM-DD HH:mm");
++  return digitsEnToFa(`${formatCalendarDate(date)} - ${date.format("HH:mm")}`);
++}
++
++export function parseCalendarDateTime(value: string): Dayjs | null {
++  if (!isPersianCalendar()) return null;
++  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
++  const match = normalized.match(
++    /^(\d{4}[/-]\d{1,2}[/-]\d{1,2})\s*(?:-|,)?\s*(\d{1,2}:\d{2}(?::\d{2})?)$/
++  );
++  if (!match) return null;
++  const date = parseCalendarDate(match[1]);
++  return date ? dayjs(`${date.format("YYYY-MM-DD")} ${match[2]}`) : null;
++}
++
++export function parseCalendarDate(value: string): Dayjs | null {
++  if (!isPersianCalendar()) return null;
++  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
++  const match = normalized.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
++  if (!match) return null;
++  const [, year, month, day] = match.map(Number);
++  if (!isValidJalaaliDate(year, month, day)) return null;
++  const gregorian = toGregorian(year, month, day);
++  return dayjs(
++    `${gregorian.gy}-${String(gregorian.gm).padStart(2, "0")}-${String(gregorian.gd).padStart(2, "0")}`
++  );
++}
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/types.ts b/node_modules/frappe-ui/src/components/DatePicker/types.ts
+index 060aac9..d81e03b 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/types.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/types.ts
+@@ -1,3 +1,3 @@
+-import type { Dayjs } from 'dayjs/esm'
+-import type { InputSize, InputVariant } from '../../composables/inputTypes'
+-import type { InputLabelingProps } from '../../composables/useInputLabeling'
++import type { Dayjs } from "dayjs/esm";
++import type { InputSize, InputVariant } from "../../composables/inputTypes";
++import type { InputLabelingProps } from "../../composables/useInputLabeling";
+@@ -8,2 +8,2 @@ import type { InputLabelingProps } from '../../composables/useInputLabeling'
+-import type { PopoverAlign, PopoverSide } from '../Popover/types'
+-export type { PopoverAlign, PopoverSide }
++import type { PopoverAlign, PopoverSide } from "../Popover/types";
++export type { PopoverAlign, PopoverSide };
+@@ -15 +15 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  side?: PopoverSide
++  side?: PopoverSide;
+@@ -18 +18 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  align?: PopoverAlign
++  align?: PopoverAlign;
+@@ -21 +21 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  offset?: number
++  offset?: number;
+@@ -25 +25 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  format?: string
++  format?: string;
+@@ -28 +28 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  size?: InputSize
++  size?: InputSize;
+@@ -31 +31 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  variant?: InputVariant
++  variant?: InputVariant;
+@@ -34 +34 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  placeholder?: string
++  placeholder?: string;
+@@ -38 +38 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  open?: boolean
++  open?: boolean;
+@@ -41 +41 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  openOnFocus?: boolean
++  openOnFocus?: boolean;
+@@ -44 +44 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  openOnClick?: boolean
++  openOnClick?: boolean;
+@@ -51 +51 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  typeable?: boolean
++  typeable?: boolean;
+@@ -54 +54 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  disabled?: boolean
++  disabled?: boolean;
+@@ -57 +57 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  clearable?: boolean
++  clearable?: boolean;
+@@ -60 +60 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  keepOpen?: boolean
++  keepOpen?: boolean;
+@@ -67 +67 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  min?: string
++  min?: string;
+@@ -73 +73 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  max?: string
++  max?: string;
+@@ -76 +76 @@ export interface CommonDatePickerProps extends InputLabelingProps {
+-  isDateUnavailable?: (date: Dayjs) => boolean
++  isDateUnavailable?: (date: Dayjs) => boolean;
+@@ -81 +81 @@ export interface DatePickerProps extends CommonDatePickerProps {
+-  modelValue?: string
++  modelValue?: string;
+@@ -85 +85 @@ export interface DatePickerProps extends CommonDatePickerProps {
+-export type DateRangeValue = [string, string] | []
++export type DateRangeValue = [string, string] | [];
+@@ -94 +94 @@ export interface DateRangePickerProps extends CommonDatePickerProps {
+-  modelValue?: DateRangeValue
++  modelValue?: DateRangeValue;
+@@ -97 +97 @@ export interface DateRangePickerProps extends CommonDatePickerProps {
+-  dualPane?: boolean
++  dualPane?: boolean;
+@@ -102 +102 @@ export type DatePickerEmits = {
+-  (event: 'update:modelValue', value: string): void
++  (event: "update:modelValue", value: string): void;
+@@ -105 +105 @@ export type DatePickerEmits = {
+-  (event: 'update:open', value: boolean): void
++  (event: "update:open", value: boolean): void;
+@@ -108,2 +108,2 @@ export type DatePickerEmits = {
+-  (event: 'change', value: string): void
+-}
++  (event: "change", value: string): void;
++};
+@@ -113 +113 @@ export type DateRangePickerEmits = {
+-  (event: 'update:modelValue', value: DateRangeValue): void
++  (event: "update:modelValue", value: DateRangeValue): void;
+@@ -116 +116 @@ export type DateRangePickerEmits = {
+-  (event: 'update:open', value: boolean): void
++  (event: "update:open", value: boolean): void;
+@@ -119,2 +119,2 @@ export type DateRangePickerEmits = {
+-  (event: 'change', value: DateRangeValue): void
+-}
++  (event: "change", value: DateRangeValue): void;
++};
+@@ -124 +124 @@ export interface DateTimePickerProps extends CommonDatePickerProps {
+-  modelValue?: string
++  modelValue?: string;
+@@ -127 +127 @@ export interface DateTimePickerProps extends CommonDatePickerProps {
+-export type DateTimePickerEmits = DatePickerEmits
++export type DateTimePickerEmits = DatePickerEmits;
+@@ -134 +134 @@ export interface DatePickerTriggerSlotProps {
+-  open: boolean
++  open: boolean;
+@@ -136 +136 @@ export interface DatePickerTriggerSlotProps {
+-  disabled: boolean
++  disabled: boolean;
+@@ -138 +138 @@ export interface DatePickerTriggerSlotProps {
+-  setOpen: (value: boolean) => void
++  setOpen: (value: boolean) => void;
+@@ -140,3 +140,3 @@ export interface DatePickerTriggerSlotProps {
+-  close: () => void
+-  displayLabel: string
+-  inputValue: string
++  close: () => void;
++  displayLabel: string;
++  inputValue: string;
+@@ -147,7 +147,7 @@ export interface DatePickerActionsSlotProps {
+-  selected: string
+-  setDate: (date: string | Date | Dayjs) => void
+-  clear: () => void
+-  close: () => void
+-  open: boolean
+-  disabled: boolean
+-  setOpen: (value: boolean) => void
++  selected: string;
++  setDate: (date: string | Date | Dayjs) => void;
++  clear: () => void;
++  close: () => void;
++  open: boolean;
++  disabled: boolean;
++  setOpen: (value: boolean) => void;
+@@ -158,2 +158,2 @@ export interface DateRangePickerActionsSlotProps {
+-  fromDate: string
+-  toDate: string
++  fromDate: string;
++  toDate: string;
+@@ -164 +164 @@ export interface DateRangePickerActionsSlotProps {
+-  setDate: (date: string | Date | Dayjs) => void
++  setDate: (date: string | Date | Dayjs) => void;
+@@ -169,6 +169,6 @@ export interface DateRangePickerActionsSlotProps {
+-  setRange: (range: [string | Date | Dayjs, string | Date | Dayjs]) => void
+-  clear: () => void
+-  close: () => void
+-  open: boolean
+-  disabled: boolean
+-  setOpen: (value: boolean) => void
++  setRange: (range: [string | Date | Dayjs, string | Date | Dayjs]) => void;
++  clear: () => void;
++  close: () => void;
++  open: boolean;
++  disabled: boolean;
++  setOpen: (value: boolean) => void;
+@@ -179,8 +179,8 @@ export interface DateTimePickerActionsSlotProps {
+-  selected: string
+-  time: string
+-  setDate: (date: string | Date | Dayjs) => void
+-  clear: () => void
+-  close: () => void
+-  open: boolean
+-  disabled: boolean
+-  setOpen: (value: boolean) => void
++  selected: string;
++  time: string;
++  setDate: (date: string | Date | Dayjs) => void;
++  clear: () => void;
++  close: () => void;
++  open: boolean;
++  disabled: boolean;
++  setOpen: (value: boolean) => void;
+@@ -191 +191 @@ export interface DatePickerSlots {
+-  trigger?: (props: DatePickerTriggerSlotProps) => any
++  trigger?: (props: DatePickerTriggerSlotProps) => any;
+@@ -194 +194 @@ export interface DatePickerSlots {
+-  prefix?: (props: DatePickerTriggerSlotProps) => any
++  prefix?: (props: DatePickerTriggerSlotProps) => any;
+@@ -197 +197 @@ export interface DatePickerSlots {
+-  suffix?: (props: DatePickerTriggerSlotProps) => any
++  suffix?: (props: DatePickerTriggerSlotProps) => any;
+@@ -204 +204 @@ export interface DatePickerSlots {
+-  actions?: (props: DatePickerActionsSlotProps) => any
++  actions?: (props: DatePickerActionsSlotProps) => any;
+@@ -208 +208 @@ export interface DateRangePickerSlots {
+-  trigger?: (props: DatePickerTriggerSlotProps) => any
++  trigger?: (props: DatePickerTriggerSlotProps) => any;
+@@ -210,2 +210,2 @@ export interface DateRangePickerSlots {
+-  prefix?: (props: DatePickerTriggerSlotProps) => any
+-  suffix?: (props: DatePickerTriggerSlotProps) => any
++  prefix?: (props: DatePickerTriggerSlotProps) => any;
++  suffix?: (props: DatePickerTriggerSlotProps) => any;
+@@ -218 +218 @@ export interface DateRangePickerSlots {
+-  actions?: (props: DateRangePickerActionsSlotProps) => any
++  actions?: (props: DateRangePickerActionsSlotProps) => any;
+@@ -222 +222 @@ export interface DateTimePickerSlots {
+-  trigger?: (props: DatePickerTriggerSlotProps) => any
++  trigger?: (props: DatePickerTriggerSlotProps) => any;
+@@ -224,2 +224,2 @@ export interface DateTimePickerSlots {
+-  prefix?: (props: DatePickerTriggerSlotProps) => any
+-  suffix?: (props: DatePickerTriggerSlotProps) => any
++  prefix?: (props: DatePickerTriggerSlotProps) => any;
++  suffix?: (props: DatePickerTriggerSlotProps) => any;
+@@ -232 +232 @@ export interface DateTimePickerSlots {
+-  actions?: (props: DateTimePickerActionsSlotProps) => any
++  actions?: (props: DateTimePickerActionsSlotProps) => any;
+@@ -235 +235 @@ export interface DateTimePickerSlots {
+-export type DatePickerViewMode = 'date' | 'monthYear'
++export type DatePickerViewMode = "date" | "monthYear";
+@@ -238,5 +238,6 @@ export interface DatePickerDateObj {
+-  date: Dayjs
+-  key: string
+-  inMonth: boolean
+-  isToday: boolean
+-  isSelected: boolean
++  date: Dayjs;
++  key: string;
++  inMonth: boolean;
++  isToday: boolean;
++  isSelected: boolean;
++  calendarDay?: string;
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/utils.ts b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
+index 1060017..a8ce3b1 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/utils.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
+@@ -1,20 +1,11 @@
+-import { dayjs, dayjsLocal } from '../../utils/dayjs'
+-import type { Dayjs } from 'dayjs/esm'
+-import type { DatePickerDateObj as DateObj, DateRangeValue } from './types'
+-import type { CalendarPanelCell } from './calendarTypes'
+-
+-// Constant list of month labels
+-export const months: string[] = [
+-  'Jan',
+-  'Feb',
+-  'Mar',
+-  'Apr',
+-  'May',
+-  'Jun',
+-  'Jul',
+-  'Aug',
+-  'Sep',
+-  'Oct',
+-  'Nov',
+-  'Dec',
+-]
++import { dayjs, dayjsLocal } from "../../utils/dayjs";
++import type { Dayjs } from "dayjs/esm";
++import type { DatePickerDateObj as DateObj, DateRangeValue } from "./types";
++import type { CalendarPanelCell } from "./calendarTypes";
++import {
++  calendarDay,
++  fromCalendarDate,
++  isPersianCalendar,
++  startOfCalendarWeek,
++  toCalendarDate,
++} from "./jalali";
+@@ -24 +15 @@ export function monthStart(year: number, monthIndex: number): Dayjs {
+-  return dayjs(`${year}-${monthIndex + 1}-01`)
++  return fromCalendarDate(year, monthIndex, 1);
+@@ -31 +22 @@ export function generateWeeks(
+-  selected: string,
++  selected: string
+@@ -36,5 +27,14 @@ export function generateWeeks(
+-  const start = monthStart(year, monthIndex).startOf('week')
+-  const days: DateObj[] = []
+-  let d: Dayjs = start
+-  const sel = dayjs(selected)
+-  const today = dayjsLocal().format('YYYY-MM-DD')
++  const gregorianMonthStart = monthStart(year, monthIndex);
++  const calendarMonthStart = toCalendarDate(gregorianMonthStart);
++  const first = fromCalendarDate(
++    calendarMonthStart.jy,
++    calendarMonthStart.jm - 1,
++    1
++  );
++  const start = isPersianCalendar()
++    ? startOfCalendarWeek(first)
++    : gregorianMonthStart.startOf("week");
++  const days: DateObj[] = [];
++  let d: Dayjs = start;
++  const sel = dayjs(selected);
++  const today = dayjsLocal().format("YYYY-MM-DD");
+@@ -44,6 +44,10 @@ export function generateWeeks(
+-      key: d.format('YYYY-MM-DD'),
+-      inMonth: d.month() === monthIndex,
+-      isToday: d.isSame(today, 'day'),
+-      isSelected: sel.isValid() && d.isSame(sel, 'day'),
+-    })
+-    d = d.add(1, 'day')
++      key: d.format("YYYY-MM-DD"),
++      inMonth: isPersianCalendar()
++        ? toCalendarDate(d).jy === year &&
++          toCalendarDate(d).jm === monthIndex + 1
++        : d.month() === monthIndex,
++      isToday: d.isSame(today, "day"),
++      isSelected: sel.isValid() && d.isSame(sel, "day"),
++      calendarDay: calendarDay(d),
++    });
++    d = d.add(1, "day");
+@@ -51,3 +55,3 @@ export function generateWeeks(
+-  const chunked: DateObj[][] = []
+-  for (let i = 0; i < days.length; i += 7) chunked.push(days.slice(i, i + 7))
+-  return chunked
++  const chunked: DateObj[][] = [];
++  for (let i = 0; i < days.length; i += 7) chunked.push(days.slice(i, i + 7));
++  return chunked;
+@@ -57 +61 @@ export function getDateValue(date: Date | string) {
+-  if (!date || date.toString() === 'Invalid Date') return ''
++  if (!date || date.toString() === "Invalid Date") return "";
+@@ -60,5 +64,5 @@ export function getDateValue(date: Date | string) {
+-    .set('hour', 0)
+-    .set('minute', 0)
+-    .set('second', 0)
+-    .set('millisecond', 0)
+-    .format('YYYY-MM-DD')
++    .set("hour", 0)
++    .set("minute", 0)
++    .set("second", 0)
++    .set("millisecond", 0)
++    .format("YYYY-MM-DD");
+@@ -73,6 +77,6 @@ export function generateRangeWeeks(options: {
+-  year: number
+-  monthIndex: number
+-  from: string
+-  to: string
+-  preview?: Dayjs | null
+-  isUnavailable: (date: Dayjs) => boolean
++  year: number;
++  monthIndex: number;
++  from: string;
++  to: string;
++  preview?: Dayjs | null;
++  isUnavailable: (date: Dayjs) => boolean;
+@@ -80,7 +84,7 @@ export function generateRangeWeeks(options: {
+-  const { year, monthIndex, from, to, preview, isUnavailable } = options
+-  const raw = generateWeeks(year, monthIndex, '')
+-  const f = from ? dayjs(from) : null
+-  const t = to ? dayjs(to) : null
+-  const hovering = !t && f && preview ? preview : null
+-  const hoverEnd = hovering && hovering.isAfter(f!, 'day') ? hovering : null
+-  const hoverStart = hovering && hovering.isBefore(f!, 'day') ? hovering : null
++  const { year, monthIndex, from, to, preview, isUnavailable } = options;
++  const raw = generateWeeks(year, monthIndex, "");
++  const f = from ? dayjs(from) : null;
++  const t = to ? dayjs(to) : null;
++  const hovering = !t && f && preview ? preview : null;
++  const hoverEnd = hovering && hovering.isAfter(f!, "day") ? hovering : null;
++  const hoverStart = hovering && hovering.isBefore(f!, "day") ? hovering : null;
+@@ -89,3 +93,3 @@ export function generateRangeWeeks(options: {
+-      const isRangeStart = !!(f && d.date.isSame(f, 'day'))
+-      const isRangeEnd = !!(t && d.date.isSame(t, 'day'))
+-      let inRange = false
++      const isRangeStart = !!(f && d.date.isSame(f, "day"));
++      const isRangeEnd = !!(t && d.date.isSame(t, "day"));
++      let inRange = false;
+@@ -93 +97 @@ export function generateRangeWeeks(options: {
+-        inRange = d.date.isAfter(f, 'day') && d.date.isBefore(t, 'day')
++        inRange = d.date.isAfter(f, "day") && d.date.isBefore(t, "day");
+@@ -95 +99 @@ export function generateRangeWeeks(options: {
+-        inRange = d.date.isAfter(f, 'day') && !d.date.isAfter(hoverEnd, 'day')
++        inRange = d.date.isAfter(f, "day") && !d.date.isAfter(hoverEnd, "day");
+@@ -98 +102 @@ export function generateRangeWeeks(options: {
+-          !d.date.isBefore(hoverStart, 'day') && d.date.isBefore(f, 'day')
++          !d.date.isBefore(hoverStart, "day") && d.date.isBefore(f, "day");
+@@ -107,3 +111,3 @@ export function generateRangeWeeks(options: {
+-      }
+-    }),
+-  )
++      };
++    })
++  );
+@@ -114,2 +118,2 @@ export function orderRange(range: [string, string]): [string, string] {
+-  const [from, to] = range
+-  return from && to && from > to ? [to, from] : [from, to]
++  const [from, to] = range;
++  return from && to && from > to ? [to, from] : [from, to];
+@@ -120 +124 @@ export function rangeKey(range: DateRangeValue | [string, string]): string {
+-  return `${range[0] ?? ''},${range[1] ?? ''}`
++  return `${range[0] ?? ""},${range[1] ?? ""}`;
+@@ -129 +133 @@ export function stepRange(
+-  date: Dayjs,
++  date: Dayjs
+@@ -131,4 +135,4 @@ export function stepRange(
+-  const [from, to] = range
+-  const value = date.format('YYYY-MM-DD')
+-  if (!from || to) return [value, '']
+-  return orderRange([from, value])
++  const [from, to] = range;
++  const value = date.format("YYYY-MM-DD");
++  if (!from || to) return [value, ""];
++  return orderRange([from, value]);

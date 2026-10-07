@@ -71,7 +71,8 @@
                     <IconDot class="h-4 w-4 text-ink-gray-5" />
                     <div class="text-base text-ink-gray-7">
                       {{
-                        dayjsLocal(article.data.modified).format(
+                        formatLocalizedDate(
+                          article.data.modified,
                           "MMM D, h:mm A"
                         )
                       }}
@@ -213,7 +214,7 @@
               <div class="flex items-center gap-1">
                 <span class="text-p-xs text-ink-gray-6">
                   {{
-                    dayjsLocal(article.data.modified).format("MMM D, h:mm A")
+                    formatLocalizedDate(article.data.modified, "MMM D, h:mm A")
                   }}
                 </span>
                 <IconDot
@@ -285,6 +286,7 @@ import { Article, Breadcrumb, Error, FeedbackAction, Resource } from "@/types";
 import {
   ConfirmDelete,
   copyToClipboard,
+  formatLocalizedDate,
   isCustomerPortal,
   uploadFunction,
 } from "@/utils";

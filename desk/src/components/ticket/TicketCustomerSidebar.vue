@@ -119,7 +119,7 @@ import {
 } from "@/composables/useSLA";
 import { ITicket } from "@/pages/ticket/symbols";
 import { Field } from "@/types";
-import { dateFormat, dateTooltipFormat } from "@/utils";
+import { dateFormat, dateTooltipFormat, formatLocalizedDate } from "@/utils";
 import { Avatar, dayjs, dayjsLocal, Tooltip } from "frappe-ui";
 import { computed, inject } from "vue";
 
@@ -173,9 +173,9 @@ const ticketBasicInfo = computed(() => [
 
 function storedStamp(field) {
   if (field.fieldtype === "Date")
-    return dayjs(field.raw).format("ddd, MMM D, YYYY");
+    return formatLocalizedDate(dayjs(field.raw), "ddd, MMM D, YYYY");
   if (field.fieldtype === "Datetime")
-    return dayjs(field.raw).format(dateTooltipFormat);
+    return formatLocalizedDate(dayjs(field.raw), dateTooltipFormat);
   return "";
 }
 
@@ -213,13 +213,15 @@ const ticketAdditionalInfo = computed(() => {
         raw: ticket.data[field.fieldname],
       };
       if (field.fieldtype === "Date") {
-        option.value = dayjs(option.value).format(
+        option.value = formatLocalizedDate(
+          dayjs(option.value),
           window.date_format.toUpperCase()
         );
       }
       if (field.fieldtype === "Datetime") {
         // window.time_format
-        option.value = dayjs(option.value).format(
+        option.value = formatLocalizedDate(
+          dayjs(option.value),
           `${window.date_format.toUpperCase()} ${window.time_format}`
         );
       }

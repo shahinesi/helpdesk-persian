@@ -216,6 +216,7 @@ import { useScreenSize } from "@/composables/screen";
 import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
+import { formatLocalizedDate } from "@/utils";
 import { Link } from "@framework/ui";
 import { useStorage } from "@vueuse/core";
 import {
@@ -644,15 +645,10 @@ function formatter(range: string) {
 }
 
 function formatRange(date: string) {
-  const dateObj = new Date(date);
-  return dateObj.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year:
-      dateObj.getFullYear() === new Date().getFullYear()
-        ? undefined
-        : "numeric",
-  });
+  const sameYear =
+    formatLocalizedDate(date, "YYYY") ===
+    formatLocalizedDate(new Date(), "YYYY");
+  return formatLocalizedDate(date, sameYear ? "MMM D" : "MMM D, YYYY");
 }
 
 watch(
