@@ -70,9 +70,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('From date')" for="from_date" required />
               <DatePicker
+                :today-label="__('Today')"
                 v-model="holidayData.from_date"
                 variant="subtle"
-                placeholder="11/01/2025"
                 class="w-full"
                 id="from_date"
                 :format="getDateFormat()"
@@ -91,9 +91,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('To date')" for="to_date" required />
               <DatePicker
+                :today-label="__('Today')"
                 v-model="holidayData.to_date"
                 variant="subtle"
-                placeholder="25/12/2025"
                 class="w-full"
                 id="to_date"
                 :format="getDateFormat()"

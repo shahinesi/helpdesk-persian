@@ -33,6 +33,7 @@
         <DateRangePicker
           v-else
           class="!w-48"
+          :today-label="__('Today')"
           ref="datePickerRef"
           v-model="periodRange"
           variant="outline"

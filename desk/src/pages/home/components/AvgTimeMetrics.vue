@@ -30,6 +30,7 @@
           </template>
         </Dropdown>
         <DateRangePicker
+          :today-label="__('Today')"
           v-else
           ref="datePickerRef"
           :model-value="customDateRange ? customDateRange.split(',') : []"

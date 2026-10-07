@@ -10,6 +10,7 @@
         <div class="flex flex-col gap-1.5">
           <FormLabel :label="__(`Date`)" required />
           <DatePicker
+            :today-label="__('Today')"
             :model-value="dayjs(dialog.holiday_date).format('YYYY-MM-DD')"
             @update:model-value="
               (value) => {

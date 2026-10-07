@@ -168,9 +168,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('From date')" for="from_date" />
               <DatePicker
+                :today-label="__('Today')"
                 v-model="slaData.start_date"
                 variant="subtle"
-                placeholder="11/01/2025"
                 class="w-full"
                 id="from_date"
                 @update:model-value="validateSlaData('start_date')"
@@ -185,9 +185,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('To date')" for="to_date" />
               <DatePicker
+                :today-label="__('Today')"
                 v-model="slaData.end_date"
                 variant="subtle"
-                placeholder="25/12/2025"
                 class="w-full"
                 id="to_date"
                 @update:model-value="validateSlaData('end_date')"

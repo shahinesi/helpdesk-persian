@@ -93,6 +93,7 @@
         <Rating v-model="ratingStars" size="md" />
       </div>
       <DateRangePicker
+        :today-label="__('Today')"
         v-else-if="isDate && operator === 'between'"
         :model-value="dateRangeValue"
         icon-left=""
@@ -101,6 +102,7 @@
       <component
         v-else-if="isDate"
         :is="field.fieldtype === 'Date' ? DatePicker : DateTimePicker"
+        :today-label="__('Today')"
         :model-value="value"
         icon-left=""
         @change="(date) => commitAndClose(date)"
