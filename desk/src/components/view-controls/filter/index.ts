@@ -1,3 +1,4 @@
 export { default as Filter } from "./Filter.vue";
-export { displayLinkOption, normalizeFilters } from "./filter";
+export { normalizeFilters } from "./filter";
+export { displayLinkOption } from "@/utils/displayLinkOption";
 export type { ActiveFilter, FilterCondition, FilterField } from "./filter";

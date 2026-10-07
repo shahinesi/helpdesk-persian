@@ -24,6 +24,7 @@
 <script setup lang="ts">
 import FieldLabel from "@/components/FieldLabel.vue";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { APIOptions, Field, FieldValue } from "@/types";
 import { parseApiOptions } from "@/utils";
@@ -186,6 +187,13 @@ const component = computed(() => {
               : null,
         }
       );
+    }
+    if (
+      props.field.options === "HD Ticket Type" &&
+      displayLinkOption(props.field.options, String(props.value || "")) !==
+        props.value
+    ) {
+      return h(HelpdeskLink, linkProps);
     }
     return h(FrameworkLink, linkProps);
   } else if (props.field.fieldtype === "Select") {

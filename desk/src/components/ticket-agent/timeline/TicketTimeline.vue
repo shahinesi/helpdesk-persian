@@ -142,6 +142,7 @@ import { useAuthStore } from "@/stores/auth";
 import { globalStore } from "@/stores/globalStore";
 import { useUserStore } from "@/stores/user";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { TicketSymbol } from "@/types";
 import { copyActivityLink } from "@/utils";
 import {
@@ -241,32 +242,42 @@ const filtered = computed(() => {
   return rows
     .filter((a) => props.tab === "activity" || a.type === props.tab)
     .map((activity) =>
-      activity.type === "version" ? localizePriorityValues(activity) : activity
+      activity.type === "version" ? localizeStandardValues(activity) : activity
     );
 });
 
 const STANDARD_PRIORITIES = new Set(["Low", "Medium", "High", "Urgent"]);
-
-function localizePriorityValue(value: string | undefined): string | undefined {
-  return value && STANDARD_PRIORITIES.has(value) ? __(value) : value;
+function localizeStandardValue(fieldname: string, value: string | undefined) {
+  if (fieldname === "priority" && value && STANDARD_PRIORITIES.has(value)) {
+    return __(value);
+  }
+  if (fieldname === "ticket_type" && value)
+    return displayLinkOption("HD Ticket Type", value);
+  return value;
 }
 
-function localizePriorityValues(activity: VersionActivity): VersionActivity {
+function localizeStandardValues(activity: VersionActivity): VersionActivity {
   const localizeChange = (change: VersionChange): VersionChange => {
-    if (change.type !== "diff" || change.fieldname !== "priority") {
+    if (
+      change.type !== "diff" ||
+      !["priority", "ticket_type"].includes(change.fieldname)
+    ) {
       return change;
     }
+    const fieldLabel = __(
+      change.fieldname === "priority" ? "Priority" : "Type"
+    );
     return {
       ...change,
       prefix: change.from
-        ? __("changed {0}", __("Priority"))
-        : __("set {0} to", __("Priority")),
-      from: localizePriorityValue(change.from),
-      to: localizePriorityValue(change.to) ?? change.to,
+        ? __("changed {0}", fieldLabel)
+        : __("set {0} to", fieldLabel),
+      from: localizeStandardValue(change.fieldname, change.from),
+      to: localizeStandardValue(change.fieldname, change.to) ?? change.to,
       history: change.history?.map((entry) => ({
         ...entry,
-        from: localizePriorityValue(entry.from) ?? entry.from,
-        to: localizePriorityValue(entry.to) ?? entry.to,
+        from: localizeStandardValue(change.fieldname, entry.from) ?? entry.from,
+        to: localizeStandardValue(change.fieldname, entry.to) ?? entry.to,
       })),
     };
   };

@@ -2,6 +2,7 @@ import { useDebounceFn } from "@vueuse/core";
 import { createResource } from "frappe-ui";
 import { computed, inject, Component, ComputedRef } from "vue";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import LucideCalendar from "~icons/lucide/calendar";
 import LucideClock from "~icons/lucide/clock";
 import LucideHash from "~icons/lucide/hash";
@@ -179,16 +180,6 @@ export function useLinkSearch(doctype: string, filters?: Record<string, any>) {
   }, 300);
 
   return { results, search };
-}
-
-const standardLinkOptions: Record<string, string[]> = {
-  "HD Ticket Status": ["Open", "Replied", "Resolved", "Closed"],
-  "HD Ticket Priority": ["Low", "Medium", "High", "Urgent"],
-  "HD Ticket Type": ["Question", "Bug", "Incident"],
-};
-
-export function displayLinkOption(doctype: string, option: string) {
-  return standardLinkOptions[doctype]?.includes(option) ? __(option) : option;
 }
 
 function buildCondition(

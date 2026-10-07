@@ -72,6 +72,7 @@ import LucidePlus from "~icons/lucide/plus";
 import { watchDebounced } from "@vueuse/core";
 import { Button, Combobox, createResource } from "frappe-ui";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { computed, ref, useAttrs, watch } from "vue";
 
 const props = defineProps({
@@ -137,7 +138,10 @@ const linkOptions = computed(() => {
     : data.map(({ description, ...rest }) => rest);
   const displayRows = rows.map((row) => ({
     ...row,
-    label: props.doctype === "HD Ticket Priority" ? __(row.value) : row.label,
+    label:
+      displayLinkOption(props.doctype, row.value) === row.value
+        ? row.label
+        : displayLinkOption(props.doctype, row.value),
   }));
   // The button trigger prints only an option it has loaded, and the search
   // returns one page. A value saved outside that page needs a row of its own
@@ -145,10 +149,7 @@ const linkOptions = computed(() => {
   if (value.value && !displayRows.some((row) => row.value === value.value)) {
     return [
       {
-        label:
-          props.doctype === "HD Ticket Priority"
-            ? __(value.value)
-            : value.value,
+        label: displayLinkOption(props.doctype, value.value),
         value: value.value,
       },
       ...displayRows,
