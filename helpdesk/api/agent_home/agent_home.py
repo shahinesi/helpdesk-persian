@@ -2,6 +2,7 @@ import json
 from datetime import date, timedelta
 
 import frappe
+from frappe import _
 from dateutil.relativedelta import relativedelta
 from frappe.query_builder import DocType
 from frappe.query_builder.functions import Avg, Count, Function
