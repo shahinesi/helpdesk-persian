@@ -786,6 +786,10 @@ msgstr "کارشناس مسئول"
 msgid "changed {0}"
 msgstr "{0} را تغییر داد:"
 
+#: frappe/desk/form/activity.py:585
+msgid "set {0} to"
+msgstr "مقدار {0} را تعیین کرد:"
+
 #: Rules/AssigneeRules.vue:5 desk/src/components/Settings/Assignment
 msgid "Assignee Rules"
 msgstr "قواعد واگذاری به کارشناسان"

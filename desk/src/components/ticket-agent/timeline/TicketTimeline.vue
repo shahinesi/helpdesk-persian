@@ -258,6 +258,9 @@ function localizePriorityValues(activity: VersionActivity): VersionActivity {
     }
     return {
       ...change,
+      prefix: change.from
+        ? __("changed {0}", __("Priority"))
+        : __("set {0} to", __("Priority")),
       from: localizePriorityValue(change.from),
       to: localizePriorityValue(change.to) ?? change.to,
       history: change.history?.map((entry) => ({

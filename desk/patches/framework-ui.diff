@@ -179,3 +179,10 @@ index b3a775c..acf01a6 100644
 @@ -100 +102 @@ function dependsOnTooltip(step: OnboardingStep) {
 -			return `You need to complete "${dependsOnStep.title}" first.`;
 +			return __('You need to complete "{0}" first.', dependsOnStep.title);
+diff --git a/src/components/ActivityTimeline/ValueChange.vue b/src/components/ActivityTimeline/ValueChange.vue
+index 2bb0d45..2bb0d45 100644
+--- a/src/components/ActivityTimeline/ValueChange.vue
++++ b/src/components/ActivityTimeline/ValueChange.vue
+@@ -10 +10 @@
+-			<span v-if="from != null || showEmptyFrom" class="text-ink-gray-5">→</span>
++			<span v-if="from != null || showEmptyFrom" class="text-ink-gray-5 rtl:rotate-180">→</span>
