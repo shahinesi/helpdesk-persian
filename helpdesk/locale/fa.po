@@ -1819,7 +1819,7 @@ msgstr "کشور"
 #: desk/src/pages/knowledge-base/NewArticle.vue:29
 #: desk/src/pages/ticket/Tickets.vue:20
 msgid "Create"
-msgstr "ایجاد کردن"
+msgstr "ایجاد"
 
 #: desk/src/components/layouts/Sidebar.vue:326
 #: desk/src/components/layouts/Sidebar.vue:332
@@ -1829,6 +1829,10 @@ msgstr "ایجاد مخاطب و دعوت از او"
 #: desk/src/components/contact/NewContactDialog.vue:5
 msgid "Create Contact"
 msgstr "ایجاد مخاطب"
+
+#: desk/src/components/knowledge-base/CategoryModal.vue:52
+msgid "Create Category"
+msgstr "ایجاد دسته‌بندی"
 
 #: desk/src/components/customer/NewCustomerDialog.vue:4
 msgid "Create Customer"
@@ -2479,6 +2483,10 @@ msgstr "ویرایش لاگ تماس"
 #: desk/src/components/contact/EditContactDialog.vue:8
 msgid "Edit Contact"
 msgstr "ویرایش مخاطب"
+
+#: desk/src/components/knowledge-base/CategoryModal.vue:52
+msgid "Edit Category"
+msgstr "ویرایش دسته‌بندی"
 
 #: desk/src/components/customer/EditCustomerDialog.vue:14
 msgid "Edit Customer"
@@ -6950,6 +6958,10 @@ msgstr "یک‌شنبه"
 #: desk/src/components/layouts/Sidebar.vue:166
 msgid "Support"
 msgstr "پشتیبانی"
+
+#: desk/src/components/knowledge-base/CategoryModal.vue:12
+msgid "Support Issues"
+msgstr "مشکلات پشتیبانی"
 
 #. Name of a report
 #: helpdesk/helpdesk/report/support_hour_distribution/support_hour_distribution.json

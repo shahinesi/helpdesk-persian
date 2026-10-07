@@ -7,9 +7,10 @@
     <template #default>
       <div class="flex flex-col flex-1 gap-3">
         <textarea
-          class="text-base rounded-4 py-1.5 px-2 border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:bg-surface-base focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full block"
+          class="font-sans text-start text-base rounded-4 py-1.5 px-2 border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:bg-surface-base focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full block"
           ref="titleRef"
-          :placeholder="__(`Support Issues`)"
+          :placeholder="__('Support Issues')"
+          dir="auto"
           v-model="newTitle"
           :rows="1"
           maxlength="50"
@@ -48,7 +49,7 @@ const showDialog = defineModel<boolean>();
 const newTitle = defineModel<string>("title");
 
 const dialogTitle = computed(() =>
-  props.edit ? "Edit Category" : "Create Category"
+  props.edit ? __("Edit Category") : __("Create Category")
 );
 
 const titleRef = ref(null);

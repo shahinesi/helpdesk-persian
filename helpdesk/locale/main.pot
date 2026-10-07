@@ -1820,6 +1820,10 @@ msgstr ""
 msgid "Create Contact"
 msgstr ""
 
+#: desk/src/components/knowledge-base/CategoryModal.vue:52
+msgid "Create Category"
+msgstr ""
+
 #: desk/src/components/customer/NewCustomerDialog.vue:4
 msgid "Create Customer"
 msgstr ""
@@ -2472,6 +2476,10 @@ msgstr ""
 
 #: desk/src/components/contact/EditContactDialog.vue:8
 msgid "Edit Contact"
+msgstr ""
+
+#: desk/src/components/knowledge-base/CategoryModal.vue:52
+msgid "Edit Category"
 msgstr ""
 
 #: desk/src/components/customer/EditCustomerDialog.vue:14
@@ -6933,6 +6941,10 @@ msgstr ""
 #: desk/src/components/layouts/MobileSidebar.vue:118
 #: desk/src/components/layouts/Sidebar.vue:166
 msgid "Support"
+msgstr ""
+
+#: desk/src/components/knowledge-base/CategoryModal.vue:12
+msgid "Support Issues"
 msgstr ""
 
 #. Name of a report
