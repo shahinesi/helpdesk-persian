@@ -292,7 +292,7 @@ function handleResponseByField(row: any, item: string) {
 
 function slaOutcomeBadge(fulfilled: boolean) {
   return h(Badge, {
-    label: fulfilled ? __("Fulfilled") : __("Failed"),
+    label: fulfilled ? __("Fulfilled") : __("SLA breached"),
     theme: fulfilled ? "gray" : "red",
     variant: "subtle",
   });

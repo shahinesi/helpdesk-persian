@@ -8989,3 +8989,11 @@ msgstr "۱ سال پیش"
 #: desk/src/utils.ts
 msgid "{0} years ago"
 msgstr "{0} سال پیش"
+
+#: frappe-ui/experimental/ListView/ListFooter.vue
+msgid "{0} of {1}"
+msgstr "{0} از {1}"
+
+#: desk/src/pages/ticket/Tickets.vue
+msgid "SLA breached"
+msgstr "نقض‌شده"
