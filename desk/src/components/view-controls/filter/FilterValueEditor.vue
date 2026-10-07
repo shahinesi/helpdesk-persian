@@ -94,6 +94,7 @@
       </div>
       <DateRangePicker
         :today-label="__('Today')"
+        :range-separator="__('to')"
         v-else-if="isDate && operator === 'between'"
         :model-value="dateRangeValue"
         icon-left=""

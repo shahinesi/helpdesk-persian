@@ -7711,6 +7711,14 @@ msgstr "برای کسب اطلاعات بیشتر در مورد تنظیم حس�
 msgid "Today"
 msgstr "امروز"
 
+#: desk/src/components/conditions-filter/CFCondition.vue
+#: desk/src/components/view-controls/filter/FilterValueEditor.vue
+#: desk/src/pages/dashboard/Dashboard.vue
+#: desk/src/pages/home/components/AvgTimeMetrics.vue
+#: desk/src/pages/home/components/RecentFeedback.vue
+msgid "to"
+msgstr "تا"
+
 #: desk/src/components/layouts/MobileSidebar.vue:91
 #: desk/src/components/layouts/Sidebar.vue:132
 msgid "Toggle theme"

@@ -1,0 +1,38 @@
+--- a/node_modules/frappe-ui/src/components/DatePicker/types.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/types.ts
+@@ -98,0 +99,3 @@
++  /** Localized text between the displayed start and end dates. */
++  rangeSeparator?: string;
++
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
+@@ -120,0 +121 @@
++  rangeSeparator: "to",
+@@ -257 +258,2 @@
+-  if (isPersianCalendar()) return formatCalendarRange(dayjs(from), dayjs(to));
++  if (isPersianCalendar())
++    return formatCalendarRange(dayjs(from), dayjs(to), props.rangeSeparator);
+--- a/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+@@ -147 +147,5 @@
+-export function formatCalendarRange(from: Dayjs, to: Dayjs): string {
++export function formatCalendarRange(
++  from: Dayjs,
++  to: Dayjs,
++  separator = "to"
++): string {
+@@ -150 +154 @@
+-  return `${formatCalendarDate(from)} – ${formatCalendarDate(to)}`;
++  return `${formatCalendarDate(from)} ${separator} ${formatCalendarDate(to)}`;
+--- a/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
+@@ -2 +2 @@
+-  <div class="select-none text-base text-ink-gray-9">
++  <div class="calendar-panel select-none text-base text-ink-gray-9">
+@@ -481,0 +482,6 @@
++<style>
++[dir="rtl"] .calendar-panel button[aria-label="previous"] > span,
++[dir="rtl"] .calendar-panel button[aria-label="next"] > span {
++  transform: scaleX(-1);
++}
++</style>
