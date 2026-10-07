@@ -329,6 +329,20 @@ function displayValue(filter: ActiveFilter): string {
       ? value.map(translateOption).join(", ")
       : translateOption(value);
   }
+  const standardLinkOptions: Record<string, string[]> = {
+    "HD Ticket Status": ["Open", "Replied", "Resolved", "Closed"],
+    "HD Ticket Priority": ["Low", "Medium", "High", "Urgent"],
+  };
+  const linkOptions = standardLinkOptions[filter.field.options || ""];
+  if (filter.field.fieldtype === "Link" && linkOptions) {
+    const translateOption = (option: any) =>
+      linkOptions.includes(String(option))
+        ? __(String(option))
+        : String(option);
+    return Array.isArray(value)
+      ? value.map(translateOption).join(", ")
+      : translateOption(value);
+  }
   // ratings are stored as a 0..1 fraction; show numeric ones as star counts
   // (×5). "is" uses set / not set, so leave those (and any non-numeric) alone.
   if (filter.field.fieldtype === "Rating" && filter.operator !== "is") {
