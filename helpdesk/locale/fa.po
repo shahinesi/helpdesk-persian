@@ -699,6 +699,10 @@ msgstr "از بازنشانی محتوا مطمئن هستید؟ محتوای ف
 msgid "Article"
 msgstr "مقاله"
 
+#: desk/src/components/ListRows.vue
+msgid "Articles"
+msgstr "مقاله"
+
 #: desk/src/pages/knowledge-base/Article.vue:528
 msgid "Article body cannot be set as empty."
 msgstr "متن مقاله نمی‌تواند خالی باشد."

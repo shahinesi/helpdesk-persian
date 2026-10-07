@@ -698,6 +698,10 @@ msgstr ""
 msgid "Article"
 msgstr ""
 
+#: desk/src/components/ListRows.vue
+msgid "Articles"
+msgstr ""
+
 #: desk/src/pages/knowledge-base/Article.vue:528
 msgid "Article body cannot be set as empty."
 msgstr ""
