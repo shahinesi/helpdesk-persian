@@ -181,28 +181,14 @@ export function useLinkSearch(doctype: string, filters?: Record<string, any>) {
   return { results, search };
 }
 
-const standardLinkLabels: Record<string, Record<string, string>> = {
-  "HD Ticket Status": {
-    Open: __("Open"),
-    Replied: __("Replied"),
-    Resolved: __("Resolved"),
-    Closed: __("Closed"),
-  },
-  "HD Ticket Priority": {
-    Low: __("Low"),
-    Medium: __("Medium"),
-    High: __("High"),
-    Urgent: __("Urgent"),
-  },
-  "HD Ticket Type": {
-    Question: __("Question"),
-    Bug: __("Bug"),
-    Incident: __("Incident"),
-  },
+const standardLinkOptions: Record<string, string[]> = {
+  "HD Ticket Status": ["Open", "Replied", "Resolved", "Closed"],
+  "HD Ticket Priority": ["Low", "Medium", "High", "Urgent"],
+  "HD Ticket Type": ["Question", "Bug", "Incident"],
 };
 
 export function displayLinkOption(doctype: string, option: string) {
-  return standardLinkLabels[doctype]?.[option] || option;
+  return standardLinkOptions[doctype]?.includes(option) ? __(option) : option;
 }
 
 function buildCondition(
