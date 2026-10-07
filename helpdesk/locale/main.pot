@@ -9055,3 +9055,51 @@ msgstr ""
 #: helpdesk/api/agent_home/agent_home.py
 msgid "Pending for {0}"
 msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Jan"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Feb"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Mar"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Apr"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "May"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Jun"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Jul"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Aug"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Sep"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Oct"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Nov"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Dec"
+msgstr ""

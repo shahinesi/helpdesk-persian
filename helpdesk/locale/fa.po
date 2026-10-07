@@ -9066,3 +9066,51 @@ msgstr "مهلت پاسخ گذشته است."
 #: helpdesk/api/agent_home/agent_home.py
 msgid "Pending for {0}"
 msgstr "مدت انتظار: {0}"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Jan"
+msgstr "ژانویه"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Feb"
+msgstr "فوریه"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Mar"
+msgstr "مارس"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Apr"
+msgstr "آوریل"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "May"
+msgstr "مه"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Jun"
+msgstr "ژوئن"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Jul"
+msgstr "ژوئیه"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Aug"
+msgstr "اوت"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Sep"
+msgstr "سپتامبر"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Oct"
+msgstr "اکتبر"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Nov"
+msgstr "نوامبر"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Dec"
+msgstr "دسامبر"

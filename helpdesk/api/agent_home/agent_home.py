@@ -160,6 +160,7 @@ def get_recent_feedback(
     to_date: str = None,
 ):
     agent = frappe.session.user
+
     Ticket = DocType("HD Ticket")
     Contact = DocType("Contact")
 
@@ -288,6 +289,21 @@ def get_avg_time_metrics(
 
     agent = frappe.session.user
 
+    month_labels = {
+        "Jan": _("Jan"),
+        "Feb": _("Feb"),
+        "Mar": _("Mar"),
+        "Apr": _("Apr"),
+        "May": _("May"),
+        "Jun": _("Jun"),
+        "Jul": _("Jul"),
+        "Aug": _("Aug"),
+        "Sep": _("Sep"),
+        "Oct": _("Oct"),
+        "Nov": _("Nov"),
+        "Dec": _("Dec"),
+    }
+
     if period == "custom_range" and from_date and to_date:
         current_from = from_date
         current_to = to_date
@@ -349,7 +365,7 @@ def get_avg_time_metrics(
     for row in result:
         key = f"{row['year']}-{row['month_num']:02d}"
         data_dict[key] = {
-            "month": row["month"],
+            "month": month_labels.get(row["month"], row["month"]),
             "avg_first": round(row["avg_first_response"] or 0),
             "avg_resolution": round(row["avg_resolution"] or 0),
         }
@@ -378,7 +394,7 @@ def get_avg_time_metrics(
         else:
             data.append(
                 [
-                    month_date.strftime("%b"),
+                    month_labels[month_date.strftime("%b")],
                     0,
                     0,
                 ]

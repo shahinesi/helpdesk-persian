@@ -315,15 +315,13 @@ const chartConfig = computed<EChartsOption>(() => {
     },
     yAxis: {
       axisLabel: {
-        formatter: (value: number) => {
-          if (value < 3600) {
-            return (value / 60).toFixed(0) + "m";
-          } else if (value < 86400) {
-            return (value / 3600).toFixed(0) + "h";
-          } else {
-            return (value / 86400).toFixed(0) + "d";
-          }
-        },
+        formatter: (value: number) =>
+          formatTime(value, {
+            day: true,
+            hour: true,
+            minute: true,
+            maxUnits: 1,
+          }) || __("0m"),
         margin: 20,
       },
       axisTick: { show: true },
