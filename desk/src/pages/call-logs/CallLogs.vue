@@ -68,26 +68,26 @@ const options = computed(() => {
         prefix: ({ row }) => {
           return h(Avatar, {
             shape: "circle",
-            image: row._caller?.image || "Unknown",
-            label: row._caller?.label || "Unknown",
+            image: row._caller?.image,
+            label: row._caller?.label || __("Unknown"),
             size: "sm",
           });
         },
         custom: ({ row }) => {
-          return h("span", row._caller?.label || "Unknown");
+          return h("span", row._caller?.label || __("Unknown"));
         },
       },
       receiver: {
         prefix: ({ row }) => {
           return h(Avatar, {
             shape: "circle",
-            image: row._receiver?.image || "Unknown",
-            label: row._receiver?.label || "Unknown",
+            image: row._receiver?.image,
+            label: row._receiver?.label || __("Unknown"),
             size: "sm",
           });
         },
         custom: ({ row }) => {
-          return h("span", row._receiver?.label || "Unknown");
+          return h("span", row._receiver?.label || __("Unknown"));
         },
       },
       type: {
@@ -101,11 +101,14 @@ const options = computed(() => {
             class: ["size-3 shrink-0"],
           });
         },
+        custom: ({ row }) => {
+          return h("span", __(row.type === "Incoming" ? "Incoming Call" : "Outgoing Call"));
+        },
       },
       status: {
         custom: ({ row }) => {
           return h(Badge, {
-            label: statusLabelMap[row.status],
+            label: __(statusLabelMap[row.status]),
             variant: "subtle",
             theme: statusColorMap[row.status],
           });
@@ -119,7 +122,7 @@ const options = computed(() => {
           });
         },
         custom: ({ row }) => {
-          return h("span", row.duration ? row.duration + "s" : "0s");
+          return h("span", __("{0}s", [row.duration || 0]));
         },
       },
     },

@@ -7,7 +7,7 @@
       <span
         class="flex-1 truncate rounded-4 border border-outline-gray-2 bg-surface-base px-2 py-1 text-p-sm text-ink-gray-9"
       >
-        {{ ticket.data.status }}
+        {{ displayLinkOption("HD Ticket Status", ticket.data.status) }}
       </span>
     </div>
 
@@ -18,7 +18,7 @@
       <span
         class="flex-1 truncate rounded-4 border border-outline-gray-2 bg-surface-base px-2 py-1 text-p-sm text-ink-gray-9"
       >
-        {{ ticket.data.priority }}
+        {{ displayLinkOption("HD Ticket Priority", ticket.data.priority) }}
       </span>
     </div>
 
@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
 import { formatLocalizedDate } from "@/utils";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { dayjs } from "frappe-ui";
 import {
   slaLabel,

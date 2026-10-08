@@ -24,8 +24,8 @@
 @@ -2,0 +3,18 @@
 +export function getChartLocale() {
 +  if (typeof document === 'undefined') return 'en-US'
-+  const language = document.documentElement.lang
-+  return language === 'fa' ? 'fa-IR' : language || 'en-US'
++  const language = document.documentElement.lang.toLowerCase().replace('_', '-')
++  return language.startsWith('fa') ? 'fa-IR' : language || 'en-US'
 +}
 +
 +export function getChartFontFamily() {
@@ -43,6 +43,28 @@
 @@ -13 +31 @@
 -  let locale = 'en-US'
 +  const locale = getChartLocale()
+@@ -52,2 +70,21 @@
+ export function formatDate(date: string, format?: string, grain: TimeGrain = 'day') {
+   if (!date) return ''
++
++  const locale = getChartLocale()
++  if (locale.startsWith('fa')) {
++    const value = dayjs(date)
++    if (!value.isValid()) return ''
++    const intlDate = new Date(Date.UTC(value.year(), value.month(), value.date(), 12))
++    const options: Intl.DateTimeFormatOptions = {
++      timeZone: 'UTC',
++      ...(grain === 'month'
++        ? { month: 'long', year: 'numeric' }
++        : grain === 'year'
++          ? { year: 'numeric' }
++          : { day: 'numeric', month: grain === 'week' ? 'short' : 'long', year: 'numeric' }),
++      ...(grain === 'hour' || grain === 'minute' || grain === 'second'
++        ? { hour: '2-digit', minute: '2-digit', ...(grain === 'second' ? { second: '2-digit' } : {}) }
++        : {}),
++    }
++    return new Intl.DateTimeFormat('fa-IR-u-ca-persian-nu-arabext', options).format(intlDate)
++  }
 --- a/node_modules/frappe-ui/experimental/Charts/types.ts
 +++ b/node_modules/frappe-ui/experimental/Charts/types.ts
 @@ -7,0 +8 @@
@@ -82,8 +104,8 @@
 @@ -126 +126 @@
 -        const formattedPercentage = percentage.toFixed(0)
 +        const formattedPercentage = formatPercentage(percentage)
---- a/node_modules/frappe-ui/src/components/Charts/NumberChart.vue
-+++ b/node_modules/frappe-ui/src/components/Charts/NumberChart.vue
+--- a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
++++ b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
 @@ -5,6 +5,6 @@
    >
      <slot name="body">

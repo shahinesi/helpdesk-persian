@@ -127,7 +127,7 @@
         class="w-full"
         v-if="props.holidayData.from_date && props.holidayData.to_date"
         :label="
-          recurringHolidayData.isEditing ? 'Update Holiday' : 'Add Holiday'
+          recurringHolidayData.isEditing ? __('Update Holiday') : __('Add Holiday')
         "
         :icon-left="
           recurringHolidayData.isEditing ? 'lucide-edit-2' : 'lucide-plus'

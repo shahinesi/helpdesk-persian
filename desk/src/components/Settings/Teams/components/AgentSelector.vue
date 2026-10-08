@@ -55,7 +55,7 @@
               <ComboboxEmpty
                 class="flex gap-2 rounded-4 px-2 py-1 text-base text-ink-gray-5"
               >
-                Agent not found
+                {{ __('Agent not found') }}
               </ComboboxEmpty>
               <ComboboxItem
                 v-for="agent in agentsList"

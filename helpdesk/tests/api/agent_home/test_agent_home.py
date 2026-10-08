@@ -17,6 +17,7 @@ from helpdesk.api.agent_home.agent_home import (
     get_pending_tickets,
     get_recent_activity,
     get_recent_feedback,
+    _updated_label,
 )
 from helpdesk.test_utils import make_agent, make_sla, make_ticket
 
@@ -92,6 +93,19 @@ def create_ticket_with_agent(
 
 
 class TestAgentHome(FrappeTestCase):
+    def test_recent_activity_localizes_standard_ticket_type_only(self):
+        standard_type = json.dumps({"changed": [["ticket_type", None, "Incident"]]})
+        custom_type = json.dumps({"changed": [["ticket_type", None, "VIP Support"]]})
+
+        self.assertEqual(
+            _updated_label(standard_type),
+            frappe._("Ticket type set to {0}").format(frappe._("Incident")),
+        )
+        self.assertEqual(
+            _updated_label(custom_type),
+            frappe._("Ticket type set to {0}").format("VIP Support"),
+        )
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

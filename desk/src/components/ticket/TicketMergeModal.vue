@@ -83,7 +83,9 @@
         class="w-full"
         variant="solid"
         :label="
-          targetTicket ? `Merge with ticket #${targetTicket} ` : 'Select Ticket'
+          targetTicket
+            ? __('Merge with ticket #{0}', [targetTicket])
+            : __('Select Ticket')
         "
         :loading="mergeTicket.loading"
         :icon-left="targetTicket && LucideMerge"

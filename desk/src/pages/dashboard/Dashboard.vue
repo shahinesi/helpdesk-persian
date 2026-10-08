@@ -528,16 +528,34 @@ function getChartType(chart: any) {
           ),
         }))
       : chart.key === "tickets_by_team"
-        ? chart.data.map((row: any) => ({
-            ...row,
-            [chart.categoryColumn]: translateDefaultTeam(
-              row[chart.categoryColumn]
-            ),
-          }))
-        : chart.data;
+      ? chart.data.map((row: any) => ({
+          ...row,
+          [chart.categoryColumn]: translateDefaultTeam(
+            row[chart.categoryColumn]
+          ),
+        }))
+      : chart.data;
+  const xAxis =
+    chart.xAxis?.type === "time"
+      ? {
+          ...chart.xAxis,
+          echartOptions: {
+            ...chart.xAxis.echartOptions,
+            axisLabel: {
+              ...chart.xAxis.echartOptions?.axisLabel,
+              formatter: (value: string | number) =>
+                formatLocalizedDate(
+                  value,
+                  chart.xAxis.timeGrain === "month" ? "MMM YYYY" : "MMM D"
+                ),
+            },
+          },
+        }
+      : chart.xAxis;
   const config = {
     ...chart,
     data,
+    xAxis,
     colors,
     fontFamily: '"Vazirmatn", sans-serif',
   };

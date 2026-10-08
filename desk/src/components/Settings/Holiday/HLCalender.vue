@@ -123,7 +123,7 @@
                         icon-left="lucide-trash-2"
                         variant="ghost"
                         :label="
-                          isConfirmingDelete ? 'Confirm Delete' : 'Delete'
+                          isConfirmingDelete ? __('Confirm Delete') : __('Delete')
                         "
                         :theme="isConfirmingDelete ? 'red' : 'gray'"
                         @click="

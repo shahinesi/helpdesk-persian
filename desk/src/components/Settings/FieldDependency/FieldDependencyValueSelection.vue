@@ -180,15 +180,15 @@ const filteredChildFieldValues = computed(() => {
 });
 
 const parentPlaceholder = computed(() => {
-  if (!state.value.selectedParentField) return "Search values";
+  if (!state.value.selectedParentField) return __("Search values");
   let label = props.parentFields.find(
     (f) => f.value === state.value.selectedParentField
   )?.label;
-  return `Search ${label} values`;
+  return __("Search {0} values", [label]);
 });
 const childPlaceholder = computed(() => {
-  if (!state.value.currentParentSelection) return "Search values";
-  return `Search ${state.value.currentParentSelection} values`;
+  if (!state.value.currentParentSelection) return __("Search values");
+  return __("Search {0} values", [state.value.currentParentSelection]);
 });
 
 function handleParentValueClick(value: string) {

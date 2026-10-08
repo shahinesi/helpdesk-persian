@@ -9142,6 +9142,38 @@ msgid "Set {0} to {1}"
 msgstr ""
 
 #: helpdesk/api/agent_home/agent_home.py
+msgid "Ticket type set to {0}"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Ticket type cleared"
+msgstr ""
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} made {1} changes"
+msgstr ""
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "over {0}"
+msgstr ""
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} minute"
+msgstr ""
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} minutes"
+msgstr ""
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} hour"
+msgstr ""
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} hours"
+msgstr ""
+
+#: helpdesk/api/agent_home/agent_home.py
 msgid "Cleared {0}"
 msgstr ""
 
@@ -9363,4 +9395,12 @@ msgstr ""
 
 #: desk/src/components/Settings/emailConfig.ts:48
 msgid "johndoe@example.com"
+msgstr ""
+
+#: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
+msgid "Add your Custom Message here"
+msgstr ""
+
+#: desk/src/components/DocumentationButton.vue
+msgid "View documentation"
 msgstr ""

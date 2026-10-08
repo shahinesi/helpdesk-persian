@@ -90,8 +90,8 @@
           :title="__(`No agent found`)"
           :description="
             activeFilter.length
-              ? 'Change your search terms or filters'
-              : 'Add one to get started.'
+              ? __('Change your search terms or filters')
+              : __('Add one to get started.')
           "
         />
         <!-- Agent List -->

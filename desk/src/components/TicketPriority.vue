@@ -56,15 +56,19 @@
         />
       </svg>
     </span>
-    <span v-if="!iconOnly" :title="__(priority)" class="truncate">{{
-      __(priority)
+    <span
+      v-if="!iconOnly"
+      :title="displayLinkOption('HD Ticket Priority', priority)"
+      class="truncate"
+    >{{
+      displayLinkOption("HD Ticket Priority", priority)
     }}</span>
   </span>
 </template>
 
 <script setup lang="ts">
 import { useTicketPriorityStore } from "@/stores/ticketPriority";
-import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { computed } from "vue";
 
 const props = defineProps<{

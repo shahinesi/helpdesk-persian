@@ -10,7 +10,9 @@
         <div class="absolute end-0 pe-2">
           <Dropdown :options="dropdownOptions">
             <template #default="{ open }">
-              <Button :label="ticket.doc.status">
+              <Button
+                :label="displayLinkOption('HD Ticket Status', ticket.doc.status)"
+              >
                 <template #prefix>
                   <IndicatorIcon
                     :class="
@@ -249,6 +251,7 @@
 import LucideChevronUp from "~icons/lucide/chevron-up";
 import LucideChevronDown from "~icons/lucide/chevron-down";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import {
   Breadcrumbs,
   call,
@@ -507,7 +510,7 @@ const dropdownOptions = computed(() =>
   ticketStatusStore.statuses.data
     ?.filter((o: HDTicketStatus) => o.enabled)
     .map((o: HDTicketStatus) => ({
-      label: o.label_agent,
+      label: displayLinkOption("HD Ticket Status", o.label_agent),
       value: o.label_agent,
       onClick: () => ticket.value.setValue.submit({ status: o.label_agent }),
       icon: () =>

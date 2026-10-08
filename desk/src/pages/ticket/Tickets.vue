@@ -217,7 +217,10 @@ const options = computed(() => ({
         const label = isCustomerPortal.value
           ? status?.["label_customer"]
           : status?.["label_agent"];
-        const displayLabel = __(label || item);
+        const displayLabel = displayLinkOption(
+          "HD Ticket Status",
+          label || item
+        );
         return h(
           "div",
           { class: "flex items-center gap-1.5 justify-start w-full" },

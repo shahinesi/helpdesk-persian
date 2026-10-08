@@ -32,6 +32,15 @@
 +  displayText?: string;
 --- a/src/components/ActivityTimeline/VersionItem.vue
 +++ b/src/components/ActivityTimeline/VersionItem.vue
+@@ -13,3 +13,2 @@
+-					made
+-					<span class="font-medium text-ink-gray-8"> {{ changes.length }} changes </span>
+-					<span v-if="sessionSpan">over {{ sessionSpan }}</span>
++					{{ __("{0} made {1} changes", authorName, changes.length) }}
++					<span v-if="sessionSpan">{{ __("over {0}", sessionSpan) }}</span>
+@@ -100,0 +101,2 @@
++const __ = (window as any).__;
++
 @@ -38,16 +38,18 @@
 -							<span :class="{ 'cap-first': changes.length > 1 }">{{
 -								change.prefix
@@ -85,3 +94,10 @@
 +								show-empty-from
 +							/>
 +						</template>
+@@ -124 +125,2 @@
+-	if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"}`;
++	if (minutes < 60)
++		return minutes === 1 ? __("{0} minute", minutes) : __("{0} minutes", minutes);
+@@ -126 +128 @@
+-	return `${hours} hour${hours === 1 ? "" : "s"}`;
++	return hours === 1 ? __("{0} hour", hours) : __("{0} hours", hours);

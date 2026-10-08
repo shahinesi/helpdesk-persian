@@ -165,13 +165,15 @@
               "
             >
               <span class="text-p-sm">
-                Conditions for this rule were created from
+                {{ __('Conditions for this rule were created in') }}
                 <a :href="deskUrl" target="_blank" class="underline">{{
-                  __("desk")
+                  __('Desk')
                 }}</a>
-                which are not compatible with this UI, you will need to recreate
-                the conditions here if you want to manage and add new conditions
-                from this UI.
+                {{
+                  __(
+                    '. They are not compatible with this interface. Recreate them here to manage or add conditions.'
+                  )
+                }}
               </span>
               <Button
                 :label="__(`I understand, add conditions`)"
@@ -248,13 +250,15 @@
               "
             >
               <span class="text-p-sm">
-                Conditions for this rule were created from
+                {{ __('Conditions for this rule were created in') }}
                 <a :href="deskUrl" target="_blank" class="underline">{{
-                  __("desk")
+                  __('Desk')
                 }}</a>
-                which are not compatible with this UI, you will need to recreate
-                the conditions here if you want to manage and add new conditions
-                from this UI.
+                {{
+                  __(
+                    '. They are not compatible with this interface. Recreate them here to manage or add conditions.'
+                  )
+                }}
               </span>
               <Button
                 :label="__(`I understand, add conditions`)"
@@ -386,7 +390,7 @@ const getAssignmentRuleData = createResource({
       assignConditionJson = JSON.parse(data.assign_condition_json || "[]");
     } catch (error) {
       toast.error(
-        "Assignment conditions are invalid or corrupt, recreate the conditions."
+        __("Assignment conditions are invalid or corrupt, recreate the conditions.")
       );
       assignConditionJson = [];
     }
@@ -394,7 +398,7 @@ const getAssignmentRuleData = createResource({
       unassignConditionJson = JSON.parse(data.unassign_condition_json || "[]");
     } catch (error) {
       toast.error(
-        "Unassignment conditions are invalid or corrupt, recreate the conditions."
+        __("Unassignment conditions are invalid or corrupt, recreate the conditions.")
       );
       unassignConditionJson = [];
     }
@@ -505,8 +509,9 @@ const showOverwriteConfirm = () => {
   showConfirmDialog.value = {
     show: true,
     title: __("Confirm overwrite"),
-    message:
-      "Your old condition will be overwritten. Are you sure you want to save?",
+    message: __(
+      "Your old condition will be overwritten. Are you sure you want to save?"
+    ),
     onConfirm: () => {
       updateAssignmentRule();
       showConfirmDialog.value.show = false;

@@ -174,7 +174,7 @@
           <div class="flex flex-col gap-1.5">
             <FormControl
               :label="__('Auto-close after (Days)')"
-              :placeholder="__(`e.g. 30`)"
+              :placeholder="__('e.g. 30')"
               v-model="settingsData.autoCloseAfterDays"
               type="number"
               :debounce="300"

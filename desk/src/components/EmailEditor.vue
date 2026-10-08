@@ -23,7 +23,6 @@
             type="select"
             variant="ghost"
             class="w-full"
-            :placeholder="__('')"
             :options="from"
           />
         </div>
@@ -533,7 +532,9 @@ function submitMail() {
     !bccEmailsClone.value.length
   ) {
     toast.warning(
-      "Email has no recipients. Please add at least one recipient (To, Cc, or Bcc) before sending."
+      __(
+        "Email has no recipients. Please add at least one recipient (To, Cc, or Bcc) before sending."
+      )
     );
     return false;
   }

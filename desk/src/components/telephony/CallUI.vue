@@ -22,14 +22,14 @@
         <FormControl
           type="select"
           v-model="callMedium"
-          :label="'Calling Medium'"
+          :label="__('Calling Medium')"
           :options="['Twilio', 'Exotel']"
         />
         <div class="flex flex-col gap-1">
           <FormControl
             type="checkbox"
             v-model="isDefaultMedium"
-            :label="`Make ${callMedium} as default calling medium`"
+            :label="__('Make {0} the default calling method', [callMedium])"
           />
 
           <div v-if="isDefaultMedium" class="text-sm text-ink-gray-4">
@@ -119,7 +119,7 @@ async function setCallingMedium() {
   telephonyStore.setDefaultCallingMedium(callMedium.value);
   telephonyStore.fetchCallIntegrationStatus();
   toast.success(
-    `Default calling medium set successfully to ${callMedium.value}`
+    __("Default calling medium set successfully to {0}", [callMedium.value])
   );
 }
 

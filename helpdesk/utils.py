@@ -338,7 +338,7 @@ call_log_default_columns = [
 
 def seconds_to_duration(seconds):
     if not seconds:
-        return "0s"
+        return _("{0}s").format(0)
 
     hours = floor(seconds // 3600)
     minutes = floor((seconds % 3600) // 60)
@@ -352,22 +352,14 @@ def seconds_to_duration(seconds):
     # 0h 1m 1s -> 1m 1s
     # 1h 1m 1s -> 1h 1m 1s
 
-    if hours and minutes and seconds:
-        return f"{hours}h {minutes}m {seconds}s"
-    elif hours and minutes:
-        return f"{hours}h {minutes}m"
-    elif hours and seconds:
-        return f"{hours}h {seconds}s"
-    elif minutes and seconds:
-        return f"{minutes}m {seconds}s"
-    elif hours:
-        return f"{hours}h"
-    elif minutes:
-        return f"{minutes}m"
-    elif seconds:
-        return f"{seconds}s"
-    else:
-        return "0s"
+    parts = []
+    if hours:
+        parts.append(_("{0}h").format(hours))
+    if minutes:
+        parts.append(_("{0}m").format(minutes))
+    if seconds:
+        parts.append(_("{0}s").format(seconds))
+    return " ".join(parts) or _("{0}s").format(0)
 
 
 def parse_phone_number(phone_number, default_country="IN"):

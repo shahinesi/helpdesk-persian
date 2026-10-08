@@ -23,8 +23,9 @@
       <div v-if="!holidayData.loading" class="h-full">
         <div class="flex items-center gap-2 mt-2">
           <span class="text-sm">
-            There are in total <b>{{ holidayData.holidays.length }}</b> holidays
-            in this list</span
+            {{
+              __('Total holidays in this list: {0}', [holidayData.holidays.length])
+            }}</span
           >
         </div>
         <hr class="mb-8 mt-2" />

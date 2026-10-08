@@ -2,7 +2,10 @@
   <Section :label="__('Feedback')" v-model:opened="opened">
     <!-- Comment reads as a quote, the preset splits into pills on commas -->
     <div class="flex flex-col items-start gap-3 pb-4 pt-0.5">
-      <StarRating :rating="rating" :aria-label="`${rating * 5} out of 5`" />
+      <StarRating
+        :rating="rating"
+        :aria-label="__('{0} out of 5', [rating * 5])"
+      />
       <div v-if="comment">
         <p
           ref="commentRef"

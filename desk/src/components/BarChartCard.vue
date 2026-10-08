@@ -19,7 +19,11 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
-import { buildPercentageChange } from "@/utils";
+import {
+  buildPercentageChange,
+  formatLocalizedDate,
+  formatLocalizedDateRange,
+} from "@/utils";
 import { EChartsOption } from "echarts";
 import { createResource } from "frappe-ui";
 import { computed, onMounted, ref, type PropType } from "vue";
@@ -29,7 +33,10 @@ interface BarChartData {
   percentage_change?: number;
   total?: number;
   average?: number;
-  data: { date: string; count: number }[] | Record<number, number>;
+  bucket?: "daily" | "weekly" | "monthly";
+  data:
+    | { date: string; end_date?: string; count: number }[]
+    | Record<number, number>;
   total_reviews?: number;
 }
 
@@ -98,9 +105,19 @@ const chartData = computed(() => {
 
   // Time-series shape: data is [{ date, count }, ...]
   const timeData = Array.isArray(_data?.data)
-    ? (_data.data as { date: string; count: number }[])
+    ? (_data.data as { date: string; end_date?: string; count: number }[])
     : [];
-  const labels = timeData.map((item) => item.date);
+  const labels = timeData.map((item) => {
+    if (item.end_date && _data?.bucket === "weekly") {
+      return formatLocalizedDateRange(item.date, item.end_date, "MMM D");
+    }
+    if (_data?.bucket === "monthly") {
+      return formatLocalizedDate(item.date, "MMM YYYY");
+    }
+    return _data?.bucket === "daily"
+      ? formatLocalizedDate(item.date, "MMM D")
+      : item.date;
+  });
   const counts = timeData.map((item) => item.count);
   const _percentageChange = _data?.percentage_change ?? null;
   const percentageChange = buildPercentageChange(

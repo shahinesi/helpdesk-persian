@@ -3769,7 +3769,7 @@ msgstr "حضوری"
 #: desk/src/components/Settings/Agents.vue:122
 #: desk/src/components/Settings/Agents.vue:268
 msgid "Inactive"
-msgstr "غیر فعال"
+msgstr "غیرفعال"
 
 #: desk/src/components/CallArea.vue:36
 msgid "Inbound Call"
@@ -9170,6 +9170,38 @@ msgid "Set {0} to {1}"
 msgstr "{0} به {1} تغییر کرد"
 
 #: helpdesk/api/agent_home/agent_home.py
+msgid "Ticket type set to {0}"
+msgstr "نوع تیکت روی «{0}» تنظیم شد"
+
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Ticket type cleared"
+msgstr "نوع تیکت پاک شد"
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} made {1} changes"
+msgstr "{0}، {1} تغییر ایجاد کرد"
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "over {0}"
+msgstr "به مدت {0}"
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} minute"
+msgstr "{0} دقیقه"
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} minutes"
+msgstr "{0} دقیقه"
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} hour"
+msgstr "{0} ساعت"
+
+#: frappe/ui/src/components/ActivityTimeline/VersionItem.vue
+msgid "{0} hours"
+msgstr "{0} ساعت"
+
+#: helpdesk/api/agent_home/agent_home.py
 msgid "Cleared {0}"
 msgstr "{0} پاک شد"
 
@@ -9504,3 +9536,1048 @@ msgstr "استفاده از TLS برای ارسال"
 #: desk/src/components/Settings/emailConfig.ts:48
 msgid "johndoe@example.com"
 msgstr "johndoe@example.com"
+
+#: desk/src/components/Settings/Teams/components/AgentSelector.vue
+msgid "Agent not found"
+msgstr "کارشناسی پیدا نشد."
+
+#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue
+msgid "Conditions for this rule were created in"
+msgstr "شرط‌های این قاعده در"
+
+#: desk/src/components/Settings/Sla/SlaPolicyView.vue
+msgid "Conditions for this SLA were created in"
+msgstr "شرط‌های این SLA در"
+
+#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue
+#: desk/src/components/Settings/Sla/SlaPolicyView.vue
+msgid "Desk"
+msgstr "میزکار"
+
+#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue
+#: desk/src/components/Settings/Sla/SlaPolicyView.vue
+msgid ". They are not compatible with this interface. Recreate them here to manage or add conditions."
+msgstr "؛ این شرط‌ها با این رابط سازگار نیستند. برای مدیریت یا افزودن شرط، آن‌ها را همین‌جا دوباره ایجاد کنید."
+
+#: desk/src/components/Settings/Holiday/HolidayView.vue
+msgid "Total holidays in this list: {0}"
+msgstr "تعداد تعطیلات این فهرست: {0}"
+
+#: desk/src/components/telephony/CallUI.vue
+msgid "Calling Medium"
+msgstr "روش تماس"
+
+#: desk/src/components/telephony/CallUI.vue
+msgid "Make {0} the default calling method"
+msgstr "{0} را روش پیش‌فرض تماس قرار دهید"
+
+#: desk/src/components/telephony/ExotelCallUI.vue
+#: desk/src/components/telephony/TwilioCallUI.vue
+msgid "Unknown"
+msgstr "نامشخص"
+
+#: desk/src/components/telephony/TwilioCallUI.vue
+msgid "Initiating call..."
+msgstr "در حال برقراری تماس..."
+
+#: desk/src/components/telephony/TwilioCallUI.vue
+msgid "Ringing..."
+msgstr "در حال زنگ خوردن..."
+
+#: desk/src/components/telephony/TwilioCallUI.vue
+msgid "Calling..."
+msgstr "در حال تماس..."
+
+#: desk/src/components/telephony/TwilioCallUI.vue
+msgid "Incoming call..."
+msgstr "تماس ورودی..."
+
+#: desk/src/components/telephony/TwilioCallUI.vue
+msgid "Accept"
+msgstr "پاسخ"
+
+#: desk/src/components/telephony/TwilioCallUI.vue
+msgid "Reject"
+msgstr "رد تماس"
+
+#: desk/src/components/telephony/ExotelCallUI.vue
+msgid "No answer"
+msgstr "پاسخی دریافت نشد"
+
+#: desk/src/components/telephony/ExotelCallUI.vue
+msgid "In progress"
+msgstr "در حال انجام"
+
+#: desk/src/components/telephony/ExotelCallUI.vue
+msgid "Call ended"
+msgstr "تماس پایان یافت"
+
+#: desk/src/pages/call-logs/CallLogs.vue
+#: desk/src/pages/call-logs/CallLogDetailModal.vue
+msgid "Incoming Call"
+msgstr "تماس ورودی"
+
+#: desk/src/pages/call-logs/CallLogs.vue
+#: desk/src/pages/call-logs/CallLogDetailModal.vue
+msgid "Outgoing Call"
+msgstr "تماس خروجی"
+
+#: desk/src/components/ticket-agent/TicketFeedback.vue
+msgid "{0} out of 5"
+msgstr "{0} از ۵"
+
+#: desk/src/components/CommunicationArea.vue
+msgid "@John could you please look into this?"
+msgstr "@John، لطفاً این مورد را بررسی می‌کنید؟"
+
+#: desk/src/components/telephony/CallUI.vue
+#: desk/src/components/telephony/ExotelCallUI.vue
+msgid "Something went wrong"
+msgstr "مشکلی پیش آمد"
+
+#: desk/src/pages/call-logs/utils.ts
+msgid "Declined"
+msgstr "رد شد"
+
+#: desk/src/pages/call-logs/utils.ts
+msgid "Missed Call"
+msgstr "تماس بی‌پاسخ"
+
+#: desk/src/components/BrandLogo.vue
+msgid "Brand Logo"
+msgstr "لوگوی برند"
+
+#: desk/src/components/ListViewBuilder.vue
+msgid "Are you sure you want to delete {0} item(s)?"
+msgstr "از حذف {0} مورد مطمئن هستید؟"
+
+#: desk/src/components/Settings/Agents.vue
+msgid "No agent found"
+msgstr "کارشناسی پیدا نشد."
+
+#: desk/src/components/Settings/FieldDependency/FieldDependencyCriteria.vue
+msgid "Set visibility and mandatory criteria for {0} field:"
+msgstr "شرایط نمایش و اجباری‌بودن فیلد {0} را تنظیم کنید:"
+
+#: desk/src/components/Settings/FieldDependency/FieldDependencyCriteria.vue
+msgid "Show {0} if {1} is set to"
+msgstr "اگر {1} روی مقدار انتخاب‌شده تنظیم شد، {0} را نمایش بده:"
+
+#: desk/src/components/Settings/FieldDependency/FieldDependencyCriteria.vue
+msgid "Make {0} mandatory if {1} is set to"
+msgstr "اگر {1} روی مقدار انتخاب‌شده تنظیم شد، {0} را اجباری کن:"
+
+#: desk/src/components/Settings/FieldDependency/FieldDependencyList.vue
+msgid "No field dependency found"
+msgstr "وابستگی فیلدی پیدا نشد."
+
+#: desk/src/components/Settings/General/components/TicketSettings.vue
+msgid "Enter Notification Message"
+msgstr "متن اعلان را وارد کنید"
+
+#: desk/src/components/Settings/Holiday/Modals/AddHolidayModal.vue
+msgid "National holiday, etc."
+msgstr "تعطیلی رسمی و موارد مشابه"
+
+#: desk/src/components/Settings/Holiday/RecurringHolidaysList.vue
+msgid "Every week"
+msgstr "هر هفته"
+
+#: desk/src/components/Settings/Holiday/RecurringHolidaysList.vue
+msgid "Every first week"
+msgstr "هفتهٔ اول هر ماه"
+
+#: desk/src/components/Settings/Holiday/RecurringHolidaysList.vue
+msgid "Every second week"
+msgstr "هفتهٔ دوم هر ماه"
+
+#: desk/src/components/Settings/Holiday/RecurringHolidaysList.vue
+msgid "Every third week"
+msgstr "هفتهٔ سوم هر ماه"
+
+#: desk/src/components/Settings/Holiday/RecurringHolidaysList.vue
+msgid "Every fourth week"
+msgstr "هفتهٔ چهارم هر ماه"
+
+#: desk/src/components/Settings/Holiday/RecurringHolidaysList.vue
+msgid "Every fifth week"
+msgstr "هفتهٔ پنجم هر ماه"
+
+#: desk/src/components/Settings/SavedReplies/SavedReplyView.vue
+msgid "Hello {{ contact }}, \n\nWe are sorry for the inconvenience, we will get back to you soon. \n\nRegards, \n{{ full_name }}"
+msgstr "سلام {{ contact }}،\n\nاز بابت این مشکل متأسفیم. به‌زودی پیگیری می‌کنیم.\n\nبا احترام،\n{{ full_name }}"
+
+#: desk/src/components/Settings/SavedReplies/components/ActionValue.vue
+msgid "a value"
+msgstr "یک مقدار"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+msgid "Set priority"
+msgstr "تنظیم اولویت"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+msgid "Set team"
+msgstr "تعیین تیم"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+msgid "Set ticket type"
+msgstr "تعیین نوع تیکت"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+msgid "Assign agent"
+msgstr "واگذاری به کارشناس"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Assign to me"
+msgstr "واگذاری به من"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+msgid "The agent who sends the reply"
+msgstr "کارشناسی که پاسخ را می‌فرستد"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+msgid "Remove tags"
+msgstr "حذف برچسب‌ها"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+msgid "Remove tag"
+msgstr "حذف برچسب"
+
+#: desk/src/components/Settings/SavedReplies/components/actionTypes.ts
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Add comment"
+msgstr "افزودن نظر"
+
+#: desk/src/components/Settings/SavedReplies/savedReplies.ts
+msgid "Middle Name"
+msgstr "نام میانی"
+
+#: desk/src/components/Settings/SavedReplies/savedReplies.ts
+msgid "Full Name"
+msgstr "نام کامل"
+
+#: desk/src/components/Settings/SavedReplies/savedReplies.ts
+msgid "Username"
+msgstr "نام کاربری"
+
+#: desk/src/components/Settings/SavedReplies/savedReplies.ts
+msgid "User Image"
+msgstr "تصویر کاربر"
+
+#: desk/src/components/Settings/SavedReplies/savedReplies.ts
+msgid "Location"
+msgstr "موقعیت"
+
+#: desk/src/components/Settings/SavedReplies/savedReplies.ts
+msgid "Bio"
+msgstr "زندگی‌نامه"
+
+#: desk/src/components/Settings/Sla/Modals/EditResponseResolutionModal.vue
+msgid "Edit response and resolution"
+msgstr "ویرایش زمان پاسخ و حل تیکت"
+
+#: desk/src/components/Settings/Sla/Modals/EditResponseResolutionModal.vue
+msgid "Select Priority"
+msgstr "اولویت را انتخاب کنید"
+
+#: desk/src/components/Settings/Sla/Modals/EditResponseResolutionModal.vue
+msgid "Response time"
+msgstr "زمان پاسخ‌گویی"
+
+#: desk/src/components/Settings/Sla/Modals/EditResponseResolutionModal.vue
+msgid "Set default priority"
+msgstr "اولویت پیش‌فرض را تعیین کنید"
+
+#: desk/src/components/Settings/Sla/Modals/WorkDayModal.vue
+msgid "Select Workday"
+msgstr "روز کاری را انتخاب کنید"
+
+#: desk/src/components/Settings/Sla/SlaPriorityList.vue
+msgid "Add row"
+msgstr "افزودن ردیف"
+
+#: desk/src/components/Settings/Sla/SlaStatusList.vue
+msgid "Ticket reopen status"
+msgstr "وضعیت بازگشایی تیکت"
+
+#: desk/src/components/Settings/Teams/TeamEdit.vue
+msgid "Add Member"
+msgstr "افزودن عضو"
+
+#: desk/src/components/Settings/Teams/TeamsList.vue
+msgid "No team found"
+msgstr "تیمی پیدا نشد."
+
+#: desk/src/components/Settings/Teams/components/AgentSelector.vue
+msgid "Type agent name or email"
+msgstr "نام یا ایمیل کارشناس را وارد کنید"
+
+#: desk/src/components/Settings/Telephony/ExotelSettings.vue
+msgid "Twilio error: {0}"
+msgstr "خطای Twilio: {0}"
+
+#: desk/src/components/Settings/Telephony/ExotelSettings.vue
+msgid "Exotel error: {0}"
+msgstr "خطای Exotel: {0}"
+
+#: desk/src/components/Settings/Telephony/ExotelSettings.vue
+msgid "Exotel number"
+msgstr "شمارهٔ Exotel"
+
+#: desk/src/components/Settings/Telephony/ExotelSettings.vue
+msgid "Account SID"
+msgstr "شناسهٔ حساب (SID)"
+
+#: desk/src/components/Settings/Telephony/ExotelSettings.vue
+msgid "Webhook Verify Token"
+msgstr "توکن تأیید وب‌هوک"
+
+#: desk/src/components/Settings/Telephony/ExotelSettings.vue
+msgid "API Token"
+msgstr "توکن API"
+
+#: desk/src/components/Settings/Telephony/ExotelSettings.vue
+msgid "Subdomain"
+msgstr "زیردامنه"
+
+#: desk/src/components/Settings/Telephony/ExotelSettings.vue
+msgid "Auth Token"
+msgstr "توکن احراز هویت"
+
+#: desk/src/components/Settings/Telephony/TwilioSettings.vue
+msgid "TwiML App Name"
+msgstr "نام برنامهٔ TwiML"
+
+#: desk/src/components/Settings/Telephony/TwilioSettings.vue
+msgid "TwiML App SID"
+msgstr "شناسهٔ برنامهٔ TwiML (SID)"
+
+#: desk/src/components/Settings/Telephony/TwilioSettings.vue
+msgid "Twilio number"
+msgstr "شمارهٔ Twilio"
+
+#: desk/src/components/Settings/settingsModal.ts
+msgid "My settings"
+msgstr "تنظیمات من"
+
+#: desk/src/components/Settings/settingsModal.ts
+msgid "App Settings"
+msgstr "تنظیمات برنامه"
+
+#: desk/src/components/Settings/settingsModal.ts
+msgid "SLA Policies"
+msgstr "سیاست‌های SLA"
+
+#: desk/src/components/Settings/settingsModal.ts
+msgid "Integrations"
+msgstr "یکپارچه‌سازی‌ها"
+
+#: desk/src/components/ViewBreadcrumbs.vue
+msgid "Standard"
+msgstr "استاندارد"
+
+#: desk/src/components/ViewModal.vue
+msgid "My Open Tickets"
+msgstr "تیکت‌های باز من"
+
+#: desk/src/components/command-palette/commands.ts
+msgid "Go to ticket #{0}"
+msgstr "رفتن به تیکت #{0}"
+
+#: desk/src/components/command-palette/commands.ts
+msgid "Search for \"{0}\""
+msgstr "جست‌وجوی «{0}»"
+
+#: desk/src/components/command-palette/commands.ts
+msgid "(advanced search)"
+msgstr "(جست‌وجوی پیشرفته)"
+
+#: desk/src/components/command-palette/commands.ts
+msgid "Create ticket \"{0}\""
+msgstr "ایجاد تیکت «{0}»"
+
+#: desk/src/components/command-palette/savedReplyCommands.ts
+msgid "Could not load {0}"
+msgstr "بارگذاری {0} ممکن نشد"
+
+#: desk/src/components/command-palette/savedReplyCommands.ts
+msgid "Could not open the reply box"
+msgstr "بازکردن کادر پاسخ ممکن نشد"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Assign to"
+msgstr "واگذاری به"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Change type"
+msgstr "تغییر نوع"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Reply to ticket"
+msgstr "پاسخ به تیکت"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Copy ticket ID"
+msgstr "کپی شناسهٔ تیکت"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Ticket #{0} copied"
+msgstr "شناسهٔ تیکت #{0} کپی شد"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Copy ticket link"
+msgstr "کپی پیوند تیکت"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Ticket URL copied"
+msgstr "نشانی تیکت کپی شد"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Merge ticket"
+msgstr "ادغام تیکت"
+
+#: desk/src/components/command-palette/ticketCommands.ts
+msgid "Already assigned to {0}"
+msgstr "این تیکت از قبل به {0} واگذار شده است"
+
+#: desk/src/components/command-palette/ticketListCommands.ts
+msgid "Private"
+msgstr "خصوصی"
+
+#: desk/src/components/conditions-filter/CFCondition.vue
+msgid "Open nested conditions"
+msgstr "بازکردن شرط‌های تودرتو"
+
+#: desk/src/components/conditions-filter/CFCondition.vue
+msgid "Nested conditions"
+msgstr "شرط‌های تودرتو"
+
+#: desk/src/components/customer/NewCustomerDialog.vue
+msgid "India"
+msgstr "هند"
+
+#: desk/src/components/knowledge-base/MergeCategoryModal.vue
+msgid "Merge with another category"
+msgstr "ادغام با دستهٔ دیگر"
+
+#: desk/src/components/telephony/CallUI.vue
+msgid "Make call"
+msgstr "برقراری تماس"
+
+#: desk/src/components/ticket/SetContactPhoneModal.vue
+msgid "{0} does not have a phone number, set one to call them."
+msgstr "برای تماس با {0}، ابتدا شمارهٔ تلفن او را ثبت کنید."
+
+#: desk/src/components/ticket/TicketMergeModal.vue
+msgid "Merge with another ticket"
+msgstr "ادغام با تیکت دیگر"
+
+#: desk/src/components/ticket/TicketSplitModal.vue
+msgid "Split ticket"
+msgstr "تفکیک تیکت"
+
+#: desk/src/components/ticket/TicketSplitModal.vue
+msgid "New Ticket Subject"
+msgstr "موضوع تیکت جدید"
+
+#: desk/src/components/ticket/TicketSplitModal.vue
+msgid "Add a subject for the new ticket"
+msgstr "برای تیکت جدید موضوعی وارد کنید"
+
+#: desk/src/components/ticket/TicketSplitModal.vue
+msgid "Split into new ticket"
+msgstr "انتقال به تیکت جدید"
+
+#: desk/src/components/ticket-agent/TicketSubjectModal.vue
+msgid "Rename Subject"
+msgstr "تغییر موضوع"
+
+#: desk/src/components/ticket-agent/timeline/TimelineCommentRow.vue
+msgid "{0} pinned already. Unpin one to pin this."
+msgstr "{0} مورد از قبل سنجاق شده است؛ برای سنجاق‌کردن این مورد، یکی را بردارید."
+
+#: desk/src/components/view-controls/ColumnSettings.vue
+msgid "Width"
+msgstr "عرض"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Less Than"
+msgstr "کمتر از"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Greater Than"
+msgstr "بیشتر از"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Less Than or Equal To"
+msgstr "کمتر یا مساوی با"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Greater Than or Equal To"
+msgstr "بیشتر یا مساوی با"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Timespan"
+msgstr "بازهٔ زمانی"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "@me"
+msgstr "من"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "contains"
+msgstr "شامل می‌شود"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "doesn't contain"
+msgstr "شامل نمی‌شود"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "not in"
+msgstr "در میانِ"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "between"
+msgstr "بین"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "greater than"
+msgstr "بزرگ‌تر از"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "less than"
+msgstr "کوچک‌تر از"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "greater than or equal to"
+msgstr "بزرگ‌تر یا مساوی با"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "less than or equal to"
+msgstr "کوچک‌تر یا مساوی با"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Last 14 Days"
+msgstr "۱۴ روز گذشته"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Last Quarter"
+msgstr "سه‌ماههٔ گذشته"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Last 6 Months"
+msgstr "۶ ماه گذشته"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Last Year"
+msgstr "سال گذشته"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "This Week"
+msgstr "این هفته"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "This Month"
+msgstr "این ماه"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "This Quarter"
+msgstr "این سه‌ماهه"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "This Year"
+msgstr "امسال"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Next Week"
+msgstr "هفتهٔ آینده"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Next Month"
+msgstr "ماه آینده"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Next Quarter"
+msgstr "سه‌ماههٔ آینده"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Next 6 Months"
+msgstr "۶ ماه آینده"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Next Year"
+msgstr "سال آینده"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Next 7 Days"
+msgstr "۷ روز آینده"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Next 14 Days"
+msgstr "۱۴ روز آینده"
+
+#: desk/src/components/view-controls/filter/filter.ts
+msgid "Next 30 Days"
+msgstr "۳۰ روز آینده"
+
+#: desk/src/composables/contact.ts
+msgid "First name is required"
+msgstr "واردکردن نام الزامی است"
+
+#: desk/src/composables/contact.ts
+msgid "At least one email address is required"
+msgstr "واردکردن دست‌کم یک نشانی ایمیل الزامی است"
+
+#: desk/src/composables/contact.ts
+msgid "Invalid email address: {0}"
+msgstr "نشانی ایمیل {0} معتبر نیست"
+
+#: desk/src/composables/contact.ts
+msgid "At least one email address must be marked as primary"
+msgstr "باید دست‌کم یک نشانی ایمیل را به‌عنوان اصلی مشخص کنید"
+
+#: desk/src/composables/contact.ts
+msgid "Contact updated"
+msgstr "مخاطب به‌روزرسانی شد"
+
+#: desk/src/composables/contact.ts
+msgid "Email address is required"
+msgstr "واردکردن نشانی ایمیل الزامی است"
+
+#: desk/src/composables/contact.ts
+msgid "Contact created and invited"
+msgstr "مخاطب ایجاد و دعوت شد"
+
+#: desk/src/composables/contact.ts
+msgid "Contact created"
+msgstr "مخاطب ایجاد شد"
+
+#: desk/src/composables/contact.ts
+msgid "Profile Picture"
+msgstr "تصویر نمایه"
+
+#: desk/src/composables/contact.ts
+msgid "Upload profile picture"
+msgstr "بارگذاری تصویر نمایه"
+
+#: desk/src/composables/contact.ts
+msgid "Phone Numbers"
+msgstr "شماره‌های تلفن"
+
+#: desk/src/composables/contact.ts
+msgid "Invitation email resent successfully"
+msgstr "ایمیل دعوت دوباره فرستاده شد"
+
+#: desk/src/composables/contact.ts
+msgid "Contact has no email address to invite"
+msgstr "برای این مخاطب نشانی ایمیلی ثبت نشده است تا دعوت‌نامه فرستاده شود"
+
+#: desk/src/composables/contact.ts
+msgid "Invitation sent"
+msgstr "دعوت‌نامه فرستاده شد"
+
+#: desk/src/composables/contact.ts
+msgid "No system user is linked with this contact"
+msgstr "هیچ کاربر سیستمی به این مخاطب پیوند داده نشده است"
+
+#: desk/src/composables/contact.ts
+msgid "Reset password email sent successfully"
+msgstr "ایمیل بازنشانی گذرواژه فرستاده شد"
+
+#: desk/src/composables/customer.ts
+msgid "Select Country"
+msgstr "کشور را انتخاب کنید"
+
+#: desk/src/composables/fc.ts
+msgid "Login to Frappe Cloud?"
+msgstr "ورود به Frappe Cloud؟"
+
+#: desk/src/composables/fc.ts
+msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
+msgstr "از ورود به پیشخوان Frappe Cloud مطمئن هستید؟"
+
+#: desk/src/composables/useApps.ts
+msgid "Apps"
+msgstr "برنامه‌ها"
+
+#: desk/src/composables/useView.ts
+msgid "Unpin View"
+msgstr "برداشتن سنجاق نما"
+
+#: desk/src/composables/useView.ts
+msgid "Pin View"
+msgstr "سنجاق‌کردن نما"
+
+#: desk/src/composables/useView.ts
+msgid "Hide from sidebar"
+msgstr "پنهان‌کردن از نوار کناری"
+
+#: desk/src/composables/useView.ts
+msgid "Show in sidebar"
+msgstr "نمایش در نوار کناری"
+
+#: desk/src/composables/useView.ts
+msgid "Hide view from sidebar"
+msgstr "نما از نوار کناری پنهان شود"
+
+#: desk/src/composables/useView.ts
+msgid "{0} view is currently visible in the sidebar. Hiding it will remove it from the sidebar."
+msgstr "نمای «{0}» اکنون در نوار کناری دیده می‌شود. با پنهان‌کردن آن، از نوار کناری برداشته می‌شود."
+
+#: desk/src/composables/useView.ts
+msgid "Make Private"
+msgstr "خصوصی‌کردن"
+
+#: desk/src/composables/useView.ts
+msgid "Make Public"
+msgstr "عمومی‌کردن"
+
+#: desk/src/composables/useView.ts
+msgid "Make view private"
+msgstr "نما خصوصی شود"
+
+#: desk/src/composables/useView.ts
+msgid "{0} view is currently public. Changing it to private will hide it for all the users."
+msgstr "نمای «{0}» اکنون عمومی است. با خصوصی‌کردن آن، از دید همهٔ کاربران پنهان می‌شود."
+
+#: desk/src/composables/useView.ts
+msgid "Delete View"
+msgstr "حذف نما"
+
+#: desk/src/composables/useView.ts
+msgid "Delete {0}"
+msgstr "حذف {0}"
+
+#: desk/src/composables/useView.ts
+msgid "Are you sure you want to delete this view?"
+msgstr "از حذف این نما مطمئن هستید؟"
+
+#: desk/src/composables/useView.ts
+msgid "This view is public, and will be removed for all users."
+msgstr "این نما عمومی است و برای همهٔ کاربران حذف خواهد شد."
+
+#: desk/src/composables/useView.ts
+msgid "View {0}"
+msgstr "نمای {0}"
+
+#: desk/src/composables/useView.ts
+msgid "deleted"
+msgstr "حذف شد"
+
+#: desk/src/composables/useView.ts
+msgid "updated"
+msgstr "به‌روزرسانی شد"
+
+#: desk/src/composables/useView.ts
+msgid "created"
+msgstr "ایجاد شد"
+
+#: desk/src/pages/SearchAgent.vue
+msgid "{0} filter(s) applied"
+msgstr "{0} فیلتر اعمال شد"
+
+#: desk/src/pages/home/components/PendingTickets.vue
+msgid "tickets"
+msgstr "تیکت"
+
+#: desk/src/pages/home/components/RecentActivity.vue
+msgid "Tickets you've recently worked on or viewed"
+msgstr "تیکت‌هایی که اخیراً روی آن‌ها کار کرده‌اید یا دیده‌اید"
+
+#: desk/src/pages/knowledge-base/Article.vue
+msgid "Article has been successfully moved."
+msgstr "مقاله با موفقیت جابه‌جا شد."
+
+#: desk/src/stores/agentStatus.ts
+msgid "Your status was changed to {0}."
+msgstr "وضعیت شما به {0} تغییر کرد."
+
+#: desk/src/stores/agentStatus.ts
+msgid "Status updated successfully."
+msgstr "وضعیت با موفقیت به‌روزرسانی شد."
+
+#: desk/src/stores/agentStatus.ts
+msgid "Could not update status."
+msgstr "به‌روزرسانی وضعیت انجام نشد."
+
+#: desk/src/stores/knowledgeBase.ts
+msgid "Content is required"
+msgstr "واردکردن محتوا الزامی است"
+
+#: desk/src/stores/knowledgeBase.ts
+msgid "Articles are required"
+msgstr "افزودن دست‌کم یک مقاله الزامی است"
+
+#: desk/src/stores/knowledgeBase.ts
+msgid "Target is required"
+msgstr "تعیین مقصد الزامی است"
+
+#: desk/src/stores/sla.ts
+msgid "SLA policy name is required."
+msgstr "واردکردن نام سیاست SLA الزامی است."
+
+#: desk/src/stores/sla.ts
+msgid "At least one priority is required."
+msgstr "باید دست‌کم یک اولویت تعیین کنید."
+
+#: desk/src/utils.ts
+msgid "Copied to clipboard."
+msgstr "در کلیپ‌بورد کپی شد."
+
+#: desk/src/utils.ts
+msgid "Link copied."
+msgstr "پیوند کپی شد."
+
+#: desk/src/utils.ts
+msgid "{0} invited successfully"
+msgstr "دعوت از {0} با موفقیت انجام شد"
+
+#: desk/src/utils.ts
+msgid "{0} already present and disabled"
+msgstr "{0} از قبل وجود دارد اما غیرفعال است"
+
+#: desk/src/utils.ts
+msgid "{0} already invited"
+msgstr "از {0} قبلاً دعوت شده است"
+
+#: desk/src/utils.ts
+msgid "{0} already present"
+msgstr "{0} از قبل وجود دارد"
+
+#: desk/src/components/telephony/CallUI.vue
+msgid "Default calling medium set successfully to {0}"
+msgstr "روش تماس پیش‌فرض با موفقیت روی {0} تنظیم شد."
+
+#: desk/src/components/EmailEditor.vue
+msgid "Email has no recipients. Please add at least one recipient (To, Cc, or Bcc) before sending."
+msgstr "برای ارسال ایمیل، دست‌کم یک گیرنده در بخش «گیرنده»، «رونوشت» یا «رونوشت مخفی» اضافه کنید."
+
+#: desk/src/components/TypingIndicator.vue
+msgid "is typing"
+msgstr "در حال نوشتن است"
+
+#: desk/src/components/TypingIndicator.vue
+msgid "are typing"
+msgstr "در حال نوشتن هستند"
+
+#: desk/src/components/TypingIndicator.vue
+msgid "and"
+msgstr "و"
+
+#: desk/src/components/TypingIndicator.vue
+msgid "{0} others"
+msgstr "{0} نفر دیگر"
+
+#: desk/src/components/UniInput.vue
+msgid "Type something"
+msgstr "عبارتی وارد کنید"
+
+#: desk/src/components/UniInput.vue
+msgid "Select an option"
+msgstr "یک گزینه انتخاب کنید"
+
+#: desk/src/components/ViewModal.vue
+msgid "Edit View"
+msgstr "ویرایش نما"
+
+#: desk/src/components/ViewModal.vue
+msgid "Duplicate View"
+msgstr "تکثیر نما"
+
+#: frappe-ui/src/components/DatePicker/DatePicker.vue
+msgid "Select date"
+msgstr "انتخاب تاریخ"
+
+#: frappe-ui/src/components/DatePicker/DateTimePicker.vue
+msgid "Select date & time"
+msgstr "انتخاب تاریخ و ساعت"
+
+#: frappe-ui/src/components/MultiSelect/MultiSelect.vue
+msgid "Clear All"
+msgstr "پاک‌کردن همه"
+
+#: frappe-ui/src/components/MultiSelect/MultiSelect.vue
+msgid "Select All"
+msgstr "انتخاب همه"
+
+#: frappe-ui/src/charts/components/ChartContainer.vue
+msgid "Loading chart"
+msgstr "در حال بارگذاری نمودار"
+
+#: frappe-ui/src/charts/components/ChartContainer.vue
+msgid "Could not render this chart"
+msgstr "نمایش نمودار ممکن نشد."
+
+#: frappe-ui/src/charts/components/ChartContainer.vue
+msgid "No data to show"
+msgstr "داده‌ای برای نمایش نیست."
+
+#: desk/src/components/Settings/InviteAgents.vue
+msgid "Admin"
+msgstr "مدیر سیستم"
+
+#: desk/src/components/Settings/FieldDependency/FieldDependencyValueSelection.vue
+msgid "Search values"
+msgstr "جست‌وجوی مقدارها"
+
+#: desk/src/components/Settings/FieldDependency/FieldDependencyValueSelection.vue
+msgid "Search {0} values"
+msgstr "جست‌وجوی مقدارهای {0}"
+
+#: desk/src/components/Settings/Teams/NewTeam.vue
+msgid "At least one team member is required"
+msgstr "افزودن دست‌کم یک عضو به تیم الزامی است."
+
+#: desk/src/components/Settings/Holiday/Modals/AddHolidayModal.vue
+msgid "Holiday date must be between {0} and {1}"
+msgstr "تاریخ تعطیلی باید بین {0} و {1} باشد."
+
+#: desk/src/components/Settings/Sla/Modals/WorkDayModal.vue
+msgid "This field is required"
+msgstr "تکمیل این فیلد الزامی است."
+
+#: desk/src/components/Settings/Sla/Modals/WorkDayModal.vue
+msgid "Start time is required"
+msgstr "واردکردن زمان شروع الزامی است."
+
+#: desk/src/components/Settings/Sla/Modals/WorkDayModal.vue
+msgid "End time is required"
+msgstr "واردکردن زمان پایان الزامی است."
+
+#: desk/src/components/Settings/Sla/Modals/WorkDayModal.vue
+msgid "End time must be after start time"
+msgstr "زمان پایان باید پس از زمان شروع باشد."
+
+#: desk/src/components/Settings/Sla/Modals/WorkDayModal.vue
+msgid "This workday already exists"
+msgstr "این روز کاری از قبل وجود دارد."
+
+#: desk/src/components/Settings/Sla/SlaPolicyView.vue
+#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue
+msgid "Assignment conditions are invalid or corrupt, recreate the conditions."
+msgstr "شرایط تخصیص نامعتبر یا خراب است؛ آن‌ها را دوباره بسازید."
+
+#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue
+msgid "Unassignment conditions are invalid or corrupt, recreate the conditions."
+msgstr "شرایط لغو تخصیص نامعتبر یا خراب است؛ آن‌ها را دوباره بسازید."
+
+#: desk/src/components/Password.vue
+msgid "Hide Password"
+msgstr "پنهان‌کردن گذرواژه"
+
+#: desk/src/components/Password.vue
+msgid "Show Password"
+msgstr "نمایش گذرواژه"
+
+#: desk/src/components/Settings/Agents.vue
+msgid "Change your search terms or filters"
+msgstr "عبارت جست‌وجو یا فیلترها را تغییر دهید."
+
+#: desk/src/components/Settings/Holiday/RecurringHolidaysList.vue
+msgid "Update Holiday"
+msgstr "به‌روزرسانی تعطیلی"
+
+#: desk/src/components/Settings/Teams/TeamsList.vue
+msgid "Change your search terms to find teams."
+msgstr "برای پیدا کردن تیم‌ها، عبارت جست‌وجو را تغییر دهید."
+
+#: desk/src/components/ticket/TicketAgentContact.vue
+msgid "Call {0}"
+msgstr "تماس با {0}"
+
+#: desk/src/components/ticket/TicketMergeModal.vue
+msgid "Merge with ticket #{0}"
+msgstr "ادغام با تیکت شمارهٔ {0}"
+
+#: desk/src/components/view-controls/ColumnSettings.vue
+msgid "Width can be in number, pixel or rem (eg. 3, 30px, 10rem)"
+msgstr "پهنای ستون را می‌توان به‌شکل عدد، پیکسل یا rem وارد کرد (مثلاً ۳، 30px یا 10rem)."
+
+#: desk/src/components/knowledge-base/CategoryFolder.vue
+msgid "Number of articles: {0}"
+msgstr "تعداد مقاله‌ها: {0}"
+
+#: desk/src/components/CommunicationArea.vue
+msgid "Send (⌘ + ⏎)"
+msgstr "ارسال (⌘ + ⏎)"
+
+#: desk/src/components/CommunicationArea.vue
+msgid "Send (Ctrl + ⏎)"
+msgstr "ارسال (Ctrl + ⏎)"
+
+#: desk/src/components/CommunicationArea.vue
+msgid "Comment (⌘ + ⏎)"
+msgstr "نظر (⌘ + ⏎)"
+
+#: desk/src/components/CommunicationArea.vue
+msgid "Comment (Ctrl + ⏎)"
+msgstr "نظر (Ctrl + ⏎)"
+
+#: desk/src/components/Settings/emailConfig.ts
+msgid "Account name is required"
+msgstr "واردکردن نام حساب الزامی است."
+
+#: desk/src/components/Settings/emailConfig.ts
+msgid "Email ID is required"
+msgstr "واردکردن شناسهٔ ایمیل الزامی است."
+
+#: desk/src/components/Settings/emailConfig.ts
+msgid "Invalid email ID"
+msgstr "شناسهٔ ایمیل معتبر نیست."
+
+#: desk/src/components/Settings/emailConfig.ts
+msgid "API Key is required"
+msgstr "واردکردن کلید API الزامی است."
+
+#: desk/src/components/Settings/emailConfig.ts
+msgid "API Secret is required"
+msgstr "واردکردن رمز API الزامی است."
+
+#: desk/src/components/Settings/emailConfig.ts
+msgid "Email Domain or manual server settings are required"
+msgstr "واردکردن دامنهٔ ایمیل یا تنظیم دستی سرور الزامی است."
+
+#: desk/src/components/Settings/emailConfig.ts
+msgid "Password is required"
+msgstr "واردکردن گذرواژه الزامی است."
+
+#: desk/src/components/Settings/General/components/TicketSettings.vue
+msgid "e.g. 30"
+msgstr "مثلاً ۳۰"
+
+#: desk/src/pages/PersonaForm.vue
+msgid "1–5"
+msgstr "۱ تا ۵ نفر"
+
+#: desk/src/pages/PersonaForm.vue
+msgid "6–10"
+msgstr "۶ تا ۱۰ نفر"
+
+#: desk/src/pages/PersonaForm.vue
+msgid "11–25"
+msgstr "۱۱ تا ۲۵ نفر"
+
+#: desk/src/pages/PersonaForm.vue
+msgid "26–50"
+msgstr "۲۶ تا ۵۰ نفر"
+
+#: desk/src/pages/PersonaForm.vue
+msgid "51–100"
+msgstr "۵۱ تا ۱۰۰ نفر"
+
+#: desk/src/pages/PersonaForm.vue
+msgid "100+"
+msgstr "بیش از ۱۰۰ نفر"
+
+#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue
+msgid "Your old condition will be overwritten. Are you sure you want to save?"
+msgstr "شرط قبلی بازنویسی می‌شود. از ذخیره‌کردن مطمئن هستید؟"
+
+#: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
+msgid "Add your Custom Message here"
+msgstr "پیام سفارشی را اینجا بنویسید"
+
+#: desk/src/components/DocumentationButton.vue
+msgid "View documentation"
+msgstr "مشاهدهٔ مستندات"

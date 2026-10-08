@@ -97,7 +97,7 @@
           <div
             class="flex items-center gap-0.5 text-ink-gray-5 hover:text-ink-gray-6 cursor-pointer shrink-0"
           >
-            vs {{ __(currentDuration).toLowerCase() }}
+            {{ __("vs") }} {{ __(currentDuration).toLowerCase() }}
             <LucideChevronDown class="size-4" />
           </div>
           <template #item-label="{ item }">

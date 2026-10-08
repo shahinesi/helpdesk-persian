@@ -44,7 +44,11 @@
           <EmailEditor
             ref="emailEditorRef"
             :label="
-              isMobileView ? 'Send' : isMac ? 'Send (⌘ + ⏎)' : 'Send (Ctrl + ⏎)'
+              isMobileView
+                ? __('Send')
+                : isMac
+                ? __('Send (⌘ + ⏎)')
+                : __('Send (Ctrl + ⏎)')
             "
             :placeholder="__(`Hi John, we are looking into this issue.`)"
             :ticketId="ticketId"
@@ -84,15 +88,15 @@
             ref="commentTextEditorRef"
             :label="
               isMobileView
-                ? 'Comment'
+                ? __('Comment')
                 : isMac
-                ? 'Comment (⌘ + ⏎)'
-                : 'Comment (Ctrl + ⏎)'
+                ? __('Comment (⌘ + ⏎)')
+                : __('Comment (Ctrl + ⏎)')
             "
             :ticketId="ticketId"
             :editable="showCommentBox"
             :doctype="doctype"
-            placeholder="@John could you please look into this?"
+          :placeholder="__(`@John could you please look into this?`)"
             @sending="
               () => {
                 showCommentBox = false;

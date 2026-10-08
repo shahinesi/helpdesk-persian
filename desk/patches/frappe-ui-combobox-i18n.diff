@@ -42,3 +42,75 @@ diff --git a/src/components/MultiSelect/MultiSelectResults.vue b/src/components/
 @@ -84 +88 @@
 -      <span>Loading...</span>
 +      <span>{{ __('Loading...') }}</span>
+diff --git a/src/components/DatePicker/DatePicker.vue b/src/components/DatePicker/DatePicker.vue
+--- a/src/components/DatePicker/DatePicker.vue
++++ b/src/components/DatePicker/DatePicker.vue
+@@ -46 +46 @@
+-          aria-label="Shortcuts"
++          :aria-label="(window as any).__?.('Shortcuts') ?? 'Shortcuts'"
+@@ -109 +109 @@
+-  placeholder: "Select date",
++  placeholder: (window as any).__?.("Select date") ?? "Select date",
+@@ -115 +115 @@
+-  todayLabel: "Today",
++  todayLabel: (window as any).__?.("Today") ?? "Today",
+diff --git a/src/components/DatePicker/DateTimePicker.vue b/src/components/DatePicker/DateTimePicker.vue
+--- a/src/components/DatePicker/DateTimePicker.vue
++++ b/src/components/DatePicker/DateTimePicker.vue
+@@ -46 +46 @@
+-          aria-label="Shortcuts"
++          :aria-label="(window as any).__?.('Shortcuts') ?? 'Shortcuts'"
+@@ -84 +84 @@
+-              placeholder="Select time"
++              :placeholder="(window as any).__?.('Select time') ?? 'Select time'"
+@@ -125 +125 @@
+-  placeholder: "Select date & time",
++  placeholder: (window as any).__?.("Select date & time") ?? "Select date & time",
+@@ -131 +131 @@
+-  todayLabel: "Now",
++  todayLabel: (window as any).__?.("Now") ?? "Now",
+diff --git a/src/components/DatePicker/DateRangePicker.vue b/src/components/DatePicker/DateRangePicker.vue
+--- a/src/components/DatePicker/DateRangePicker.vue
++++ b/src/components/DatePicker/DateRangePicker.vue
+@@ -46 +46 @@
+-          aria-label="Shortcuts"
++          :aria-label="(window as any).__?.('Shortcuts') ?? 'Shortcuts'"
+@@ -113 +113 @@
+-  placeholder: "Select range",
++  placeholder: (window as any).__?.("Select range") ?? "Select range",
+@@ -120 +120 @@
+-  todayLabel: "Today",
++  todayLabel: (window as any).__?.("Today") ?? "Today",
+diff --git a/src/components/Dialog/Dialog.vue b/src/components/Dialog/Dialog.vue
+--- a/src/components/Dialog/Dialog.vue
++++ b/src/components/Dialog/Dialog.vue
+@@ -90 +90 @@
+-                        <Button variant="ghost" label="Close">
++                        <Button variant="ghost" :label="(window as any).__?.('Close') ?? 'Close'">
+@@ -145 +145 @@
+-                label="Close"
++                :label="(window as any).__?.('Close') ?? 'Close'"
+diff --git a/src/components/MultiSelect/MultiSelect.vue b/src/components/MultiSelect/MultiSelect.vue
+--- a/src/components/MultiSelect/MultiSelect.vue
++++ b/src/components/MultiSelect/MultiSelect.vue
+@@ -63 +63 @@
+-  emptyText: 'No results',
++  emptyText: (window as any).__?.('No results') ?? 'No results',
+@@ -584 +584 @@
+-                  Clear All
++                  {{ (window as any).__?.('Clear All') ?? 'Clear All' }}
+@@ -593 +593 @@
+-                  Select All
++                  {{ (window as any).__?.('Select All') ?? 'Select All' }}
+diff --git a/src/charts/components/ChartContainer.vue b/src/charts/components/ChartContainer.vue
+--- a/src/charts/components/ChartContainer.vue
++++ b/src/charts/components/ChartContainer.vue
+@@ -101 +101 @@
+-        <span class="sr-only" role="status">Loading chart</span>
++        <span class="sr-only" role="status">{{ (window as any).__?.('Loading chart') ?? 'Loading chart' }}</span>
+@@ -111 +111 @@
+-              Could not render this chart
++              {{ (window as any).__?.('Could not render this chart') ?? 'Could not render this chart' }}
+@@ -117 +117 @@
+-            <span class="text-p-sm text-ink-gray-5">No data to show</span>
++            <span class="text-p-sm text-ink-gray-5">{{ (window as any).__?.('No data to show') ?? 'No data to show' }}</span>

@@ -91,7 +91,7 @@
           <Button
             variant="subtle"
             :theme="isConfirmingDelete ? 'red' : 'gray'"
-            :label="isConfirmingDelete ? 'Confirm Delete' : 'Delete'"
+            :label="isConfirmingDelete ? __('Confirm Delete') : __('Delete')"
             @click="deleteWorkDay"
             icon-left="lucide-trash-2"
           />
@@ -200,7 +200,7 @@ function resetForm() {
 
 const validateField = (field: string) => {
   if (!workDayData[field as keyof typeof workDayData]) {
-    errors[field as keyof typeof errors] = "This field is required";
+    errors[field as keyof typeof errors] = __("This field is required");
     return false;
   }
   errors[field as keyof typeof errors] = "";
@@ -209,8 +209,8 @@ const validateField = (field: string) => {
 
 const validateTimeRange = () => {
   if (!workDayData.start_time || !workDayData.end_time) {
-    if (!workDayData.start_time) errors.start_time = "Start time is required";
-    if (!workDayData.end_time) errors.end_time = "End time is required";
+    if (!workDayData.start_time) errors.start_time = __("Start time is required");
+    if (!workDayData.end_time) errors.end_time = __("End time is required");
     return false;
   }
 
@@ -223,7 +223,7 @@ const validateTimeRange = () => {
     endHours < startHours ||
     (endHours === startHours && endMinutes <= startMinutes)
   ) {
-    errors.end_time = "End time must be after start time";
+    errors.end_time = __("End time must be after start time");
     return false;
   }
 
@@ -264,7 +264,7 @@ const onSave = () => {
       );
 
       if (isDuplicate) {
-        errors.workday = "This workday already exists";
+        errors.workday = __("This workday already exists");
         toast.error(__("A workday with this name already exists"));
         return;
       }

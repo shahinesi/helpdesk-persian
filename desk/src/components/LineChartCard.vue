@@ -15,7 +15,11 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
-import { buildPercentageChange, formatTime } from "@/utils";
+import {
+  buildPercentageChange,
+  formatLocalizedDate,
+  formatTime,
+} from "@/utils";
 import { EChartsOption } from "echarts";
 import { createResource } from "frappe-ui";
 import { computed, onMounted, ref, type PropType } from "vue";
@@ -78,7 +82,8 @@ const chartData = computed(() => {
   const isDataFetched = resource.fetched;
   const _data: AverageResponseData = isDataFetched ? resource.data : props.data;
 
-  const dates = _data?.data?.map((item) => item.date) || [];
+  const dates =
+    _data?.data?.map((item) => formatLocalizedDate(item.date, "MMM D")) || [];
 
   const seriesData =
     _data?.data?.map((item) =>

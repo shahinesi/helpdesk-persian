@@ -104,7 +104,7 @@
                 <IndicatorIcon
                   :class="getStatus(ticket.status)?.parsed_color"
                 />
-                <span>{{ __(ticket.status) }}</span>
+                <span>{{ displayLinkOption("HD Ticket Status", ticket.status) }}</span>
               </div>
 
               <!-- Priority -->
@@ -164,6 +164,7 @@ import { IndicatorIcon } from "@/components/icons";
 import { useScreenSize } from "@/composables/screen";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import type { ListResource, Resource } from "@/types";
 import type { HDTicket } from "@/types/doctypes";
 import { watchDebounced } from "@vueuse/core";

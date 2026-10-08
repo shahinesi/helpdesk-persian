@@ -121,9 +121,11 @@ const onSave = () => {
 
   if (holidayDate.isBefore(fromDate) || holidayDate.isAfter(toDate)) {
     toast.error(
-      `Holiday date must be between ${getFormattedDate(
-        holidayData.value.from_date
-      )} and ${getFormattedDate(holidayData.value.to_date)}`
+      __(
+        "Holiday date must be between {0} and {1}",
+        getFormattedDate(holidayData.value.from_date),
+        getFormattedDate(holidayData.value.to_date)
+      )
     );
     return;
   }

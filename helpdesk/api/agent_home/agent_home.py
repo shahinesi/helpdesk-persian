@@ -703,6 +703,7 @@ FEED_FIELD_LABELS = {
     "agent_group": "team",
     "ticket_type": "type",
 }
+STANDARD_TICKET_TYPES = {"Unspecified", "Question", "Bug", "Incident"}
 
 
 def _updated_label(data: str | None) -> str | None:
@@ -717,6 +718,13 @@ def _updated_label(data: str | None) -> str | None:
         if field not in changed:
             continue
         new = changed[field]
+        if field == "ticket_type":
+            if not new:
+                return _("Ticket type cleared")
+            value = str(new)
+            if value in STANDARD_TICKET_TYPES:
+                value = _(value)
+            return _("Ticket type set to {0}").format(value)
         display_label = _(label)
         if new:
             value = _(str(new)) if field in {"status", "priority"} else str(new)

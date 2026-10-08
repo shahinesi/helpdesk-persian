@@ -12,7 +12,8 @@
       >
         <div class="w-full truncate">
           {{
-            options?.find((option) => option.value == model)?.label || "Select"
+            options?.find((option) => option.value == model)?.label ||
+            __("Select")
           }}
         </div>
       </Button>

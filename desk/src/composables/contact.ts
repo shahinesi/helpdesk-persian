@@ -439,7 +439,7 @@ function getContactFieldConfig(newDoc: boolean = false): FieldConfigRow[] {
         type: "email",
         label: __("Email"),
         required: true,
-        placeholder: __("john.doe@example.com"),
+        placeholder: "john.doe@example.com",
       }
     : {
         key: "emails",

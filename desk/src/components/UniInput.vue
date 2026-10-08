@@ -148,15 +148,15 @@ const placeholder = computed(() => {
     return props.field.placeholder;
   }
   if (props.field.fieldtype === "Data" && !props.field.url_method) {
-    return "Type something";
+    return __("Type something");
   } else if (
     props.field.fieldtype === "Select" ||
     props.field.fieldtype === "Link" ||
     props.field.fieldtype === "Check"
   ) {
-    return "Select an option";
+    return __("Select an option");
   }
-  return "Type something";
+  return __("Type something");
 });
 
 function emitUpdate(fieldname: Field["fieldname"], value: Value) {
