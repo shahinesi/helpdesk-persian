@@ -1,18 +1,12 @@
 diff --git a/src/components/Combobox/Combobox.vue b/src/components/Combobox/Combobox.vue
 --- a/src/components/Combobox/Combobox.vue
 +++ b/src/components/Combobox/Combobox.vue
-@@ -56,3 +56,5 @@
- } from './utils'
- 
-+const __ = (window as any).__ ?? ((message: string) => message)
-+
- defineOptions({
-@@ -72,7 +74,7 @@
+@@ -72,7 +72,7 @@
    align: 'start',
    offset: 4,
    loading: false,
 -  emptyText: 'No results',
-+  emptyText: __('No results'),
++  emptyText: () => (window as any).__?.('No results') ?? 'No results',
    hideSearch: false,
    filterable: true,
  })
