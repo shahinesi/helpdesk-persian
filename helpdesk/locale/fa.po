@@ -5649,6 +5649,10 @@ msgstr "اخیر"
 msgid "Recent Tickets"
 msgstr "تیکت‌های اخیر"
 
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Recently assigned"
+msgstr "به‌تازگی واگذار شده"
+
 #: desk/src/translationLabels.js:13
 msgid "Recently Assigned Tickets"
 msgstr "تیکت‌های واگذارشدهٔ اخیر"

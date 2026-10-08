@@ -540,7 +540,7 @@ def _get_new_tickets(limit=10):
     for ticket in tickets:
         ticket["reason"] = {
             "type": "new_tickets",
-            "text": "Recently assigned",
+            "text": _("Recently assigned"),
         }
 
     total_count = get_ticket_count(filters=filters)

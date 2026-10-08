@@ -5638,6 +5638,10 @@ msgstr ""
 msgid "Recent Tickets"
 msgstr ""
 
+#: helpdesk/api/agent_home/agent_home.py
+msgid "Recently assigned"
+msgstr ""
+
 #: desk/src/translationLabels.js:13
 msgid "Recently Assigned Tickets"
 msgstr ""
