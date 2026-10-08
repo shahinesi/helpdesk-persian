@@ -1,0 +1,98 @@
+--- a/node_modules/frappe-ui/experimental/Charts/ECharts.vue
++++ b/node_modules/frappe-ui/experimental/Charts/ECharts.vue
+@@ -4,0 +5 @@
++import { getChartFontFamily } from './helpers'
+@@ -17,0 +19,10 @@
++function withAppFont(options: EChartsOption): EChartsOption {
++  return {
++    ...options,
++    textStyle: {
++      ...options.textStyle,
++      fontFamily: options.textStyle?.fontFamily || getChartFontFamily(),
++    },
++  }
++}
++
+@@ -28 +39 @@
+-  chart.setOption({ ...props.options }, true)
++  chart.setOption(withAppFont(props.options), true)
+@@ -51 +62 @@
+-      chart.setOption(newOptions, true)
++      chart.setOption(withAppFont(newOptions), true)
+--- a/node_modules/frappe-ui/experimental/Charts/helpers.ts
++++ b/node_modules/frappe-ui/experimental/Charts/helpers.ts
+@@ -2,0 +3,18 @@
++export function getChartLocale() {
++  if (typeof document === 'undefined') return 'en-US'
++  const language = document.documentElement.lang
++  return language === 'fa' ? 'fa-IR' : language || 'en-US'
++}
++
++export function getChartFontFamily() {
++  if (typeof document === 'undefined') return 'InterVar, sans-serif'
++  return getComputedStyle(document.documentElement).fontFamily || 'sans-serif'
++}
++
++export function formatPercentage(value: number) {
++  return new Intl.NumberFormat(getChartLocale(), {
++    style: 'percent',
++    maximumFractionDigits: 0,
++  }).format(value / 100)
++}
++
+@@ -13 +31 @@
+-  let locale = 'en-US'
++  const locale = getChartLocale()
+--- a/node_modules/frappe-ui/experimental/Charts/types.ts
++++ b/node_modules/frappe-ui/experimental/Charts/types.ts
+@@ -7,0 +8 @@
++  fontFamily?: string
+@@ -76,0 +78 @@
++  fontFamily?: string
+@@ -92,0 +95 @@
++  fontFamily?: string
+--- a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
+@@ -2 +2,7 @@
+-import { formatDate, formatLabel, formatValue, mergeDeep } from './helpers'
++import {
++  formatDate,
++  formatLabel,
++  formatValue,
++  getChartFontFamily,
++  mergeDeep,
++} from './helpers'
+@@ -31 +37 @@
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+--- a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
+@@ -2 +2 @@
+-import { formatValue } from './helpers'
++import { formatPercentage, formatValue, getChartFontFamily } from './helpers'
+@@ -47 +47 @@
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+@@ -74 +74 @@
+-            return `${name} (${percentage.toFixed(0)}%)`
++            return `${name} (${formatPercentage(percentage)})`
+@@ -94 +94 @@
+-            return `${name} (${percentage.toFixed(0)}%)`
++            return `${name} (${formatPercentage(percentage)})`
+@@ -126 +126 @@
+-        const formattedPercentage = percentage.toFixed(0)
++        const formattedPercentage = formatPercentage(percentage)
+--- a/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
+@@ -8 +8 @@
+-import { formatValue } from './helpers'
++import { formatPercentage, formatValue, getChartFontFamily } from './helpers'
+@@ -40 +40 @@
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+@@ -69 +69 @@
+-            const percentage = Number((values[index] / total) * 100).toFixed(0)
++            const percentage = formatPercentage((values[index] / total) * 100)
+@@ -107 +107 @@
+-        const formattedPercentage = percentage.toFixed(0)
++        const formattedPercentage = formatPercentage(percentage)
