@@ -52,7 +52,7 @@ import { slaTextColor, useSLA, type SLAMetric } from "@/composables/useSLA";
 import { __ } from "@/translation";
 import { TicketSymbol } from "@/types";
 import { dateFormat } from "@/utils";
-import { HoverCard } from "frappe-ui";
+import { dayjs, HoverCard } from "frappe-ui";
 import { computed, inject } from "vue";
 import LucideInfo from "~icons/lucide/info";
 
@@ -144,6 +144,10 @@ function cardDetails(card: SLACard) {
 function fmt(date: string): string {
   // Year included: SLA breaches span months/years, so a bare "MMM D" makes the
   // due/actual dates read as contradictory (e.g. resolved "before" the due date).
-  return dateFormat(date, "MMM D, YYYY, h:mm A");
+  const format =
+    dayjs.locale().split("-")[0] === "fa"
+      ? "D MMMM YYYY، HH:mm"
+      : "MMM D, YYYY, h:mm A";
+  return dateFormat(date, format);
 }
 </script>
