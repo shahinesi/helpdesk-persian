@@ -3551,6 +3551,10 @@ msgstr "در اینجا، تخفیف‌های هفتگی شما بر اساس ا
 msgid "Hey"
 msgstr "سلام"
 
+#: desk/src/components/CommunicationArea.vue:49
+msgid "Hi John, we are looking into this issue."
+msgstr "سلام، در حال پیگیری این موضوع هستیم."
+
 #: desk/src/components/SavedReplyActions/SavedReplyActions.vue:26
 msgid "Hide actions"
 msgstr "پنهان‌کردن اقدام‌ها"

@@ -3532,6 +3532,10 @@ msgstr ""
 msgid "Hey"
 msgstr ""
 
+#: desk/src/components/CommunicationArea.vue:49
+msgid "Hi John, we are looking into this issue."
+msgstr ""
+
 #: desk/src/components/SavedReplyActions/SavedReplyActions.vue:26
 msgid "Hide actions"
 msgstr ""
