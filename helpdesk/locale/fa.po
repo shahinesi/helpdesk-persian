@@ -807,6 +807,14 @@ msgstr "کارشناس مسئول"
 msgid "changed {0}"
 msgstr "{0} را تغییر داد:"
 
+#: desk/src/components/ticket-agent/timeline/TicketTimeline.vue
+msgid "{0} changed from {1} to {2}"
+msgstr "{0} از «{1}» به «{2}» تغییر کرد"
+
+#: desk/src/components/ticket-agent/timeline/TicketTimeline.vue
+msgid "{0} set to {1}"
+msgstr "{0} روی «{1}» تنظیم شد"
+
 #: frappe/desk/form/activity.py:585
 msgid "set {0} to"
 msgstr "مقدار {0} را تعیین کرد:"
@@ -1114,11 +1122,11 @@ msgstr "بر اساس سیاست منابع انسانی خود، تاریخ ش�
 
 #: desk/src/components/EmailEditor.vue:54
 msgid "Bcc"
-msgstr "رونوشت پنهان"
+msgstr "رونوشت مخفی"
 
 #: desk/src/components/EmailEditor.vue:88
 msgid "Bcc:"
-msgstr "رونوشت پنهان:"
+msgstr "رونوشت مخفی:"
 
 #: desk/src/components/conditions-filter/CFCondition.vue:416
 msgid "Between"
@@ -1343,6 +1351,10 @@ msgstr "رونوشت"
 #: desk/src/components/EmailEditor.vue:70
 msgid "Cc:"
 msgstr "رونوشت:"
+
+#: frappe/ui/src/components/ActivityTimeline/EmailItem.vue
+msgid "To:"
+msgstr "گیرنده:"
 
 #: desk/src/components/Settings/General/components/LogoUpload.vue:40
 msgid "Change"

@@ -247,7 +247,18 @@ const filtered = computed(() => {
 });
 
 const STANDARD_PRIORITIES = new Set(["Low", "Medium", "High", "Urgent"]);
+const VERSION_FIELD_LABELS: Record<string, string> = {
+  status: "Status",
+  priority: "Priority",
+  agent_group: "Team",
+  ticket_type: "Ticket Type",
+  sla: "SLA",
+};
+
 function localizeStandardValue(fieldname: string, value: string | undefined) {
+  if (fieldname === "status" && value) {
+    return displayLinkOption("HD Ticket Status", value);
+  }
   if (fieldname === "priority" && value && STANDARD_PRIORITIES.has(value)) {
     return __(value);
   }
@@ -260,23 +271,41 @@ function localizeStandardValues(activity: VersionActivity): VersionActivity {
   const localizeChange = (change: VersionChange): VersionChange => {
     if (
       change.type !== "diff" ||
-      !["priority", "ticket_type"].includes(change.fieldname)
+      !change.fieldname ||
+      !(change.fieldname in VERSION_FIELD_LABELS)
     ) {
       return change;
     }
-    const fieldLabel =
-      change.fieldname === "priority" ? __("Priority") : __("Ticket Type");
+    const fieldLabel = __(VERSION_FIELD_LABELS[change.fieldname]);
+    const to = localizeStandardValue(change.fieldname, change.to) ?? change.to;
     return {
       ...change,
-      prefix: change.from
-        ? __("changed {0}", fieldLabel)
-        : __("set {0} to", fieldLabel),
+      displayText: change.from
+        ? __(
+            "{0} changed from {1} to {2}",
+            fieldLabel,
+            localizeStandardValue(change.fieldname, change.from) ?? change.from,
+            to
+          )
+        : __("{0} set to {1}", fieldLabel, to),
       from: localizeStandardValue(change.fieldname, change.from),
-      to: localizeStandardValue(change.fieldname, change.to) ?? change.to,
+      to,
       history: change.history?.map((entry) => ({
         ...entry,
         from: localizeStandardValue(change.fieldname, entry.from) ?? entry.from,
         to: localizeStandardValue(change.fieldname, entry.to) ?? entry.to,
+        displayText: entry.from
+          ? __(
+              "{0} changed from {1} to {2}",
+              fieldLabel,
+              localizeStandardValue(change.fieldname, entry.from) ?? entry.from,
+              localizeStandardValue(change.fieldname, entry.to) ?? entry.to
+            )
+          : __(
+              "{0} set to {1}",
+              fieldLabel,
+              localizeStandardValue(change.fieldname, entry.to) ?? entry.to
+            ),
       })),
     };
   };
