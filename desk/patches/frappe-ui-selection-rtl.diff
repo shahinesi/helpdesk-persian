@@ -51,3 +51,22 @@
 @@ -72 +72 @@
 -  'relative inline-flex items-center gap-2 text-left transition-[background-color,border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-[state=open]:outline-none text-ink-gray-7 data-[placeholder]:text-ink-gray-4 data-[disabled]:text-ink-gray-4'
 +  'relative inline-flex items-center gap-2 text-start transition-[background-color,border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-[state=open]:outline-none text-ink-gray-7 data-[placeholder]:text-ink-gray-4 data-[disabled]:text-ink-gray-4'
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+@@ -1,0 +2 @@
++import { useTextDirection } from '@vueuse/core'
+@@ -55,0 +57,2 @@
++const textDirection = useTextDirection({ observe: true })
++
+@@ -369,0 +373 @@
++      :dir="textDirection"
+@@ -444 +449 @@
+-          <span class="grid min-w-0 flex-1 text-left font-normal">
++          <span class="grid min-w-0 flex-1 text-start font-normal">
+@@ -506,0 +512 @@
++          :dir="textDirection"
+@@ -537,0 +544 @@
++                  :dir="textDirection"
+@@ -581 +589 @@
+-                  class="ml-auto"
++                  class="ms-auto"
