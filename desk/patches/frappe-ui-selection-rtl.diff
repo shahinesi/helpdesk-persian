@@ -55,7 +55,7 @@
 +++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
 @@ -1,0 +2 @@
 +import { useTextDirection } from '@vueuse/core'
-@@ -55,0 +57,2 @@
+@@ -69,0 +71,2 @@
 +const textDirection = useTextDirection({ observe: true })
 +
 @@ -369,0 +373 @@
