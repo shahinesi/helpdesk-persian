@@ -6,6 +6,7 @@
     :options="linkOptions"
     :loading="options.loading"
     :filterable="false"
+    :empty-text="__('No results')"
     :size="size"
     :variant="variant"
     :placeholder="placeholder"

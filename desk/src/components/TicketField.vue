@@ -189,9 +189,7 @@ const component = computed(() => {
       );
     }
     if (
-      props.field.options === "HD Ticket Type" &&
-      displayLinkOption(props.field.options, String(props.value || "")) !==
-        props.value
+      ["HD Ticket Type", "HD Team", "HD Customer"].includes(props.field.options)
     ) {
       return h(HelpdeskLink, linkProps);
     }
