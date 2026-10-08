@@ -1,4 +1,4 @@
-diff --git a/src/components/ActivityTimeline/EmailContent.vue b/src/components/ActivityTimeline/EmailContent.vue b/src/components/ActivityTimeline/EmailContent.vue
+diff --git a/src/components/ActivityTimeline/EmailContent.vue b/src/components/ActivityTimeline/EmailContent.vue
 --- a/src/components/ActivityTimeline/EmailContent.vue
 +++ b/src/components/ActivityTimeline/EmailContent.vue
 @@ -155,7 +155,6 @@
