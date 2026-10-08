@@ -1,0 +1,188 @@
+diff --git a/src/components/ActivityTimeline/LoadMoreButton.vue b/src/components/ActivityTimeline/LoadMoreButton.vue
+index b2a777d..2d84654 100644
+--- a/src/components/ActivityTimeline/LoadMoreButton.vue
++++ b/src/components/ActivityTimeline/LoadMoreButton.vue
+@@ -4 +4 @@
+-		{{ label ?? "Load more" }}
++		{{ label ?? __("Load more") }}
+@@ -12,0 +13,2 @@ import type { Component } from "vue";
++const __ = (window as any).__;
++
+diff --git a/src/components/Fields/CodeEditorField.vue b/src/components/Fields/CodeEditorField.vue
+index ef168bc..3c3e521 100644
+--- a/src/components/Fields/CodeEditorField.vue
++++ b/src/components/Fields/CodeEditorField.vue
+@@ -51 +51 @@
+-					:label="expanded ? 'Collapse' : 'Expand'"
++					:label="expanded ? __('Collapse code') : __('Expand code')"
+diff --git a/src/components/Notifications/NotificationItem.vue b/src/components/Notifications/NotificationItem.vue
+index e572e22..171cd18 100644
+--- a/src/components/Notifications/NotificationItem.vue
++++ b/src/components/Notifications/NotificationItem.vue
+@@ -5,0 +6,2 @@ import type { NotificationItemProps, NotificationLog } from "./types";
++const __ = (window as any).__;
++
+@@ -48,2 +50 @@ function activate() {
+-				class="absolute top-1/2 size-[5px] -translate-y-1/2 rounded-full bg-gray-800"
+-				style="left: -10px"
++				class="absolute top-1/2 size-[5px] -translate-y-1/2 rounded-full bg-gray-800 start-[-10px]"
+@@ -51 +52 @@ function activate() {
+-				<span class="sr-only">Unread</span>
++				<span class="sr-only">{{ __("Unread") }}</span>
+diff --git a/src/components/Notifications/NotificationPanel.vue b/src/components/Notifications/NotificationPanel.vue
+index 9301441..58183fc 100644
+--- a/src/components/Notifications/NotificationPanel.vue
++++ b/src/components/Notifications/NotificationPanel.vue
+@@ -14 +14 @@ const props = withDefaults(defineProps<NotificationPanelProps>(), {
+-	title: "Notifications",
++	title: undefined,
+@@ -25,0 +26,3 @@ const emit = defineEmits<{
++const __ = (window as any).__;
++const displayTitle = computed(() => props.title ?? __("Notifications"));
++
+@@ -83 +86 @@ const headerScope = computed(() => ({
+-	title: props.title,
++	title: displayTitle.value,
+@@ -108 +111 @@ const activeTabSlot = computed(() => (activeTab.value ? `tab-${activeTab.value}`
+-				<span class="text-md font-medium mr-auto">{{ title }}</span>
++				<span class="text-md font-medium me-auto">{{ displayTitle }}</span>
+@@ -111,2 +114,2 @@ const activeTabSlot = computed(() => (activeTab.value ? `tab-${activeTab.value}`
+-					tooltip="Mark all as read"
+-					aria-label="Mark all as read"
++					:tooltip="__('Mark all as read')"
++					:aria-label="__('Mark all as read')"
+@@ -120,2 +123,2 @@ const activeTabSlot = computed(() => (activeTab.value ? `tab-${activeTab.value}`
+-					tooltip="Close"
+-					aria-label="Close"
++					:tooltip="__('Close')"
++					:aria-label="__('Close')"
+@@ -167 +170 @@ const activeTabSlot = computed(() => (activeTab.value ? `tab-${activeTab.value}`
+-						<Button label="Load more" size="sm" @click="loadMore" />
++						<Button :label="__('Load more')" size="sm" @click="loadMore" />
+@@ -174 +177 @@ const activeTabSlot = computed(() => (activeTab.value ? `tab-${activeTab.value}`
+-						Couldn't load notifications
++						{{ __("Couldn't load notifications") }}
+@@ -182 +185 @@ const activeTabSlot = computed(() => (activeTab.value ? `tab-${activeTab.value}`
+-						No notifications to show
++						{{ __("No notifications to show") }}
+diff --git a/src/components/Onboarding/GettingStartedBanner.vue b/src/components/Onboarding/GettingStartedBanner.vue
+index 703ca8a..cf3d354 100644
+--- a/src/components/Onboarding/GettingStartedBanner.vue
++++ b/src/components/Onboarding/GettingStartedBanner.vue
+@@ -10 +10 @@
+-					{{ "Getting started" }}
++					{{ __("Getting started") }}
+@@ -13 +13 @@
+-					{{ `${stepsCompleted}/${totalSteps} steps` }}
++					{{ __("{0}/{1} steps", stepsCompleted, totalSteps) }}
+@@ -22 +22 @@
+-						{{ "You are all set" }}
++						{{ __("You are all set") }}
+@@ -36 +36 @@
+-				{{ "All steps are completed successfully" }}
++				{{ __("All steps are completed successfully") }}
+@@ -41 +41 @@
+-			:label="stepsCompleted == 0 ? 'Start now' : 'Continue'"
++			:label="stepsCompleted == 0 ? __('Start now') : __('Continue')"
+@@ -46 +46 @@
+-				<LucideChevronsRight class="size-4" />
++				<LucideChevronsRight class="size-4 rtl:rotate-180" />
+@@ -52 +52 @@
+-		aria-label="Getting started"
++		:aria-label="__('Getting started')"
+@@ -67,0 +68,2 @@ import type { GettingStartedBannerProps } from "./types";
++const __ = (window as any).__;
++
+diff --git a/src/components/Onboarding/HelpCenter.vue b/src/components/Onboarding/HelpCenter.vue
+index 88a53f1..387cbd6 100644
+--- a/src/components/Onboarding/HelpCenter.vue
++++ b/src/components/Onboarding/HelpCenter.vue
+@@ -6 +6 @@
+-				:placeholder="'Search articles...'"
++				:placeholder="__('Search articles...')"
+@@ -16,2 +16,2 @@
+-			<div>All articles</div>
+-			<Button variant="ghost" aria-label="Open docs" @click="openDocs">
++			<div>{{ __("All articles") }}</div>
++			<Button variant="ghost" :aria-label="__('Open docs')" @click="openDocs">
+@@ -30 +30 @@
+-							class="size-4 text-ink-gray-5"
++							class="size-4 text-ink-gray-5 rtl:rotate-180"
+@@ -35 +35 @@
+-				<div v-show="a.opened" class="flex flex-col gap-1.5 ml-5">
++				<div v-show="a.opened" class="flex flex-col gap-1.5 ms-5">
+@@ -66,0 +67,2 @@ import type { HelpArticle, HelpCenterProps } from "./types";
++const __ = (window as any).__;
++
+diff --git a/src/components/Onboarding/HelpModal.vue b/src/components/Onboarding/HelpModal.vue
+index 891b59a..7353287 100644
+--- a/src/components/Onboarding/HelpModal.vue
++++ b/src/components/Onboarding/HelpModal.vue
+@@ -4 +4 @@
+-		class="fixed z-50 right-0 w-80 h-[calc(100%_-_80px)] text-ink-gray-9 m-5 mt-[62px] p-3 flex gap-2 flex-col justify-between rounded-6 bg-surface-elevation-2 shadow-2xl"
++		class="fixed z-50 end-0 w-80 h-[calc(100%_-_80px)] text-ink-gray-9 m-5 mt-[62px] p-3 flex gap-2 flex-col justify-between rounded-6 bg-surface-elevation-2 shadow-2xl"
+@@ -14 +14 @@
+-					<Button variant="ghost" icon="lucide-ellipsis" aria-label="More options" />
++					<Button variant="ghost" icon="lucide-ellipsis" :aria-label="__('More options')" />
+@@ -19 +19 @@
+-					:aria-label="minimize ? 'Maximize' : 'Minimize'"
++					:aria-label="minimize ? __('Maximize') : __('Minimize')"
+@@ -23 +23 @@
+-				<Button variant="ghost" aria-label="Close" @click="show = false">
++				<Button variant="ghost" :aria-label="__('Close')" @click="show = false">
+@@ -69,0 +70,2 @@ const props = withDefaults(defineProps<HelpModalProps>(), {
++const __ = (window as any).__;
++
+@@ -77 +79 @@ const headingTitle = computed(() => {
+-		return "Getting started";
++		return __("Getting started");
+@@ -79 +81 @@ const headingTitle = computed(() => {
+-		return "Help center";
++		return __("Help center");
+@@ -87 +89 @@ const options = computed(() => {
+-			label: "Reset onboarding steps",
++			label: __("Reset onboarding steps"),
+@@ -100 +102 @@ const footerItems = computed(() => {
+-			label: "Help centre",
++			label: __("Help centre"),
+@@ -109 +111 @@ const footerItems = computed(() => {
+-			label: "Getting started",
++			label: __("Getting started"),
+diff --git a/src/components/Onboarding/OnboardingSteps.vue b/src/components/Onboarding/OnboardingSteps.vue
+index b3a775c..acf01a6 100644
+--- a/src/components/Onboarding/OnboardingSteps.vue
++++ b/src/components/Onboarding/OnboardingSteps.vue
+@@ -5 +5 @@
+-			{{ "Welcome to " + title }}
++			{{ __("Welcome to {0}", title) }}
+@@ -8 +8 @@
+-			{{ `${stepsCompleted}/${totalSteps} steps completed` }}
++			{{ __("{0}/{1} steps completed", stepsCompleted, totalSteps) }}
+@@ -14 +14 @@
+-				:label="`${completedPercentage}% completed`"
++				:label="__('{0}% completed', completedPercentage)"
+@@ -22 +22 @@
+-					:label="'Reset all'"
++					:label="__('Reset all')"
+@@ -28 +28 @@
+-					:label="'Skip all'"
++					:label="__('Skip all')"
+@@ -62 +62 @@
+-					:label="'Skip'"
++					:label="__('Skip')"
+@@ -68 +68 @@
+-					:label="'Reset'"
++					:label="__('Reset')"
+@@ -80,0 +81,2 @@ import type { OnboardingStep, OnboardingStepsProps } from "./types";
++const __ = (window as any).__;
++
+@@ -100 +102 @@ function dependsOnTooltip(step: OnboardingStep) {
+-			return `You need to complete "${dependsOnStep.title}" first.`;
++			return __('You need to complete "{0}" first.', dependsOnStep.title);
+diff --git a/src/components/ActivityTimeline/ValueChange.vue b/src/components/ActivityTimeline/ValueChange.vue
+index 2bb0d45..2bb0d45 100644
+--- a/src/components/ActivityTimeline/ValueChange.vue
++++ b/src/components/ActivityTimeline/ValueChange.vue
+@@ -10 +10 @@
+-			<span v-if="from != null || showEmptyFrom" class="text-ink-gray-5">→</span>
++			<span v-if="from != null || showEmptyFrom" class="text-ink-gray-5 rtl:rotate-180">→</span>
