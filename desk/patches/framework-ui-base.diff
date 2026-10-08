@@ -84,6 +84,9 @@ index 703ca8a..cf3d354 100644
 @@ -41 +41 @@
 -			:label="stepsCompleted == 0 ? 'Start now' : 'Continue'"
 +			:label="stepsCompleted == 0 ? __('Start now') : __('Continue')"
+@@ -45 +45 @@
+-			<template #prefix>
++			<template #suffix>
 @@ -46 +46 @@
 -				<LucideChevronsRight class="size-4" />
 +				<LucideChevronsRight class="size-4 rtl:rotate-180" />
