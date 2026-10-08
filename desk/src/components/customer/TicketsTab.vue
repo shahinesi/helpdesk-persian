@@ -104,7 +104,7 @@
                 <IndicatorIcon
                   :class="getStatus(ticket.status)?.parsed_color"
                 />
-                <span>{{ ticket.status }}</span>
+                <span>{{ __(ticket.status) }}</span>
               </div>
 
               <!-- Priority -->

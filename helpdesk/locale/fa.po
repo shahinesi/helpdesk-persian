@@ -4122,6 +4122,10 @@ msgstr "ماه گذشته"
 msgid "Last seen"
 msgstr "آخرین بازدید"
 
+#: desk/src/pages/contact/Contact.vue
+msgid "Last seen {0}"
+msgstr "آخرین بازدید: {0}"
+
 #: Rules/AssigneeRules.vue:95 desk/src/components/Settings/Assignment
 msgid "Last user assigned by this rule"
 msgstr "آخرین کاربری که این قاعده به او واگذار کرده است"

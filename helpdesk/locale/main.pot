@@ -4103,6 +4103,10 @@ msgstr ""
 msgid "Last seen"
 msgstr ""
 
+#: desk/src/pages/contact/Contact.vue
+msgid "Last seen {0}"
+msgstr ""
+
 #: desk/src/components/Settings/Assignment Rules/AssigneeRules.vue:95
 msgid "Last user assigned by this rule"
 msgstr ""
