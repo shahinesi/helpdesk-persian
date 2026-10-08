@@ -15,7 +15,7 @@
         },
       ]"
     >
-      <div :class="'text-end text-base text-ink-gray-5'">
+      <div class="text-start text-base text-ink-gray-5">
         <div v-if="props.itemIndex == 0" class="min-w-[66px] text-start">
           {{ __("Where") }}
         </div>
@@ -33,7 +33,7 @@
       <div v-if="!props.isGroup" class="flex items-center gap-2 w-full">
         <div id="fieldname" class="flex-1 min-w-0">
           <Combobox
-            class="w-full"
+            class="w-full text-start"
             trigger="button"
             :options="filterableFields.data || []"
             :model-value="props.condition[0]"
@@ -47,7 +47,7 @@
             disabled
             type="text"
             :placeholder="__('operator')"
-            class="w-full"
+            class="w-full text-start [&_select]:text-start"
           />
           <FormControl
             v-else
@@ -56,7 +56,7 @@
             v-model="props.condition[1]"
             @change="updateOperator"
             :options="getOperators()"
-            class="w-full"
+            class="w-full text-start [&_input]:text-start [&_select]:text-start"
           />
         </div>
         <div id="value" class="flex-1 min-w-0">
@@ -73,6 +73,7 @@
             v-model="props.condition[2]"
             @change="updateValue"
             :placeholder="__('condition')"
+            class="text-start [&_input]:text-start [&_select]:text-start"
           />
         </div>
       </div>
@@ -237,7 +238,7 @@ function getValueControl() {
   if (!field) return null;
   const fieldData = filterableFields.data?.find((f) => f.fieldname == field);
   if (!fieldData) return null;
-  const { fieldtype, options } = fieldData;
+  const { fieldtype, fieldname, options } = fieldData;
   if (operator == "is") {
     return h(FormControl, {
       type: "select",
@@ -262,7 +263,7 @@ function getValueControl() {
             { label: __("No"), value: "No" },
           ]
         : getSelectOptions(options).map((option) => ({
-            label: option,
+            label: fieldname === "sla_status" ? __(option) : option,
             value: option,
           }));
     return h(FormControl, {

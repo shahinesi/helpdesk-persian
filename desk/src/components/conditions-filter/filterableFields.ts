@@ -1,4 +1,5 @@
 import { createResource } from "frappe-ui";
+import { __ } from "@/translation";
 
 export const filterableFields = createResource({
   url: "helpdesk.api.doc.get_filterable_fields",
@@ -11,9 +12,9 @@ export const filterableFields = createResource({
       .filter((field) => !field.fieldname.startsWith("_"))
       .map((field) => {
         return {
-          label: field.label,
-          value: field.fieldname,
           ...field,
+          label: __(field.label),
+          value: field.fieldname,
         };
       });
     return data;
