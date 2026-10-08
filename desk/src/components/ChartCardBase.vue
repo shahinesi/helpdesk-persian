@@ -130,7 +130,7 @@ import { Dropdown } from "frappe-ui";
 import { ECharts } from "frappe-ui/experimental";
 import { computed, type PropType } from "vue";
 import { dayjs } from "frappe-ui";
-import { formatLocalizedNumber } from "@/utils/number";
+import { formatLocalizedDigits, formatLocalizedNumber } from "@/utils/number";
 
 const props = defineProps({
   title: {
@@ -189,8 +189,9 @@ function formatPercentage(value: string) {
 }
 
 function formatChartValue(value: number | string) {
-  return dayjs.locale().split("-")[0] === "fa" && typeof value === "number"
+  if (dayjs.locale().split("-")[0] !== "fa") return value;
+  return typeof value === "number"
     ? formatLocalizedNumber(value)
-    : value;
+    : formatLocalizedDigits(value);
 }
 </script>

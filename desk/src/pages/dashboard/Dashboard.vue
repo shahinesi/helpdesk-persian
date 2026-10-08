@@ -218,6 +218,7 @@ import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import { formatLocalizedDate, formatLocalizedDateRange } from "@/utils";
+import { formatLocalizedDigits } from "@/utils/number";
 import { Link } from "@framework/ui";
 import { useStorage } from "@vueuse/core";
 import {
@@ -554,6 +555,7 @@ function getChartType(chart: any) {
       : chart.xAxis;
   const config = {
     ...chart,
+    subtitle: formatLocalizedDigits(chart.subtitle || ""),
     data,
     xAxis,
     colors,

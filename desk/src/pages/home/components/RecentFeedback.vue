@@ -36,14 +36,19 @@
               <div class="flex items-center gap-1">
                 <LucideStar class="size-4 fill-[#de9735] text-[#de9735]" />
                 <div class="text-2xl-medium text-ink-gray-8">
-                  {{ chartConfig.averageRating }}
+                  {{ formatLocalizedNumber(chartConfig.averageRating) }}
                 </div>
               </div>
               <div
                 class="flex items-center text-ink-gray-5 text-sm cursor-pointer hover:text-ink-gray-7"
                 @click="redirectToSeeAllReviews"
               >
-                {{ __("{0} reviews", chartConfig.totalFeedbacks) }}
+                {{
+                  __(
+                    "{0} reviews",
+                    formatLocalizedNumber(chartConfig.totalFeedbacks)
+                  )
+                }}
                 <LucideArrowUpRight class="size-3.5 ms-0.5" />
               </div>
             </div>
