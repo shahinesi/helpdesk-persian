@@ -683,7 +683,10 @@ class HDTicket(Document, CustomerEditController):
         recipients = to
 
         sender_email = None
-        if not skip_email_workflow:
+        should_send_email = not skip_email_workflow and frappe.db.get_single_value(
+            "HD Settings", "enable_reply_email_via_agent"
+        )
+        if should_send_email:
             sender_email, email_account_name = self._resolve_sender_email(
                 email_account_name, from_email_id
             )
@@ -716,9 +719,6 @@ class HDTicket(Document, CustomerEditController):
 
         # Each reply needs its own id so the next reply can point at it. Saved after
         # the send below, not here.
-        should_send_email = not skip_email_workflow and frappe.db.get_single_value(
-            "HD Settings", "enable_reply_email_via_agent"
-        )
         message_id = None
         if should_send_email:
             # fail before writing anything we would have to undo
