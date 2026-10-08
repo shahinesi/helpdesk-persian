@@ -5066,7 +5066,7 @@ msgstr ""
 msgid "Open help"
 msgstr ""
 
-#: desk/src/components/Settings/EmailEdit.vue:37
+#: desk/src/components/Settings/EmailEdit.vue:37 desk/src/components/Settings/EmailAdd.vue:43
 msgid "Open in Desk"
 msgstr ""
 
@@ -9223,4 +9223,144 @@ msgstr ""
 
 #: desk/src/utils/displayLinkOption.ts
 msgid "Unspecified"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:39
+msgid "Account name"
+msgstr ""
+
+#: desk/src/components/Settings/EmailProviderIcon.vue:10
+msgid "Custom"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:54
+msgid "Enable Incoming"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:62
+msgid "Enable Outgoing"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:70
+msgid "Default Incoming"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:78
+msgid "Default Outgoing"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:57
+msgid "When enabled, tickets are created from incoming emails received by this account."
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:65
+msgid "When enabled, outgoing emails are sent from this account."
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:73
+msgid "When enabled, replies to your company (for example, replies@yourcompany.com) are received by this account. Only one account can be the default incoming account."
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:81
+msgid "When enabled, all outgoing emails are sent from this account. Only one account can be the default outgoing account."
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:195
+msgid "Setting up GMail requires you to enable two-factor authentication and app passwords. Read more"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:204
+msgid "Setting up Outlook requires you to enable two-factor authentication and app passwords. Read more"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:213
+msgid "Setting up Sendgrid requires you to enable two-factor authentication and app passwords. Read more"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:222
+msgid "Setting up SparkPost requires you to enable two-factor authentication and app passwords. Read more"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:231
+msgid "Setting up Yahoo requires you to enable two-factor authentication and app passwords. Read more"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:240
+msgid "Setting up Yandex requires you to enable two-factor authentication and app passwords. Read more"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:249
+msgid "Setting up Frappe Mail requires an API key and API secret for your email account. Read more"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:257
+msgid "Use your own IMAP/SMTP settings."
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:42
+msgid "Support / Sales"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:100
+msgid "Frappe Mail site"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:106
+msgid "API Key"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:112
+msgid "API Secret"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:128
+msgid "Email Domain"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:131
+msgid "example.com"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:137
+msgid "Incoming Server (IMAP/POP)"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:140
+msgid "imap.example.com"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:143
+msgid "Incoming Port"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:149
+msgid "Use SSL for Incoming"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:155
+msgid "Use TLS for Incoming"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:164
+msgid "Outgoing Server (SMTP)"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:167
+msgid "smtp.example.com"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:170
+msgid "Outgoing Port"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:176
+msgid "Use SSL for Outgoing"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:182
+msgid "Use TLS for Outgoing"
+msgstr ""
+
+#: desk/src/components/Settings/emailConfig.ts:48
+msgid "johndoe@example.com"
 msgstr ""

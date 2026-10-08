@@ -55,7 +55,7 @@ export const incomingOutgoingFields: RenderField[] = [
     name: "enable_incoming",
     type: "checkbox",
     description: __(
-      "If enabled, tickets can be created from the incoming emails on this account."
+      "When enabled, tickets are created from incoming emails received by this account."
     ),
   },
   {
@@ -63,7 +63,7 @@ export const incomingOutgoingFields: RenderField[] = [
     name: "enable_outgoing",
     type: "checkbox",
     description: __(
-      "If enabled, outgoing emails can be sent from this account."
+      "When enabled, outgoing emails are sent from this account."
     ),
   },
   {
@@ -71,7 +71,7 @@ export const incomingOutgoingFields: RenderField[] = [
     name: "default_incoming",
     type: "checkbox",
     description: __(
-      "If enabled, all replies to your company (eg: replies@yourcompany.com) will come to this account. Note: Only one account can be default incoming."
+      "When enabled, replies to your company (for example, replies@yourcompany.com) are received by this account. Only one account can be the default incoming account."
     ),
   },
   {
@@ -79,7 +79,7 @@ export const incomingOutgoingFields: RenderField[] = [
     name: "default_outgoing",
     type: "checkbox",
     description: __(
-      "If enabled, all outgoing emails will be sent from this account. Note: Only one account can be default outgoing."
+      "When enabled, all outgoing emails are sent from this account. Only one account can be the default outgoing account."
     ),
   },
 ];
@@ -192,48 +192,54 @@ export const services: EmailService[] = [
   {
     name: "GMail",
     icon: LogoGmail,
-    info: __(`Setting up GMail requires you to enable two factor authentication
-		  and app specific passwords. Read more`),
+    info: __(
+      "Setting up GMail requires you to enable two-factor authentication and app passwords. Read more"
+    ),
     link: "https://support.google.com/accounts/answer/185833",
     custom: false,
   },
   {
     name: "Outlook",
     icon: LogoOutlook,
-    info: __(`Setting up Outlook requires you to enable two factor authentication
-		  and app specific passwords. Read more`),
+    info: __(
+      "Setting up Outlook requires you to enable two-factor authentication and app passwords. Read more"
+    ),
     link: "https://support.microsoft.com/en-us/account-billing/how-to-get-and-use-app-passwords-5896ed9b-4263-e681-128a-a6f2979a7944",
     custom: false,
   },
   {
     name: "Sendgrid",
     icon: LogoSendgrid,
-    info: __(`Setting up Sendgrid requires you to enable two factor authentication
-		  and app specific passwords. Read more`),
+    info: __(
+      "Setting up Sendgrid requires you to enable two-factor authentication and app passwords. Read more"
+    ),
     link: "https://sendgrid.com/docs/ui/account-and-settings/two-factor-authentication/",
     custom: false,
   },
   {
     name: "SparkPost",
     icon: LogoSparkpost,
-    info: __(`Setting up SparkPost requires you to enable two factor authentication
-		  and app specific passwords. Read more`),
+    info: __(
+      "Setting up SparkPost requires you to enable two-factor authentication and app passwords. Read more"
+    ),
     link: "https://support.sparkpost.com/docs/my-account-and-profile/enabling-two-factor-authentication",
     custom: false,
   },
   {
     name: "Yahoo",
     icon: LogoYahoo,
-    info: __(`Setting up Yahoo requires you to enable two factor authentication
-		  and app specific passwords. Read more`),
+    info: __(
+      "Setting up Yahoo requires you to enable two-factor authentication and app passwords. Read more"
+    ),
     link: "https://help.yahoo.com/kb/SLN15241.html",
     custom: false,
   },
   {
     name: "Yandex",
     icon: LogoYandex,
-    info: __(`Setting up Yandex requires you to enable two factor authentication
-		  and app specific passwords. Read more`),
+    info: __(
+      "Setting up Yandex requires you to enable two-factor authentication and app passwords. Read more"
+    ),
     link: "https://yandex.com/support/id/authorization/app-passwords.html",
     custom: false,
   },
@@ -241,7 +247,7 @@ export const services: EmailService[] = [
     name: "Frappe Mail",
     icon: LogoFrappeMail,
     info: __(
-      `Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more`
+      "Setting up Frappe Mail requires an API key and API secret for your email account. Read more"
     ),
     link: "https://github.com/frappe/mail",
     custom: true,
@@ -249,7 +255,7 @@ export const services: EmailService[] = [
   {
     name: "Custom",
     icon: "",
-    info: __(`Use your own IMAP/SMTP settings. Open in Desk`),
+    info: __("Use your own IMAP/SMTP settings."),
     link: "/desk/email-account/new-email-account",
     custom: true,
   },

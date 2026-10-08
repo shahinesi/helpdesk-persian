@@ -7,13 +7,14 @@
     <LucideMail v-else class="size-4.5 text-ink-gray-7" />
   </div>
   <p v-if="serviceName" class="text-center text-p-xs text-ink-gray-7">
-    {{ serviceName }}
+    {{ serviceName === "Custom" ? __("Custom") : serviceName }}
   </p>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import LucideMail from "~icons/lucide/mail";
+import { __ } from "@/translation";
 
 interface P {
   serviceName?: string;

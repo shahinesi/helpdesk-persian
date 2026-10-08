@@ -38,7 +38,11 @@
                     :href="selectedService.link"
                     target="_blank"
                     class="text-ink-blue-5 underline"
-                    >{{ __("here") }}</a
+                    >{{
+                      selectedService.name === "Custom"
+                        ? __("Open in Desk")
+                        : __("here")
+                    }}</a
                   >.
                 </div>
               </div>
