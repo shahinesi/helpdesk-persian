@@ -4842,6 +4842,15 @@ msgstr "تیکتی به‌تازگی به شما واگذار نشده است."
 msgid "No results"
 msgstr "نتیجه‌ای پیدا نشد."
 
+#: frappe-ui/src/components/Select/Select.vue
+#: frappe-ui/src/components/Menu/Menu.vue
+msgid "No options"
+msgstr "گزینه‌ای موجود نیست."
+
+#: desk/src/components/SearchMultiSelect.vue
+msgid "No options found"
+msgstr "گزینه‌ای پیدا نشد."
+
 #: desk/src/components/command-palette/CommandPalette.vue:244
 msgid "No results for \"{0}\""
 msgstr "نتیجه‌ای برای «{0}» پیدا نشد."

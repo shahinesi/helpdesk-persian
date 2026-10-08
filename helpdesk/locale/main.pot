@@ -4822,6 +4822,15 @@ msgstr ""
 msgid "No results"
 msgstr ""
 
+#: frappe-ui/src/components/Select/Select.vue
+#: frappe-ui/src/components/Menu/Menu.vue
+msgid "No options"
+msgstr ""
+
+#: desk/src/components/SearchMultiSelect.vue
+msgid "No options found"
+msgstr ""
+
 #: desk/src/components/command-palette/CommandPalette.vue:244
 msgid "No results for \"{0}\""
 msgstr ""

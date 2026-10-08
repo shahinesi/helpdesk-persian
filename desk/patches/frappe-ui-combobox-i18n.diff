@@ -1,12 +1,26 @@
 diff --git a/src/components/Combobox/Combobox.vue b/src/components/Combobox/Combobox.vue
 --- a/src/components/Combobox/Combobox.vue
 +++ b/src/components/Combobox/Combobox.vue
-@@ -72,7 +72,7 @@
-   align: 'start',
-   offset: 4,
-   loading: false,
--  emptyText: __('No results'),
+@@ -77 +77 @@
+-  emptyText: 'No results',
 +  emptyText: () => (window as any).__?.('No results') ?? 'No results',
-   hideSearch: false,
-   filterable: true,
- })
+diff --git a/src/components/Select/Select.vue b/src/components/Select/Select.vue
+--- a/src/components/Select/Select.vue
++++ b/src/components/Select/Select.vue
+@@ -59,0 +60,5 @@
++const displayEmptyText = computed(() =>
++  props.emptyText === 'No options'
++    ? (window as any).__?.('No options') ?? 'No options'
++    : props.emptyText,
++)
+@@ -360 +365 @@
+-                <slot name="empty">{{ emptyText }}</slot>
++                <slot name="empty">{{ displayEmptyText }}</slot>
+diff --git a/src/components/Menu/Menu.vue b/src/components/Menu/Menu.vue
+--- a/src/components/Menu/Menu.vue
++++ b/src/components/Menu/Menu.vue
+@@ -28,0 +29 @@
++const noOptionsText = computed(() => (window as any).__?.('No options') ?? 'No options')
+@@ -196 +197 @@
+-    <template v-else>No options</template>
++    <template v-else>{{ noOptionsText }}</template>
