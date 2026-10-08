@@ -144,7 +144,7 @@ import { computed, onMounted, ref, type PropType, nextTick } from "vue";
 import { EChartsOption } from "echarts";
 import { createResource, Dropdown, DateRangePicker, Button } from "frappe-ui";
 import { ECharts } from "frappe-ui/experimental";
-import { dataTheme, formatTime } from "@/utils";
+import { dataTheme, formatLocalizedDate, formatTime } from "@/utils";
 import { __ } from "@/translation";
 import EmptyState from "@/components/EmptyState.vue";
 
@@ -269,6 +269,11 @@ const chartConfig = computed<EChartsOption>(() => {
   let data = getAvgTimeMetricsResource.fetched
     ? getAvgTimeMetricsResource.data?.data
     : props.data?.data || [];
+  data = data.map(([month, firstResponse, resolution]) => [
+    formatLocalizedDate(month, "MMM"),
+    firstResponse,
+    resolution,
+  ]);
 
   return {
     legend: {},

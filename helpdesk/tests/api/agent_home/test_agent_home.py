@@ -417,9 +417,9 @@ class TestAgentHome(FrappeTestCase):
         self.assertEqual(result["averages"]["resolution"], 20.0)
 
         # Verify data points exist for the months
-        month_labels = [row[0] for row in result["data"]]
-        t1_month = frappe.utils.add_months(now, -1).strftime("%b")
-        self.assertIn(t1_month, month_labels)
+        month_dates = [row[0] for row in result["data"]]
+        t1_month = frappe.utils.add_months(now, -1).strftime("%Y-%m")
+        self.assertTrue(any(month.startswith(t1_month) for month in month_dates))
 
         # Test 6m period (Should see T1, T2)
         # Avg First = (10 + 20) / 2 = 15

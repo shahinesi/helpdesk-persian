@@ -286,21 +286,6 @@ def get_avg_time_metrics(
 
     agent = frappe.session.user
 
-    month_labels = {
-        "Jan": _("Jan"),
-        "Feb": _("Feb"),
-        "Mar": _("Mar"),
-        "Apr": _("Apr"),
-        "May": _("May"),
-        "Jun": _("Jun"),
-        "Jul": _("Jul"),
-        "Aug": _("Aug"),
-        "Sep": _("Sep"),
-        "Oct": _("Oct"),
-        "Nov": _("Nov"),
-        "Dec": _("Dec"),
-    }
-
     if period == "custom_range" and from_date and to_date:
         current_from = from_date
         current_to = to_date
@@ -323,7 +308,6 @@ def get_avg_time_metrics(
     # Monthly aggregation query using query builder. Per-series gating mirrors
     # dashboard.py: both averages require an SLA; first-response also requires
     # first_responded_on, resolution also requires status IN resolved_statuses.
-    month_abbr = Function("DATE_FORMAT", Ticket.creation, "%b")
     year_val = Function("YEAR", Ticket.creation)
     month_val = Function("MONTH", Ticket.creation)
 
@@ -343,7 +327,6 @@ def get_avg_time_metrics(
     result = (
         frappe.qb.from_(Ticket)
         .select(
-            month_abbr.as_("month"),
             year_val.as_("year"),
             month_val.as_("month_num"),
             Avg(first_response_value).as_("avg_first_response"),
@@ -362,7 +345,6 @@ def get_avg_time_metrics(
     for row in result:
         key = f"{row['year']}-{row['month_num']:02d}"
         data_dict[key] = {
-            "month": month_labels.get(row["month"], row["month"]),
             "avg_first": round(row["avg_first_response"] or 0),
             "avg_resolution": round(row["avg_resolution"] or 0),
         }
@@ -380,10 +362,11 @@ def get_avg_time_metrics(
     for i in range(num_months - 1, -1, -1):
         month_date = current_to_date - relativedelta(months=i)
         key = f"{month_date.year}-{month_date.month:02d}"
+        month_label_date = month_date.replace(day=15).strftime("%Y-%m-%d")
         if key in data_dict:
             data.append(
                 [
-                    data_dict[key]["month"],
+                    month_label_date,
                     data_dict[key]["avg_first"],
                     data_dict[key]["avg_resolution"],
                 ]
@@ -391,7 +374,7 @@ def get_avg_time_metrics(
         else:
             data.append(
                 [
-                    month_labels[month_date.strftime("%b")],
+                    month_label_date,
                     0,
                     0,
                 ]
