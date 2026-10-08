@@ -5,7 +5,7 @@ diff --git a/src/components/Combobox/Combobox.vue b/src/components/Combobox/Comb
    align: 'start',
    offset: 4,
    loading: false,
--  emptyText: 'No results',
+-  emptyText: __('No results'),
 +  emptyText: () => (window as any).__?.('No results') ?? 'No results',
    hideSearch: false,
    filterable: true,
