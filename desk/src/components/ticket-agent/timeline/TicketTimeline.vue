@@ -262,6 +262,9 @@ function localizeStandardValue(fieldname: string, value: string | undefined) {
   if (fieldname === "priority" && value && STANDARD_PRIORITIES.has(value)) {
     return __(value);
   }
+  if (fieldname === "agent_group" && value) {
+    return displayLinkOption("HD Team", value);
+  }
   if (fieldname === "ticket_type" && value)
     return displayLinkOption("HD Ticket Type", value);
   return value;
