@@ -61,7 +61,7 @@
               "
             >
               <span class="shrink-0 text-xs text-ink-gray-5">
-                {{ dayjs(ticket.modified).fromNow() }}
+                {{ prettyDate(ticket.modified) }}
               </span>
             </Tooltip>
           </div>
@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatLocalizedDate } from "@/utils";
+import { formatLocalizedDate, prettyDate } from "@/utils";
 import { useContactFeedback } from "@/composables/contact";
 import { __ } from "@/translation";
 import { dayjs, LoadingIndicator, TabButtons, Tooltip } from "frappe-ui";

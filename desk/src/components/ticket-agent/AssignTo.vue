@@ -36,7 +36,8 @@
                 v-if="localAssignees.length > 1"
                 class="text-ink-gray-7 truncate"
               >
-                {{ localAssignees.length }} {{ __("assignees") }}
+                {{ formatLocalizedNumber(localAssignees.length) }}
+                {{ __("assignees") }}
               </span>
             </template>
             <template v-else>
@@ -172,6 +173,7 @@ import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
 import { capture } from "@/telemetry";
 import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import {
   AgentOption,
   AssigneeSymbol,

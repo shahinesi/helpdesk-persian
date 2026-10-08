@@ -45,7 +45,9 @@
         @click="emit('toggle', reaction.emoji)"
       >
         <span>{{ reaction.emoji }}</span>
-        <span class="font-medium">{{ reaction.count }}</span>
+        <span class="font-medium">{{
+          formatLocalizedNumber(reaction.count)
+        }}</span>
       </button>
     </Tooltip>
   </div>
@@ -53,6 +55,7 @@
 
 <script setup lang="ts">
 import ReactionIcon from "@/components/icons/ReactionIcon.vue";
+import { formatLocalizedNumber } from "@/utils/number";
 import { Button, Popover, Tooltip } from "frappe-ui";
 
 export interface CommentReaction {

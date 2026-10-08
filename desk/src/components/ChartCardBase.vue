@@ -17,7 +17,7 @@
           <div
             class="text-2xl-medium text-center text-ink-gray-8 whitespace-nowrap"
           >
-            {{ text }}
+            {{ formatChartValue(text) }}
           </div>
         </slot>
         <div v-if="timelineFilter" class="flex items-center text-sm gap-1">
@@ -73,7 +73,7 @@
           <span
             class="text-2xl-medium text-center text-ink-gray-8 whitespace-nowrap"
           >
-            {{ text }}
+            {{ formatChartValue(text) }}
           </span>
         </slot>
         <slot name="chart">
@@ -129,8 +129,8 @@ import { EChartsOption } from "echarts";
 import { Dropdown } from "frappe-ui";
 import { ECharts } from "frappe-ui/experimental";
 import { computed, type PropType } from "vue";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { dayjs } from "frappe-ui";
+import { formatLocalizedNumber } from "@/utils/number";
 
 const props = defineProps({
   title: {
@@ -183,9 +183,14 @@ const durationOptions = computed(() =>
 
 function formatPercentage(value: string) {
   if (value === "—") return value;
-  const formatted = `${value}%`;
   return dayjs.locale().split("-")[0] === "fa"
-    ? digitsEnToFa(formatted)
-    : formatted;
+    ? `${formatLocalizedNumber(Number(value))}٪`
+    : `${value}%`;
+}
+
+function formatChartValue(value: number | string) {
+  return dayjs.locale().split("-")[0] === "fa" && typeof value === "number"
+    ? formatLocalizedNumber(value)
+    : value;
 }
 </script>

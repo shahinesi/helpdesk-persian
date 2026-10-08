@@ -18,6 +18,7 @@ import { __ } from "@/translation";
 import {
   buildPercentageChange,
   formatLocalizedDate,
+  formatLocalizedNumber,
   formatTime,
 } from "@/utils";
 import { EChartsOption } from "echarts";
@@ -180,7 +181,7 @@ const chartConfig = computed<EChartsOption>(() => {
                 minute: true,
                 maxUnits: 2,
               }) || __("0m")
-            : p.value;
+            : formatLocalizedNumber(Number(p.value));
         return `<span style="font-size:12px;color:#6b7280">${p.name}: <b style="color:#374151">${value}</b></span>`;
       },
     },

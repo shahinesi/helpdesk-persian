@@ -50,7 +50,11 @@ import { __ } from "@/translation";
 import { ref } from "vue";
 import { Button, Dropdown } from "frappe-ui";
 import WorkDayModal from "./Modals/WorkDayModal.vue";
-import { ConfirmDelete, getGridTemplateColumnsForTable } from "@/utils";
+import {
+  ConfirmDelete,
+  formatLocalizedDate,
+  getGridTemplateColumnsForTable,
+} from "@/utils";
 import { slaData } from "@/stores/sla";
 
 interface Column {
@@ -125,15 +129,9 @@ const editWorkDay = () => {
 };
 
 const formatTime = (time) => {
-  if (!time) return "00:00";
-  const [hours, minutes] = time.split(":");
+  const [hours = "0", minutes = "0"] = (time || "00:00").split(":");
   const date = new Date();
   date.setHours(parseInt(hours) || 0, parseInt(minutes) || 0, 0);
-
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  return formatLocalizedDate(date, "hh:mm A");
 };
 </script>

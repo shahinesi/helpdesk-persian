@@ -37,6 +37,7 @@
 <script setup lang="ts">
 import MultipleAvatar from "@/components/MultipleAvatar.vue";
 import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import { computed } from "vue";
 import { AnalyticsSummary } from "./types";
 
@@ -53,12 +54,15 @@ const rows = computed<SummaryRow[]>(() => {
   const rows: SummaryRow[] = [
     {
       label: __("Customer messages"),
-      value: String(summary.customer_messages),
+      value: formatLocalizedNumber(summary.customer_messages),
     },
-    { label: __("Agent replies"), value: String(summary.agent_messages) },
+    {
+      label: __("Agent replies"),
+      value: formatLocalizedNumber(summary.agent_messages),
+    },
     {
       label: __("Internal comments"),
-      value: String(summary.internal_comments),
+      value: formatLocalizedNumber(summary.internal_comments),
     },
   ];
   // a visible churn row IS the signal; healthy tickets show nothing
@@ -81,6 +85,8 @@ const rows = computed<SummaryRow[]>(() => {
 });
 
 function times(count: number): string {
-  return count === 1 ? __("1 time") : __("{0} times", String(count));
+  return count === 1
+    ? __("1 time")
+    : __("{0} times", formatLocalizedNumber(count));
 }
 </script>

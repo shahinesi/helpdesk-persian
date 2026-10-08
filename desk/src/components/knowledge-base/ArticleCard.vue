@@ -28,15 +28,16 @@
         }}</span>
       </div>
       <span class="text-sm text-ink-gray-5">{{
-        dayjs.tz(article.modified).fromNow()
+        prettyDate(article.modified)
       }}</span>
     </div>
   </router-link>
 </template>
 
 <script setup lang="ts">
-import { Avatar, dayjs } from "frappe-ui";
+import { Avatar } from "frappe-ui";
 import { Article } from "@/types";
+import { prettyDate } from "@/utils";
 
 const props = defineProps<{
   article: Article;

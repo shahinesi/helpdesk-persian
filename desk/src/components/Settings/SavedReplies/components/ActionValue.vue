@@ -60,7 +60,7 @@
           :color="colorToken(option.color)"
         />
         <span v-if="selectedOptions.length > 3" class="text-ink-gray-5">
-          +{{ selectedOptions.length - 3 }}
+          +{{ formatLocalizedNumber(selectedOptions.length - 3) }}
         </span>
       </span>
       <span v-else>{{ __("Select tags") }}</span>
@@ -98,6 +98,7 @@ import TagChip from "@/components/tag/TagChip.vue";
 import { useSavedReplyActionOptions } from "@/composables/useSavedReplyActionOptions";
 import { colorToken } from "@/composables/useTags";
 import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import { SavedReplyActionType } from "@/types";
 import { Link } from "@framework/ui";
 import { Avatar, Combobox, MultiSelect, Select } from "frappe-ui";

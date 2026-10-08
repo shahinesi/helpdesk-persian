@@ -23,6 +23,7 @@ import {
   buildPercentageChange,
   formatLocalizedDate,
   formatLocalizedDateRange,
+  formatLocalizedNumber,
 } from "@/utils";
 import { EChartsOption } from "echarts";
 import { createResource } from "frappe-ui";
@@ -95,7 +96,7 @@ const chartData = computed(() => {
     const distribution = _data.data as Record<number, number>;
     const values = [1, 2, 3, 4, 5].map((s) => distribution[s] ?? 0);
     return {
-      labels: ["1", "2", "3", "4", "5"],
+      labels: [1, 2, 3, 4, 5].map(formatLocalizedNumber),
       counts: values,
       percentageChange: buildPercentageChange(0, props.negativeIsBetter),
       text: _data?.average ?? 0,
@@ -186,7 +187,7 @@ const chartConfig = computed<EChartsOption>(() => {
             label: {
               show: true,
               position: "top" as const,
-              formatter: value > 0 ? String(value) : "",
+              formatter: value > 0 ? formatLocalizedNumber(value) : "",
               color: "#6b7280",
               fontSize: 11,
             },
@@ -241,7 +242,11 @@ const chartConfig = computed<EChartsOption>(() => {
       formatter: (params: any) => {
         const p = Array.isArray(params) ? params[0] : params;
         if (!p.value) return "";
-        return `<span style="font-size:12px;color:#6b7280">${p.name}: <b style="color:#374151">${p.value}</b></span>`;
+        return `<span style="font-size:12px;color:#6b7280">${
+          p.name
+        }: <b style="color:#374151">${formatLocalizedNumber(
+          Number(p.value)
+        )}</b></span>`;
       },
     },
   };

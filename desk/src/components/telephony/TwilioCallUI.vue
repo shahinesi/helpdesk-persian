@@ -20,7 +20,7 @@
         />
         <div class="flex flex-col items-center justify-center gap-1">
           <div class="text-xl-medium">
-            {{ contact?.full_name ?? __('Unknown') }}
+            {{ contact?.full_name ?? __("Unknown") }}
           </div>
           <div class="text-sm text-ink-gray-5">
             {{ contact?.mobile_no || contact?.phone }}
@@ -28,18 +28,18 @@
         </div>
         <CountUpTimer ref="counterUp">
           <div v-if="onCall" class="my-1 text-base">
-            {{ counterUp?.updatedTime }}
+            {{ counterUp?.localizedTime }}
           </div>
         </CountUpTimer>
         <div v-if="!onCall" class="my-1 text-base">
           {{
             callStatus == "initiating"
-            ? __('Initiating call...')
+              ? __("Initiating call...")
               : callStatus == "ringing"
-              ? __('Ringing...')
+              ? __("Ringing...")
               : calling
-              ? __('Calling...')
-              : __('Incoming call...')
+              ? __("Calling...")
+              : __("Incoming call...")
           }}
         </div>
         <div v-if="onCall" class="flex gap-2">
@@ -113,12 +113,12 @@
         class="relative flex !h-5 !w-5 items-center justify-center"
       />
       <div class="max-w-[120px] truncate">
-        {{ contact?.full_name ?? __('Unknown') }}
+        {{ contact?.full_name ?? __("Unknown") }}
       </div>
     </div>
     <div v-if="onCall" class="flex items-center gap-2">
       <div class="my-1 min-w-[40px] text-center">
-        {{ counterUp?.updatedTime }}
+        {{ counterUp?.localizedTime }}
       </div>
       <Button
         variant="solid"
@@ -133,7 +133,7 @@
     </div>
     <div v-else-if="calling" class="flex items-center gap-3">
       <div class="my-1">
-        {{ callStatus == "ringing" ? __('Ringing...') : __('Calling...') }}
+        {{ callStatus == "ringing" ? __("Ringing...") : __("Calling...") }}
       </div>
       <Button
         variant="solid"

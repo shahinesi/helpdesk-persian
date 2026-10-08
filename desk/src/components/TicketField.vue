@@ -25,9 +25,11 @@
 import FieldLabel from "@/components/FieldLabel.vue";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
+import { formatLocalizedNumber } from "@/utils/number";
+import { digitsArToFa, digitsFaToEn } from "@persian-tools/persian-tools";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { APIOptions, Field, FieldValue } from "@/types";
-import { parseApiOptions } from "@/utils";
+import { formatLocalizedDate, getDateFormat, parseApiOptions } from "@/utils";
 import { Link as FrameworkLink } from "@framework/ui";
 import HelpdeskLink from "@/components/frappe-ui/Link.vue";
 import {
@@ -35,9 +37,9 @@ import {
   createResource,
   DatePicker,
   DateTimePicker,
-  dayjs,
   Select,
   TextInput,
+  dayjs,
 } from "frappe-ui";
 import { computed, h, nextTick } from "vue";
 
@@ -233,11 +235,16 @@ const listeners = computed(() => {
   const fieldtype = props.field.fieldtype;
   if ([...textFields, ...numberFields].includes(fieldtype)) {
     return {
-      blur: (event: FocusEvent) =>
-        emitUpdate(
-          props.field.fieldname,
-          (event.target as HTMLInputElement).value
-        ),
+      blur: (event: FocusEvent) => {
+        const value = (event.target as HTMLInputElement).value;
+        const canonicalValue =
+          dayjs.locale().split("-")[0] === "fa"
+            ? digitsFaToEn(digitsArToFa(value))
+                .replace(/[٬,]/g, "")
+                .replace(/٫/g, ".")
+            : value;
+        emitUpdate(props.field.fieldname, canonicalValue);
+      },
     };
   }
   if (fieldtype === "Link") {
@@ -291,8 +298,15 @@ const transValue = computed(() => {
     return props.value ? 1 : 0;
   } else if (fieldtype === "Date") {
     if (!props.value) return props.value;
-    if (dayjs.locale().split("-")[0] === "fa") return props.value;
-    return dayjs(props.value).format(window.date_format.toUpperCase());
+    return formatLocalizedDate(String(props.value), getDateFormat());
+  } else if (
+    numberFields.includes(fieldtype) &&
+    dayjs.locale().split("-")[0] === "fa" &&
+    props.value !== null &&
+    props.value !== ""
+  ) {
+    const value = Number(props.value);
+    if (Number.isFinite(value)) return formatLocalizedNumber(value);
   }
   // else if (fieldtype === "Duration") {
   //   if (!props.value) return null;

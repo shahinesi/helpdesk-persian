@@ -19,7 +19,7 @@
         v-if="remainingCustomers.length"
         class="relative -me-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-surface-gray-2 text-2xs font-medium text-ink-gray-6 ring-2 ring-[var(--surface-base)]"
       >
-        +{{ remainingCustomers.length }}
+        +{{ formatLocalizedNumber(remainingCustomers.length) }}
       </div>
     </div>
     <span
@@ -38,6 +38,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import { Avatar, Tooltip } from "frappe-ui";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
@@ -66,7 +67,7 @@ const remainingCustomers = computed(() =>
 const label = computed(() =>
   props.customers.length === 1
     ? props.customers[0].name
-    : __("{0} Customers", [props.customers.length])
+    : __("{0} Customers", [formatLocalizedNumber(props.customers.length)])
 );
 
 function goToCustomer(name: string): void {

@@ -33,7 +33,7 @@
               {{
                 selectedCount === 1
                   ? selectedOptions[0]?.label
-                  : `${selectedCount} ${selectionText}`
+                  : `${formatLocalizedNumber(selectedCount)} ${selectionText}`
               }}
             </span>
           </template>
@@ -112,7 +112,7 @@
               v-if="(option.count ?? 0) > 0"
               class="text-xs text-ink-gray-5 ms-auto"
             >
-              {{ option.count }}
+              {{ formatLocalizedNumber(option.count) }}
             </span>
           </button>
         </div>
@@ -163,7 +163,7 @@
               v-if="(option.count ?? 0) > 0"
               class="text-xs text-ink-gray-5 ms-auto"
             >
-              {{ option.count }}
+              {{ formatLocalizedNumber(option.count) }}
             </span>
           </button>
         </div>
@@ -173,7 +173,7 @@
           v-if="filteredOptions.length === 0"
           class="px-2 py-4 text-center text-sm text-ink-gray-5"
         >
-          {{ __('No options found') }}
+          {{ __("No options found") }}
         </div>
       </div>
     </div>
@@ -185,6 +185,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import { Avatar, Button, Checkbox } from "frappe-ui";
 import {
   computed,

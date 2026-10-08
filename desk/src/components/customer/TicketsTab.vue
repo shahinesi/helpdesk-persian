@@ -104,7 +104,9 @@
                 <IndicatorIcon
                   :class="getStatus(ticket.status)?.parsed_color"
                 />
-                <span>{{ displayLinkOption("HD Ticket Status", ticket.status) }}</span>
+                <span>{{
+                  displayLinkOption("HD Ticket Status", ticket.status)
+                }}</span>
               </div>
 
               <!-- Priority -->
@@ -117,12 +119,12 @@
 
               <!-- First Response -->
               <div v-if="!isMobileView" class="text-ink-gray-6">
-                {{ dayjsLocal(ticket.response_by).fromNow() }}
+                {{ prettyDate(ticket.response_by) }}
               </div>
 
               <!-- Resolution -->
               <div v-if="!isMobileView" class="text-ink-gray-6">
-                {{ dayjsLocal(ticket.resolution_by).fromNow() }}
+                {{ prettyDate(ticket.resolution_by) }}
               </div>
 
               <!-- Assigned To -->
@@ -164,11 +166,12 @@ import { IndicatorIcon } from "@/components/icons";
 import { useScreenSize } from "@/composables/screen";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
+import { prettyDate } from "@/utils";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import type { ListResource, Resource } from "@/types";
 import type { HDTicket } from "@/types/doctypes";
 import { watchDebounced } from "@vueuse/core";
-import { dayjsLocal, FormControl, LoadingIndicator } from "frappe-ui";
+import { FormControl, LoadingIndicator } from "frappe-ui";
 import { computed, onBeforeUnmount, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import LucideSearch from "~icons/lucide/search";

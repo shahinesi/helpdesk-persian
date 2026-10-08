@@ -119,6 +119,7 @@ import {
 } from "@/composables/useSLA";
 import { ITicket } from "@/pages/ticket/symbols";
 import { Field } from "@/types";
+import { formatLocalizedNumber } from "@/utils/number";
 import { dateFormat, dateTooltipFormat, formatLocalizedDate } from "@/utils";
 import { Avatar, dayjs, dayjsLocal, Tooltip } from "frappe-ui";
 import { computed, inject } from "vue";
@@ -224,6 +225,13 @@ const ticketAdditionalInfo = computed(() => {
           dayjs(option.value),
           `${window.date_format.toUpperCase()} ${window.time_format}`
         );
+      }
+      if (
+        ["Int", "Float", "Currency", "Percent"].includes(field.fieldtype) &&
+        dayjs.locale().split("-")[0] === "fa"
+      ) {
+        const value = Number(option.value);
+        if (Number.isFinite(value)) option.value = formatLocalizedNumber(value);
       }
       return option;
     });

@@ -56,7 +56,7 @@
                 theme="gray"
                 size="sm"
               >
-                {{ tab.count }}
+                {{ formatLocalizedNumber(tab.count) }}
               </Badge>
             </span>
           </template>
@@ -110,7 +110,7 @@ import { useCustomer } from "@/composables/customer";
 import { useScreenSize } from "@/composables/screen";
 import { __ } from "@/translation";
 import { CustomerResourceSymbol } from "@/types";
-import { hasPermission } from "@/utils";
+import { formatLocalizedNumber, hasPermission } from "@/utils";
 import {
   Badge,
   Breadcrumbs,

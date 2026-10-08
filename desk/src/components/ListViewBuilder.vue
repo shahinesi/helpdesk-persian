@@ -127,7 +127,12 @@
       <template #left>
         <TabButtons
           :model-value="defaultParams.page_length_count"
-          :options="[20, 50, 100].map((o) => ({ label: String(o), value: o }))"
+          :options="
+            [20, 50, 100].map((o) => ({
+              label: formatLocalizedNumber(o),
+              value: o,
+            }))
+          "
           @update:model-value="(count) => handlePageLength(count)"
         />
       </template>
@@ -144,6 +149,7 @@
 
 <script setup lang="ts">
 import { MultipleAvatar, StarRating } from "@/components";
+import { formatLocalizedNumber } from "@/utils/number";
 import {
   ColumnSettings,
   QuickFilters,
@@ -163,11 +169,10 @@ import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { capture } from "@/telemetry";
 import { __ } from "@/translation";
 import { View, ViewType } from "@/types";
-import { getIcon } from "@/utils";
+import { getIcon, prettyDate } from "@/utils";
 import { useStorage } from "@vueuse/core";
 import {
   createResource,
-  dayjsLocal,
   Dropdown,
   frappeRequest,
   LoadingIndicator,
@@ -574,7 +579,7 @@ function listCell(column: any, row: any, item: any, idx: number) {
   if (column.type === "Datetime") {
     return h("span", {
       class: "text-base",
-      textContent: dayjsLocal(item).fromNow(),
+      textContent: prettyDate(item),
     });
   }
   if (column.type === "MultipleAvatar") {

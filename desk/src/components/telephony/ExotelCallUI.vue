@@ -21,7 +21,7 @@
       }}</span>
       <span>·</span>
       <div v-if="callStatus == 'In progress'">
-        {{ counterUp?.updatedTime }}
+        {{ counterUp?.localizedTime }}
       </div>
       <div
         v-else-if="callStatus == 'Call ended' || callStatus == 'No answer'"
@@ -69,7 +69,7 @@
           />
           <div class="flex flex-col items-center justify-center gap-1">
             <div class="text-xl-medium">
-              {{ contact?.full_name ?? __('Unknown') }}
+              {{ contact?.full_name ?? __("Unknown") }}
             </div>
             <div class="text-sm text-ink-gray-5">
               {{ contact?.mobile_no || contact?.phone }}
@@ -77,7 +77,7 @@
           </div>
           <CountUpTimer ref="counterUp">
             <div class="my-1 text-base">
-              {{ counterUp?.updatedTime }}
+              {{ counterUp?.localizedTime }}
             </div>
           </CountUpTimer>
           <div class="my-1 text-base">
