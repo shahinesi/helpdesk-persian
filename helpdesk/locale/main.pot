@@ -2153,8 +2153,16 @@ msgstr ""
 msgid "Define who receives the tickets and how they’re distributed among agents."
 msgstr ""
 
-#: desk/src/components/ticket-agent/TicketSLA.vue:126
+#: desk/src/components/ticket-agent/TicketSLA.vue:120
+msgid "Delay"
+msgstr ""
+
+#: desk/src/components/ticket-agent/TicketSLA.vue:128
 msgid "Delay (total)"
+msgstr ""
+
+#: desk/src/components/ticket-agent/TicketSLA.vue:120
+msgid "Delay (working hours)"
 msgstr ""
 
 #: desk/src/components/DeleteWithTicketsDialog.vue:20
@@ -5976,8 +5984,16 @@ msgstr ""
 msgid "Resolved late"
 msgstr ""
 
+#: desk/src/components/ticket-agent/TicketSLA.vue:81
+msgid "Resolved on"
+msgstr ""
+
 #: desk/src/components/ticket-agent/analytics/TicketTimeline.vue:303
 msgid "Responded late"
+msgstr ""
+
+#: desk/src/components/ticket-agent/TicketSLA.vue:75
+msgid "Responded on"
 msgstr ""
 
 #. Label of the response_tab (Tab Break) field in DocType 'HD Ticket'

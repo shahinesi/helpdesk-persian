@@ -2171,9 +2171,17 @@ msgstr "نوع پیش‌فرض تیکت"
 msgid "Define who receives the tickets and how they’re distributed among agents."
 msgstr "مشخص کنید چه کسانی تیکت‌ها را دریافت کنند و تیکت‌ها چگونه میان کارشناسان تقسیم شوند."
 
-#: desk/src/components/ticket-agent/TicketSLA.vue:126
+#: desk/src/components/ticket-agent/TicketSLA.vue:120
+msgid "Delay"
+msgstr "تأخیر"
+
+#: desk/src/components/ticket-agent/TicketSLA.vue:128
 msgid "Delay (total)"
 msgstr "مجموع تأخیر"
+
+#: desk/src/components/ticket-agent/TicketSLA.vue:120
+msgid "Delay (working hours)"
+msgstr "تأخیر (ساعات کاری)"
 
 #: desk/src/components/DeleteWithTicketsDialog.vue:20
 #: desk/src/components/DeleteWithTicketsDialog.vue:65
@@ -5999,9 +6007,17 @@ msgstr "حل‌شده"
 msgid "Resolved late"
 msgstr "با تأخیر حل شد."
 
+#: desk/src/components/ticket-agent/TicketSLA.vue:81
+msgid "Resolved on"
+msgstr "زمان حل تیکت"
+
 #: desk/src/components/ticket-agent/analytics/TicketTimeline.vue:303
 msgid "Responded late"
 msgstr "پاسخ با تأخیر داده شد"
+
+#: desk/src/components/ticket-agent/TicketSLA.vue:75
+msgid "Responded on"
+msgstr "زمان پاسخ"
 
 #. Label of the response_tab (Tab Break) field in DocType 'HD Ticket'
 #: desk/src/components/Settings/SavedReplies/SavedReplyView.vue:89

@@ -4,6 +4,9 @@ import { reactive } from "vue";
 
 const translatedMessages = reactive<Record<string, string>>({});
 let translationsPromise: Promise<void> | undefined;
+type TranslationPayload =
+  | Record<string, string>
+  | { language: string; messages: Record<string, string> };
 
 function getTranslatedMessage(message: string): string {
   return translatedMessages[message] || message;
@@ -37,8 +40,14 @@ export function loadTranslations(): Promise<void> {
       url: "helpdesk.api.general.get_translations",
       method: "GET",
     })
-      .then((messages: Record<string, string>) => {
-        Object.assign(translatedMessages, messages);
+      .then((payload: TranslationPayload) => {
+        if ("messages" in payload && typeof payload.messages === "object") {
+          (window as any).lang = payload.language;
+          document.documentElement.lang = payload.language;
+          Object.assign(translatedMessages, payload.messages);
+        } else {
+          Object.assign(translatedMessages, payload);
+        }
         (window as any).translatedMessages = translatedMessages;
       })
       .catch((error) => {

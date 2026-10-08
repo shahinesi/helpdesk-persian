@@ -30,7 +30,7 @@
                 :key="row.label"
                 class="flex items-baseline justify-between gap-8"
               >
-                <span class="text-ink-gray-5">{{ __(row.label) }}</span>
+                <span class="text-ink-gray-5">{{ row.label }}</span>
                 <span
                   class="tabular-nums"
                   :class="row.danger ? 'text-ink-red-6' : 'text-ink-gray-8'"
@@ -72,13 +72,13 @@ const cards = computed<SLACard[]>(() =>
       title: __("First Response"),
       metric: firstResponse.value,
       fulfilledLabel: "Fulfilled",
-      actualLabel: "Responded on",
+      actualLabel: __("Responded on"),
     },
     {
       title: __("Resolution"),
       metric: resolution.value,
       fulfilledLabel: "Fulfilled",
-      actualLabel: "Resolved on",
+      actualLabel: __("Resolved on"),
     },
   ].filter((card): card is SLACard => Boolean(card.metric))
 );
@@ -117,7 +117,9 @@ function cardDetails(card: SLACard) {
   }
   if (metric.delay) {
     rows.push({
-      label: metric.delayInWorkingHours ? "Delay (working hours)" : "Delay",
+      label: metric.delayInWorkingHours
+        ? __("Delay (working hours)")
+        : __("Delay"),
       value: metric.delay,
       danger: true,
     });

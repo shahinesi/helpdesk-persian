@@ -1,4 +1,5 @@
 import { dayjs, dayjsLocal } from "frappe-ui";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { __ } from "@/translation";
 import { computed, type ComputedRef, type Ref } from "vue";
 
@@ -218,6 +219,8 @@ function coarseDuration(date: string): string {
 /** Format a duration using its two most significant units, e.g. "1d 9h" */
 function twoUnitDuration(milliseconds: number): string {
   const duration = dayjs.duration(milliseconds);
+  const localize = (value: number) =>
+    dayjs.locale().split("-")[0] === "fa" ? digitsEnToFa(String(value)) : value;
 
   const years = duration.years();
   const months = duration.months();
@@ -227,17 +230,17 @@ function twoUnitDuration(milliseconds: number): string {
   const seconds = duration.seconds();
 
   if (years > 0) {
-    return __("{0}y {1}mo", [years, months]);
+    return __("{0}y {1}mo", [localize(years), localize(months)]);
   } else if (months > 0) {
-    return __("{0}mo {1}d", [months, days]);
+    return __("{0}mo {1}d", [localize(months), localize(days)]);
   } else if (days > 0) {
-    return __("{0}d {1}h", [days, hours]);
+    return __("{0}d {1}h", [localize(days), localize(hours)]);
   } else if (hours > 0) {
-    return __("{0}h {1}m", [hours, minutes]);
+    return __("{0}h {1}m", [localize(hours), localize(minutes)]);
   } else if (minutes > 0) {
     return seconds > 0
-      ? __("{0}m {1}s", [minutes, seconds])
-      : __("{0}m", [minutes]);
+      ? __("{0}m {1}s", [localize(minutes), localize(seconds)])
+      : __("{0}m", [localize(minutes)]);
   }
-  return __("{0}s", [seconds]);
+  return __("{0}s", [localize(seconds)]);
 }
