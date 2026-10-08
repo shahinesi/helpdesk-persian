@@ -55,18 +55,36 @@
 +++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
 @@ -1,0 +2 @@
 +import { useTextDirection } from '@vueuse/core'
-@@ -69,0 +71,2 @@
+@@ -68,4 +69,6 @@
+   offset: 4,
+ })
+-
++
 +const textDirection = useTextDirection({ observe: true })
 +
-@@ -369,0 +373 @@
+ const portalTarget = usePortalTarget(() => props.portalTo)
+@@ -366,3 +370,4 @@
+     <ComboboxRoot
 +      :dir="textDirection"
+       multiple
+       :model-value="internalModel"
 @@ -444 +449 @@
 -          <span class="grid min-w-0 flex-1 text-left font-normal">
 +          <span class="grid min-w-0 flex-1 text-start font-normal">
-@@ -506,0 +512 @@
+@@ -485,5 +490,6 @@
+         <ComboboxContent
+           data-slot="content"
+           data-selection
 +          :dir="textDirection"
-@@ -537,0 +544 @@
+           :data-variant="variant"
+           :data-size="size"
+@@ -523,5 +529,6 @@
+                 <ComboboxInput
+                   ref="searchInput"
+                   :id="`${inputId}-search-input`"
 +                  :dir="textDirection"
+                   data-slot="input"
+                   :value="query"
 @@ -581 +589 @@
 -                  class="ml-auto"
 +                  class="ms-auto"
