@@ -362,7 +362,13 @@ function chartEmptyState(chart: any) {
     title: __("No chart data available"),
   };
   return [
-    { ...state, chartTitle: chart?.title, chartSubtitle: chart?.subtitle },
+    {
+      ...state,
+      chartTitle: chart?.title,
+      chartSubtitle: formatLocalizedDigits(
+        chart?.subtitle || state.chartSubtitle || ""
+      ),
+    },
   ];
 }
 
