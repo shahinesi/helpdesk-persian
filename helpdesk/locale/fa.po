@@ -3014,6 +3014,14 @@ msgstr "فیلدها"
 msgid "Filter"
 msgstr "فیلتر"
 
+#: desk/src/components/command-palette/ticketListCommands.ts:31
+msgid "Filter by status"
+msgstr "فیلتر بر اساس وضعیت"
+
+#: desk/src/components/command-palette/ticketListCommands.ts:41
+msgid "Filter by priority"
+msgstr "فیلتر بر اساس اولویت"
+
 #. Label of the filters_tab (Tab Break) field in DocType 'HD View'
 #. Label of the filters (Code) field in DocType 'HD View'
 #: desk/src/components/view-controls/filter/Filter.vue:201
@@ -4515,6 +4523,14 @@ msgstr "جدید"
 #: desk/src/pages/knowledge-base/NewArticle.vue:191
 msgid "New Article"
 msgstr "مقالهٔ جدید"
+
+#: desk/src/components/command-palette/commands.ts:111
+msgid "New article"
+msgstr "مقالهٔ جدید"
+
+#: desk/src/components/command-palette/commands.ts:103
+msgid "New ticket"
+msgstr "تیکت جدید"
 
 #: Rules/AssignmentRuleView.vue:4 desk/src/components/Settings/Assignment
 msgid "New Assignment Rule"
@@ -6705,6 +6721,18 @@ msgstr "نمایش کمتر"
 msgid "Show more"
 msgstr "نمایش بیشتر"
 
+#: desk/src/components/command-palette/ticketListCommands.ts:50
+msgid "Show tickets assigned to me"
+msgstr "نمایش تیکت‌های واگذارشده به من"
+
+#: desk/src/components/command-palette/ticketListCommands.ts:60
+msgid "Switch view"
+msgstr "تغییر نما"
+
+#: desk/src/components/command-palette/ticketListCommands.ts:69
+msgid "Clear filters"
+msgstr "پاک‌کردن فیلترها"
+
 #: desk/src/pages/home/components/PendingTickets.vue:149
 msgid "Showing {0} of {1} {2}"
 msgstr "در حال نمایش {0} از {1} {2}"
@@ -7389,6 +7417,10 @@ msgstr "پنج‌شنبه"
 #: helpdesk/helpdesk/web_form/tickets/tickets.json
 msgid "Ticket"
 msgstr "تیکت"
+
+#: desk/src/components/command-palette/paletteTypes.ts:90
+msgid "Ticket list"
+msgstr "فهرست تیکت‌ها"
 
 #: helpdesk/helpdesk/doctype/hd_ticket/api.py:172
 msgid "Ticket #{0} is already merged"

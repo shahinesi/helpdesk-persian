@@ -3013,6 +3013,14 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
+#: desk/src/components/command-palette/ticketListCommands.ts:31
+msgid "Filter by status"
+msgstr ""
+
+#: desk/src/components/command-palette/ticketListCommands.ts:41
+msgid "Filter by priority"
+msgstr ""
+
 #. Label of the filters_tab (Tab Break) field in DocType 'HD View'
 #. Label of the filters (Code) field in DocType 'HD View'
 #: desk/src/components/view-controls/filter/Filter.vue:201
@@ -4506,6 +4514,14 @@ msgstr ""
 #: desk/src/pages/knowledge-base/NewArticle.vue:184
 #: desk/src/pages/knowledge-base/NewArticle.vue:191
 msgid "New Article"
+msgstr ""
+
+#: desk/src/components/command-palette/commands.ts:111
+msgid "New article"
+msgstr ""
+
+#: desk/src/components/command-palette/commands.ts:103
+msgid "New ticket"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:4
@@ -6694,6 +6710,18 @@ msgstr ""
 msgid "Show more"
 msgstr ""
 
+#: desk/src/components/command-palette/ticketListCommands.ts:50
+msgid "Show tickets assigned to me"
+msgstr ""
+
+#: desk/src/components/command-palette/ticketListCommands.ts:60
+msgid "Switch view"
+msgstr ""
+
+#: desk/src/components/command-palette/ticketListCommands.ts:69
+msgid "Clear filters"
+msgstr ""
+
 #: desk/src/pages/home/components/PendingTickets.vue:149
 msgid "Showing {0} of {1} {2}"
 msgstr ""
@@ -7372,6 +7400,10 @@ msgstr ""
 #: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
 #: helpdesk/helpdesk/web_form/tickets/tickets.json
 msgid "Ticket"
+msgstr ""
+
+#: desk/src/components/command-palette/paletteTypes.ts:90
+msgid "Ticket list"
 msgstr ""
 
 #: helpdesk/helpdesk/doctype/hd_ticket/api.py:172
