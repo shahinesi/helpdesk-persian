@@ -3059,6 +3059,10 @@ msgstr "پایان"
 msgid "First Name"
 msgstr "نام کوچک"
 
+#: desk/src/utils/displayLinkOption.ts
+msgid "First Ticket"
+msgstr "اولین تیکت"
+
 #. Label of the first_responded_on (Datetime) field in DocType 'HD Ticket'
 #: helpdesk/helpdesk/doctype/hd_ticket/hd_ticket.json
 msgid "First Responded On"

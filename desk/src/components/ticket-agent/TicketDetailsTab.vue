@@ -132,7 +132,12 @@
                         class="font-base shrink-0 rounded-1 px-2 py-0.5 text-xs"
                         :class="getStatusColor(t.status as string)"
                       >
-                        {{ t.status }}
+                        {{
+                          displayLinkOption(
+                            "HD Ticket Status",
+                            t.status as string
+                          )
+                        }}
                       </span>
                     </div>
                   </div>
@@ -157,6 +162,7 @@ import { getMeta } from "@/stores/meta";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation.ts";
 import { formatLocalizedDate } from "@/utils";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import {
   AssigneeSymbol,
   CustomizationSymbol,
