@@ -101,3 +101,31 @@
 @@ -126 +128 @@
 -	return `${hours} hour${hours === 1 ? "" : "s"}`;
 +	return hours === 1 ? __("{0} hour", hours) : __("{0} hours", hours);
+
+--- a/src/components/Onboarding/onboarding.ts
++++ b/src/components/Onboarding/onboarding.ts
+@@ -16,0 +17,5 @@
++export function formatLocalizedNumber(value: number) {
++  const locale = document.documentElement.lang || "en";
++  return new Intl.NumberFormat(locale).format(value);
++}
++
+--- a/src/components/Onboarding/GettingStartedBanner.vue
++++ b/src/components/Onboarding/GettingStartedBanner.vue
+@@ -13 +13 @@
+-					{{ __("{0}/{1} steps", stepsCompleted, totalSteps) }}
++					{{ __("{0}/{1} steps", formatLocalizedNumber(stepsCompleted), formatLocalizedNumber(totalSteps)) }}
+@@ -75 +75 @@
+-import { useOnboarding } from "./onboarding";
++import { formatLocalizedNumber, useOnboarding } from "./onboarding";
+--- a/src/components/Onboarding/OnboardingSteps.vue
++++ b/src/components/Onboarding/OnboardingSteps.vue
+@@ -8 +8 @@
+-			{{ __("{0}/{1} steps completed", stepsCompleted, totalSteps) }}
++			{{ __("{0}/{1} steps completed", formatLocalizedNumber(stepsCompleted), formatLocalizedNumber(totalSteps)) }}
+@@ -14 +14 @@
+-				:label="__('{0}% completed', completedPercentage)"
++				:label="__('{0}% completed', formatLocalizedNumber(completedPercentage))"
+@@ -91 +91 @@
+-import { useOnboarding } from "./onboarding";
++import { formatLocalizedNumber, useOnboarding } from "./onboarding";
