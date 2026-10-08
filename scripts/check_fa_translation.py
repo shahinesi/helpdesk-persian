@@ -3,8 +3,9 @@
 
 import ast
 import collections
-import string
+import gettext
 import re
+import string
 import sys
 from pathlib import Path
 
@@ -152,6 +153,52 @@ def check(path):
     return bool(untranslated or fuzzy or incomplete_plural or placeholder_errors)
 
 
+def check_compiled_catalog(path, mo_path):
+    entries, _ = parse_catalog(path)
+    header = next((entry for entry in entries if not entry["msgid"]), None)
+    entries = [entry for entry in entries if entry["msgid"]]
+    nplurals = 2
+    if header:
+        match = re.search(r"nplurals\s*=\s*(\d+)", header["msgstr"].get("0", ""))
+        if match:
+            nplurals = int(match.group(1))
+
+    with mo_path.open("rb") as compiled_file:
+        compiled = gettext.GNUTranslations(compiled_file)
+
+    errors = []
+    for entry in entries:
+        if entry["plural"] is None:
+            actual = compiled.gettext(entry["msgid"])
+            if actual != entry["msgstr"].get("0", ""):
+                errors.append(entry["msgid"])
+            continue
+
+        for index in range(nplurals):
+            actual = compiled._catalog.get((entry["msgid"], index))
+            expected = entry["msgstr"].get(str(index), "")
+            if actual != expected:
+                errors.append(f"{entry['msgid']} (plural form {index})")
+
+    print(f"Compiled catalog mismatches: {len(errors)}")
+    for message in errors[:10]:
+        print(f"compiled catalog mismatch: {message}", file=sys.stderr)
+    return bool(errors)
+
+
 if __name__ == "__main__":
-    catalog = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("helpdesk/locale/fa.po")
-    raise SystemExit(check(catalog))
+    args = sys.argv[1:]
+    mo_path = None
+    if "--mo" in args:
+        index = args.index("--mo")
+        try:
+            mo_path = Path(args[index + 1])
+        except IndexError:
+            raise SystemExit("--mo requires a compiled .mo path")
+        del args[index : index + 2]
+
+    catalog = Path(args[0]) if args else Path("helpdesk/locale/fa.po")
+    failed = check(catalog)
+    if mo_path:
+        failed = check_compiled_catalog(catalog, mo_path) or failed
+    raise SystemExit(failed)

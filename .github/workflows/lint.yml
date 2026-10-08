@@ -35,6 +35,13 @@ jobs:
       - name: Check Persian translation coverage
         run: python scripts/check_fa_translation.py
 
+      - name: Verify compiled Persian catalog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext
+          msgfmt --check -o /tmp/helpdesk-fa.mo helpdesk/locale/fa.po
+          python scripts/check_fa_translation.py --mo /tmp/helpdesk-fa.mo
+
       - name: Set up Python 3.10
         uses: actions/setup-python@v2
         with:

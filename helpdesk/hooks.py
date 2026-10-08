@@ -23,9 +23,18 @@ get_site_info = "helpdesk.activation.get_site_info"
 
 after_install = "helpdesk.setup.install.after_install"
 after_migrate = [
+    "helpdesk.hooks.invalidate_merged_translation_cache",
     "helpdesk.search.build_index_in_background",
     "helpdesk.search.download_corpus",
 ]
+
+
+def invalidate_merged_translation_cache():
+    import frappe
+    from frappe.translate import MERGED_TRANSLATION_KEY
+
+    # The merged catalog lives in Redis and survives replacing compiled .mo files.
+    frappe.cache.delete_value(MERGED_TRANSLATION_KEY)
 
 
 # Full Text Search
