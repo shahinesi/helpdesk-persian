@@ -24,3 +24,21 @@ diff --git a/src/components/Menu/Menu.vue b/src/components/Menu/Menu.vue
 @@ -196 +197 @@
 -    <template v-else>No options</template>
 +    <template v-else>{{ noOptionsText }}</template>
+diff --git a/src/components/Combobox/ComboboxResults.vue b/src/components/Combobox/ComboboxResults.vue
+--- a/src/components/Combobox/ComboboxResults.vue
++++ b/src/components/Combobox/ComboboxResults.vue
+@@ -29,0 +30,2 @@
++const __ = (message: string) => (window as any).__?.(message) ?? message
++
+@@ -115 +119 @@
+-      <span>Loading...</span>
++      <span>{{ __('Loading...') }}</span>
+diff --git a/src/components/MultiSelect/MultiSelectResults.vue b/src/components/MultiSelect/MultiSelectResults.vue
+--- a/src/components/MultiSelect/MultiSelectResults.vue
++++ b/src/components/MultiSelect/MultiSelectResults.vue
+@@ -26,0 +27,2 @@
++const __ = (message: string) => (window as any).__?.(message) ?? message
++
+@@ -84 +88 @@
+-      <span>Loading...</span>
++      <span>{{ __('Loading...') }}</span>

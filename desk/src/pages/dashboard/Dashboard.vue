@@ -527,7 +527,14 @@ function getChartType(chart: any) {
             row[chart.categoryColumn] || "Unspecified"
           ),
         }))
-      : chart.data;
+      : chart.key === "tickets_by_team"
+        ? chart.data.map((row: any) => ({
+            ...row,
+            [chart.categoryColumn]: translateDefaultTeam(
+              row[chart.categoryColumn]
+            ),
+          }))
+        : chart.data;
   const config = {
     ...chart,
     data,
