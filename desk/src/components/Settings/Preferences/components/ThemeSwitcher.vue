@@ -59,7 +59,7 @@
                         v-else-if="logo"
                         class="size-5 shrink-0 rounded-4"
                       />
-                      <div>{{ __(name) }}</div>
+                      <div>{{ name }}</div>
                     </div>
                     <div
                       v-if="option.bars"
