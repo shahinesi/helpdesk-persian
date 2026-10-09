@@ -80,3 +80,15 @@ diff --git a/node_modules/frappe-ui/src/molecules/editor/style.css b/node_module
    color: var(--ink-gray-4);
    pointer-events: none;
    height: 0;
+diff --git a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
+--- a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
++++ b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
+@@ -212,4 +212,8 @@
+ [data-slot='item-list-row'] {
+   background-color: transparent;
+ }
++
++html[dir='rtl'] .lucide-chevron-right {
++  transform: rotate(180deg);
++}
+ </style>
