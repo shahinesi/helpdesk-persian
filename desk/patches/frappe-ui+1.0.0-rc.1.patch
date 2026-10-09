@@ -72,7 +72,7 @@ index 91c8dc4..2883b93 100644
 diff --git a/node_modules/frappe-ui/src/molecules/editor/style.css b/node_modules/frappe-ui/src/molecules/editor/style.css
 --- a/node_modules/frappe-ui/src/molecules/editor/style.css
 +++ b/node_modules/frappe-ui/src/molecules/editor/style.css
-@@ -14,7 +14,8 @@
+@@ -14,6 +14,7 @@
  .ProseMirror:not(.ProseMirror-focused) p.is-editor-empty::before {
    content: attr(data-placeholder);
 -  float: left;
