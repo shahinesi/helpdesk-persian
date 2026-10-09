@@ -7,7 +7,9 @@
             <div v-if="backLabel" class="flex items-center gap-2">
               <Button
                 variant="ghost"
-                :icon-left="isRtl ? 'lucide-chevron-right' : 'lucide-chevron-left'"
+                :icon-left="
+                  isRtl ? 'lucide-chevron-right' : 'lucide-chevron-left'
+                "
                 :label="backLabel"
                 size="md"
                 @click="onBack"

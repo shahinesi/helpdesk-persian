@@ -165,13 +165,13 @@
               "
             >
               <span class="text-p-sm">
-                {{ __('Conditions for this rule were created in') }}
+                {{ __("Conditions for this rule were created in") }}
                 <a :href="deskUrl" target="_blank" class="underline">{{
-                  __('Desk')
+                  __("Desk")
                 }}</a>
                 {{
                   __(
-                    '. They are not compatible with this interface. Recreate them here to manage or add conditions.'
+                    ". They are not compatible with this interface. Recreate them here to manage or add conditions."
                   )
                 }}
               </span>
@@ -250,13 +250,13 @@
               "
             >
               <span class="text-p-sm">
-                {{ __('Conditions for this rule were created in') }}
+                {{ __("Conditions for this rule were created in") }}
                 <a :href="deskUrl" target="_blank" class="underline">{{
-                  __('Desk')
+                  __("Desk")
                 }}</a>
                 {{
                   __(
-                    '. They are not compatible with this interface. Recreate them here to manage or add conditions.'
+                    ". They are not compatible with this interface. Recreate them here to manage or add conditions."
                   )
                 }}
               </span>
@@ -390,7 +390,9 @@ const getAssignmentRuleData = createResource({
       assignConditionJson = JSON.parse(data.assign_condition_json || "[]");
     } catch (error) {
       toast.error(
-        __("Assignment conditions are invalid or corrupt, recreate the conditions.")
+        __(
+          "Assignment conditions are invalid or corrupt, recreate the conditions."
+        )
       );
       assignConditionJson = [];
     }
@@ -398,7 +400,9 @@ const getAssignmentRuleData = createResource({
       unassignConditionJson = JSON.parse(data.unassign_condition_json || "[]");
     } catch (error) {
       toast.error(
-        __("Unassignment conditions are invalid or corrupt, recreate the conditions.")
+        __(
+          "Unassignment conditions are invalid or corrupt, recreate the conditions."
+        )
       );
       unassignConditionJson = [];
     }

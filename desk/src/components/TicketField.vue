@@ -360,10 +360,8 @@ function handleRedirect(value: string) {
 
 :deep(button.form-control[data-slot="trigger"]:hover .lucide-chevron-down),
 :deep(button.form-control[data-slot="trigger"]:focus .lucide-chevron-down),
-:deep(
-    button.form-control[data-slot="trigger"][data-state="open"]
-      .lucide-chevron-down
-  ) {
+:deep(button.form-control[data-slot="trigger"][data-state="open"]
+    .lucide-chevron-down) {
   visibility: visible;
 }
 :deep(.form-control [type="checkbox"]) {

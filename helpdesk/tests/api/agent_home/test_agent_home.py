@@ -8,6 +8,7 @@ from frappe.tests.utils import FrappeTestCase
 
 from helpdesk.api.agent_home.agent_home import (
     RECENT_ACTIVITY_LIMIT,
+    _updated_label,
     get_agent_tickets,
     get_avg_first_response_time,
     get_avg_resolution_time,
@@ -17,7 +18,6 @@ from helpdesk.api.agent_home.agent_home import (
     get_pending_tickets,
     get_recent_activity,
     get_recent_feedback,
-    _updated_label,
 )
 from helpdesk.test_utils import make_agent, make_sla, make_ticket
 

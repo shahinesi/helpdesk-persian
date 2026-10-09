@@ -145,7 +145,9 @@ const detailFields = computed(() => {
         class: "h-3.5 w-3.5",
       }),
       name: "type",
-      value: __(data.type.label === "Incoming" ? "Incoming Call" : "Outgoing Call"),
+      value: __(
+        data.type.label === "Incoming" ? "Incoming Call" : "Outgoing Call"
+      ),
     },
     {
       icon: ContactsIcon,

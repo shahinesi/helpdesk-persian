@@ -102,7 +102,10 @@ const options = computed(() => {
           });
         },
         custom: ({ row }) => {
-          return h("span", __(row.type === "Incoming" ? "Incoming Call" : "Outgoing Call"));
+          return h(
+            "span",
+            __(row.type === "Incoming" ? "Incoming Call" : "Outgoing Call")
+          );
         },
       },
       status: {

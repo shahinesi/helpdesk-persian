@@ -189,9 +189,7 @@ class HelpdeskDashboard:
             "suffix": "%",
             "delta": current_pct - prev_pct,
             "deltaSuffix": "%",
-            "tooltip": _(
-                "Percentage of tickets created that were resolved within SLA"
-            ),
+            "tooltip": _("Percentage of tickets created that were resolved within SLA"),
         }
 
     def get_avg_first_response_time(self):

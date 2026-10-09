@@ -60,9 +60,8 @@
       v-if="!iconOnly"
       :title="displayLinkOption('HD Ticket Priority', priority)"
       class="truncate"
-    >{{
-      displayLinkOption("HD Ticket Priority", priority)
-    }}</span>
+      >{{ displayLinkOption("HD Ticket Priority", priority) }}</span
+    >
   </span>
 </template>
 

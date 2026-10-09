@@ -16,7 +16,7 @@
         {{ category?.category_name }}
       </p>
       <span class="truncate text-xs md:text-sm text-ink-gray-5">
-        {{ __('Number of articles: {0}', [category?.article_count || 0]) }}
+        {{ __("Number of articles: {0}", [category?.article_count || 0]) }}
       </span>
     </div>
   </router-link>

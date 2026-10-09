@@ -132,13 +132,13 @@
                 v-if="!useNewUI"
               >
                 <span class="text-p-sm">
-                  {{ __('Conditions for this SLA were created in') }}
+                  {{ __("Conditions for this SLA were created in") }}
                   <a :href="deskUrl" target="_blank" class="underline">{{
-                    __('Desk')
+                    __("Desk")
                   }}</a>
                   {{
                     __(
-                      '. They are not compatible with this interface. Recreate them here to manage or add conditions.'
+                      ". They are not compatible with this interface. Recreate them here to manage or add conditions."
                     )
                   }}
                 </span>
@@ -348,7 +348,9 @@ const getSlaData = createResource({
       condition_json = JSON.parse(data.condition_json || "[]");
     } catch (error) {
       toast.error(
-        __("Assignment conditions are invalid or corrupt, recreate the conditions.")
+        __(
+          "Assignment conditions are invalid or corrupt, recreate the conditions."
+        )
       );
       condition_json = [];
     }

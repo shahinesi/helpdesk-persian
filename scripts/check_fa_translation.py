@@ -117,10 +117,14 @@ def check(path):
                     if field
                 )
             except ValueError:
-                placeholder_errors.append((entry["msgid"], index, "invalid brace format"))
+                placeholder_errors.append(
+                    (entry["msgid"], index, "invalid brace format")
+                )
                 continue
             if source_fields != translated_fields:
-                placeholder_errors.append((entry["msgid"], index, "brace placeholders differ"))
+                placeholder_errors.append(
+                    (entry["msgid"], index, "brace placeholders differ")
+                )
             if "python-format" in entry["flags"]:
                 translated_printf = collections.Counter(
                     re.findall(
@@ -129,7 +133,9 @@ def check(path):
                     )
                 )
                 if printf_fields != translated_printf:
-                    placeholder_errors.append((entry["msgid"], index, "printf placeholders differ"))
+                    placeholder_errors.append(
+                        (entry["msgid"], index, "printf placeholders differ")
+                    )
 
     print(f"Total active entries: {len(entries)}")
     print(f"Translated: {len(translated)}")

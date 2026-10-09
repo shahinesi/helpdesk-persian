@@ -96,7 +96,7 @@
             :ticketId="ticketId"
             :editable="showCommentBox"
             :doctype="doctype"
-          :placeholder="__(`@John could you please look into this?`)"
+            :placeholder="__(`@John could you please look into this?`)"
             @sending="
               () => {
                 showCommentBox = false;
