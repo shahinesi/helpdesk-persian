@@ -15,7 +15,7 @@ test("the new email account form validates each provider and reports a bad serve
   await dialog.getByRole("button", { name: "New" }).click();
   const create = dialog.getByRole("button", { name: "Create" });
 
-  await dialog.getByText("GMail", { exact: true }).click();
+  await dialog.getByText("Gmail", { exact: true }).click();
   await create.click();
   await expect(dialog.getByText("Account name is required")).toBeVisible();
   await dialog.getByRole("textbox", { name: "Account name" }).fill(name);
@@ -201,4 +201,3 @@ async function openNotification(dialog: Locator, label: string) {
 async function setting(api: Api, field: string) {
   return (await api.get("HD Settings", "HD Settings"))[field];
 }
-

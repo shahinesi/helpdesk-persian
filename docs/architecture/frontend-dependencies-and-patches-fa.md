@@ -34,7 +34,9 @@ yarn apply:ui-patches
 yarn build
 ```
 
-مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` روی commit `af3ed4a2de6f3698e21f2ccb909f4aca1be20236` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین Full Docker Build، تست کامل Backend یا Runtime پذیرش نیست.
+مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` روی commit `af3ed4a2de6f3698e21f2ccb909f4aca1be20236` و دوباره روی نامزد `57446ad5d4e78cae713b2b2edb48927b2a3b9828` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد؛ اجرای دوم GitHub Actions شماره `37982460203` است. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین Full Docker Build، تست کامل Backend یا Runtime پذیرش نیست.
+
+برای SHA نامزد `57446ad5`، Lint و Server Tests نیز موفق شدند. Playwright دو مورد ناموفق داشت: آزمون Settings هنوز نام قدیمی `GMail` را جست‌وجو می‌کرد، درحالی‌که عنوان رسمی UI اکنون `Gmail` است؛ این selector در تغییر بعدی به‌روز شد و باید CI همان تغییر دوباره اجرا شود. آزمون Opening Date نیز ردیف مورد انتظار را پیدا نکرد؛ علت از لاگ به‌تنهایی قطعی نیست و هنوز نیازمند بررسی مستقل است.
 
 ### ساخت image با Docker
 

@@ -7,11 +7,11 @@
 | شاخه | وضعیت مشاهده‌شده | کاربرد |
 |---|---|---|
 | `main` | هم‌تراز `upstream/main`، نسخه 1.30.1 | خط پایدار رسمی |
-| `main-hotfix` | ۲۰ Commit عقب‌تر از `upstream/main-hotfix` | اصلاح‌های نسخه پایدار؛ نیازمند همگام‌سازی امن |
+| `main-hotfix` | هم‌تراز `upstream/main-hotfix` پس از Fast-forward در ۹ اکتبر | شاخه رسمی مستقل؛ تاریخچهٔ آن با `main` واگراست |
 | `develop` | ۵ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop` | شاخه پیش‌فرض Fork و Base مربوط به PR فعلی |
 | `legacy` | هم‌تراز `upstream/legacy` | نگهداری خط قدیمی |
 | `vendor/main` | هم‌تراز `upstream/main` | Mirror پایدار؛ بدون تغییر اختصاصی |
-| `vendor/main-hotfix` | ۲۰ Commit عقب‌تر از `upstream/main-hotfix` | Mirror اصلاح‌های نسخه پایدار؛ به‌روزرسانی فقط با Fast-forward |
+| `vendor/main-hotfix` | هم‌تراز `upstream/main-hotfix` پس از Fast-forward در ۹ اکتبر | Mirror اصلاح‌های نسخه پایدار؛ فقط Fast-forward |
 | `vendor/develop` | هم‌تراز `upstream/develop` در Remote | Mirror توسعه |
 | `vendor/legacy` | هم‌تراز `upstream/legacy` | Mirror خط قدیمی |
 | `custom/develop-fa` | ۱۷۹ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop`، بر پایهٔ Merge Base=`794c7b0895eb4b1ac652f6817d69d3879faef844` | نسخه فارسی توسعه؛ به‌روزرسانی نیازمند Proposal و بازبینی است |
@@ -20,7 +20,9 @@
 
 Default Branch روی `develop` باقی می‌ماند؛ تغییرش تا آماده‌شدن خط پایدار فارسی انجام نمی‌شود. `main` و `develop` دو خط مستقل‌اند: وابستگی Helpdesk در `main` به Frappe 15/16 و Python 3.10+ محدود است، در حالی که `develop` به Frappe 16/17 و Python 3.14 نیاز دارد.
 
-در ممیزی ۹ اکتبر ۲۰۲۶، تاریخچه‌های `upstream/main` و `upstream/develop` از Merge Base `536d06681ffbb31ea5a770a5340294c12825c714` به‌ترتیب ۲۶۰۸ و ۳۵۴۲ Commit یکتا داشتند. `origin/custom/develop-fa` از Merge Base `794c7b0895eb4b1ac652f6817d69d3879faef844` مشتق شده است؛ این شاخه ۱۷۹ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop` است. شاخه محلی `custom/develop-fa` نسبت به نسخه Remote خود ۶۰ Commit عقب است و نباید به‌جای شاخه Remote Push شود. `origin/main-hotfix` و `origin/vendor/main-hotfix` هر دو ۲۰ Commit از upstream عقب‌اند. هیچ Merge بین `main` و `develop` انجام نشده است.
+در ممیزی ۹ اکتبر ۲۰۲۶، تاریخچه‌های `upstream/main` و `upstream/develop` از Merge Base `536d06681ffbb31ea5a770a5340294c12825c714` به‌ترتیب ۲۶۰۸ و ۳۵۴۲ Commit یکتا داشتند. `origin/custom/develop-fa` از Merge Base `794c7b0895eb4b1ac652f6817d69d3879faef844` مشتق شده است؛ این شاخه ۱۷۹ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop` است. شاخه محلی `custom/develop-fa` نسبت به نسخه Remote خود ۶۰ Commit عقب است و نباید به‌جای شاخه Remote Push شود. `main-hotfix` و `vendor/main-hotfix` از SHA `26dbace988e0664ce0fbecedf91f1e63a80d46de` با Fast-forward عادی به SHA upstream یعنی `d978f39d2a0186d2d03aa21cf9a679a483bf2146` رسیدند؛ هیچ Commit اختصاصی حذف نشد. هیچ Merge بین `main` و `develop` انجام نشده است.
+
+Workflow همگام‌سازی روزانه در شاخهٔ فعلی وجود دارد، اما هنوز در Default Branch (`develop`) نیست؛ فهرست GitHub Actions آن را فعال نشان نمی‌دهد. زمان‌بندی تا زمانی که Workflow از مسیر PR موجود و پس از تأیید وارد Default Branch نشود فعال نیست. هیچ شاخهٔ فارسی به‌صورت خودکار Merge یا Deploy نمی‌شود.
 
 ## جریان نگهداری
 
