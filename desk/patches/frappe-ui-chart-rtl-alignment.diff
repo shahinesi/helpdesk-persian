@@ -1,8 +1,0 @@
---- a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
-+++ b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
-@@ -68 +68 @@
--  grid-column: 1;
-+  grid-column: 2;
-@@ -74 +74 @@
--  grid-column: 2;
-+  grid-column: 1;

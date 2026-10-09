@@ -1,3 +1,3917 @@
+diff --git a/node_modules/frappe-ui/experimental/Charts/ECharts.vue b/node_modules/frappe-ui/experimental/Charts/ECharts.vue
+index 4c580fd..23c0ce3 100644
+--- a/node_modules/frappe-ui/experimental/Charts/ECharts.vue
++++ b/node_modules/frappe-ui/experimental/Charts/ECharts.vue
+@@ -2,6 +2,7 @@
+ import { EChartsOption, init, type ECharts } from 'echarts'
+ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+ import debounce from '#utils/debounce'
++import { getChartFontFamily } from './helpers'
+ 
+ const props = defineProps<{
+   options: EChartsOption
+@@ -15,6 +16,16 @@ const props = defineProps<{
+ let chart: ECharts
+ const chartDiv = ref<HTMLDivElement>()
+ 
++function withAppFont(options: EChartsOption): EChartsOption {
++  return {
++    ...options,
++    textStyle: {
++      ...options.textStyle,
++      fontFamily: options.textStyle?.fontFamily || getChartFontFamily(),
++    },
++  }
++}
++
+ const chartClass = computed(() => {
+   const defaults =
+     'h-full w-full min-w-[300px] md:min-w-[400px] min-h-[300px] px-4 py-2'
+@@ -25,7 +36,7 @@ onMounted(() => {
+   if (!chartDiv.value) return
+ 
+   chart = init(chartDiv.value, 'light', { renderer: 'svg' })
+-  chart.setOption({ ...props.options }, true)
++  chart.setOption(withAppFont(props.options), true)
+ 
+   if (props.events?.click) {
+     chart.on('click', props.events.click)
+@@ -48,7 +59,7 @@ watch(
+   () => props.options,
+   (newOptions) => {
+     if (chart) {
+-      chart.setOption(newOptions, true)
++      chart.setOption(withAppFont(newOptions), true)
+     }
+   },
+   { deep: true },
+diff --git a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
+index e9acb37..f446345 100644
+--- a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
++++ b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
+@@ -4,7 +4,7 @@
+     :class="config.delta ? 'pb-6' : 'pb-3'"
+   >
+     <slot name="body">
+-      <div class="flex w-full flex-col">
++      <div class="number-chart-content flex w-full flex-col">
+         <slot name="title">
+           <span class="truncate text-sm-medium text-ink-gray-5">
+             {{ config.title }}
+@@ -19,7 +19,7 @@
+               v-html="config.prefix"
+               class="size-4 table"
+             />
+-            {{ formatValue(config.value, 1, true) }}{{ config.suffix }}
++            {{ formatValue(config.value, 1, true) }}{{ formatSuffix(config.suffix) }}
+           </div>
+         </slot>
+         <slot name="delta" v-bind="{ formatValue }">
+@@ -41,7 +41,7 @@
+             </span>
+             <span>
+               {{ config.deltaPrefix }}{{ formatValue(config.delta, 1, true)
+-              }}{{ config.deltaSuffix }}
++              }}{{ formatSuffix(config.deltaSuffix) }}
+             </span>
+           </div>
+         </slot>
+@@ -51,8 +51,33 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { formatValue } from './helpers'
++import { formatSuffix, formatValue } from './helpers'
+ import { NumberChartConfig } from './types'
+ 
+ defineProps<{ config: NumberChartConfig }>()
+ </script>
++
++<style scoped>
++:global([dir="rtl"]) .number-chart-content {
++  display: grid;
++  grid-template-columns: minmax(0, 1fr) auto;
++  align-items: center;
++}
++
++:global([dir="rtl"]) .number-chart-content > :first-child {
++  grid-column: 2;
++  grid-row: 1;
++  text-align: start;
++}
++
++:global([dir="rtl"]) .number-chart-content > :nth-child(2) {
++  grid-column: 1;
++  grid-row: 1;
++  justify-self: end;
++  text-align: end;
++}
++
++:global([dir="rtl"]) .number-chart-content > :nth-child(3) {
++  grid-column: 1 / -1;
++}
++</style>
+diff --git a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
+index 0335128..1f35d7e 100644
+--- a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
+@@ -1,5 +1,5 @@
+ import { getTitleOptions } from './eChartOptions'
+-import { formatValue } from './helpers'
++import { formatPercentage, formatValue, getChartFontFamily } from './helpers'
+ import { DonutChartConfig } from './types'
+ 
+ export default function useDonutChartOptions(config: DonutChartConfig) {
+@@ -44,7 +44,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+     animation: true,
+     animationDuration: 700,
+     color: config.colors,
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+     title: getTitleOptions(config.title, config.subtitle, isRTL),
+     dataset: {
+       source: [
+@@ -71,7 +71,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+           show: config.showInlineLabels,
+           formatter: ({ value, name }: any) => {
+             const percentage = total > 0 ? (value[1] / total) * 100 : 0
+-            return `${name} (${percentage.toFixed(0)}%)`
++            return `${name} (${formatPercentage(percentage)})`
+           },
+         },
+         emphasis: { scaleSize: 5 },
+@@ -91,7 +91,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+             const labelIndex = labels.indexOf(name)
+             const percentage =
+               total > 0 ? (values[labelIndex] / total) * 100 : 0
+-            return `${name} (${percentage.toFixed(0)}%)`
++            return `${name} (${formatPercentage(percentage)})`
+           },
+           textStyle: {
+             padding: [0, 0, 0, -5],
+@@ -123,7 +123,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+         const value = p.value[1]
+         const percentage = total > 0 ? (value / total) * 100 : 0
+         const formatted = isNaN(value) ? value : formatValue(value, 1, true)
+-        const formattedPercentage = percentage.toFixed(0)
++        const formattedPercentage = formatPercentage(percentage)
+         return `
+           <div${dirAttr} class="flex items-center justify-between gap-5">
+             <div>${p.name}</div>
+diff --git a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
+index b8be33b..34449d0 100644
+--- a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
+@@ -1,5 +1,12 @@
+ import type { EChartsOption } from 'echarts'
+-import { formatDate, formatLabel, formatValue, mergeDeep } from './helpers'
++import {
++  formatDate,
++  formatDigits,
++  formatLabel,
++  formatValue,
++  getChartFontFamily,
++  mergeDeep,
++} from './helpers'
+ import { AxisChartConfig } from './types'
+ 
+ export const PADDING_TOP = 0
+@@ -14,7 +21,7 @@ export const TITLE_BOTTOM = 24
+ export default function useEchartsOptions(config: AxisChartConfig) {
+   const isRTL = config.dir === 'rtl'
+   const title = config.title
+-  const subtitle = config.subtitle
++  const subtitle = config.subtitle ? formatDigits(config.subtitle) : config.subtitle
+   const hasTitle = title ? 1 : 0
+   const hasSubtitle = subtitle ? 1 : 0
+   const hasXAxisTitle = config.xAxis.title ? 1 : 0
+@@ -28,7 +35,7 @@ export default function useEchartsOptions(config: AxisChartConfig) {
+   return {
+     animation: true,
+     animationDuration: 700,
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+     title: getTitleOptions(title, subtitle, isRTL),
+     color: config.colors,
+     grid: {
+diff --git a/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
+index 59dd5d7..bb48c39 100644
+--- a/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
+@@ -5,7 +5,7 @@ import {
+   TITLE_BOTTOM,
+   TITLE_HEIGHT,
+ } from './eChartOptions'
+-import { formatValue } from './helpers'
++import { formatPercentage, formatValue, getChartFontFamily } from './helpers'
+ import { FunnelChartConfig } from './types'
+ 
+ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+@@ -37,7 +37,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+     animation: true,
+     animationDuration: 700,
+     color: colors,
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+     title: getTitleOptions(config.title, config.subtitle, isRTL),
+     series: [
+       {
+@@ -66,7 +66,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+             if (!config.showPercentages) {
+               return value
+             }
+-            const percentage = Number((values[index] / total) * 100).toFixed(0)
++            const percentage = formatPercentage((values[index] / total) * 100)
+             return `${value} (${percentage}%)`
+           },
+         },
+@@ -104,7 +104,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+         const value = p.value
+         const percentage = total > 0 ? (value / total) * 100 : 0
+         const formatted = isNaN(value) ? value : formatValue(value, 1, true)
+-        const formattedPercentage = percentage.toFixed(0)
++        const formattedPercentage = formatPercentage(percentage)
+         return `
+           <div${dirAttr} class="flex items-center justify-between gap-5">
+             <div>${p.name}</div>
+diff --git a/node_modules/frappe-ui/experimental/Charts/helpers.ts b/node_modules/frappe-ui/experimental/Charts/helpers.ts
+index c576b80..ad2ac98 100644
+--- a/node_modules/frappe-ui/experimental/Charts/helpers.ts
++++ b/node_modules/frappe-ui/experimental/Charts/helpers.ts
+@@ -1,5 +1,38 @@
+ import { dayjs } from '#utils/dayjs'
+ 
++export function getChartLocale() {
++  if (typeof document === 'undefined') return 'en-US'
++  const language = document.documentElement.lang.toLowerCase().replace('_', '-')
++  return language.startsWith('fa') ? 'fa-IR' : language || 'en-US'
++}
++
++export function formatDigits(value: string | number) {
++  const locale = getChartLocale()
++  return locale.startsWith('fa')
++    ? String(value).replace(/\d/g, (digit) => new Intl.NumberFormat(locale).format(Number(digit)))
++    : String(value)
++}
++
++export function getChartFontFamily() {
++  if (typeof document === 'undefined') return 'InterVar, sans-serif'
++  return getComputedStyle(document.documentElement).fontFamily || 'sans-serif'
++}
++
++export function formatPercentage(value: number) {
++  return new Intl.NumberFormat(getChartLocale(), {
++    style: 'percent',
++    maximumFractionDigits: 0,
++  }).format(value / 100)
++}
++
++export function formatSuffix(suffix?: string) {
++  if (!suffix) return ''
++  const locale = getChartLocale()
++  if (!locale.startsWith('fa')) return suffix
++  if (suffix === '%') return '٪'
++  return formatDigits(suffix)
++}
++
+ export function formatLabel(name: string) {
+   return name
+     .split('_')
+@@ -10,7 +43,7 @@ export function formatLabel(name: string) {
+ export function formatValue(value: number, precision = 0, shorten = false) {
+   if (isNaN(value)) return value.toString()
+ 
+-  let locale = 'en-US'
++  const locale = getChartLocale()
+ 
+   if (shorten) {
+     let formatted = new Intl.NumberFormat(locale, {
+@@ -52,6 +85,25 @@ export type TimeGrain =
+ export function formatDate(date: string, format?: string, grain: TimeGrain = 'day') {
+   if (!date) return ''
+ 
++  const locale = getChartLocale()
++  if (locale.startsWith('fa')) {
++    const value = dayjs(date)
++    if (!value.isValid()) return ''
++    const intlDate = new Date(Date.UTC(value.year(), value.month(), value.date(), 12))
++    const options: Intl.DateTimeFormatOptions = {
++      timeZone: 'UTC',
++      ...(grain === 'month'
++        ? { month: 'long', year: 'numeric' }
++        : grain === 'year'
++          ? { year: 'numeric' }
++          : { day: 'numeric', month: grain === 'week' ? 'short' : 'long', year: 'numeric' }),
++      ...(grain === 'hour' || grain === 'minute' || grain === 'second'
++        ? { hour: '2-digit', minute: '2-digit', ...(grain === 'second' ? { second: '2-digit' } : {}) }
++        : {}),
++    }
++    return new Intl.DateTimeFormat('fa-IR-u-ca-persian-nu-arabext', options).format(intlDate)
++  }
++
+   if (grain) {
+     const grainToFormat: Record<TimeGrain, string> = {
+       second: 'MMMM D, YYYY h:mm:ss A',
+diff --git a/node_modules/frappe-ui/experimental/Charts/types.ts b/node_modules/frappe-ui/experimental/Charts/types.ts
+index 718e760..2d7f86a 100644
+--- a/node_modules/frappe-ui/experimental/Charts/types.ts
++++ b/node_modules/frappe-ui/experimental/Charts/types.ts
+@@ -5,6 +5,7 @@ export type AxisChartConfig = {
+   title: string
+   subtitle?: string
+   colors?: string[]
++  fontFamily?: string
+   /** Forces layout direction; defaults to document.documentElement.dir */
+   dir?: 'rtl' | 'ltr'
+   xAxis: {
+@@ -74,6 +75,7 @@ export type DonutChartConfig = {
+   title: string
+   subtitle?: string
+   colors?: string[]
++  fontFamily?: string
+   /** Forces layout direction; defaults to document.documentElement.dir */
+   dir?: 'rtl' | 'ltr'
+   categoryColumn: string
+@@ -90,6 +92,7 @@ export type FunnelChartConfig = {
+   title: string
+   subtitle?: string
+   colors?: string[]
++  fontFamily?: string
+   /** Forces layout direction; defaults to document.documentElement.dir */
+   dir?: 'rtl' | 'ltr'
+   categoryColumn: string
+diff --git a/node_modules/frappe-ui/experimental/ListView/ListFooter.vue b/node_modules/frappe-ui/experimental/ListView/ListFooter.vue
+index 4611ee8..16dd8d7 100644
+--- a/node_modules/frappe-ui/experimental/ListView/ListFooter.vue
++++ b/node_modules/frappe-ui/experimental/ListView/ListFooter.vue
+@@ -13,14 +13,12 @@
+         <div class="flex items-center">
+           <Button
+             v-if="showLoadMore"
+-            label="Load More"
++            :label="__('Load More')"
+             @click="emit('loadMore')"
+           />
+           <div v-if="showLoadMore" class="mx-3 h-[80%] border-l" />
+           <div class="flex items-center gap-1 text-base text-ink-gray-5">
+-            <div>{{ options.rowCount || '0' }}</div>
+-            <div>of</div>
+-            <div>{{ options.totalCount || '0' }}</div>
++            <div>{{ __('{0} of {1}', [options.rowCount || '0', options.totalCount || '0']) }}</div>
+           </div>
+         </div>
+       </slot>
+diff --git a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
+index ebc1f6a..d824ec2 100644
+--- a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
++++ b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
+@@ -80,7 +80,7 @@
+       >
+         <!-- Announced by the container, so an app's own placeholder does not
+              have to carry the announcement with it. -->
+-        <span class="sr-only" role="status">Loading chart</span>
++        <span class="sr-only" role="status">{{ (window as any).__?.('Loading chart') ?? 'Loading chart' }}</span>
+         <slot name="loading">
+           <!-- A block the size of the plot, not a spinner in the middle of it.
+                A dashboard fills in a card at a time, and a placeholder holding
+@@ -98,7 +98,7 @@
+         <template v-if="state === 'error'">
+           <slot name="error" :error="error">
+             <span class="text-sm-medium text-ink-red-7">
+-              Could not render this chart
++              {{ (window as any).__?.('Could not render this chart') ?? 'Could not render this chart' }}
+             </span>
+             <span v-if="error" class="max-w-sm text-p-sm text-ink-gray-5">
+               {{ error }}
+@@ -108,7 +108,7 @@
+ 
+         <template v-else>
+           <slot name="empty">
+-            <span class="text-p-sm text-ink-gray-5">No data to show</span>
++            <span class="text-p-sm text-ink-gray-5">{{ (window as any).__?.('No data to show') ?? 'No data to show' }}</span>
+           </slot>
+         </template>
+       </div>
+diff --git a/node_modules/frappe-ui/src/charts/measureText.ts b/node_modules/frappe-ui/src/charts/measureText.ts
+index da0ec5f..41da68c 100644
+--- a/node_modules/frappe-ui/src/charts/measureText.ts
++++ b/node_modules/frappe-ui/src/charts/measureText.ts
+@@ -16,7 +16,7 @@
+ const DEFAULT_FONT = '12px sans-serif'
+ 
+ /** What the charts set as `textStyle.fontFamily`; every label inherits it. */
+-export const CHART_FONT_FAMILY = 'InterVar, Inter, sans-serif'
++export const CHART_FONT_FAMILY = 'Vazirmatn, InterVar, Inter, sans-serif'
+ 
+ /**
+  * The CSS font a label of `fontSize` is drawn with. Measuring and rendering
+diff --git a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
+index 17c32d9..5b1f34b 100644
+--- a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
++++ b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
+@@ -1,5 +1,6 @@
+ <script setup lang="ts">
+ import { computed, nextTick, ref, useAttrs, useTemplateRef, watch } from 'vue'
++import { useTextDirection } from '@vueuse/core'
+ import {
+   ComboboxAnchor,
+   ComboboxContent,
+@@ -71,11 +72,13 @@ const props = withDefaults(defineProps<ComboboxProps>(), {
+   align: 'start',
+   offset: 4,
+   loading: false,
+-  emptyText: 'No results',
++  emptyText: () => (window as any).__?.('No results') ?? 'No results',
+   hideSearch: false,
+   filterable: true,
+ })
+ 
++const textDirection = useTextDirection({ observe: true })
++
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const emit = defineEmits<ComboboxEmits>()
+@@ -485,6 +488,7 @@ defineSlots<ComboboxSlots>()
+       <ComboboxRoot
+         ref="rootRef"
+         class="contents"
++        :dir="textDirection"
+         :model-value="internalModelValue"
+         :open="open"
+         :disabled="disabled"
+@@ -587,7 +591,7 @@ defineSlots<ComboboxSlots>()
+ 
+               <span
+                 :class="[
+-                  'min-w-0 flex-1 truncate text-left font-normal leading-tighter',
++                  'min-w-0 flex-1 truncate text-start font-normal leading-tighter',
+                   !selectedOption && 'text-ink-gray-4',
+                 ]"
+               >
+@@ -672,6 +676,7 @@ defineSlots<ComboboxSlots>()
+           <ComboboxContent
+             data-slot="content"
+             data-selection
++            :dir="textDirection"
+             :data-variant="variant"
+             :data-size="size"
+             :data-loading="loading ? '' : undefined"
+diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
+index 9c76a89..18bc095 100644
+--- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
++++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
+@@ -113,7 +113,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
+       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
+     >
+       <LoadingIndicator class="size-4" />
+-      <span>Loading...</span>
++      <span>{{ (window as any).__?.('Loading...') ?? 'Loading...' }}</span>
+     </div>
+ 
+     <template v-else>
+@@ -271,7 +271,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
+ 
+                   <ComboboxItemIndicator
+                     v-if="isSelectableOption(item)"
+-                    class="ml-1 inline-flex items-center justify-center"
++                    class="ms-1 inline-flex items-center justify-center"
+                   >
+                     <span class="lucide-check size-4 text-ink-gray-6" />
+                   </ComboboxItemIndicator>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue b/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
+index 22b644f..a1b17b4 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
+@@ -1,22 +1,22 @@
+ <template>
+-  <div class="select-none text-base text-ink-gray-9">
++  <div class="calendar-panel select-none text-base text-ink-gray-9">
+     <div
+       v-if="centerHeader"
+       class="flex items-center justify-between p-2 pb-0 gap-1"
+     >
+       <Button
+         :class="{ invisible: hidePrev }"
+-        label="previous"
++        :label="translateLabel('previous')"
+         variant="ghost"
+         icon="lucide-chevron-left"
+         @click="emit('prev')"
+       />
+       <span class="text-sm-medium text-ink-gray-7">
+-        {{ months[currentMonth] }} {{ currentYear }}
++        {{ monthYearLabel }}
+       </span>
+       <Button
+         :class="{ invisible: hideNext }"
+-        label="next"
++        :label="translateLabel('next')"
+         variant="ghost"
+         icon="lucide-chevron-right"
+         @click="emit('next')"
+@@ -27,15 +27,15 @@
+         variant="ghost"
+         size="sm"
+         class="text-sm-medium text-ink-gray-7"
+-        label="cycle-calendar-view"
++        :label="translateLabel('cycle-calendar-view')"
+         @click="emit('cycleView')"
+       >
+-        {{ months[currentMonth] }} {{ currentYear }}
++        {{ monthYearLabel }}
+       </Button>
+       <div v-if="view === 'date'" class="flex items-center">
+         <Button
+           v-if="!hidePrev"
+-          label="previous"
++          :label="translateLabel('previous')"
+           variant="ghost"
+           icon="lucide-chevron-left"
+           @click="emit('prev')"
+@@ -49,7 +49,7 @@
+         />
+         <Button
+           v-if="!hideNext"
+-          label="next"
++          :label="translateLabel('next')"
+           variant="ghost"
+           icon="lucide-chevron-right"
+           @click="emit('next')"
+@@ -61,7 +61,7 @@
+         v-if="view === 'date'"
+         ref="gridRef"
+         role="grid"
+-        aria-label="Calendar dates"
++        :aria-label="translateLabel('Calendar dates')"
+         @mouseleave="emit('hoverCell', null)"
+       >
+         <div
+@@ -113,25 +113,35 @@
+                 "
+                 @keydown.down.prevent="shiftFocus(cell.date.add(7, 'day'), 1)"
+                 @keydown.home.prevent="
+-                  shiftFocus(cell.date.subtract(cell.date.day(), 'day'), -1)
++                  shiftFocus(
++                    cell.date.subtract(calendarWeekdayIndex(cell.date), 'day'),
++                    -1
++                  )
+                 "
+                 @keydown.end.prevent="
+-                  shiftFocus(cell.date.add(6 - cell.date.day(), 'day'), 1)
++                  shiftFocus(
++                    cell.date.add(6 - calendarWeekdayIndex(cell.date), 'day'),
++                    1
++                  )
+                 "
+                 @keydown.page-up.prevent="
+                   shiftFocus(
+-                    $event.shiftKey
+-                      ? cell.date.subtract(1, 'year')
+-                      : cell.date.subtract(1, 'month'),
+-                    -1,
++                    shiftCalendarDate(
++                      cell.date,
++                      $event.shiftKey ? -1 : 0,
++                      $event.shiftKey ? 0 : -1
++                    ),
++                    -1
+                   )
+                 "
+                 @keydown.page-down.prevent="
+                   shiftFocus(
+-                    $event.shiftKey
+-                      ? cell.date.add(1, 'year')
+-                      : cell.date.add(1, 'month'),
+-                    1,
++                    shiftCalendarDate(
++                      cell.date,
++                      $event.shiftKey ? 1 : 0,
++                      $event.shiftKey ? 0 : 1
++                    ),
++                    1
+                   )
+                 "
+                 @keydown.enter.prevent="
+@@ -141,18 +151,18 @@
+                   !cell.isUnavailable && emit('selectDate', cell.date)
+                 "
+               >
+-                {{ cell.date.date() }}
++                {{ cell.calendarDay || cell.date.date() }}
+               </button>
+             </template>
+           </div>
+         </div>
+       </div>
+-      <div v-else class="flex h-52 w-52" aria-label="Select month and year">
++      <div v-else class="flex h-52 w-52" :aria-label="translateLabel('Select month and year')">
+         <div
+           ref="yearListRef"
+           class="relative flex w-1/2 flex-col gap-0.5 overflow-y-auto"
+           role="listbox"
+-          aria-label="Select year"
++          :aria-label="translateLabel('Select year')"
+         >
+           <button
+             v-for="y in years"
+@@ -168,17 +178,17 @@
+             :aria-selected="y === currentYear ? 'true' : 'false'"
+             @click="emit('selectYear', y)"
+           >
+-            {{ y }}
++            {{ calendarYear(y) }}
+           </button>
+         </div>
+         <div
+           ref="monthListRef"
+           class="relative flex w-1/2 flex-col gap-0.5 overflow-y-auto pl-1.5"
+           role="listbox"
+-          aria-label="Select month"
++          :aria-label="translateLabel('Select month')"
+         >
+           <button
+-            v-for="(m, i) in months"
++            v-for="(m, i) in displayMonths"
+             type="button"
+             :key="m"
+             class="w-full text-ink-gray-8 shrink-0 h-7 rounded-4 py-1 text-sm leading-tighter text-center cursor-pointer transition-colors duration-100"
+@@ -200,81 +210,108 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { computed, nextTick, ref, watch } from 'vue'
+-import type { Dayjs } from 'dayjs/esm'
+-import { Button } from '../Button'
+-import { months } from './utils'
++import { computed, getCurrentInstance, nextTick, ref, watch } from "vue";
++import type { Dayjs } from "dayjs/esm";
++import { Button } from "../Button";
++import { dayjs } from "../../utils/dayjs";
++import {
++  calendarMonths,
++  calendarMonthYear,
++  calendarWeekdays,
++  calendarYear,
++  calendarWeekdayIndex,
++  isPersianCalendar,
++  shiftCalendarDate,
++  toCalendarDate,
++} from "./jalali";
+ import type {
+   CalendarPanelCell,
+   CalendarPanelExposed,
+   CalendarPanelProps,
+-} from './calendarTypes'
++} from "./calendarTypes";
++
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
++const translateLabel = (message: string) => translate?.(message) ?? message;
+ 
+ const props = withDefaults(defineProps<CalendarPanelProps>(), {
+-  todayLabel: '',
++  todayLabel: "",
+   hidePrev: false,
+   hideNext: false,
+   hideToday: false,
+   hideOutOfMonth: false,
+   centerHeader: false,
+-})
++});
++
++const monthYearLabel = computed(() =>
++  calendarMonthYear(props.currentYear, props.currentMonth)
++);
++const displayMonths = computed(() => calendarMonths(props.currentYear));
++const WEEKDAYS = computed(() => calendarWeekdays());
+ 
+ const emit = defineEmits<{
+-  (e: 'prev'): void
+-  (e: 'next'): void
+-  (e: 'today'): void
+-  (e: 'cycleView'): void
+-  (e: 'selectMonth', i: number): void
+-  (e: 'selectYear', y: number): void
+-  (e: 'selectDate', d: Dayjs): void
+-  (e: 'hoverCell', d: Dayjs | null): void
++  (e: "prev"): void;
++  (e: "next"): void;
++  (e: "today"): void;
++  (e: "cycleView"): void;
++  (e: "selectMonth", i: number): void;
++  (e: "selectYear", y: number): void;
++  (e: "selectDate", d: Dayjs): void;
++  (e: "hoverCell", d: Dayjs | null): void;
+   /** Request that the parent make this date visible. The parent decides
+    *  whether to advance its own month (single-pane) or to leave the view
+    *  alone because the date is already visible in a sibling panel
+    *  (dual-pane). */
+-  (e: 'navigate', d: Dayjs): void
++  (e: "navigate", d: Dayjs): void;
+   /** Roving tabindex moved — parent should update its `focusedDate` ref so
+    *  every panel that shares it stays in sync. */
+-  (e: 'update:focusedDate', d: Dayjs): void
+-}>()
++  (e: "update:focusedDate", d: Dayjs): void;
++}>();
+ 
+ // ── Month-year split view ────────────────────────────────────────────────────
+ // The year column is a scrollable list. We bound it to [min, max] when provided
+ // (so unreachable years aren't offered) and otherwise fall back to a wide window
+ // around the current year. The current year is always included.
+ const years = computed<number[]>(() => {
+-  const current = props.currentYear
+-  const minY = props.min ? Number(props.min.slice(0, 4)) : current - 100
+-  const maxY = props.max ? Number(props.max.slice(0, 4)) : current + 10
+-  const start = Math.min(minY, current)
+-  const end = Math.max(maxY, current)
+-  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+-})
++  const current = props.currentYear;
++  const minY = props.min
++    ? isPersianCalendar()
++      ? toCalendarDate(dayjs(props.min)).jy
++      : Number(props.min.slice(0, 4))
++    : current - 100;
++  const maxY = props.max
++    ? isPersianCalendar()
++      ? toCalendarDate(dayjs(props.max)).jy
++      : Number(props.max.slice(0, 4))
++    : current + 10;
++  const start = Math.min(minY, current);
++  const end = Math.max(maxY, current);
++  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
++});
+ 
+-const yearListRef = ref<HTMLElement | null>(null)
+-const monthListRef = ref<HTMLElement | null>(null)
++const yearListRef = ref<HTMLElement | null>(null);
++const monthListRef = ref<HTMLElement | null>(null);
+ 
+ // Center the active year/month when the split view opens. Manual scrollTop (vs
+ // scrollIntoView) keeps the scroll contained to each list and never nudges the
+ // popover or page. Relies on the list containers being `relative` so the
+ // buttons' `offsetTop` is measured against them.
+ function centerSelected(container: HTMLElement | null) {
+-  const el = container?.querySelector<HTMLElement>('[data-selected]')
+-  if (!container || !el) return
++  const el = container?.querySelector<HTMLElement>("[data-selected]");
++  if (!container || !el) return;
+   container.scrollTop =
+-    el.offsetTop - container.clientHeight / 2 + el.clientHeight / 2
++    el.offsetTop - container.clientHeight / 2 + el.clientHeight / 2;
+ }
+ 
+ watch(
+   () => props.view,
+   (view) => {
+-    if (view !== 'monthYear') return
++    if (view !== "monthYear") return;
+     nextTick(() => {
+-      centerSelected(yearListRef.value)
+-      centerSelected(monthListRef.value)
+-    })
+-  },
+-)
++      centerSelected(yearListRef.value);
++      centerSelected(monthListRef.value);
++    });
++  }
++);
+ 
+ // ── Roving tabindex (Reka Calendar pattern) ──────────────────────────────────
+ // The focused date is *controlled* — the parent owns the value and feeds it
+@@ -284,25 +321,25 @@ watch(
+ // visible weeks contain the date renders the `tabindex=0` cell, and the
+ // matching panel's watch handler calls `.focus()` on its own cell.
+ 
+-const gridRef = ref<HTMLElement | null>(null)
++const gridRef = ref<HTMLElement | null>(null);
+ 
+ function isFocusedCell(cell: CalendarPanelCell): boolean {
+-  return !!props.focusedDate && cell.date.isSame(props.focusedDate, 'day')
++  return !!props.focusedDate && cell.date.isSame(props.focusedDate, "day");
+ }
+ 
+ function pickInitialFocusDate(weeks: CalendarPanelCell[][]): Dayjs | null {
+-  const flat = weeks.flat()
++  const flat = weeks.flat();
+   const selected = flat.find(
+     (c) =>
+       (c.isSelected || c.isRangeStart || c.isRangeEnd) &&
+       !c.isUnavailable &&
+-      c.inMonth,
+-  )
+-  if (selected) return selected.date
+-  const today = flat.find((c) => c.isToday && c.inMonth && !c.isUnavailable)
+-  if (today) return today.date
+-  const firstAvailable = flat.find((c) => c.inMonth && !c.isUnavailable)
+-  return firstAvailable?.date ?? null
++      c.inMonth
++  );
++  if (selected) return selected.date;
++  const today = flat.find((c) => c.isToday && c.inMonth && !c.isUnavailable);
++  if (today) return today.date;
++  const firstAvailable = flat.find((c) => c.inMonth && !c.isUnavailable);
++  return firstAvailable?.date ?? null;
+ }
+ 
+ // When the focused date changes, move DOM focus to the matching cell — but
+@@ -312,37 +349,37 @@ function pickInitialFocusDate(weeks: CalendarPanelCell[][]): Dayjs | null {
+ watch(
+   () => props.focusedDate,
+   (val) => {
+-    if (!val) return
++    if (!val) return;
+     nextTick(() => {
+-      const key = val.format('YYYY-MM-DD')
++      const key = val.format("YYYY-MM-DD");
+       const el = gridRef.value?.querySelector(
+-        `[data-value='${key}']:not([data-outside-view])`,
+-      ) as HTMLButtonElement | null
+-      if (!el) return
+-      const active = document.activeElement
+-      const focusInSomePanel = active?.hasAttribute('data-value')
+-      if (focusInSomePanel) el.focus()
+-    })
+-  },
+-)
++        `[data-value='${key}']:not([data-outside-view])`
++      ) as HTMLButtonElement | null;
++      if (!el) return;
++      const active = document.activeElement;
++      const focusInSomePanel = active?.hasAttribute("data-value");
++      if (focusInSomePanel) el.focus();
++    });
++  }
++);
+ 
+ // Defense-in-depth ceiling for the skip-disabled recursion: even with the
+ // min/max bounds check, an `isDateUnavailable` predicate that returns true
+ // for an unbounded run of dates would otherwise spin forever.
+-const MAX_SKIP_DISABLED_STEPS = 366
++const MAX_SKIP_DISABLED_STEPS = 366;
+ 
+ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+   // Bounds check first — if the target is outside [min, max], the arrow
+   // press is a no-op rather than trying to navigate into nothing. Matches
+   // Reka's CalendarCellTrigger behavior.
+-  if (props.min && target.isBefore(props.min, 'day')) return
+-  if (props.max && target.isAfter(props.max, 'day')) return
+-  if (steps > MAX_SKIP_DISABLED_STEPS) return
++  if (props.min && target.isBefore(props.min, "day")) return;
++  if (props.max && target.isAfter(props.max, "day")) return;
++  if (steps > MAX_SKIP_DISABLED_STEPS) return;
+ 
+-  const key = target.format('YYYY-MM-DD')
++  const key = target.format("YYYY-MM-DD");
+   const el = gridRef.value?.querySelector(
+-    `[data-value='${key}']:not([data-outside-view])`,
+-  ) as HTMLButtonElement | null
++    `[data-value='${key}']:not([data-outside-view])`
++  ) as HTMLButtonElement | null;
+ 
+   if (!el) {
+     // Target isn't in *our* grid. Tell the parent so it can either advance
+@@ -350,21 +387,21 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+     // the date is already visible in a sibling panel). Then retry once —
+     // by then either our grid has the cell (parent advanced our month) or
+     // a sibling panel does (its watch handler picks it up).
+-    if (retried) return
+-    emit('navigate', target)
+-    nextTick(() => shiftFocus(target, dir, true, steps))
+-    return
++    if (retried) return;
++    emit("navigate", target);
++    nextTick(() => shiftFocus(target, dir, true, steps));
++    return;
+   }
+ 
+-  if (el.hasAttribute('data-disabled')) {
++  if (el.hasAttribute("data-disabled")) {
+     // Skip disabled by stepping one more day in the same direction. Reset
+     // `retried` (we may cross another month boundary) but bump `steps`.
+-    shiftFocus(target.add(dir, 'day'), dir, false, steps + 1)
+-    return
++    shiftFocus(target.add(dir, "day"), dir, false, steps + 1);
++    return;
+   }
+ 
+-  emit('update:focusedDate', target)
+-  el.focus()
++  emit("update:focusedDate", target);
++  el.focus();
+ }
+ 
+ /**
+@@ -373,75 +410,80 @@ function shiftFocus(target: Dayjs, dir: 1 | -1, retried = false, steps = 0) {
+  * when the parent hasn't seeded a focused date yet.
+  */
+ function focusInitialCell() {
+-  const target = props.focusedDate ?? pickInitialFocusDate(props.weeks)
+-  if (!target) return
+-  emit('update:focusedDate', target)
++  const target = props.focusedDate ?? pickInitialFocusDate(props.weeks);
++  if (!target) return;
++  emit("update:focusedDate", target);
+   nextTick(() => {
+-    const key = target.format('YYYY-MM-DD')
++    const key = target.format("YYYY-MM-DD");
+     const el = gridRef.value?.querySelector(
+-      `[data-value='${key}']:not([data-outside-view])`,
+-    ) as HTMLButtonElement | null
+-    el?.focus()
+-  })
++      `[data-value='${key}']:not([data-outside-view])`
++    ) as HTMLButtonElement | null;
++    el?.focus();
++  });
+ }
+ 
+-defineExpose<CalendarPanelExposed>({ focusInitialCell })
++defineExpose<CalendarPanelExposed>({ focusInitialCell });
+ 
+-const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+-
+-function ariaSelected(cell: CalendarPanelCell): 'true' | 'false' {
++function ariaSelected(cell: CalendarPanelCell): "true" | "false" {
+   return cell.isSelected || cell.isRangeStart || cell.isRangeEnd
+-    ? 'true'
+-    : 'false'
++    ? "true"
++    : "false";
+ }
+ 
+ function ariaLabel(cell: CalendarPanelCell): string {
+-  return cell.date.format('YYYY-MM-DD') + (cell.isToday ? ' (Today)' : '')
++  const todayLabel = cell.isToday && props.todayLabel ? ` (${props.todayLabel})` : "";
++  return cell.date.format("YYYY-MM-DD") + todayLabel;
+ }
+ 
+ function cellClass(cell: CalendarPanelCell): Array<string | false> {
+   // "Today" stays bold whether or not it's selected; its gray text color is kept
+   // separate so it can be dropped on selected cells.
+-  const todayFont = cell.isToday ? 'font-semibold' : ''
++  const todayFont = cell.isToday ? "font-semibold" : "";
+   // Resting text color for non-selected cells. Omitted on selected/range cells:
+   // both are `text-*` utilities, so leaving them in would win the CSS source-order
+   // tie against `text-ink-base` and the selected date would render gray.
+   const restingText = [
+-    cell.inMonth ? 'text-ink-gray-8' : 'text-ink-gray-3',
+-    cell.isToday ? 'text-ink-gray-9' : '',
+-  ]
++    cell.inMonth ? "text-ink-gray-8" : "text-ink-gray-3",
++    cell.isToday ? "text-ink-gray-9" : "",
++  ];
+ 
+   if (cell.isUnavailable) {
+     return [
+-      'rounded-4',
++      "rounded-4",
+       ...restingText,
+       todayFont,
+-      'opacity-30 cursor-not-allowed',
+-    ]
++      "opacity-30 cursor-not-allowed",
++    ];
+   }
+ 
+   if (cell.isRangeStart || cell.isRangeEnd || cell.isSelected) {
+     return [
+-      'rounded-4',
++      "rounded-4",
+       todayFont,
+-      'bg-surface-gray-9 text-ink-base hover:bg-surface-gray-9 cursor-pointer',
+-    ]
++      "bg-surface-gray-9 text-ink-base hover:bg-surface-gray-9 cursor-pointer",
++    ];
+   }
+ 
+   if (cell.inRange) {
+     return [
+-      'rounded-4',
++      "rounded-4",
+       ...restingText,
+       todayFont,
+-      'bg-surface-gray-3 hover:bg-surface-gray-3 cursor-pointer',
+-    ]
++      "bg-surface-gray-3 hover:bg-surface-gray-3 cursor-pointer",
++    ];
+   }
+ 
+   return [
+-    'rounded-4',
++    "rounded-4",
+     ...restingText,
+     todayFont,
+-    'hover:bg-surface-gray-2 cursor-pointer',
+-  ]
++    "hover:bg-surface-gray-2 cursor-pointer",
++  ];
+ }
+ </script>
++<style>
++[dir="rtl"] .calendar-panel button[aria-label="previous"] > span,
++[dir="rtl"] .calendar-panel button[aria-label="next"] > span {
++  transform: scaleX(-1);
++}
++</style>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
+index 4c5c7d9..9b5671e 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
+@@ -16,7 +16,7 @@
+     :required="props.required"
+     :size="props.size"
+     :variant="props.variant"
+-    :placeholder="props.placeholder"
++    :placeholder="resolvedPlaceholder"
+     :disabled="props.disabled"
+     :readonly="inputReadonly"
+     :display-label="displayLabel"
+@@ -46,7 +46,7 @@
+         <aside
+           v-if="$slots.actions"
+           data-slot="actions"
+-          aria-label="Shortcuts"
++          :aria-label="translateLabel('Shortcuts')"
+           class="flex flex-col p-2 gap-0.5"
+         >
+           <slot
+@@ -65,7 +65,7 @@
+         <DateCalendar
+           ref="calendarRef"
+           :model-value="selected"
+-          today-label="Today"
++          :today-label="resolvedTodayLabel"
+           :min="props.min"
+           :max="props.max"
+           :is-date-unavailable="props.isDateUnavailable"
+@@ -78,75 +78,88 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { ref, computed, nextTick, watch } from 'vue'
+-import { dayjs, dayjsLocal } from '../../utils/dayjs'
+-import DateCalendar from './DateCalendar.vue'
+-import PickerShell from '../shared/picker/PickerShell.vue'
++import { ref, computed, getCurrentInstance, nextTick, watch } from "vue";
++import { dayjs, dayjsLocal } from "../../utils/dayjs";
++import DateCalendar from "./DateCalendar.vue";
++import PickerShell from "../shared/picker/PickerShell.vue";
+ import {
+   usePopoverPositioning,
+   useKeepOpen,
+   useTypeable,
+   useDateCoercion,
+   makeUnavailableCheck,
+-} from './composables'
+-import type { Dayjs } from 'dayjs/esm'
+-import type { DatePickerProps, DatePickerEmits, DatePickerSlots } from './types'
+-import type { DateCalendarExposed } from './calendarTypes'
++} from "./composables";
++import type { Dayjs } from "dayjs/esm";
+ import type {
+-  PickerExposed,
+-  PickerShellExposed,
+-} from '../shared/picker/types'
++  DatePickerProps,
++  DatePickerEmits,
++  DatePickerSlots,
++} from "./types";
++import type { DateCalendarExposed } from "./calendarTypes";
++import {
++  formatCalendarDate,
++  isPersianCalendar,
++  parseCalendarDate,
++} from "./jalali";
++import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
+ 
+ const props = withDefaults(defineProps<DatePickerProps>(), {
+-  modelValue: '',
+-  variant: 'subtle',
+-  placeholder: 'Select date',
++  modelValue: "",
++  variant: "subtle",
+   typeable: true,
+   disabled: false,
+   clearable: true,
+   openOnFocus: false,
+   openOnClick: true,
+-})
+-const emit = defineEmits<DatePickerEmits>()
+-
+-defineSlots<DatePickerSlots>()
++});
++const emit = defineEmits<DatePickerEmits>();
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
++const translateLabel = (message: string) => translate?.(message) ?? message;
++const resolvedPlaceholder = computed(() =>
++  props.placeholder ?? translateLabel("Select date")
++);
++const resolvedTodayLabel = computed(() =>
++  props.todayLabel ?? translateLabel("Today")
++);
++
++defineSlots<DatePickerSlots>();
+ 
+ // ── Popover open state ───────────────────────────────────────────────────────
+ 
+-const shellRef = ref<PickerShellExposed | null>(null)
++const shellRef = ref<PickerShellExposed | null>(null);
+ // Seeded from the prop, so a parent that mounts the picker with `open` already
+ // true gets an open panel. The watch below only sees later changes.
+-const isOpen = ref(props.open === true)
++const isOpen = ref(props.open === true);
+ 
+ watch(
+   () => props.open,
+   (val) => {
+-    if (typeof val === 'boolean' && val !== isOpen.value) {
+-      isOpen.value = val
++    if (typeof val === "boolean" && val !== isOpen.value) {
++      isOpen.value = val;
+     }
+-  },
+-)
++  }
++);
+ 
+ watch(isOpen, (val) => {
+-  emit('update:open', val)
+-})
++  emit("update:open", val);
++});
+ 
+ function onShellOpen() {
+-  initFromValue()
++  initFromValue();
+ }
+ 
+ function onShellClose() {
+   if (isTyping.value) {
+-    commitInput()
+-    isTyping.value = false
++    commitInput();
++    isTyping.value = false;
+   }
+ }
+ 
+-const calendarRef = ref<DateCalendarExposed | null>(null)
++const calendarRef = ref<DateCalendarExposed | null>(null);
+ 
+ function onShellRequestFocus() {
+   // The calendar only mounts with the popover, so wait a tick for it.
+-  nextTick(() => calendarRef.value?.focus())
++  nextTick(() => calendarRef.value?.focus());
+ }
+ 
+ // ADR-0012: a picker owns its trigger, so `open` and `close` earn a place on
+@@ -155,139 +168,138 @@ defineExpose<PickerExposed>({
+   open: () => shellRef.value?.open(),
+   close: () => shellRef.value?.close(),
+   focus: (options?: FocusOptions) => shellRef.value?.focus(options),
+-})
++});
+ 
+ // ── Positioning / keepOpen ────────────────────────────────────────────────────
+ 
+ const { resolvedSide, resolvedAlign, resolvedOffset } =
+-  usePopoverPositioning(props)
+-const shouldKeepOpen = useKeepOpen(props)
+-const inputReadonly = useTypeable(props)
++  usePopoverPositioning(props);
++const shouldKeepOpen = useKeepOpen(props);
++const inputReadonly = useTypeable(props);
+ 
+ // ── Calendar state ───────────────────────────────────────────────────────────
+ 
+-const DATE_FORMAT = 'YYYY-MM-DD'
+-const selected = ref<string>('')
+-const initialValue = ref(props.modelValue || '')
++const DATE_FORMAT = "YYYY-MM-DD";
++const selected = ref<string>("");
++const initialValue = ref(props.modelValue || "");
+ 
+ const checkUnavailable = makeUnavailableCheck(
+   () => props.min,
+   () => props.max,
+-  () => props.isDateUnavailable,
+-)
++  () => props.isDateUnavailable
++);
+ 
+-const coerceToDayjs = useDateCoercion(() => props.format)
++const coerceToDayjs = useDateCoercion(() => props.format);
+ 
+ function syncFromValue(val?: string): void {
+   if (!val) {
+     if (!props.clearable) {
+-      selected.value = dayjsLocal().format(DATE_FORMAT)
++      selected.value = dayjsLocal().format(DATE_FORMAT);
+     } else {
+-      selected.value = ''
++      selected.value = "";
+     }
+-    return
++    return;
+   }
+-  const d = coerceToDayjs(val)
++  const d = coerceToDayjs(val);
+   if (!d) {
+-    selected.value = ''
+-    return
++    selected.value = "";
++    return;
+   }
+-  selected.value = d.format(DATE_FORMAT)
++  selected.value = d.format(DATE_FORMAT);
+ }
+ 
+-syncFromValue(initialValue.value)
++syncFromValue(initialValue.value);
+ 
+ function initFromValue(): void {
+-  syncFromValue(props.modelValue)
++  syncFromValue(props.modelValue);
+ }
+ 
+ watch(
+   () => props.modelValue,
+   (m) => {
+-    syncFromValue(m)
+-  },
+-)
++    syncFromValue(m);
++  }
++);
+ 
+ // ── Display ──────────────────────────────────────────────────────────────────
+ 
+ const displayLabel = computed<string>(() =>
+-  props.format ? formatter(selected.value, props.format) : selected.value,
+-)
++  selected.value ? formatter(selected.value, props.format || DATE_FORMAT) : ""
++);
+ 
+ function formatter(dateStr: string, format: string): string {
+-  const d = dayjs(dateStr)
+-  if (!d.isValid()) return dateStr
+-  return d.format(format)
++  const d = dayjs(dateStr);
++  if (!d.isValid()) return dateStr;
++  if (isPersianCalendar()) return formatCalendarDate(d);
++  return d.format(format);
+ }
+ 
+-const inputValue = ref<string>(displayLabel.value)
+-const isTyping = ref(false)
++const inputValue = ref<string>(displayLabel.value);
++const isTyping = ref(false);
+ 
+ watch(displayLabel, (val) => {
+-  if (!isTyping.value) inputValue.value = val
+-})
++  if (!isTyping.value) inputValue.value = val;
++});
+ 
+ // ── Input commit / selection ─────────────────────────────────────────────────
+ 
+ function clearSelection() {
+-  if (!selected.value) return
+-  selected.value = ''
+-  emit('update:modelValue', '')
+-  emit('change', '')
+-  initialValue.value = ''
+-  inputValue.value = ''
++  if (!selected.value) return;
++  selected.value = "";
++  emit("update:modelValue", "");
++  emit("change", "");
++  initialValue.value = "";
++  inputValue.value = "";
+ }
+ 
+ function commitInput(close = false): void {
+-  const raw = inputValue.value.trim()
++  const raw = inputValue.value.trim();
+   if (!raw) {
+     if (!props.clearable) {
+-      selectDate(dayjsLocal())
+-      if (close && !shouldKeepOpen.value) isOpen.value = false
++      selectDate(dayjsLocal());
++      if (close && !shouldKeepOpen.value) isOpen.value = false;
+     } else {
+-      clearSelection()
+-      if (close && !shouldKeepOpen.value) isOpen.value = false
++      clearSelection();
++      if (close && !shouldKeepOpen.value) isOpen.value = false;
+     }
+-    return
++    return;
+   }
+-  const d = coerceToDayjs(raw)
++  const d = parseCalendarDate(raw) ?? coerceToDayjs(raw);
+   if (d && !checkUnavailable(d)) {
+-    selectDate(d)
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
++    selectDate(d);
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
+   } else {
+-    inputValue.value = displayLabel.value
++    inputValue.value = displayLabel.value;
+   }
+ }
+ 
+ function selectDate(date: string | Date | Dayjs): void {
+-  const d = dayjs(date as any)
+-  if (!d.isValid()) return
+-  if (checkUnavailable(d)) return
+-  const prev = selected.value
+-  selected.value = d.format(DATE_FORMAT)
++  const d = dayjs(date as any);
++  if (!d.isValid()) return;
++  if (checkUnavailable(d)) return;
++  const prev = selected.value;
++  selected.value = d.format(DATE_FORMAT);
+ 
+   if (selected.value !== initialValue.value) {
+-    emit('update:modelValue', selected.value)
+-    if (selected.value !== prev) emit('change', selected.value)
+-    initialValue.value = selected.value
++    emit("update:modelValue", selected.value);
++    if (selected.value !== prev) emit("change", selected.value);
++    initialValue.value = selected.value;
+   }
+ 
+   if (!isTyping.value) {
+-    inputValue.value = props.format
+-      ? formatter(selected.value, props.format)
+-      : selected.value
++    inputValue.value = formatter(selected.value, props.format || DATE_FORMAT);
+   }
+ }
+ 
+ function handleDateCellClick(date: string | Date | Dayjs) {
+-  selectDate(date)
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  selectDate(date);
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+ }
+ 
+ function handleClearClick() {
+-  clearSelection()
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  clearSelection();
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+ }
+ </script>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateRangeCalendar.vue b/node_modules/frappe-ui/src/components/DatePicker/DateRangeCalendar.vue
+index 77fb912..2fc3052 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateRangeCalendar.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateRangeCalendar.vue
+@@ -50,39 +50,40 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { computed, ref } from 'vue'
+-import type { Dayjs } from 'dayjs/esm'
+-import { dayjs, dayjsLocal } from '../../utils/dayjs'
+-import CalendarPanel from './CalendarPanel.vue'
++import { computed, ref } from "vue";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs, dayjsLocal } from "../../utils/dayjs";
++import CalendarPanel from "./CalendarPanel.vue";
+ import {
+   makeUnavailableCheck,
+   useCalendarView,
+   useFocusedDate,
+-} from './composables'
+-import { generateRangeWeeks, rangeKey, stepRange } from './utils'
++} from "./composables";
++import { generateRangeWeeks, rangeKey, stepRange } from "./utils";
++import { shiftCalendarMonth, toCalendarDate } from "./jalali";
+ import type {
+   CalendarPanelCell,
+   CalendarPanelExposed,
+   DateRangeCalendarEmits,
+   DateRangeCalendarExposed,
+   DateRangeCalendarProps,
+-} from './calendarTypes'
+-import type { DateRangeValue } from './types'
++} from "./calendarTypes";
++import type { DateRangeValue } from "./types";
+ 
+ const props = withDefaults(defineProps<DateRangeCalendarProps>(), {
+-  todayLabel: 'Today',
++  todayLabel: "Today",
+   dualPane: false,
+-})
++});
+ 
+-const emit = defineEmits<DateRangeCalendarEmits>()
++const emit = defineEmits<DateRangeCalendarEmits>();
+ 
+ /** Selected range as `[from, to]` in `YYYY-MM-DD` format, or `[]` when empty. */
+-const model = defineModel<DateRangeValue>({ default: () => [] })
++const model = defineModel<DateRangeValue>({ default: () => [] });
+ 
+-const DATE_FORMAT = 'YYYY-MM-DD'
++const DATE_FORMAT = "YYYY-MM-DD";
+ 
+-const fromDate = computed<string>(() => model.value[0] ?? '')
+-const toDate = computed<string>(() => model.value[1] ?? '')
++const fromDate = computed<string>(() => model.value[0] ?? "");
++const toDate = computed<string>(() => model.value[1] ?? "");
+ 
+ const {
+   view,
+@@ -95,16 +96,16 @@ const {
+   selectYear,
+   focusOn,
+   resetView,
+-} = useCalendarView()
++} = useCalendarView();
+ 
+ const checkUnavailable = makeUnavailableCheck(
+   () => props.min,
+   () => props.max,
+-  () => props.isDateUnavailable,
+-)
++  () => props.isDateUnavailable
++);
+ 
+ // The date under the cursor after the first click, for previewing the range.
+-const hoverDate = ref<Dayjs | null>(null)
++const hoverDate = ref<Dayjs | null>(null);
+ 
+ function buildRangeWeeks(year: number, month: number): CalendarPanelCell[][] {
+   // Until the end is picked, the previewed date and the cells between it and
+@@ -117,32 +118,34 @@ function buildRangeWeeks(year: number, month: number): CalendarPanelCell[][] {
+     to: toDate.value,
+     preview: hoverDate.value ?? focusedDate.value,
+     isUnavailable: checkUnavailable,
+-  })
++  });
+ }
+ 
+ const weeks = computed<CalendarPanelCell[][]>(() =>
+-  buildRangeWeeks(currentYear.value, currentMonth.value),
+-)
++  buildRangeWeeks(currentYear.value, currentMonth.value)
++);
+ 
+ // ── Dual pane ────────────────────────────────────────────────────────────────
+ // The second pane renders only for the day grid. The month-year view falls
+ // back to one panel.
+ 
+-const isDualPaneActive = computed(() => props.dualPane && view.value === 'date')
++const isDualPaneActive = computed(
++  () => props.dualPane && view.value === "date"
++);
+ 
+-const rightAnchor = computed(() =>
+-  dayjs().year(currentYear.value).month(currentMonth.value).add(1, 'month'),
+-)
+-const rightYear = computed(() => rightAnchor.value.year())
+-const rightMonth = computed(() => rightAnchor.value.month())
++const rightMonthState = computed(() =>
++  shiftCalendarMonth(currentYear.value, currentMonth.value, 1)
++);
++const rightYear = computed(() => rightMonthState.value.year);
++const rightMonth = computed(() => rightMonthState.value.month);
+ const rightWeeks = computed<CalendarPanelCell[][]>(() =>
+-  buildRangeWeeks(rightYear.value, rightMonth.value),
+-)
++  buildRangeWeeks(rightYear.value, rightMonth.value)
++);
+ 
+ // ── Keyboard focus ───────────────────────────────────────────────────────────
+ 
+-const leftPanelRef = ref<CalendarPanelExposed | null>(null)
+-const rightPanelRef = ref<CalendarPanelExposed | null>(null)
++const leftPanelRef = ref<CalendarPanelExposed | null>(null);
++const rightPanelRef = ref<CalendarPanelExposed | null>(null);
+ 
+ const { focusedDate, markOwnCommit, focus } = useFocusedDate({
+   key: () => rangeKey(model.value),
+@@ -158,23 +161,25 @@ const { focusedDate, markOwnCommit, focus } = useFocusedDate({
+   focusOn,
+   resetView,
+   panels: () => [leftPanelRef.value, rightPanelRef.value],
+-})
++});
+ 
+ function onPanelNavigate(target: Dayjs): void {
+   // In dual pane the target may be visible in the other panel. Then only the
+   // focused date moves, and that panel focuses its matching cell.
+   if (isDualPaneActive.value) {
++    const targetDate = toCalendarDate(target);
+     const inLeft =
+-      target.month() === currentMonth.value &&
+-      target.year() === currentYear.value
++      targetDate.jm - 1 === currentMonth.value &&
++      targetDate.jy === currentYear.value;
+     const inRight =
+-      target.month() === rightMonth.value && target.year() === rightYear.value
++      targetDate.jm - 1 === rightMonth.value &&
++      targetDate.jy === rightYear.value;
+     if (inLeft || inRight) {
+-      focusedDate.value = target
+-      return
++      focusedDate.value = target;
++      return;
+     }
+   }
+-  focusOn(target)
++  focusOn(target);
+ }
+ 
+ // ── Selection ────────────────────────────────────────────────────────────────
+@@ -182,30 +187,30 @@ function onPanelNavigate(target: Dayjs): void {
+ // `v-model` does not emit when the range is unchanged. `select` and `today`
+ // fire on every click, so a parent can react to re-selecting the current range.
+ function commit(range: DateRangeValue): void {
+-  if (range[0] && range[1]) hoverDate.value = null
+-  markOwnCommit(rangeKey(range))
+-  model.value = range
++  if (range[0] && range[1]) hoverDate.value = null;
++  markOwnCommit(rangeKey(range));
++  model.value = range;
+ }
+ 
+ function select(date: Dayjs): void {
+-  if (checkUnavailable(date)) return
+-  const range = stepRange([fromDate.value, toDate.value], date)
+-  commit(range)
+-  emit('select', range)
++  if (checkUnavailable(date)) return;
++  const range = stepRange([fromDate.value, toDate.value], date);
++  commit(range);
++  emit("select", range);
+ }
+ 
+ function selectToday(): void {
+-  const today = dayjsLocal().startOf('day')
+-  if (checkUnavailable(today)) return
+-  const value = today.format(DATE_FORMAT)
+-  const range: DateRangeValue = [value, value]
+-  commit(range)
+-  emit('today', range)
++  const today = dayjsLocal().startOf("day");
++  if (checkUnavailable(today)) return;
++  const value = today.format(DATE_FORMAT);
++  const range: DateRangeValue = [value, value];
++  commit(range);
++  emit("today", range);
+ }
+ 
+ function onCellHover(d: Dayjs | null): void {
+-  hoverDate.value = fromDate.value && !toDate.value ? d : null
++  hoverDate.value = fromDate.value && !toDate.value ? d : null;
+ }
+ 
+-defineExpose<DateRangeCalendarExposed>({ focus })
++defineExpose<DateRangeCalendarExposed>({ focus });
+ </script>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
+index bd682fa..2ef3058 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
+@@ -16,7 +16,7 @@
+     :required="props.required"
+     :size="props.size"
+     :variant="props.variant"
+-    :placeholder="props.placeholder"
++    :placeholder="resolvedPlaceholder"
+     :disabled="props.disabled"
+     :readonly="inputReadonly"
+     :display-label="displayLabel"
+@@ -44,7 +44,7 @@
+         <aside
+           v-if="$slots.actions"
+           data-slot="actions"
+-          aria-label="Shortcuts"
++          :aria-label="translateLabel('Shortcuts')"
+           class="flex flex-col p-2 gap-0.5"
+         >
+           <slot
+@@ -66,7 +66,7 @@
+           ref="calendarRef"
+           :model-value="[fromDate, toDate]"
+           :dual-pane="props.dualPane"
+-          today-label="Today"
++          :today-label="resolvedTodayLabel"
+           :min="props.min"
+           :max="props.max"
+           :is-date-unavailable="props.isDateUnavailable"
+@@ -79,82 +79,92 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { ref, computed, nextTick, watch } from 'vue'
+-import { dayjs } from '../../utils/dayjs'
+-import { orderRange, rangeKey, stepRange } from './utils'
+-import DateRangeCalendar from './DateRangeCalendar.vue'
+-import PickerShell from '../shared/picker/PickerShell.vue'
++import { ref, computed, getCurrentInstance, nextTick, watch } from "vue";
++import { dayjs } from "../../utils/dayjs";
++import { orderRange, rangeKey, stepRange } from "./utils";
++import DateRangeCalendar from "./DateRangeCalendar.vue";
++import PickerShell from "../shared/picker/PickerShell.vue";
+ import {
+   usePopoverPositioning,
+   useKeepOpen,
+   useTypeable,
+   useDateCoercion,
+   makeUnavailableCheck,
+-} from './composables'
+-import type { Dayjs } from 'dayjs/esm'
++} from "./composables";
++import type { Dayjs } from "dayjs/esm";
+ import type {
+   DateRangePickerProps,
+   DateRangePickerEmits,
+   DateRangePickerSlots,
+   DateRangeValue,
+-} from './types'
+-import type { DateRangeCalendarExposed } from './calendarTypes'
+-import type {
+-  PickerExposed,
+-  PickerShellExposed,
+-} from '../shared/picker/types'
++} from "./types";
++import type { DateRangeCalendarExposed } from "./calendarTypes";
++import {
++  formatCalendarDate,
++  formatCalendarRange,
++  isPersianCalendar,
++  parseCalendarDate,
++} from "./jalali";
++import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
+ 
+ const props = withDefaults(defineProps<DateRangePickerProps>(), {
+   modelValue: () => [],
+-  variant: 'subtle',
+-  placeholder: 'Select range',
++  variant: "subtle",
+   typeable: true,
+   disabled: false,
+   clearable: true,
+   dualPane: false,
+   openOnFocus: false,
+   openOnClick: true,
+-})
+-const emit = defineEmits<DateRangePickerEmits>()
+-
+-defineSlots<DateRangePickerSlots>()
++});
++const emit = defineEmits<DateRangePickerEmits>();
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
++const translateLabel = (message: string) => translate?.(message) ?? message;
++const resolvedPlaceholder = computed(() =>
++  props.placeholder ?? translateLabel("Select range")
++);
++const resolvedTodayLabel = computed(() =>
++  props.todayLabel ?? translateLabel("Today")
++);
++
++defineSlots<DateRangePickerSlots>();
+ 
+ // ── Popover open state ───────────────────────────────────────────────────────
+ 
+-const shellRef = ref<PickerShellExposed | null>(null)
++const shellRef = ref<PickerShellExposed | null>(null);
+ // Seeded from the prop, so a parent that mounts the picker with `open` already
+ // true gets an open panel. The watch below only sees later changes.
+-const isOpen = ref(props.open === true)
++const isOpen = ref(props.open === true);
+ 
+ watch(
+   () => props.open,
+   (val) => {
+-    if (typeof val === 'boolean' && val !== isOpen.value) {
+-      isOpen.value = val
++    if (typeof val === "boolean" && val !== isOpen.value) {
++      isOpen.value = val;
+     }
+-  },
+-)
++  }
++);
+ 
+ watch(isOpen, (val) => {
+-  emit('update:open', val)
+-})
++  emit("update:open", val);
++});
+ 
+ function onShellOpen() {
+-  initFromValue()
++  initFromValue();
+ }
+ 
+ function onShellClose() {
+   if (isTyping.value) {
+-    commitInput()
+-    isTyping.value = false
++    commitInput();
++    isTyping.value = false;
+   }
+ }
+ 
+-const calendarRef = ref<DateRangeCalendarExposed | null>(null)
++const calendarRef = ref<DateRangeCalendarExposed | null>(null);
+ 
+ function onShellRequestFocus() {
+   // The calendar only mounts with the popover, so wait a tick for it.
+-  nextTick(() => calendarRef.value?.focus())
++  nextTick(() => calendarRef.value?.focus());
+ }
+ 
+ // ADR-0012: a picker owns its trigger, so `open` and `close` earn a place on
+@@ -163,174 +173,179 @@ defineExpose<PickerExposed>({
+   open: () => shellRef.value?.open(),
+   close: () => shellRef.value?.close(),
+   focus: (options?: FocusOptions) => shellRef.value?.focus(options),
+-})
++});
+ 
+ // ── Positioning / keepOpen ────────────────────────────────────────────────────
+ 
+ const { resolvedSide, resolvedAlign, resolvedOffset } =
+-  usePopoverPositioning(props)
+-const shouldKeepOpen = useKeepOpen(props)
+-const inputReadonly = useTypeable(props)
++  usePopoverPositioning(props);
++const shouldKeepOpen = useKeepOpen(props);
++const inputReadonly = useTypeable(props);
+ 
+ // ── Range state ──────────────────────────────────────────────────────────────
+ 
+-const DATE_FORMAT = 'YYYY-MM-DD'
+-const fromDate = ref<string>('')
+-const toDate = ref<string>('')
++const DATE_FORMAT = "YYYY-MM-DD";
++const fromDate = ref<string>("");
++const toDate = ref<string>("");
+ 
+ const checkUnavailable = makeUnavailableCheck(
+   () => props.min,
+   () => props.max,
+-  () => props.isDateUnavailable,
+-)
++  () => props.isDateUnavailable
++);
+ 
+-const coerceToDayjs = useDateCoercion(() => props.format)
++const coerceToDayjs = useDateCoercion(() => props.format);
+ 
+ // ── Value parsing ────────────────────────────────────────────────────────────
+ 
+ function normalizeIncoming(val?: string[] | null): [string, string] {
+-  if (!val || !val.length) return ['', '']
+-  const from = coerceToDayjs(val[0] || '')
+-  const to = coerceToDayjs(val[1] || '')
+-  return [from?.format(DATE_FORMAT) || '', to?.format(DATE_FORMAT) || '']
++  if (!val || !val.length) return ["", ""];
++  const from = coerceToDayjs(val[0] || "");
++  const to = coerceToDayjs(val[1] || "");
++  return [from?.format(DATE_FORMAT) || "", to?.format(DATE_FORMAT) || ""];
+ }
+ 
+ function parseRangeInput(raw: string): [Dayjs | null, Dayjs | null] {
+-  if (!raw.trim()) return [null, null]
+-  const normalized = raw.replace(/\s+to\s+/i, ',').replace(/\s+-\s+/g, ',')
++  if (!raw.trim()) return [null, null];
++  const normalized = raw.replace(/\s+to\s+/i, ",").replace(/\s+-\s+/g, ",");
+   const parts = normalized
+-    .split(',')
++    .split(/,|\s+to\s+|\s+تا\s+|\s+[–—-]\s+/i)
+     .map((p) => p.trim())
+-    .filter(Boolean)
+-  if (!parts.length) return [null, null]
+-  return [coerceToDayjs(parts[0]), coerceToDayjs(parts[1])]
++    .filter(Boolean);
++  if (!parts.length) return [null, null];
++  return [
++    parseCalendarDate(parts[0]) ?? coerceToDayjs(parts[0]),
++    parseCalendarDate(parts[1] || "") ?? coerceToDayjs(parts[1] || ""),
++  ];
+ }
+ 
+ function pickIncoming(): string[] {
+-  return props.modelValue && props.modelValue.length ? props.modelValue : []
++  return props.modelValue && props.modelValue.length ? props.modelValue : [];
+ }
+ 
+ function syncFromValue(val?: string[]): void {
+-  const [f, t] = normalizeIncoming(val)
+-  fromDate.value = f
+-  toDate.value = t
++  const [f, t] = normalizeIncoming(val);
++  fromDate.value = f;
++  toDate.value = t;
+ }
+ 
+-const initialValue = ref<string>('')
+-syncFromValue(pickIncoming())
+-initialValue.value = rangeKey([fromDate.value, toDate.value])
++const initialValue = ref<string>("");
++syncFromValue(pickIncoming());
++initialValue.value = rangeKey([fromDate.value, toDate.value]);
+ 
+ function initFromValue(): void {
+-  syncFromValue(pickIncoming())
++  syncFromValue(pickIncoming());
+ }
+ 
+ watch(
+   () => props.modelValue,
+   () => {
+-    syncFromValue(pickIncoming())
+-  },
+-)
++    syncFromValue(pickIncoming());
++  }
++);
+ 
+ // ── Display ──────────────────────────────────────────────────────────────────
+ 
+ const displayLabel = computed<string>(() =>
+-  formatDisplay(fromDate.value, toDate.value),
+-)
++  formatDisplay(fromDate.value, toDate.value)
++);
+ 
+ function formatOne(dateStr: string): string {
+-  if (!dateStr) return ''
+-  const d = dayjs(dateStr)
+-  if (!d.isValid()) return dateStr
+-  return props.format ? d.format(props.format) : dateStr
++  if (!dateStr) return "";
++  const d = dayjs(dateStr);
++  if (!d.isValid()) return dateStr;
++  if (isPersianCalendar()) return formatCalendarDate(d);
++  return props.format ? d.format(props.format) : dateStr;
+ }
+ function formatDisplay(from: string, to: string): string {
+-  if (!from && !to) return ''
+-  if (from && !to) return formatOne(from)
+-  return `${formatOne(from)} to ${formatOne(to)}`
++  if (!from && !to) return "";
++  if (from && !to) return formatOne(from);
++  if (isPersianCalendar()) return formatCalendarRange(dayjs(from), dayjs(to));
++  return `${formatOne(from)} to ${formatOne(to)}`;
+ }
+ 
+-const inputValue = ref<string>(displayLabel.value)
+-const isTyping = ref(false)
++const inputValue = ref<string>(displayLabel.value);
++const isTyping = ref(false);
+ watch(displayLabel, (val) => {
+-  if (!isTyping.value) inputValue.value = val
+-})
++  if (!isTyping.value) inputValue.value = val;
++});
+ 
+ // ── Input commit / selection ─────────────────────────────────────────────────
+ 
+ function commitInput(close = false): void {
+-  const raw = inputValue.value.trim()
++  const raw = inputValue.value.trim();
+   if (!raw) {
+-    clearSelection()
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
+-    return
++    clearSelection();
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
++    return;
+   }
+-  const [f, t] = parseRangeInput(raw)
+-  if (f && !checkUnavailable(f)) fromDate.value = f.format(DATE_FORMAT)
+-  if (t && !checkUnavailable(t)) toDate.value = t.format(DATE_FORMAT)
+-  else if (!t) toDate.value = ''
+-  setOrdered([fromDate.value, toDate.value])
+-  emitIfChanged()
+-  inputValue.value = displayLabel.value
++  const [f, t] = parseRangeInput(raw);
++  if (f && !checkUnavailable(f)) fromDate.value = f.format(DATE_FORMAT);
++  if (t && !checkUnavailable(t)) toDate.value = t.format(DATE_FORMAT);
++  else if (!t) toDate.value = "";
++  setOrdered([fromDate.value, toDate.value]);
++  emitIfChanged();
++  inputValue.value = displayLabel.value;
+   if (close && !shouldKeepOpen.value && fromDate.value && toDate.value) {
+-    isOpen.value = false
++    isOpen.value = false;
+   }
+ }
+ 
+ // The calendar reports every click, including the half-open range after the
+ // first one. Emit and close only once both ends are set.
+ function handleRangeSelect(range: DateRangeValue) {
+-  fromDate.value = range[0] ?? ''
+-  toDate.value = range[1] ?? ''
++  fromDate.value = range[0] ?? "";
++  toDate.value = range[1] ?? "";
+   if (fromDate.value && toDate.value) {
+-    emitIfChanged()
+-    if (!shouldKeepOpen.value) isOpen.value = false
++    emitIfChanged();
++    if (!shouldKeepOpen.value) isOpen.value = false;
+   }
+-  isTyping.value = false
++  isTyping.value = false;
+ }
+ 
+ function handleDateCellClick(date: string | Date | Dayjs) {
+-  const d = dayjs(date as any)
+-  if (!d.isValid() || checkUnavailable(d)) return
+-  handleRangeSelect(stepRange([fromDate.value, toDate.value], d))
++  const d = dayjs(date as any);
++  if (!d.isValid() || checkUnavailable(d)) return;
++  handleRangeSelect(stepRange([fromDate.value, toDate.value], d));
+ }
+ 
+ function setOrdered(range: [string, string]): void {
+-  const [from, to] = orderRange(range)
+-  fromDate.value = from
+-  toDate.value = to
++  const [from, to] = orderRange(range);
++  fromDate.value = from;
++  toDate.value = to;
+ }
+ 
+ function emitIfChanged() {
+-  const next = rangeKey([fromDate.value, toDate.value])
+-  if (next === initialValue.value) return
++  const next = rangeKey([fromDate.value, toDate.value]);
++  if (next === initialValue.value) return;
+   const payload: DateRangeValue =
+-    fromDate.value && toDate.value ? [fromDate.value, toDate.value] : []
+-  emit('update:modelValue', payload)
+-  emit('change', payload)
+-  initialValue.value = next
++    fromDate.value && toDate.value ? [fromDate.value, toDate.value] : [];
++  emit("update:modelValue", payload);
++  emit("change", payload);
++  initialValue.value = next;
+ }
+ 
+ function clearSelection() {
+-  if (!fromDate.value && !toDate.value) return
+-  fromDate.value = ''
+-  toDate.value = ''
+-  emitIfChanged()
+-  inputValue.value = ''
++  if (!fromDate.value && !toDate.value) return;
++  fromDate.value = "";
++  toDate.value = "";
++  emitIfChanged();
++  inputValue.value = "";
+ }
+ 
+ function handleClearClick() {
+-  clearSelection()
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  clearSelection();
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+ }
+ 
+ function handleSetRange(range: [string | Date | Dayjs, string | Date | Dayjs]) {
+-  const a = dayjs(range[0])
+-  const b = dayjs(range[1])
+-  if (!a.isValid() || !b.isValid()) return
+-  if (checkUnavailable(a) || checkUnavailable(b)) return
+-  setOrdered([a.format(DATE_FORMAT), b.format(DATE_FORMAT)])
+-  emitIfChanged()
+-  isTyping.value = false
++  const a = dayjs(range[0]);
++  const b = dayjs(range[1]);
++  if (!a.isValid() || !b.isValid()) return;
++  if (checkUnavailable(a) || checkUnavailable(b)) return;
++  setOrdered([a.format(DATE_FORMAT), b.format(DATE_FORMAT)]);
++  emitIfChanged();
++  isTyping.value = false;
+ }
+ </script>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
+index ca8ae34..9dd65e5 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
+@@ -16,7 +16,7 @@
+     :required="props.required"
+     :size="props.size"
+     :variant="props.variant"
+-    :placeholder="props.placeholder"
++    :placeholder="resolvedPlaceholder"
+     :disabled="props.disabled"
+     :readonly="inputReadonly"
+     :display-label="displayLabel"
+@@ -46,7 +46,7 @@
+         <aside
+           v-if="$slots.actions"
+           data-slot="actions"
+-          aria-label="Shortcuts"
++          :aria-label="translateLabel('Shortcuts')"
+           class="flex flex-col p-2 gap-0.5"
+         >
+           <slot
+@@ -67,7 +67,7 @@
+           <DateCalendar
+             ref="calendarRef"
+             :model-value="selectedDate"
+-            today-label="Now"
++            :today-label="resolvedTodayLabel"
+             :min="resolvedMin"
+             :max="resolvedMax"
+             :is-date-unavailable="props.isDateUnavailable"
+@@ -81,7 +81,7 @@
+               :typeable="props.typeable"
+               side="bottom"
+               align="start"
+-              placeholder="Select time"
++              :placeholder="resolvedTimePlaceholder"
+               :min="computedMinTime"
+               :max="computedMaxTime"
+               @change="onTimeChange"
+@@ -94,71 +94,81 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { ref, computed, nextTick, watch } from 'vue'
+-import TimePicker from '../TimePicker/TimePicker.vue'
+-import { dayjs, dayjsLocal, dayjsSystem } from '../../utils/dayjs'
+-import DateCalendar from './DateCalendar.vue'
+-import PickerShell from '../shared/picker/PickerShell.vue'
++import { ref, computed, getCurrentInstance, nextTick, watch } from "vue";
++import TimePicker from "../TimePicker/TimePicker.vue";
++import { dayjs, dayjsLocal, dayjsSystem } from "../../utils/dayjs";
++import DateCalendar from "./DateCalendar.vue";
++import PickerShell from "../shared/picker/PickerShell.vue";
+ import {
+   usePopoverPositioning,
+   useKeepOpen,
+   useTypeable,
+   useDateCoercion,
+-} from './composables'
+-import type { Dayjs } from 'dayjs/esm'
++} from "./composables";
++import type { Dayjs } from "dayjs/esm";
+ import type {
+   DateTimePickerProps,
+   DateTimePickerEmits,
+   DateTimePickerSlots,
+-} from './types'
+-import type { DateCalendarExposed } from './calendarTypes'
+-import type {
+-  PickerExposed,
+-  PickerShellExposed,
+-} from '../shared/picker/types'
++} from "./types";
++import type { DateCalendarExposed } from "./calendarTypes";
++import {
++  formatCalendarDateTime,
++  isPersianCalendar,
++  parseCalendarDateTime,
++} from "./jalali";
++import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
+ 
+ const props = withDefaults(defineProps<DateTimePickerProps>(), {
+-  modelValue: '',
+-  variant: 'subtle',
+-  placeholder: 'Select date & time',
++  modelValue: "",
++  variant: "subtle",
+   typeable: true,
+   disabled: false,
+   clearable: true,
+   openOnFocus: false,
+   openOnClick: true,
+-})
+-const emit = defineEmits<DateTimePickerEmits>()
+-
+-defineSlots<DateTimePickerSlots>()
++});
++const emit = defineEmits<DateTimePickerEmits>();
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
++const translateLabel = (message: string) => translate?.(message) ?? message;
++const resolvedPlaceholder = computed(() =>
++  props.placeholder ?? translateLabel("Select date & time")
++);
++const resolvedTimePlaceholder = computed(() => translateLabel("Select time"));
++const resolvedTodayLabel = computed(() =>
++  props.todayLabel ?? translateLabel("Now")
++);
++
++defineSlots<DateTimePickerSlots>();
+ 
+ // ── Popover open state ───────────────────────────────────────────────────────
+ 
+-const shellRef = ref<PickerShellExposed | null>(null)
++const shellRef = ref<PickerShellExposed | null>(null);
+ // Seeded from the prop, so a parent that mounts the picker with `open` already
+ // true gets an open panel. The watch below only sees later changes.
+-const isOpen = ref(props.open === true)
++const isOpen = ref(props.open === true);
+ 
+ watch(
+   () => props.open,
+   (val) => {
+-    if (typeof val === 'boolean' && val !== isOpen.value) {
+-      isOpen.value = val
++    if (typeof val === "boolean" && val !== isOpen.value) {
++      isOpen.value = val;
+     }
+-  },
+-)
++  }
++);
+ 
+ watch(isOpen, (val) => {
+-  emit('update:open', val)
+-})
++  emit("update:open", val);
++});
+ 
+ function onShellOpen() {
+-  initFromValue()
++  initFromValue();
+ }
+ 
+ function onShellClose() {
+   if (isTyping.value) {
+-    commitInput()
+-    isTyping.value = false
++    commitInput();
++    isTyping.value = false;
+   }
+ }
+ 
+@@ -168,55 +178,55 @@ defineExpose<PickerExposed>({
+   open: () => shellRef.value?.open(),
+   close: () => shellRef.value?.close(),
+   focus: (options?: FocusOptions) => shellRef.value?.focus(options),
+-})
++});
+ 
+-const calendarRef = ref<DateCalendarExposed | null>(null)
+-const timePickerRef = ref<{ focus: () => void } | null>(null)
++const calendarRef = ref<DateCalendarExposed | null>(null);
++const timePickerRef = ref<{ focus: () => void } | null>(null);
+ 
+ function onShellRequestFocus() {
+   // The calendar only mounts with the popover, so wait a tick for it.
+-  nextTick(() => calendarRef.value?.focus())
++  nextTick(() => calendarRef.value?.focus());
+ }
+ 
+ // ── Positioning / keepOpen ────────────────────────────────────────────────────
+ 
+ const { resolvedSide, resolvedAlign, resolvedOffset } =
+-  usePopoverPositioning(props)
+-const shouldKeepOpen = useKeepOpen(props)
+-const inputReadonly = useTypeable(props)
++  usePopoverPositioning(props);
++const shouldKeepOpen = useKeepOpen(props);
++const inputReadonly = useTypeable(props);
+ 
+ // ── Calendar state ───────────────────────────────────────────────────────────
+ 
+-const DATE_FORMAT = 'YYYY-MM-DD'
+-const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
++const DATE_FORMAT = "YYYY-MM-DD";
++const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+ 
+-const selectedDate = ref<string>('')
+-const timeValue = ref<string>('')
++const selectedDate = ref<string>("");
++const timeValue = ref<string>("");
+ 
+-const initialValue = ref(props.modelValue || '')
++const initialValue = ref(props.modelValue || "");
+ 
+-const coerceToDayjs = useDateCoercion(() => props.format)
++const coerceToDayjs = useDateCoercion(() => props.format);
+ 
+ // ── Constraints ──────────────────────────────────────────────────────────────
+ 
+ // `min`/`max` accept either a date (`YYYY-MM-DD`) or a date-time
+ // (`YYYY-MM-DD HH:mm:ss`); date-only values parse as midnight, which gives
+ // day-level semantics for free under the second-level check below.
+-const resolvedMin = computed<string | undefined>(() => props.min)
+-const resolvedMax = computed<string | undefined>(() => props.max)
++const resolvedMin = computed<string | undefined>(() => props.min);
++const resolvedMax = computed<string | undefined>(() => props.max);
+ 
+ const minDT = computed<Dayjs | null>(() =>
+-  resolvedMin.value ? coerceToDayjs(resolvedMin.value) : null,
+-)
++  resolvedMin.value ? coerceToDayjs(resolvedMin.value) : null
++);
+ const maxDT = computed<Dayjs | null>(() =>
+-  resolvedMax.value ? coerceToDayjs(resolvedMax.value) : null,
+-)
++  resolvedMax.value ? coerceToDayjs(resolvedMax.value) : null
++);
+ 
+ function checkUnavailable(d: Dayjs): boolean {
+-  if (props.isDateUnavailable?.(d)) return true
+-  if (minDT.value && d.endOf('day').isBefore(minDT.value)) return true
+-  if (maxDT.value && d.startOf('day').isAfter(maxDT.value)) return true
+-  return false
++  if (props.isDateUnavailable?.(d)) return true;
++  if (minDT.value && d.endOf("day").isBefore(minDT.value)) return true;
++  if (maxDT.value && d.startOf("day").isAfter(maxDT.value)) return true;
++  return false;
+ }
+ 
+ // ── Value sync ───────────────────────────────────────────────────────────────
+@@ -224,170 +234,172 @@ function checkUnavailable(d: Dayjs): boolean {
+ function syncFromValue(val?: string): void {
+   if (!val) {
+     if (!props.clearable) {
+-      const now = dayjsLocal()
+-      selectedDate.value = now.format(DATE_FORMAT)
+-      timeValue.value = now.format('HH:mm:ss')
++      const now = dayjsLocal();
++      selectedDate.value = now.format(DATE_FORMAT);
++      timeValue.value = now.format("HH:mm:ss");
+     } else {
+-      selectedDate.value = ''
+-      timeValue.value = ''
++      selectedDate.value = "";
++      timeValue.value = "";
+     }
+-    return
++    return;
+   }
+-  const d = coerceToDayjs(val)
++  const d = coerceToDayjs(val);
+   if (!d) {
+-    selectedDate.value = ''
+-    timeValue.value = ''
+-    return
++    selectedDate.value = "";
++    timeValue.value = "";
++    return;
+   }
+-  selectedDate.value = d.format(DATE_FORMAT)
+-  timeValue.value = d.format('HH:mm:ss')
++  selectedDate.value = d.format(DATE_FORMAT);
++  timeValue.value = d.format("HH:mm:ss");
+ }
+ 
+-syncFromValue(initialValue.value)
++syncFromValue(initialValue.value);
+ 
+ function initFromValue(): void {
+-  syncFromValue(props.modelValue)
++  syncFromValue(props.modelValue);
+ }
+ 
+ watch(
+   () => props.modelValue,
+   (m) => {
+-    syncFromValue(m)
+-  },
+-)
++    syncFromValue(m);
++  }
++);
+ 
+ // ── Display ──────────────────────────────────────────────────────────────────
+ 
+ const combinedValue = computed<string>(() => {
+-  if (!selectedDate.value) return ''
+-  const base = `${selectedDate.value} ${timeValue.value || '00:00:00'}`
+-  const local = dayjs(base)
+-  if (!local.isValid()) return ''
+-  return local.format(DATE_TIME_FORMAT)
+-})
++  if (!selectedDate.value) return "";
++  const base = `${selectedDate.value} ${timeValue.value || "00:00:00"}`;
++  const local = dayjs(base);
++  if (!local.isValid()) return "";
++  return local.format(DATE_TIME_FORMAT);
++});
+ 
+ const displayLabel = computed<string>(() => {
+-  if (!combinedValue.value) return ''
+-  if (props.format) return dayjs(combinedValue.value).format(props.format)
+-  return combinedValue.value
+-})
+-
+-const inputValue = ref<string>(displayLabel.value)
+-const isTyping = ref(false)
++  if (!combinedValue.value) return "";
++  if (isPersianCalendar())
++    return formatCalendarDateTime(dayjs(combinedValue.value));
++  if (props.format) return dayjs(combinedValue.value).format(props.format);
++  return combinedValue.value;
++});
++
++const inputValue = ref<string>(displayLabel.value);
++const isTyping = ref(false);
+ watch(displayLabel, (val) => {
+-  if (!isTyping.value) inputValue.value = val
+-})
++  if (!isTyping.value) inputValue.value = val;
++});
+ 
+ const computedMinTime = computed<string>(() => {
+-  if (!minDT.value || !selectedDate.value) return ''
+-  if (dayjs(selectedDate.value).isSame(minDT.value, 'day'))
+-    return minDT.value.format('HH:mm:ss')
+-  return ''
+-})
++  if (!minDT.value || !selectedDate.value) return "";
++  if (dayjs(selectedDate.value).isSame(minDT.value, "day"))
++    return minDT.value.format("HH:mm:ss");
++  return "";
++});
+ const computedMaxTime = computed<string>(() => {
+-  if (!maxDT.value || !selectedDate.value) return ''
+-  if (dayjs(selectedDate.value).isSame(maxDT.value, 'day'))
+-    return maxDT.value.format('HH:mm:ss')
+-  return ''
+-})
++  if (!maxDT.value || !selectedDate.value) return "";
++  if (dayjs(selectedDate.value).isSame(maxDT.value, "day"))
++    return maxDT.value.format("HH:mm:ss");
++  return "";
++});
+ 
+ watch([computedMinTime, computedMaxTime, timeValue, selectedDate], () => {
+-  if (!selectedDate.value || !timeValue.value) return
+-  const cur = dayjs(`${selectedDate.value} ${timeValue.value}`)
++  if (!selectedDate.value || !timeValue.value) return;
++  const cur = dayjs(`${selectedDate.value} ${timeValue.value}`);
+   if (minDT.value && cur.isBefore(minDT.value))
+-    timeValue.value = computedMinTime.value || timeValue.value
++    timeValue.value = computedMinTime.value || timeValue.value;
+   if (maxDT.value && cur.isAfter(maxDT.value))
+-    timeValue.value = computedMaxTime.value || timeValue.value
+-})
++    timeValue.value = computedMaxTime.value || timeValue.value;
++});
+ 
+ // ── Input commit / selection ─────────────────────────────────────────────────
+ 
+ function commitInput(close = false): void {
+-  const raw = inputValue.value.trim()
++  const raw = inputValue.value.trim();
+   if (!raw) {
+     if (!props.clearable) {
+-      const now = dayjsLocal()
+-      selectDate(now)
+-      timeValue.value = now.format('HH:mm:ss')
+-      emitChange()
++      const now = dayjsLocal();
++      selectDate(now);
++      timeValue.value = now.format("HH:mm:ss");
++      emitChange();
+     } else {
+-      clearSelection()
++      clearSelection();
+     }
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
+-    return
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
++    return;
+   }
+-  const parsed = coerceToDayjs(raw)
++  const parsed = parseCalendarDateTime(raw) ?? coerceToDayjs(raw);
+   if (parsed && !checkUnavailable(parsed)) {
+-    selectDate(parsed)
+-    timeValue.value = parsed.format('HH:mm:ss')
+-    emitChange()
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
++    selectDate(parsed);
++    timeValue.value = parsed.format("HH:mm:ss");
++    emitChange();
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
+   } else {
+-    inputValue.value = displayLabel.value
++    inputValue.value = displayLabel.value;
+   }
+ }
+ 
+ function selectDate(date: string | Date | Dayjs): void {
+-  const d = dayjs(date as any)
+-  if (!d.isValid() || checkUnavailable(d)) return
+-  selectedDate.value = d.format(DATE_FORMAT)
++  const d = dayjs(date as any);
++  if (!d.isValid() || checkUnavailable(d)) return;
++  selectedDate.value = d.format(DATE_FORMAT);
+ }
+ 
+ function handleDateCellClick(date: string | Date | Dayjs) {
+-  selectDate(date)
+-  emitChange()
+-  isTyping.value = false
++  selectDate(date);
++  emitChange();
++  isTyping.value = false;
+   // A date alone is half a selection. Keep the popover open and move focus to
+   // the TimePicker.
+-  nextTick(() => timePickerRef.value?.focus?.())
++  nextTick(() => timePickerRef.value?.focus?.());
+ }
+ 
+ function onTimeChange(val: string) {
+-  timeValue.value = val
+-  isTyping.value = false
+-  if (selectedDate.value) emitChange()
++  timeValue.value = val;
++  isTyping.value = false;
++  if (selectedDate.value) emitChange();
+ }
+ 
+ function emitChange() {
+   if (!selectedDate.value) {
+-    clearSelection()
+-    return
++    clearSelection();
++    return;
+   }
+ 
+-  const localDateTime = combinedValue.value
+-  const systemDateTime = dayjsSystem(localDateTime).format(DATE_TIME_FORMAT)
++  const localDateTime = combinedValue.value;
++  const systemDateTime = dayjsSystem(localDateTime).format(DATE_TIME_FORMAT);
+ 
+   if (systemDateTime !== initialValue.value) {
+-    emit('update:modelValue', systemDateTime)
+-    emit('change', systemDateTime)
+-    initialValue.value = systemDateTime
++    emit("update:modelValue", systemDateTime);
++    emit("change", systemDateTime);
++    initialValue.value = systemDateTime;
+   }
+ 
+-  if (!isTyping.value) inputValue.value = displayLabel.value
++  if (!isTyping.value) inputValue.value = displayLabel.value;
+ }
+ 
+ function clearSelection() {
+-  if (!selectedDate.value && !timeValue.value) return
+-  selectedDate.value = ''
+-  timeValue.value = ''
+-  emit('update:modelValue', '')
+-  emit('change', '')
+-  initialValue.value = ''
+-  inputValue.value = ''
++  if (!selectedDate.value && !timeValue.value) return;
++  selectedDate.value = "";
++  timeValue.value = "";
++  emit("update:modelValue", "");
++  emit("change", "");
++  initialValue.value = "";
++  inputValue.value = "";
+ }
+ 
+ // Now commits date and time together, in one emit.
+ function handleNowClick(date: string) {
+-  selectDate(date)
+-  timeValue.value = dayjsLocal().format('HH:mm:ss')
+-  emitChange()
+-  isTyping.value = false
+-  if (!shouldKeepOpen.value) isOpen.value = false
++  selectDate(date);
++  timeValue.value = dayjsLocal().format("HH:mm:ss");
++  emitChange();
++  isTyping.value = false;
++  if (!shouldKeepOpen.value) isOpen.value = false;
+ }
+ 
+ function handleClearClick() {
+-  clearSelection()
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  clearSelection();
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+ }
+ </script>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/composables.ts b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
+index 553986b..438efd8 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/composables.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
+@@ -1,61 +1,62 @@
+-import { ref, computed, watch } from 'vue'
+-import type { Dayjs } from 'dayjs/esm'
+-import { dayjs } from '../../utils/dayjs'
+-import { generateWeeks, monthStart, getDateValue } from './utils'
+-import type { CalendarPanelExposed } from './calendarTypes'
++import { ref, computed, watch } from "vue";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs } from "../../utils/dayjs";
++import { generateWeeks, monthStart, getDateValue } from "./utils";
++import type { CalendarPanelExposed } from "./calendarTypes";
++import { shiftCalendarMonth, toCalendarDate } from "./jalali";
+ import type {
+   CommonDatePickerProps,
+   PopoverAlign,
+   PopoverSide,
+   DatePickerViewMode as ViewMode,
+-} from './types'
++} from "./types";
+ 
+ // View + month/year navigation state shared by all three pickers.
+ export function useCalendarView() {
+-  const view = ref<ViewMode>('date')
+-  const currentYear = ref<number>(dayjs().year())
+-  const currentMonth = ref<number>(dayjs().month())
++  const view = ref<ViewMode>("date");
++  const today = dayjs();
++  const initial = toCalendarDate(today);
++  const currentYear = ref<number>(initial.jy);
++  const currentMonth = ref<number>(initial.jm - 1);
+ 
+   // Prev/next only navigate months in the day grid. The month-year split view
+   // scrolls instead of paging, so it has no prev/next controls.
+   function prev(): void {
+-    const m = monthStart(currentYear.value, currentMonth.value).subtract(
+-      1,
+-      'month',
+-    )
+-    currentYear.value = m.year()
+-    currentMonth.value = m.month()
++    const value = shiftCalendarMonth(currentYear.value, currentMonth.value, -1);
++    currentYear.value = value.year;
++    currentMonth.value = value.month;
+   }
+ 
+   function next(): void {
+-    const m = monthStart(currentYear.value, currentMonth.value).add(1, 'month')
+-    currentYear.value = m.year()
+-    currentMonth.value = m.month()
++    const value = shiftCalendarMonth(currentYear.value, currentMonth.value, 1);
++    currentYear.value = value.year;
++    currentMonth.value = value.month;
+   }
+ 
+   // Toggle between the day grid and the month-year split view.
+   function cycleView(): void {
+-    view.value = view.value === 'date' ? 'monthYear' : 'date'
++    view.value = view.value === "date" ? "monthYear" : "date";
+   }
+ 
+   // Picking a month commits the choice and returns to the day grid.
+   function selectMonth(i: number): void {
+-    currentMonth.value = i
+-    view.value = 'date'
++    currentMonth.value = i;
++    view.value = "date";
+   }
+ 
+   // Picking a year stays in the split view so the user can then pick a month.
+   function selectYear(y: number): void {
+-    currentYear.value = y
++    currentYear.value = y;
+   }
+ 
+   function focusOn(d: Dayjs): void {
+-    currentYear.value = d.year()
+-    currentMonth.value = d.month()
++    const value = toCalendarDate(d);
++    currentYear.value = value.jy;
++    currentMonth.value = value.jm - 1;
+   }
+ 
+   function resetView(): void {
+-    view.value = 'date'
++    view.value = "date";
+   }
+ 
+   return {
+@@ -69,15 +70,15 @@ export function useCalendarView() {
+     selectYear,
+     focusOn,
+     resetView,
+-  }
++  };
+ }
+ 
+ // Positioning resolution: `side`/`align`/`offset`.
+ export function usePopoverPositioning(props: CommonDatePickerProps) {
+-  const resolvedSide = computed<PopoverSide>(() => props.side ?? 'bottom')
+-  const resolvedAlign = computed<PopoverAlign>(() => props.align ?? 'start')
+-  const resolvedOffset = computed(() => props.offset ?? 4)
+-  return { resolvedSide, resolvedAlign, resolvedOffset }
++  const resolvedSide = computed<PopoverSide>(() => props.side ?? "bottom");
++  const resolvedAlign = computed<PopoverAlign>(() => props.align ?? "start");
++  const resolvedOffset = computed(() => props.offset ?? 4);
++  return { resolvedSide, resolvedAlign, resolvedOffset };
+ }
+ 
+ // Returns the readonly state to apply to the underlying TextInput (the
+@@ -85,85 +86,85 @@ export function usePopoverPositioning(props: CommonDatePickerProps) {
+ // the trigger element — `typeable` is the picker-level vocabulary that wraps
+ // it.
+ export function useTypeable(props: { typeable?: boolean }) {
+-  return computed<boolean>(() => props.typeable === false)
++  return computed<boolean>(() => props.typeable === false);
+ }
+ 
+ // `keepOpen` resolution.
+ export function useKeepOpen(props: CommonDatePickerProps) {
+-  return computed(() => props.keepOpen === true)
++  return computed(() => props.keepOpen === true);
+ }
+ 
+ // Coerce arbitrary string input to a Dayjs, respecting an optional explicit format.
+ export function useDateCoercion(getFormat: () => string | undefined) {
+   return function coerceToDayjs(val?: string | null): Dayjs | null {
+-    if (!val) return null
+-    const raw = String(val).trim()
+-    if (!raw) return null
+-    const format = getFormat()
++    if (!val) return null;
++    const raw = String(val).trim();
++    if (!raw) return null;
++    const format = getFormat();
+     if (format) {
+-      const dStrict = dayjs(raw, format, true)
+-      if (dStrict.isValid()) return dStrict
++      const dStrict = dayjs(raw, format, true);
++      if (dStrict.isValid()) return dStrict;
+     }
+-    const dLoose = dayjs(raw)
+-    if (dLoose.isValid()) return dLoose
+-    const normalized = getDateValue(raw)
++    const dLoose = dayjs(raw);
++    if (dLoose.isValid()) return dLoose;
++    const normalized = getDateValue(raw);
+     if (normalized) {
+-      const dNorm = dayjs(normalized)
+-      if (dNorm.isValid()) return dNorm
++      const dNorm = dayjs(normalized);
++      if (dNorm.isValid()) return dNorm;
+     }
+-    return null
+-  }
++    return null;
++  };
+ }
+ 
+ // Build an `isDateUnavailable` checker from min/max/isDateUnavailable props.
+ export function makeUnavailableCheck(
+   getMin: () => string | undefined,
+   getMax: () => string | undefined,
+-  getIsUnavailable: () => ((d: Dayjs) => boolean) | undefined,
++  getIsUnavailable: () => ((d: Dayjs) => boolean) | undefined
+ ) {
+   return function checkUnavailable(d: Dayjs): boolean {
+-    const min = getMin()
+-    const max = getMax()
+-    const isUnavailable = getIsUnavailable()
+-    if (min && d.isBefore(dayjs(min), 'day')) return true
+-    if (max && d.isAfter(dayjs(max), 'day')) return true
+-    if (isUnavailable?.(d)) return true
+-    return false
+-  }
++    const min = getMin();
++    const max = getMax();
++    const isUnavailable = getIsUnavailable();
++    if (min && d.isBefore(dayjs(min), "day")) return true;
++    if (max && d.isAfter(dayjs(max), "day")) return true;
++    if (isUnavailable?.(d)) return true;
++    return false;
++  };
+ }
+ 
+ export interface UseFocusedDateOptions {
+   /** Identity of the current value. The watch fires when it changes. */
+-  key: () => string
++  key: () => string;
+   /** The date the view and the roving tabindex follow. */
+-  anchor: () => Dayjs | null
++  anchor: () => Dayjs | null;
+   /** The months on screen, so the seed can scan every pane. */
+-  months: () => Array<{ year: number; month: number }>
+-  isUnavailable: (date: Dayjs) => boolean
+-  focusOn: (date: Dayjs) => void
+-  resetView: () => void
+-  panels: () => Array<CalendarPanelExposed | null | undefined>
++  months: () => Array<{ year: number; month: number }>;
++  isUnavailable: (date: Dayjs) => boolean;
++  focusOn: (date: Dayjs) => void;
++  resetView: () => void;
++  panels: () => Array<CalendarPanelExposed | null | undefined>;
+ }
+ 
+ // The panels' roving tabindex is controlled, so the focused date lives here. It
+ // is seeded at setup so the first render already has `tabindex=0` on the cell
+ // `focus()` will land on.
+ export function useFocusedDate(options: UseFocusedDateOptions) {
+-  const focusedDate = ref<Dayjs | null>(null)
+-  let ownKey: string | null = null
++  const focusedDate = ref<Dayjs | null>(null);
++  let ownKey: string | null = null;
+ 
+   function seed(): void {
+-    const anchor = options.anchor()
++    const anchor = options.anchor();
+     if (anchor?.isValid() && !options.isUnavailable(anchor)) {
+-      focusedDate.value = anchor
+-      return
++      focusedDate.value = anchor;
++      return;
+     }
+     const cells = options
+       .months()
+-      .flatMap(({ year, month }) => generateWeeks(year, month, '').flat())
+-      .filter((cell) => cell.inMonth && !options.isUnavailable(cell.date))
+-    const target = cells.find((cell) => cell.isToday) ?? cells[0]
+-    if (target) focusedDate.value = target.date
++      .flatMap(({ year, month }) => generateWeeks(year, month, "").flat())
++      .filter((cell) => cell.inMonth && !options.isUnavailable(cell.date));
++    const target = cells.find((cell) => cell.isToday) ?? cells[0];
++    if (target) focusedDate.value = target.date;
+   }
+ 
+   // Only a value set from outside moves the view. The calendar's own click
+@@ -172,24 +173,24 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+   watch(
+     options.key,
+     (key) => {
+-      if (key === ownKey) return
+-      options.resetView()
+-      const anchor = options.anchor()
+-      if (anchor?.isValid()) options.focusOn(anchor)
+-      seed()
++      if (key === ownKey) return;
++      options.resetView();
++      const anchor = options.anchor();
++      if (anchor?.isValid()) options.focusOn(anchor);
++      seed();
+     },
+-    { immediate: true },
+-  )
++    { immediate: true }
++  );
+ 
+   /** Record the value the calendar is committing, so the watch ignores it. */
+   function markOwnCommit(key: string): void {
+-    ownKey = key
++    ownKey = key;
+   }
+ 
+   /** Move keyboard focus into the day grid. */
+   function focus(): void {
+-    for (const panel of options.panels()) panel?.focusInitialCell()
++    for (const panel of options.panels()) panel?.focusInitialCell();
+   }
+ 
+-  return { focusedDate, markOwnCommit, focus }
++  return { focusedDate, markOwnCommit, focus };
+ }
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/jalali.ts b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+new file mode 100644
+index 0000000..056cb09
+--- /dev/null
++++ b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+@@ -0,0 +1,193 @@
++import {
++  digitsEnToFa,
++  digitsFaToEn,
++  digitsArToFa,
++} from "@persian-tools/persian-tools";
++import {
++  isValidJalaaliDate,
++  jalaaliMonthLength,
++  jalaaliWeek,
++  toGregorian,
++  toJalaali,
++} from "jalaali-js";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs } from "../../utils/dayjs";
++
++const intlLocale = "fa-IR-u-ca-persian-nu-arabext";
++
++export function isPersianCalendar(): boolean {
++  return dayjs.locale().split("-")[0] === "fa";
++}
++
++export function toCalendarDate(date: Dayjs) {
++  return isPersianCalendar()
++    ? toJalaali(date.year(), date.month() + 1, date.date())
++    : { jy: date.year(), jm: date.month() + 1, jd: date.date() };
++}
++
++export function fromCalendarDate(
++  year: number,
++  monthIndex: number,
++  day: number
++): Dayjs {
++  if (isPersianCalendar()) {
++    const date = toGregorian(year, monthIndex + 1, day);
++    return dayjs(
++      `${date.gy}-${String(date.gm).padStart(2, "0")}-${String(date.gd).padStart(2, "0")}`
++    );
++  }
++  return dayjs(
++    `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(
++      2,
++      "0"
++    )}`
++  );
++}
++
++export function shiftCalendarMonth(
++  year: number,
++  monthIndex: number,
++  amount: number
++) {
++  if (isPersianCalendar()) {
++    const month = monthIndex + amount;
++    return {
++      year: year + Math.floor(month / 12),
++      month: ((month % 12) + 12) % 12,
++    };
++  }
++  const date = dayjs(
++    `${year}-${String(monthIndex + 1).padStart(2, "0")}-01`
++  ).add(amount, "month");
++  return { year: date.year(), month: date.month() };
++}
++
++export function shiftCalendarDate(
++  date: Dayjs,
++  years: number,
++  months: number
++): Dayjs {
++  if (!isPersianCalendar()) return date.add(years, "year").add(months, "month");
++  const current = toJalaali(date.year(), date.month() + 1, date.date());
++  let year = current.jy + years;
++  let month = current.jm - 1 + months;
++  year += Math.floor(month / 12);
++  month = ((month % 12) + 12) % 12;
++  const day = Math.min(current.jd, jalaaliMonthLength(year, month + 1));
++  return fromCalendarDate(year, month, day);
++}
++
++export function calendarMonths(year: number): string[] {
++  return Array.from({ length: 12 }, (_, monthIndex) => {
++    const date = fromCalendarDate(year, monthIndex, 1);
++    if (!isPersianCalendar()) return date.format("MMM");
++    return new Intl.DateTimeFormat(intlLocale, {
++      month: "long",
++      timeZone: "UTC",
++    }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++  });
++}
++
++export function calendarYear(year: number): string {
++  return isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
++}
++
++export function calendarMonthYear(year: number, monthIndex: number): string {
++  const date = fromCalendarDate(year, monthIndex, 1);
++  if (!isPersianCalendar()) return date.format("MMM YYYY");
++  return new Intl.DateTimeFormat(intlLocale, {
++    month: "long",
++    year: "numeric",
++    timeZone: "UTC",
++  }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++}
++
++export function calendarWeekdays(): string[] {
++  if (!isPersianCalendar()) return ["S", "M", "T", "W", "T", "F", "S"];
++  const now = dayjs();
++  const today = toJalaali(now.year(), now.month() + 1, now.date());
++  const saturday = jalaaliWeek(today.jy, today.jm, today.jd).saturday;
++  const gregorian = toGregorian(saturday.jy, saturday.jm, saturday.jd);
++  const start = new Date(
++    Date.UTC(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12)
++  );
++  const weekday = new Intl.DateTimeFormat(intlLocale, {
++    weekday: "narrow",
++    timeZone: "UTC",
++  });
++  return Array.from({ length: 7 }, (_, index) => {
++    const date = new Date(start);
++    date.setUTCDate(date.getUTCDate() + index);
++    return weekday.format(date);
++  });
++}
++
++export function calendarDay(date: Dayjs): string {
++  const { jd } = toCalendarDate(date);
++  return isPersianCalendar() ? digitsEnToFa(String(jd)) : String(jd);
++}
++
++export function calendarWeekdayIndex(date: Dayjs): number {
++  if (!isPersianCalendar()) return date.day();
++  const { jy, jm, jd } = toCalendarDate(date);
++  const saturday = jalaaliWeek(jy, jm, jd).saturday;
++  return date.startOf("day").diff(
++    fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd),
++    "day"
++  );
++}
++
++export function startOfCalendarWeek(date: Dayjs): Dayjs {
++  if (!isPersianCalendar()) return date.startOf("week");
++  const { jy, jm, jd } = toCalendarDate(date);
++  const saturday = jalaaliWeek(jy, jm, jd).saturday;
++  return fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd);
++}
++
++export function formatCalendarRange(from: Dayjs, to: Dayjs): string {
++  if (!isPersianCalendar())
++    return `${from.format("YYYY-MM-DD")} to ${to.format("YYYY-MM-DD")}`;
++  return new Intl.DateTimeFormat(dayjs.locale(), {
++    calendar: "persian",
++    day: "numeric",
++    month: "long",
++    year: "numeric",
++  }).formatRange(from.toDate(), to.toDate());
++}
++
++export function formatCalendarDate(date: Dayjs): string {
++  if (!isPersianCalendar()) return date.format("YYYY-MM-DD");
++  const { jy, jm, jd } = toJalaali(date.year(), date.month() + 1, date.date());
++  return digitsEnToFa(
++    `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`
++  );
++}
++
++export function formatCalendarDateTime(date: Dayjs): string {
++  if (!isPersianCalendar()) return date.format("YYYY-MM-DD HH:mm");
++  return digitsEnToFa(`${formatCalendarDate(date)} - ${date.format("HH:mm")}`);
++}
++
++export function parseCalendarDateTime(value: string): Dayjs | null {
++  if (!isPersianCalendar()) return null;
++  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
++  const match = normalized.match(
++    /^(\d{4}[/-]\d{1,2}[/-]\d{1,2})\s*(?:-|,)?\s*(\d{1,2}:\d{2}(?::\d{2})?)$/
++  );
++  if (!match) return null;
++  const date = parseCalendarDate(match[1]);
++  return date ? dayjs(`${date.format("YYYY-MM-DD")} ${match[2]}`) : null;
++}
++
++export function parseCalendarDate(value: string): Dayjs | null {
++  if (!isPersianCalendar()) return null;
++  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
++  const match = normalized.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
++  if (!match) return null;
++  const [, year, month, day] = match.map(Number);
++  if (!isValidJalaaliDate(year, month, day)) return null;
++  const gregorian = toGregorian(year, month, day);
++  return dayjs(
++    `${gregorian.gy}-${String(gregorian.gm).padStart(2, "0")}-${String(gregorian.gd).padStart(2, "0")}`
++  );
++}
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/types.ts b/node_modules/frappe-ui/src/components/DatePicker/types.ts
+index 060aac9..bbd9856 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/types.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/types.ts
+@@ -1,88 +1,91 @@
+-import type { Dayjs } from 'dayjs/esm'
+-import type { InputSize, InputVariant } from '../../composables/inputTypes'
+-import type { InputLabelingProps } from '../../composables/useInputLabeling'
++import type { Dayjs } from "dayjs/esm";
++import type { InputSize, InputVariant } from "../../composables/inputTypes";
++import type { InputLabelingProps } from "../../composables/useInputLabeling";
+ 
+ // Re-exported, not redeclared: `index.ts` does `export * from './types'`, so a
+ // local copy publishes a second structurally identical `PopoverSide` at the
+ // package root that can drift from `Popover`'s without a compile error.
+-import type { PopoverAlign, PopoverSide } from '../Popover/types'
+-export type { PopoverAlign, PopoverSide }
++import type { PopoverAlign, PopoverSide } from "../Popover/types";
++export type { PopoverAlign, PopoverSide };
+ 
+ // Shared props for both single date and range pickers
+ export interface CommonDatePickerProps extends InputLabelingProps {
+   // Positioning — aligned with Combobox/Dropdown vocabulary
+   /** Preferred popover side relative to the trigger. */
+-  side?: PopoverSide
++  side?: PopoverSide;
+ 
+   /** Alignment of the popover along the trigger edge. */
+-  align?: PopoverAlign
++  align?: PopoverAlign;
+ 
+   /** Gap between the trigger and popover content in pixels. */
+-  offset?: number
++  offset?: number;
+ 
+   // Display
+   /** Display format used for the input text. */
+-  format?: string
++  format?: string;
++
++  /** Localized label for the action that selects the current date. */
++  todayLabel?: string;
+ 
+   /** Size of the trigger input. */
+-  size?: InputSize
++  size?: InputSize;
+ 
+   /** Visual style variant passed through to the input. */
+-  variant?: InputVariant
++  variant?: InputVariant;
+ 
+   /** Placeholder text shown when no value is selected. */
+-  placeholder?: string
++  placeholder?: string;
+ 
+   // Interaction
+   /** Controls popover open state (for controlled usage). */
+-  open?: boolean
++  open?: boolean;
+ 
+   /** Opens the popover when the input receives focus. Default: false. */
+-  openOnFocus?: boolean
++  openOnFocus?: boolean;
+ 
+   /** Opens the popover when the input is clicked. Default: true. */
+-  openOnClick?: boolean
++  openOnClick?: boolean;
+ 
+   /**
+    * Whether the trigger input accepts typed input. When `false` the user can
+    * still open the popover and pick a date, but cannot type a date manually.
+    * Default: `true`.
+    */
+-  typeable?: boolean
++  typeable?: boolean;
+ 
+   /** Disables the trigger input and calendar interactions. */
+-  disabled?: boolean
++  disabled?: boolean;
+ 
+   /** Shows clear and quick-action controls when enabled. */
+-  clearable?: boolean
++  clearable?: boolean;
+ 
+   /** Keeps the popover open after a date is selected. Default: false. */
+-  keepOpen?: boolean
++  keepOpen?: boolean;
+ 
+   // Constraints
+   /**
+    * Earliest selectable date. Accepts `YYYY-MM-DD` (or, for `DateTimePicker`,
+    * `YYYY-MM-DD HH:mm:ss` for second-level granularity).
+    */
+-  min?: string
++  min?: string;
+ 
+   /**
+    * Latest selectable date. Accepts `YYYY-MM-DD` (or, for `DateTimePicker`,
+    * `YYYY-MM-DD HH:mm:ss` for second-level granularity).
+    */
+-  max?: string
++  max?: string;
+ 
+   /** Return true to prevent a date from being selected. Combined with `min`/`max`. */
+-  isDateUnavailable?: (date: Dayjs) => boolean
++  isDateUnavailable?: (date: Dayjs) => boolean;
+ }
+ 
+ export interface DatePickerProps extends CommonDatePickerProps {
+   /** Controlled value for the picker. */
+-  modelValue?: string
++  modelValue?: string;
+ }
+ 
+ /** A range value: a `[from, to]` tuple in `YYYY-MM-DD` format, or `[]` when cleared. */
+-export type DateRangeValue = [string, string] | []
++export type DateRangeValue = [string, string] | [];
+ 
+ export interface DateRangePickerProps extends CommonDatePickerProps {
+   /**
+@@ -91,153 +94,154 @@ export interface DateRangePickerProps extends CommonDatePickerProps {
+    * prop was `string[]`, which let a one-element array in and made a round-trip
+    * through the model fail to type-check.
+    */
+-  modelValue?: DateRangeValue
++  modelValue?: DateRangeValue;
+ 
+   /** Render two calendar panels side by side (current month + next month). */
+-  dualPane?: boolean
++  dualPane?: boolean;
+ }
+ 
+ export type DatePickerEmits = {
+   /** Fired when the picker value changes. */
+-  (event: 'update:modelValue', value: string): void
++  (event: "update:modelValue", value: string): void;
+ 
+   /** Fired when the popover open state changes. */
+-  (event: 'update:open', value: boolean): void
++  (event: "update:open", value: boolean): void;
+ 
+   /** Fired after the picker commits a normalized value. */
+-  (event: 'change', value: string): void
+-}
++  (event: "change", value: string): void;
++};
+ 
+ export type DateRangePickerEmits = {
+   /** Fired when the range value changes. Emits `[from, to]` or `[]` when cleared. */
+-  (event: 'update:modelValue', value: DateRangeValue): void
++  (event: "update:modelValue", value: DateRangeValue): void;
+ 
+   /** Fired when the popover open state changes. */
+-  (event: 'update:open', value: boolean): void
++  (event: "update:open", value: boolean): void;
+ 
+   /** Fired after the picker commits a normalized range value. */
+-  (event: 'change', value: DateRangeValue): void
+-}
++  (event: "change", value: DateRangeValue): void;
++};
+ 
+ export interface DateTimePickerProps extends CommonDatePickerProps {
+   /** Controlled value for the picker. */
+-  modelValue?: string
++  modelValue?: string;
+ }
+ 
+-export type DateTimePickerEmits = DatePickerEmits
++export type DateTimePickerEmits = DatePickerEmits;
+ 
+ // ── Slot prop shapes ─────────────────────────────────────────────────────────
+ 
+ /** Props bound to the trigger / prefix / suffix slots on all three pickers. */
+ export interface DatePickerTriggerSlotProps {
+   /** Whether the popover is currently open. */
+-  open: boolean
++  open: boolean;
+   /** Whether the picker is disabled. */
+-  disabled: boolean
++  disabled: boolean;
+   /** Sets the popover open state. */
+-  setOpen: (value: boolean) => void
++  setOpen: (value: boolean) => void;
+   /** Closes the popover. Equivalent to `setOpen(false)`. */
+-  close: () => void
+-  displayLabel: string
+-  inputValue: string
++  close: () => void;
++  displayLabel: string;
++  inputValue: string;
+ }
+ 
+ /** Props bound to the `actions` slot on `DatePicker`. */
+ export interface DatePickerActionsSlotProps {
+-  selected: string
+-  setDate: (date: string | Date | Dayjs) => void
+-  clear: () => void
+-  close: () => void
+-  open: boolean
+-  disabled: boolean
+-  setOpen: (value: boolean) => void
++  selected: string;
++  setDate: (date: string | Date | Dayjs) => void;
++  clear: () => void;
++  close: () => void;
++  open: boolean;
++  disabled: boolean;
++  setOpen: (value: boolean) => void;
+ }
+ 
+ /** Props bound to the `actions` slot on `DateRangePicker`. */
+ export interface DateRangePickerActionsSlotProps {
+-  fromDate: string
+-  toDate: string
++  fromDate: string;
++  toDate: string;
+   /**
+    * Commits one endpoint, mirroring a calendar cell click:
+    * first call sets `from`, second call sets `to`.
+    */
+-  setDate: (date: string | Date | Dayjs) => void
++  setDate: (date: string | Date | Dayjs) => void;
+   /**
+    * Commits both endpoints atomically. Normalizes order so the earlier
+    * date becomes `from`. Use for fixed-window presets ("Last 7 days").
+    */
+-  setRange: (range: [string | Date | Dayjs, string | Date | Dayjs]) => void
+-  clear: () => void
+-  close: () => void
+-  open: boolean
+-  disabled: boolean
+-  setOpen: (value: boolean) => void
++  setRange: (range: [string | Date | Dayjs, string | Date | Dayjs]) => void;
++  clear: () => void;
++  close: () => void;
++  open: boolean;
++  disabled: boolean;
++  setOpen: (value: boolean) => void;
+ }
+ 
+ /** Props bound to the `actions` slot on `DateTimePicker`. */
+ export interface DateTimePickerActionsSlotProps {
+-  selected: string
+-  time: string
+-  setDate: (date: string | Date | Dayjs) => void
+-  clear: () => void
+-  close: () => void
+-  open: boolean
+-  disabled: boolean
+-  setOpen: (value: boolean) => void
++  selected: string;
++  time: string;
++  setDate: (date: string | Date | Dayjs) => void;
++  clear: () => void;
++  close: () => void;
++  open: boolean;
++  disabled: boolean;
++  setOpen: (value: boolean) => void;
+ }
+ 
+ export interface DatePickerSlots {
+   /** Custom trigger renderer for the picker. */
+-  trigger?: (props: DatePickerTriggerSlotProps) => any
++  trigger?: (props: DatePickerTriggerSlotProps) => any;
+ 
+   /** Content rendered before the trigger input value. */
+-  prefix?: (props: DatePickerTriggerSlotProps) => any
++  prefix?: (props: DatePickerTriggerSlotProps) => any;
+ 
+   /** Content rendered after the trigger input value. */
+-  suffix?: (props: DatePickerTriggerSlotProps) => any
++  suffix?: (props: DatePickerTriggerSlotProps) => any;
+ 
+   /**
+    * Sidebar rendered to the left of the calendar. Use for date shortcuts
+    * ("Today", "Tomorrow", "Last 7 days") and other preset actions. When
+    * omitted, the popover shows the calendar only.
+    */
+-  actions?: (props: DatePickerActionsSlotProps) => any
++  actions?: (props: DatePickerActionsSlotProps) => any;
+ }
+ 
+ export interface DateRangePickerSlots {
+-  trigger?: (props: DatePickerTriggerSlotProps) => any
++  trigger?: (props: DatePickerTriggerSlotProps) => any;
+ 
+-  prefix?: (props: DatePickerTriggerSlotProps) => any
+-  suffix?: (props: DatePickerTriggerSlotProps) => any
++  prefix?: (props: DatePickerTriggerSlotProps) => any;
++  suffix?: (props: DatePickerTriggerSlotProps) => any;
+ 
+   /**
+    * Sidebar rendered to the left of the calendar. Use for range shortcuts
+    * ("Last 7 days", "Last 12 months") and other preset actions. When
+    * omitted, the popover shows the calendar only.
+    */
+-  actions?: (props: DateRangePickerActionsSlotProps) => any
++  actions?: (props: DateRangePickerActionsSlotProps) => any;
+ }
+ 
+ export interface DateTimePickerSlots {
+-  trigger?: (props: DatePickerTriggerSlotProps) => any
++  trigger?: (props: DatePickerTriggerSlotProps) => any;
+ 
+-  prefix?: (props: DatePickerTriggerSlotProps) => any
+-  suffix?: (props: DatePickerTriggerSlotProps) => any
++  prefix?: (props: DatePickerTriggerSlotProps) => any;
++  suffix?: (props: DatePickerTriggerSlotProps) => any;
+ 
+   /**
+    * Sidebar rendered to the left of the calendar. Use for date-time
+    * shortcuts ("Now", "Tomorrow 9am") and other preset actions. When
+    * omitted, the popover shows the calendar and time picker only.
+    */
+-  actions?: (props: DateTimePickerActionsSlotProps) => any
++  actions?: (props: DateTimePickerActionsSlotProps) => any;
+ }
+ 
+-export type DatePickerViewMode = 'date' | 'monthYear'
++export type DatePickerViewMode = "date" | "monthYear";
+ 
+ export interface DatePickerDateObj {
+-  date: Dayjs
+-  key: string
+-  inMonth: boolean
+-  isToday: boolean
+-  isSelected: boolean
++  date: Dayjs;
++  key: string;
++  inMonth: boolean;
++  isToday: boolean;
++  isSelected: boolean;
++  calendarDay?: string;
+ }
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/utils.ts b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
+index 1060017..a8ce3b1 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/utils.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
+@@ -1,67 +1,71 @@
+-import { dayjs, dayjsLocal } from '../../utils/dayjs'
+-import type { Dayjs } from 'dayjs/esm'
+-import type { DatePickerDateObj as DateObj, DateRangeValue } from './types'
+-import type { CalendarPanelCell } from './calendarTypes'
+-
+-// Constant list of month labels
+-export const months: string[] = [
+-  'Jan',
+-  'Feb',
+-  'Mar',
+-  'Apr',
+-  'May',
+-  'Jun',
+-  'Jul',
+-  'Aug',
+-  'Sep',
+-  'Oct',
+-  'Nov',
+-  'Dec',
+-]
++import { dayjs, dayjsLocal } from "../../utils/dayjs";
++import type { Dayjs } from "dayjs/esm";
++import type { DatePickerDateObj as DateObj, DateRangeValue } from "./types";
++import type { CalendarPanelCell } from "./calendarTypes";
++import {
++  calendarDay,
++  fromCalendarDate,
++  isPersianCalendar,
++  startOfCalendarWeek,
++  toCalendarDate,
++} from "./jalali";
+ 
+ // Start of given month (0-indexed month)
+ export function monthStart(year: number, monthIndex: number): Dayjs {
+-  return dayjs(`${year}-${monthIndex + 1}-01`)
++  return fromCalendarDate(year, monthIndex, 1);
+ }
+ 
+ // Build weeks grid for the calendar
+ export function generateWeeks(
+   year: number,
+   monthIndex: number,
+-  selected: string,
++  selected: string
+ ): DateObj[][] {
+   // Always emit 6 rows × 7 days so the calendar height stays constant — both
+   // across months in a single pane (no jiggle when navigating) and between
+   // panes in dual-pane mode (where one month may span 5 weeks and the other 6).
+-  const start = monthStart(year, monthIndex).startOf('week')
+-  const days: DateObj[] = []
+-  let d: Dayjs = start
+-  const sel = dayjs(selected)
+-  const today = dayjsLocal().format('YYYY-MM-DD')
++  const gregorianMonthStart = monthStart(year, monthIndex);
++  const calendarMonthStart = toCalendarDate(gregorianMonthStart);
++  const first = fromCalendarDate(
++    calendarMonthStart.jy,
++    calendarMonthStart.jm - 1,
++    1
++  );
++  const start = isPersianCalendar()
++    ? startOfCalendarWeek(first)
++    : gregorianMonthStart.startOf("week");
++  const days: DateObj[] = [];
++  let d: Dayjs = start;
++  const sel = dayjs(selected);
++  const today = dayjsLocal().format("YYYY-MM-DD");
+   for (let i = 0; i < 42; i++) {
+     days.push({
+       date: d,
+-      key: d.format('YYYY-MM-DD'),
+-      inMonth: d.month() === monthIndex,
+-      isToday: d.isSame(today, 'day'),
+-      isSelected: sel.isValid() && d.isSame(sel, 'day'),
+-    })
+-    d = d.add(1, 'day')
++      key: d.format("YYYY-MM-DD"),
++      inMonth: isPersianCalendar()
++        ? toCalendarDate(d).jy === year &&
++          toCalendarDate(d).jm === monthIndex + 1
++        : d.month() === monthIndex,
++      isToday: d.isSame(today, "day"),
++      isSelected: sel.isValid() && d.isSame(sel, "day"),
++      calendarDay: calendarDay(d),
++    });
++    d = d.add(1, "day");
+   }
+-  const chunked: DateObj[][] = []
+-  for (let i = 0; i < days.length; i += 7) chunked.push(days.slice(i, i + 7))
+-  return chunked
++  const chunked: DateObj[][] = [];
++  for (let i = 0; i < days.length; i += 7) chunked.push(days.slice(i, i + 7));
++  return chunked;
+ }
+ 
+ export function getDateValue(date: Date | string) {
+-  if (!date || date.toString() === 'Invalid Date') return ''
++  if (!date || date.toString() === "Invalid Date") return "";
+ 
+   return dayjs(date)
+-    .set('hour', 0)
+-    .set('minute', 0)
+-    .set('second', 0)
+-    .set('millisecond', 0)
+-    .format('YYYY-MM-DD')
++    .set("hour", 0)
++    .set("minute", 0)
++    .set("second", 0)
++    .set("millisecond", 0)
++    .format("YYYY-MM-DD");
+ }
+ 
+ /**
+@@ -70,32 +74,32 @@ export function getDateValue(date: Date | string) {
+  * preview render as in-range, not as selected.
+  */
+ export function generateRangeWeeks(options: {
+-  year: number
+-  monthIndex: number
+-  from: string
+-  to: string
+-  preview?: Dayjs | null
+-  isUnavailable: (date: Dayjs) => boolean
++  year: number;
++  monthIndex: number;
++  from: string;
++  to: string;
++  preview?: Dayjs | null;
++  isUnavailable: (date: Dayjs) => boolean;
+ }): CalendarPanelCell[][] {
+-  const { year, monthIndex, from, to, preview, isUnavailable } = options
+-  const raw = generateWeeks(year, monthIndex, '')
+-  const f = from ? dayjs(from) : null
+-  const t = to ? dayjs(to) : null
+-  const hovering = !t && f && preview ? preview : null
+-  const hoverEnd = hovering && hovering.isAfter(f!, 'day') ? hovering : null
+-  const hoverStart = hovering && hovering.isBefore(f!, 'day') ? hovering : null
++  const { year, monthIndex, from, to, preview, isUnavailable } = options;
++  const raw = generateWeeks(year, monthIndex, "");
++  const f = from ? dayjs(from) : null;
++  const t = to ? dayjs(to) : null;
++  const hovering = !t && f && preview ? preview : null;
++  const hoverEnd = hovering && hovering.isAfter(f!, "day") ? hovering : null;
++  const hoverStart = hovering && hovering.isBefore(f!, "day") ? hovering : null;
+   return raw.map((week) =>
+     week.map((d) => {
+-      const isRangeStart = !!(f && d.date.isSame(f, 'day'))
+-      const isRangeEnd = !!(t && d.date.isSame(t, 'day'))
+-      let inRange = false
++      const isRangeStart = !!(f && d.date.isSame(f, "day"));
++      const isRangeEnd = !!(t && d.date.isSame(t, "day"));
++      let inRange = false;
+       if (f && t) {
+-        inRange = d.date.isAfter(f, 'day') && d.date.isBefore(t, 'day')
++        inRange = d.date.isAfter(f, "day") && d.date.isBefore(t, "day");
+       } else if (hoverEnd && f) {
+-        inRange = d.date.isAfter(f, 'day') && !d.date.isAfter(hoverEnd, 'day')
++        inRange = d.date.isAfter(f, "day") && !d.date.isAfter(hoverEnd, "day");
+       } else if (hoverStart && f) {
+         inRange =
+-          !d.date.isBefore(hoverStart, 'day') && d.date.isBefore(f, 'day')
++          !d.date.isBefore(hoverStart, "day") && d.date.isBefore(f, "day");
+       }
+       return {
+         ...d,
+@@ -104,20 +108,20 @@ export function generateRangeWeeks(options: {
+         isRangeStart,
+         isRangeEnd,
+         inRange,
+-      }
+-    }),
+-  )
++      };
++    })
++  );
+ }
+ 
+ /** Put a range's endpoints in order, so picking the end first gives the same result. */
+ export function orderRange(range: [string, string]): [string, string] {
+-  const [from, to] = range
+-  return from && to && from > to ? [to, from] : [from, to]
++  const [from, to] = range;
++  return from && to && from > to ? [to, from] : [from, to];
+ }
+ 
+ /** A range as one string, for comparing two ranges. */
+ export function rangeKey(range: DateRangeValue | [string, string]): string {
+-  return `${range[0] ?? ''},${range[1] ?? ''}`
++  return `${range[0] ?? ""},${range[1] ?? ""}`;
+ }
+ 
+ /**
+@@ -126,10 +130,10 @@ export function rangeKey(range: DateRangeValue | [string, string]): string {
+  */
+ export function stepRange(
+   range: [string, string],
+-  date: Dayjs,
++  date: Dayjs
+ ): [string, string] {
+-  const [from, to] = range
+-  const value = date.format('YYYY-MM-DD')
+-  if (!from || to) return [value, '']
+-  return orderRange([from, value])
++  const [from, to] = range;
++  const value = date.format("YYYY-MM-DD");
++  if (!from || to) return [value, ""];
++  return orderRange([from, value]);
+ }
+diff --git a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
+index f034a73..c9af75c 100644
+--- a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
++++ b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
+@@ -87,7 +87,7 @@
+                         </DialogTitle>
+                       </div>
+                       <DialogClose v-if="props.showCloseButton" as-child>
+-                        <Button variant="ghost" label="Close">
++                        <Button variant="ghost" :label="(window as any).__?.('Close') ?? 'Close'">
+                           <template #icon>
+                             <span class="lucide-x size-4 text-ink-gray-9" />
+                           </template>
+@@ -142,7 +142,7 @@
+               <Button
+                 class="absolute right-4 top-4 z-10"
+                 variant="ghost"
+-                label="Close"
++                :label="(window as any).__?.('Close') ?? 'Close'"
+               >
+                 <template #icon>
+                   <span class="lucide-x size-4 text-ink-gray-9" />
+diff --git a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue b/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
+index 57eabce..be57785 100644
+--- a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
++++ b/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
+@@ -1,5 +1,9 @@
+ <template>
+-  <DropdownMenuRoot v-model:open="openModel" v-slot="{ open }">
++  <DropdownMenuRoot
++    v-model:open="openModel"
++    :dir="textDirection"
++    v-slot="{ open }"
++  >
+     <DropdownMenuTrigger
+       as-child
+       data-slot="trigger"
+@@ -28,6 +32,7 @@
+       <DropdownMenuContent
+         data-slot="content"
+         data-motion="instant"
++        :dir="textDirection"
+         :class="menuClasses.content"
+         :side="side"
+         :align="align"
+@@ -52,6 +57,7 @@
+ 
+ <script setup lang="ts">
+ import { computed, onScopeDispose, useAttrs } from 'vue'
++import { useTextDirection } from '@vueuse/core'
+ import {
+   DropdownMenuContent,
+   DropdownMenuItem,
+@@ -85,6 +91,7 @@ const props = withDefaults(defineProps<DropdownProps>(), {
+   offset: 4,
+ })
+ 
++const textDirection = useTextDirection({ observe: true })
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ function close() {
+diff --git a/node_modules/frappe-ui/src/components/Menu/Menu.vue b/node_modules/frappe-ui/src/components/Menu/Menu.vue
+index c2ab540..9d1462b 100644
+--- a/node_modules/frappe-ui/src/components/Menu/Menu.vue
++++ b/node_modules/frappe-ui/src/components/Menu/Menu.vue
+@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<MenuProps>(), {
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const router = useRouter()
++const noOptionsText = computed(() => (window as any).__?.('No options') ?? 'No options')
+ 
+ const hasVisibleItems = computed(() => {
+   return props.groups.some((group) => group.options.length)
+@@ -181,7 +182,7 @@ async function handleItemSelect(item: MenuOption, event: Event) {
+ 
+   <div v-else data-slot="empty" class="p-1.5 text-base text-ink-gray-5">
+     <MenuRenderContent v-if="slotFns?.empty" :content="slotFns.empty?.()" />
+-    <template v-else>No options</template>
++    <template v-else>{{ noOptionsText }}</template>
+   </div>
+ </template>
+ 
+diff --git a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
+index 61ccd67..9f1ef3f 100644
+--- a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
++++ b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
+@@ -212,4 +212,8 @@ function handleSwitchChange(value: boolean) {
+ [data-slot='item-list-row'] {
+   background-color: transparent;
+ }
++
++html[dir='rtl'] .lucide-chevron-right {
++  transform: rotate(180deg);
++}
+ </style>
+diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+index 993d0ce..0b8cc77 100644
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+@@ -1,4 +1,5 @@
+ <script setup lang="ts">
++import { useTextDirection } from '@vueuse/core'
+ import { computed, ref, useAttrs, useTemplateRef, watch } from 'vue'
+ import {
+   ComboboxAnchor,
+@@ -59,12 +60,14 @@ const props = withDefaults(defineProps<MultiSelectProps>(), {
+   hideSearch: false,
+   loading: false,
+   filterable: true,
+-  emptyText: 'No results',
++  emptyText: (window as any).__?.('No results') ?? 'No results',
+   side: 'bottom',
+   align: 'start',
+   offset: 4,
+ })
+ 
++const textDirection = useTextDirection({ observe: true })
++
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const emit = defineEmits<MultiSelectEmits>()
+@@ -367,6 +370,7 @@ defineSlots<MultiSelectSlots>()
+       </template>
+     </InputLabel>
+     <ComboboxRoot
++      :dir="textDirection"
+       multiple
+       :model-value="internalModel"
+       :open="open"
+@@ -441,7 +445,7 @@ defineSlots<MultiSelectSlots>()
+             :icon="singleSelectedOption.icon"
+           />
+ 
+-          <span class="grid min-w-0 flex-1 text-left font-normal">
++          <span class="grid min-w-0 flex-1 text-start font-normal">
+             <span
+               :class="[
+                 'col-start-1 row-start-1 max-w-full truncate',
+@@ -481,6 +485,7 @@ defineSlots<MultiSelectSlots>()
+         <ComboboxContent
+           data-slot="content"
+           data-selection
++          :dir="textDirection"
+           :data-variant="variant"
+           :data-size="size"
+           :data-loading="loading ? '' : undefined"
+@@ -518,6 +523,7 @@ defineSlots<MultiSelectSlots>()
+                 <ComboboxInput
+                   ref="searchInput"
+                   :id="`${inputId}-search-input`"
++                  :dir="textDirection"
+                   data-slot="input"
+                   :value="query"
+                   :disabled="disabled"
+@@ -572,16 +578,16 @@ defineSlots<MultiSelectSlots>()
+                   size="sm"
+                   @click="clear"
+                 >
+-                  Clear All
++                  {{ (window as any).__?.('Clear All') ?? 'Clear All' }}
+                 </Button>
+                 <Button
+                   v-if="!allSelected"
+                   variant="ghost"
+                   size="sm"
+-                  class="ml-auto"
++                  class="ms-auto"
+                   @click="selectAll"
+                 >
+-                  Select All
++                  {{ (window as any).__?.('Select All') ?? 'Select All' }}
+                 </Button>
+               </div>
+             </div>
+diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
+index a3930bf..d7d47e2 100644
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
+@@ -82,7 +82,7 @@ function getItemTextValue(item: NormalizedOption) {
+       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
+     >
+       <LoadingIndicator class="size-4" />
+-      <span>Loading...</span>
++      <span>{{ (window as any).__?.('Loading...') ?? 'Loading...' }}</span>
+     </div>
+ 
+     <template v-else>
+diff --git a/node_modules/frappe-ui/src/components/Select/Select.vue b/node_modules/frappe-ui/src/components/Select/Select.vue
+index 6b949d0..f616e80 100644
+--- a/node_modules/frappe-ui/src/components/Select/Select.vue
++++ b/node_modules/frappe-ui/src/components/Select/Select.vue
+@@ -1,5 +1,6 @@
+ <script setup lang="ts">
+ import { computed, useAttrs, useTemplateRef } from 'vue'
++import { useTextDirection } from '@vueuse/core'
+ import { useInputLabeling } from '../../composables/useInputLabeling'
+ import { useReactiveSlots } from '../../composables/useReactiveSlots'
+ import { usePortalTarget } from '../../composables/usePortalTarget'
+@@ -56,6 +57,11 @@ defineOptions({
+ // fire. Nothing is emitted on mount. The component normalizes `undefined` to
+ // `null` where it reads the value, and `clear()` emits `null` (INP-Q2).
+ const model = defineModel<SelectOptionValue | null>()
++const displayEmptyText = computed(() =>
++  props.emptyText === 'No options'
++    ? (window as any).__?.('No options') ?? 'No options'
++    : props.emptyText,
++)
+ const open = defineModel<boolean>('open', { default: false })
+ 
+ const props = withDefaults(defineProps<SelectProps>(), {
+@@ -66,6 +72,8 @@ const props = withDefaults(defineProps<SelectProps>(), {
+   emptyText: 'No options',
+ })
+ 
++const textDirection = useTextDirection({ observe: true })
++
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const attrs = useAttrs()
+@@ -324,7 +332,12 @@ defineExpose(exposed)
+         <slot name="label" v-bind="slotProps" />
+       </template>
+     </InputLabel>
+-    <SelectRoot v-model="internalModel" v-model:open="open" v-bind="rootAttrs">
++    <SelectRoot
++      v-model="internalModel"
++      v-model:open="open"
++      :dir="textDirection"
++      v-bind="rootAttrs"
++    >
+       <SelectTrigger
+         :id="inputId"
+         ref="trigger"
+@@ -397,7 +410,7 @@ defineExpose(exposed)
+           />
+           <slot v-else name="prefix" v-bind="controlSlotProps" />
+ 
+-          <div class="grid min-w-0 text-left truncate">
++          <div class="grid min-w-0 text-start truncate">
+             <SelectValue
+               :placeholder="placeholder"
+               class="col-start-1 row-start-1 max-w-full truncate leading-tighter"
+@@ -421,7 +434,7 @@ defineExpose(exposed)
+           <slot name="suffix" v-bind="controlSlotProps">
+             <span
+               data-slot="chevron"
+-              class="lucide-chevron-down ml-auto size-4 shrink-0 text-ink-gray-4"
++              class="lucide-chevron-down ms-auto size-4 shrink-0 text-ink-gray-4"
+             />
+           </slot>
+         </template>
+@@ -430,6 +443,7 @@ defineExpose(exposed)
+       <SelectPortal :to="portalTarget">
+         <SelectContent
+           data-slot="content"
++          :dir="textDirection"
+           class="z-[100] origin-[var(--reka-select-content-transform-origin)]"
+           :class="
+             usesPopperPosition ? 'min-w-[--reka-select-trigger-width]' : null
+@@ -452,7 +466,7 @@ defineExpose(exposed)
+                 data-slot="empty"
+                 class="px-2 py-1.5 text-base text-ink-gray-5"
+               >
+-                <slot name="empty">{{ emptyText }}</slot>
++                <slot name="empty">{{ displayEmptyText }}</slot>
+               </div>
+ 
+               <template v-else>
+@@ -559,7 +573,7 @@ defineExpose(exposed)
+                         v-bind="getItemSlotProps(internalOption.option)"
+                       />
+                       <SelectItemIndicator
+-                        class="ml-1 inline-flex items-center justify-center"
++                        class="ms-1 inline-flex items-center justify-center"
+                       >
+                         <span class="lucide-check size-4 text-ink-gray-6" />
+                       </SelectItemIndicator>
+diff --git a/node_modules/frappe-ui/src/components/Select/utils.ts b/node_modules/frappe-ui/src/components/Select/utils.ts
+index 65b9ca3..732c468 100644
+--- a/node_modules/frappe-ui/src/components/Select/utils.ts
++++ b/node_modules/frappe-ui/src/components/Select/utils.ts
+@@ -69,4 +69,4 @@ export function triggerVariantClasses(
+  * which is why Select doesn't reuse the shared base string.
+  */
+ export const triggerBaseClasses =
+-  'relative inline-flex items-center gap-2 text-left transition-[background-color,border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-[state=open]:outline-none text-ink-gray-7 data-[placeholder]:text-ink-gray-4 data-[disabled]:text-ink-gray-4'
++  'relative inline-flex items-center gap-2 text-start transition-[background-color,border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-[state=open]:outline-none text-ink-gray-7 data-[placeholder]:text-ink-gray-4 data-[disabled]:text-ink-gray-4'
+diff --git a/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue b/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
+index d4e2a29..d5633a8 100644
+--- a/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
++++ b/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
+@@ -1,5 +1,5 @@
+ <template>
+-  <SidebarItem :label="isCollapsed ? 'Expand' : 'Collapse'" @click="toggle">
++  <SidebarItem :label="isCollapsed ? __('Expand') : __('Collapse')" @click="toggle">
+     <template #prefix>
+       <span
+         class="lucide-panel-right-open size-4 text-ink-gray-6 transition-transform duration-300 ease-in-out"
+diff --git a/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue b/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
+index d486f57..5f15393 100644
+--- a/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
++++ b/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
+@@ -14,7 +14,7 @@
+           :required="required"
+           :variant="variant"
+           :size="size"
+-          :placeholder="placeholder"
++          :placeholder="resolvedPlaceholder"
+           :disabled="disabled"
+           :readonly="isReadonly"
+           role="combobox"
+@@ -97,7 +97,7 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { computed, nextTick, onMounted, ref, watch } from 'vue'
++import { computed, getCurrentInstance, nextTick, onMounted, ref, watch } from 'vue'
+ import {
+   PopoverAnchor,
+   PopoverContent,
+@@ -130,7 +130,6 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
+   modelValue: '',
+   interval: 15,
+   options: () => [],
+-  placeholder: 'Select time',
+   variant: 'subtle' as Variant,
+   disabled: false,
+   typeable: true,
+@@ -139,6 +138,10 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
+ })
+ 
+ const emit = defineEmits<TimePickerEmits>()
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__
++const resolvedPlaceholder = computed(
++  () => props.placeholder ?? translate?.('Select time') ?? 'Select time',
++)
+ 
+ const portalTarget = usePortalTarget()
+ 
+diff --git a/node_modules/frappe-ui/src/components/Toast/ToastProvider.vue b/node_modules/frappe-ui/src/components/Toast/ToastProvider.vue
+index 7af458c..cbaf7bb 100644
+--- a/node_modules/frappe-ui/src/components/Toast/ToastProvider.vue
++++ b/node_modules/frappe-ui/src/components/Toast/ToastProvider.vue
+@@ -9,7 +9,7 @@
+       unstyled: true,
+       classes: {
+         toast:
+-          'group py-2.5 flex items-center px-4 bg-surface-gray-9 rounded-5 shadow-xl w-[360px] after:bg-transparent',
++          'group py-2.5 flex items-center px-4 bg-surface-gray-9 rounded-5 shadow-xl w-[360px] font-sans after:bg-transparent',
+         title: 'text-p-base font-medium text-ink-base',
+         description: 'text-p-base text-ink-base',
+         icon: 'mr-2 text-ink-base [&_svg]:size-4',
+diff --git a/node_modules/frappe-ui/src/components/Tooltip/TooltipBubble.vue b/node_modules/frappe-ui/src/components/Tooltip/TooltipBubble.vue
+index aa14fbe..3e7d628 100644
+--- a/node_modules/frappe-ui/src/components/Tooltip/TooltipBubble.vue
++++ b/node_modules/frappe-ui/src/components/Tooltip/TooltipBubble.vue
+@@ -51,7 +51,7 @@ defineSlots<{
+       <div
+         v-else
+         data-slot="bubble"
+-        class="rounded-4 bg-surface-gray-10 px-2 py-1 text-xs text-ink-base shadow-xl"
++        class="rounded-4 bg-surface-gray-10 px-2 py-1 font-sans text-xs text-ink-base shadow-xl"
+       >
+         <slot name="content">{{ text }}</slot>
+       </div>
+diff --git a/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue b/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue
+index 7d96b79..23a83d8 100644
+--- a/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue
++++ b/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue
+@@ -4,6 +4,7 @@
+     data-panel
+     data-motion="instant"
+     :data-state="state"
++    :dir="textDirection"
+     :class="shellClass"
+   >
+     <slot />
+@@ -40,6 +41,7 @@
+  * transforms.
+  */
+ import './popoverPanel.css'
++import { useTextDirection } from '@vueuse/core'
+ 
+ defineProps<{
+   /**
+@@ -58,4 +60,5 @@ defineSlots<{ default?: () => any }>()
+ // Consumer `class` (layout) auto-merges after this.
+ const shellClass =
+   'overflow-hidden rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 will-change-[opacity]'
++const textDirection = useTextDirection({ observe: true })
+ </script>
 diff --git a/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts b/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts
 index 91c8dc4..2883b93 100644
 --- a/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts
@@ -69,9 +3983,11 @@ index 91c8dc4..2883b93 100644
        renderer?.destroy()
        floatingEl = null
 diff --git a/node_modules/frappe-ui/src/molecules/editor/style.css b/node_modules/frappe-ui/src/molecules/editor/style.css
+index cc3f745..e51412c 100644
 --- a/node_modules/frappe-ui/src/molecules/editor/style.css
 +++ b/node_modules/frappe-ui/src/molecules/editor/style.css
-@@ -14,6 +14,7 @@
+@@ -13,7 +13,8 @@
+ 
  .ProseMirror:not(.ProseMirror-focused) p.is-editor-empty::before {
    content: attr(data-placeholder);
 -  float: left;
@@ -80,15 +3996,3 @@ diff --git a/node_modules/frappe-ui/src/molecules/editor/style.css b/node_module
    color: var(--ink-gray-4);
    pointer-events: none;
    height: 0;
-diff --git a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
---- a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
-+++ b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
-@@ -212,4 +212,8 @@
- [data-slot='item-list-row'] {
-   background-color: transparent;
- }
-+
-+html[dir='rtl'] .lucide-chevron-right {
-+  transform: rotate(180deg);
-+}
- </style>

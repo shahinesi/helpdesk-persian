@@ -1,6 +1,0 @@
-diff --git a/src/components/Onboarding/GettingStartedBanner.vue b/src/components/Onboarding/GettingStartedBanner.vue
---- a/src/components/Onboarding/GettingStartedBanner.vue
-+++ b/src/components/Onboarding/GettingStartedBanner.vue
-@@ -45 +45 @@
--			<template #prefix>
-+			<template #suffix>
