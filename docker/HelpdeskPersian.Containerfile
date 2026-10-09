@@ -9,4 +9,5 @@ USER frappe
 WORKDIR /home/frappe/frappe-bench
 RUN cd apps/helpdesk/desk && yarn install --frozen-lockfile --non-interactive
 RUN mkdir -p sites && printf '{}' > sites/common_site_config.json \
-    && bench set-config -gp socketio_port 9000
+    && bench set-config -gp socketio_port 9000 \
+    && CI=Yes bench build --apps frappe,helpdesk

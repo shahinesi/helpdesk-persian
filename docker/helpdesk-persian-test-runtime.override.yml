@@ -1,0 +1,13 @@
+services:
+  backend:
+    image: ${HELPDESK_RUNTIME_IMAGE:?Set HELPDESK_RUNTIME_IMAGE to a commit-tagged test image}
+  frontend:
+    image: ${HELPDESK_RUNTIME_IMAGE:?Set HELPDESK_RUNTIME_IMAGE to a commit-tagged test image}
+  queue-long:
+    image: ${HELPDESK_RUNTIME_IMAGE:?Set HELPDESK_RUNTIME_IMAGE to a commit-tagged test image}
+  queue-short:
+    image: ${HELPDESK_RUNTIME_IMAGE:?Set HELPDESK_RUNTIME_IMAGE to a commit-tagged test image}
+  scheduler:
+    image: ${HELPDESK_RUNTIME_IMAGE:?Set HELPDESK_RUNTIME_IMAGE to a commit-tagged test image}
+  websocket:
+    image: ${HELPDESK_RUNTIME_IMAGE:?Set HELPDESK_RUNTIME_IMAGE to a commit-tagged test image}
