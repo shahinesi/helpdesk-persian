@@ -118,3 +118,75 @@ jobs:
               --title "chore(upstream): propose develop update" \
               --body-file "$RUNNER_TEMP/upstream-proposal.md"
           fi
+
+      - name: Prepare Persian main update proposal
+        id: main-proposal
+        run: |
+          set -euo pipefail
+          base_branch="custom/main-fa"
+          upstream_branch="vendor/main"
+          proposal_branch="sync/upstream-main-fa"
+
+          if ! git ls-remote --exit-code --heads origin "$base_branch" >/dev/null 2>&1; then
+            echo "custom/main-fa is not initialized; skipping stable proposal."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git fetch origin \
+            "refs/heads/$base_branch:refs/remotes/origin/$base_branch" \
+            "refs/heads/$upstream_branch:refs/remotes/origin/$upstream_branch"
+          base="refs/remotes/origin/$base_branch"
+          upstream="refs/remotes/origin/$upstream_branch"
+
+          if git merge-base --is-ancestor "$upstream" "$base"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git switch --detach "$GITHUB_SHA"
+          if git ls-remote --exit-code --heads origin "$proposal_branch" >/dev/null 2>&1; then
+            git fetch origin "refs/heads/$proposal_branch:refs/remotes/origin/$proposal_branch"
+            git switch --create "$proposal_branch" --track "refs/remotes/origin/$proposal_branch"
+            git merge --no-edit --no-ff "$base"
+          else
+            git switch --create "$proposal_branch" "$base"
+          fi
+
+          git merge --no-edit --no-ff "$upstream"
+          git push --set-upstream origin "$proposal_branch"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse "$base")" >> "$GITHUB_OUTPUT"
+          echo "upstream_sha=$(git rev-parse "$upstream")" >> "$GITHUB_OUTPUT"
+          echo "proposal_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update draft stable proposal
+        if: steps.main-proposal.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ steps.main-proposal.outputs.base_sha }}
+          UPSTREAM_SHA: ${{ steps.main-proposal.outputs.upstream_sha }}
+          PROPOSAL_SHA: ${{ steps.main-proposal.outputs.proposal_sha }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/upstream-main-proposal.md" <<EOF
+          ## Upstream stable update proposal
+
+          - Persian base: \`$BASE_SHA\`
+          - Upstream main: \`$UPSTREAM_SHA\`
+          - Candidate merge: \`$PROPOSAL_SHA\`
+          - Conflict handling: clean merge only; conflicts stop this workflow.
+          - Validation: automated CI runs on this proposal. No automatic merge or deployment is enabled.
+
+          Review dependency changes, migrations, translations, RTL behavior, and Jalali date behavior before merging.
+          EOF
+
+          existing="$(gh pr list --state open --base custom/main-fa --head "${GITHUB_REPOSITORY_OWNER}:sync/upstream-main-fa" --json url --jq '.[0].url // empty')"
+          if [[ -n "$existing" ]]; then
+            gh pr edit "$existing" --title "chore(upstream): propose main update" --body-file "$RUNNER_TEMP/upstream-main-proposal.md"
+          else
+            gh pr create --draft --base custom/main-fa --head sync/upstream-main-fa \
+              --title "chore(upstream): propose main update" \
+              --body-file "$RUNNER_TEMP/upstream-main-proposal.md"
+          fi

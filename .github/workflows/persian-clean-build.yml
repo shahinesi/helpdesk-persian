@@ -2,7 +2,7 @@ name: Persian clean frontend build
 
 on:
   pull_request:
-    branches: [develop, custom/develop-fa]
+    branches: [develop, custom/develop-fa, custom/main-fa]
     paths:
       - "desk/**"
       - ".github/workflows/persian-clean-build.yml"
