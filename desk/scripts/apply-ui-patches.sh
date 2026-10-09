@@ -38,9 +38,10 @@ if ! git -C "$frappe_ui" apply --reverse --check -p3 "$patch_dir/frappe-ui+1.0.0
 fi
 
 framework_patch="$patch_dir/frappe-ui-framework.diff"
-if git -C "$framework_ui" apply --reverse --check --directory=ui -p1 "$framework_patch" >/dev/null 2>&1; then
+framework_root="$(cd "$framework_ui/.." && pwd)"
+if git -C "$framework_root" apply --reverse --check --directory=ui -p1 "$framework_patch" >/dev/null 2>&1; then
 	echo "Frappe UI Persian patch is already applied."
 else
 	echo "Applying Frappe UI Persian patch."
-	git -C "$framework_ui" apply --directory=ui -p1 "$framework_patch"
+	git -C "$framework_root" apply --directory=ui -p1 "$framework_patch"
 fi
