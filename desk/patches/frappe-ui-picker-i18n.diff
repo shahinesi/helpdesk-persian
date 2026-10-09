@@ -98,3 +98,45 @@
 +const resolvedPlaceholder = computed(
 +  () => props.placeholder ?? translate?.('Select time') ?? 'Select time',
 +)
+
+--- a/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/CalendarPanel.vue
+@@ -9 +9 @@
+-        label="previous"
++        :label="translateLabel('previous')"
+@@ -19 +19 @@
+-        label="next"
++        :label="translateLabel('next')"
+@@ -30 +30 @@
+-        label="cycle-calendar-view"
++        :label="translateLabel('cycle-calendar-view')"
+@@ -38 +38 @@
+-          label="previous"
++          :label="translateLabel('previous')"
+@@ -52 +52 @@
+-          label="next"
++          :label="translateLabel('next')"
+@@ -64 +64 @@
+-        aria-label="Calendar dates"
++        :aria-label="translateLabel('Calendar dates')"
+@@ -160 +160 @@
+-      <div v-else class="flex h-52 w-52" aria-label="Select month and year">
++      <div v-else class="flex h-52 w-52" :aria-label="translateLabel('Select month and year')">
+@@ -165 +165 @@
+-          aria-label="Select year"
++          :aria-label="translateLabel('Select year')"
+@@ -188 +188 @@
+-          aria-label="Select month"
++          :aria-label="translateLabel('Select month')"
+@@ -213 +213 @@
+-import { computed, nextTick, ref, watch } from "vue";
++import { computed, getCurrentInstance, nextTick, ref, watch } from "vue";
+@@ -231,0 +232,3 @@
++
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
++const translateLabel = (message: string) => translate?.(message) ?? message;
+@@ -483,2 +486,2 @@
+-[dir="rtl"] .calendar-panel button[aria-label="previous"] > span,
+-[dir="rtl"] .calendar-panel button[aria-label="next"] > span {
++[dir="rtl"] .calendar-panel button[aria-:label="translateLabel('previous')"] > span,
++[dir="rtl"] .calendar-panel button[aria-:label="translateLabel('next')"] > span {

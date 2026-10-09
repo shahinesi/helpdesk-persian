@@ -10609,3 +10609,24 @@ msgstr "پیام سفارشی را اینجا بنویسید"
 #: desk/src/components/DocumentationButton.vue
 msgid "View documentation"
 msgstr "مشاهدهٔ مستندات"
+
+msgid "previous"
+msgstr "قبلی"
+
+msgid "next"
+msgstr "بعدی"
+
+msgid "cycle-calendar-view"
+msgstr "تغییر نمای تقویم"
+
+msgid "Calendar dates"
+msgstr "روزهای تقویم"
+
+msgid "Select month and year"
+msgstr "انتخاب ماه و سال"
+
+msgid "Select year"
+msgstr "انتخاب سال"
+
+msgid "Select month"
+msgstr "انتخاب ماه"
