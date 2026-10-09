@@ -17,7 +17,7 @@
 | نسخه Frappe | 17.0.0-dev، UNVERSIONED در Image |
 | نسخه frappe-ui | 1.0.0-rc.1 |
 | Snapshot | مسیر ثبت‌شده در `rollback-fa.md` |
-| همگامی با branch فعلی | سرور روی SHA `e0c78c32402c0789f8898db66d219c0c0290158d` است؛ branch محلی/PR روی `af3ed4a2de6f3698e21f2ccb909f4aca1be20236` قرار دارد |
+| همگامی با branch فعلی | سرور روی SHA `e0c78c32402c0789f8898db66d219c0c0290158d` است؛ branch محلی/PR جلوتر است و SHA فعلی از Git ثبت می‌شود |
 | وضعیت CI شاخه محلی/PR | Lint، Clean Frontend Build، Server و UI Tests موفق‌اند؛ Full Docker image و runtime پذیرش هنوز تأیید نشده‌اند |
 | Build prerequisites | Containerfile سورس `frappe/ui` را از ref ثابت می‌گیرد؛ فضای آزاد آخرین مشاهده حدود ۹ GB از ۷۷ GB و image فعلی برنامه حدود ۱۴ GB است |
 
