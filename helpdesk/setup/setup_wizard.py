@@ -23,12 +23,7 @@ def set_fresh_setup_language():
     ):
         return
 
-    settings = frappe.db.get_value(
-        "System Settings",
-        "System Settings",
-        ["language", "country", "time_zone", "currency"],
-        as_dict=True,
-    )
+    settings = frappe.get_cached_doc("System Settings")
     if (
         settings
         and settings.get("language")
