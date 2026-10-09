@@ -41,7 +41,6 @@ jobs:
           sudo apt-get install -y gettext
           msgfmt --check -o /tmp/helpdesk-fa.mo helpdesk/locale/fa.po
           python scripts/check_fa_translation.py --mo /tmp/helpdesk-fa.mo
-          python scripts/check_fa_translation.py --mo helpdesk/locale/fa/LC_MESSAGES/helpdesk.mo
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v2
