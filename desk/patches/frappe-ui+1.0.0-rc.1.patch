@@ -66,8 +66,8 @@ index 91c8dc4..2883b93 100644
 +      cleanupAutoUpdate?.()
 +      cleanupAutoUpdate = null
        floatingEl?.remove()
-      renderer?.destroy()
-      floatingEl = null
+       renderer?.destroy()
+       floatingEl = null
 diff --git a/node_modules/frappe-ui/src/molecules/editor/style.css b/node_modules/frappe-ui/src/molecules/editor/style.css
 --- a/node_modules/frappe-ui/src/molecules/editor/style.css
 +++ b/node_modules/frappe-ui/src/molecules/editor/style.css
