@@ -27,21 +27,15 @@ diff --git a/src/components/Menu/Menu.vue b/src/components/Menu/Menu.vue
 diff --git a/src/components/Combobox/ComboboxResults.vue b/src/components/Combobox/ComboboxResults.vue
 --- a/src/components/Combobox/ComboboxResults.vue
 +++ b/src/components/Combobox/ComboboxResults.vue
-@@ -29,0 +30,2 @@
-+const __ = (message: string) => (window as any).__?.(message) ?? message
-+
-@@ -115 +119 @@
+@@ -135 +135 @@
 -      <span>Loading...</span>
-+      <span>{{ __('Loading...') }}</span>
++      <span>{{ (window as any).__?.('Loading...') ?? 'Loading...' }}</span>
 diff --git a/src/components/MultiSelect/MultiSelectResults.vue b/src/components/MultiSelect/MultiSelectResults.vue
 --- a/src/components/MultiSelect/MultiSelectResults.vue
 +++ b/src/components/MultiSelect/MultiSelectResults.vue
-@@ -26,0 +27,2 @@
-+const __ = (message: string) => (window as any).__?.(message) ?? message
-+
-@@ -84 +88 @@
+@@ -86 +86 @@
 -      <span>Loading...</span>
-+      <span>{{ __('Loading...') }}</span>
++      <span>{{ (window as any).__?.('Loading...') ?? 'Loading...' }}</span>
 diff --git a/src/components/Dialog/Dialog.vue b/src/components/Dialog/Dialog.vue
 --- a/src/components/Dialog/Dialog.vue
 +++ b/src/components/Dialog/Dialog.vue
