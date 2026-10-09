@@ -1,6 +1,6 @@
 FROM node:20.20.0-bookworm-slim@sha256:d8a35d586fad3af7abb6fdb9ba972388395405f4d462da9e4a4ddcde67b5e0fb AS node-runtime
 
-RUN npm install --global yarn@1.22.18
+RUN npm install --global --prefix /opt/yarn-v1.22.18 yarn@1.22.18
 
 FROM helpdesk-persian:styled AS frappe-ui-source
 
@@ -21,13 +21,14 @@ USER root
 RUN find /home/frappe/frappe-bench/apps/helpdesk -mindepth 1 -maxdepth 1 ! -name desk -exec rm -rf {} + \
     && find /home/frappe/frappe-bench/apps/helpdesk/desk -mindepth 1 -maxdepth 1 ! -name node_modules -exec rm -rf {} +
 COPY --from=node-runtime /usr/local/ /usr/local/
+COPY --from=node-runtime /opt/yarn-v1.22.18/ /opt/yarn-v1.22.18/
 COPY --from=frappe-ui-source --chown=frappe:frappe /tmp/frappe-source/ui/ /home/frappe/frappe-bench/apps/frappe/ui/
 COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/helpdesk/
 
 USER frappe
 WORKDIR /home/frappe/frappe-bench
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-ENV PATH="/usr/local/bin:${PATH}"
+ENV PATH="/opt/yarn-v1.22.18/bin:/usr/local/bin:${PATH}"
 RUN test "$(node --version)" = "v20.20.0" \
     && test "$(yarn --version)" = "1.22.18" \
     && rm -rf apps/helpdesk/desk/node_modules/frappe-ui \
