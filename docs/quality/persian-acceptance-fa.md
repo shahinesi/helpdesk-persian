@@ -1,12 +1,12 @@
 # معیار پذیرش فارسی و Build
 
-## گیت‌های فعلی — commit `d11dc04b57a610aaef8684f3ce3c4db7294403aa`، ۱۰ اکتبر ۲۰۲۶
+## گیت‌های فعلی — commit `3d597d68e1b89b700884441e65d02ccc6f2a294a`، ۱۰ اکتبر ۲۰۲۶
 
 - Translation gate: ۲۲۸۳ ورودی فعال، بدون ترجمهٔ ناقص، fuzzy یا خطای placeholder؛ ۱۰۰٪.
 - Lint: موفق.
 - Server tests: موفق.
 - Clean frontend build: نصب از cache خالی با `--frozen-lockfile`، بررسی pin منبع Frappe UI، اجرای idempotent Patch دوبار و `yarn build` در GitHub Actions موفق.
-- Playwright: هر دو shard موفق. شکست قبلی `Opening Date` از fixture تاریخ UTC در برابر timezone سایت CI بود؛ fixture اکنون تاریخ جاری Backend را نگه می‌دارد و منطق فیلتر محصول تغییر نکرد.
+- Playwright: هر دو shard موفق. شکست قبلی `Opening Date` از fixture تاریخ UTC در برابر timezone سایت CI بود؛ fixture اکنون تاریخ جاری Backend را نگه می‌دارد و منطق فیلتر محصول تغییر نکرد. selector Gmail نیز با نام رسمی Provider هماهنگ است.
 - نسخه‌های Pipeline: Node 20.20.0، Yarn 1.22.18، Vue 3.5.31، Vite 5.4.21، TypeScript 5.9.3، `frappe-ui` 1.0.0-rc.1.
 - `yarn tsc --noEmit` در بررسی قبلی خطاهای متعدد در Helpdesk و `frappe/ui` داشت؛ این گیت همچنان FAIL/UNRESOLVED است.
 
@@ -18,8 +18,8 @@ Build موفق، هشدارهای فعلی را نشان داد: دو Component 
 
 ## وضعیت PR و محیط
 
-PR شماره ۱ باز است؛ Base=`develop`، Head=`feat/persian-setup-wizard` در SHA `d11dc04b57a610aaef8684f3ce3c4db7294403aa`. همه Checkهای CI موفق‌اند و GitHub آخرین وضعیت را `CLEAN` و `MERGEABLE` گزارش کرده است. Merge انجام نشده است.
+PR شماره ۱ باز است؛ Base=`develop`، Head=`feat/persian-setup-wizard` در SHA `3d597d68e1b89b700884441e65d02ccc6f2a294a`. همه Checkهای CI موفق‌اند و GitHub آخرین وضعیت را `CLEAN` و `MERGEABLE` گزارش کرده است. Merge انجام نشده است.
 
-Stack متصل به دامنه همچنان SHA `b978318cd83e249ba24d7702dd1be862a1596345` و Image digest `sha256:8a4ed272e5f8661bb270ed6b5930ed5fab692d385dc2d67abd01bcb1c9a3066d` را اجرا می‌کند؛ صفحه Home HTTP 200 است. نامزد `d11dc04` Deploy نشده، Migration اجرا نشده و DB/Redis/Volumeها تغییر نکرده‌اند. Backup پیش از نامزد ثبت و از نظر gzip/TAR/JSON و checksum اعتبارسنجی شده؛ Restore آزمایشی نشد. Full Docker Build از Checkout تمیز تأیید نشده است؛ فضای میزبان ۶٫۴ GB آزاد است.
+Stack متصل به دامنه Image `helpdesk-persian:runtime-3d597d68` با digest `sha256:3a9a9823e5bc18e1c695c7340a50aca4380f1ea54e17acc4f41db622f52aebad` را اجرا می‌کند. Full Docker Build از archive دقیق همین commit موفق شد؛ Home، Login، API ping و assetهای CSS/فونت/JavaScript پاسخ HTTP 200 دادند. DB/Redis/Volumeها تغییر نکردند و Migration اجرا نشد. Backup تازه تهیه و خوانایی و checksum آن بررسی شد؛ Restore آزمایشی نشد. Rollback image قبلی حفظ شده است.
 
-Runtime در مرورگر مستقل: ۱۵ بخش اصلی Settings روی نسخهٔ قبلی سرور مرور شده‌اند، بدون ذخیره تنظیم عملیاتی. نام رسمی Gmail/SendGrid و عبور `dir=ltr` از combobox در source اصلاح و تست شده‌اند، اما چون نامزد Deploy نشده، Runtime آن اصلاحات هنوز تأیید نشده است. این بررسی تمام فرم‌های تو‌در‌تو، موبایل، LTR زبان انگلیسی، صفحه‌کلید و Accessibility را پوشش نمی‌دهد.
+Runtime زندهٔ Settings پس از Deploy: **UNVERIFIED**. تست‌های Playwright در CI روی محیط ایزوله موفق‌اند؛ این نتیجه جایگزین بررسی زندهٔ Settings نیست. برای ورود به سایت زنده، credential معتبرِ حساب تست و profile مرورگر مستقل لازم است. `yarn tsc --noEmit` همچنان FAIL/UNRESOLVED است و بررسی Restore ایزوله و LTR/موبایل/Accessibility هم انجام نشده است.

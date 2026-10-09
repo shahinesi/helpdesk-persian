@@ -6,24 +6,24 @@
 |---|---|
 | میزبان SSH | `carpet-erp` |
 | مسیر Repository | `/home/ubuntu/helpdesk-persian` |
-| SHA و وضعیت Working Tree روی سرور | `b978318cd83e249ba24d7702dd1be862a1596345`، پاک |
+| SHA آخرین Image برنامه | `3d597d68e1b89b700884441e65d02ccc6f2a294a` |
 | روش اجرا | Docker Compose |
 | Compose project | `helpdesk-persian-test` |
-| Image برنامه | `helpdesk-persian:runtime-b978318cd`, `sha256:8a4ed272e5f8661bb270ed6b5930ed5fab692d385dc2d67abd01bcb1c9a3066d` |
+| Image برنامه | `helpdesk-persian:runtime-3d597d68`, `sha256:3a9a9823e5bc18e1c695c7340a50aca4380f1ea54e17acc4f41db622f52aebad` |
 | DB | MariaDB 11.8، container healthy |
 | Cache/Queue | Redis 8.6، سرویس‌های Up |
 | دامنه | Traefik برای `helpdesk.ircarpet-r.com` به frontend این Stack route دارد |
 | نسخه Helpdesk | 1.22.2، UNVERSIONED در Image |
 | نسخه Frappe | 17.0.0-dev، UNVERSIONED در Image |
 | نسخه frappe-ui | 1.0.0-rc.1 |
-| Snapshot پیش از نامزد فعلی | `/home/frappe/frappe-bench/sites/backups/pre-57446ad5`؛ SQL gzip، public/private TAR و JSON تنظیمات از نظر خوانایی و checksum اعتبارسنجی شده؛ Restore آزمایشی نشده |
-| شاخه نامزد | `feat/persian-setup-wizard` روی SHA `d11dc04b57a610aaef8684f3ce3c4db7294403aa`؛ PR #1 به `develop` باز است |
-| وضعیت CI شاخه/PR | Clean Frontend Build، Lint، Python Server Tests و هر دو Playwright shard موفق؛ PR در آخرین بررسی `CLEAN` و `MERGEABLE` بود |
-| وضعیت Build کامل | Clean Frontend Build در CI تأیید شده؛ Full Docker Build از checkout تمیز هنوز تأیید نشده و image کامل نامزد ساخته نشده است |
-| فضای میزبان | ۶٫۴ GB آزاد از ۷۷ GB؛ Docker imageها ۵۱٫۰۳ GB و build cache برابر ۱۴٫۸۸ GB است. هیچ Image یا Volume پاک نشود |
-| وضعیت سرویس فعلی | سرویس‌های برنامه همچنان `helpdesk-persian:runtime-b978318cd` را اجرا می‌کنند؛ MariaDB Healthy؛ دامنه `https://helpdesk.ircarpet-r.com/helpdesk/home` پاسخ HTTP 200 |
-| اثر پس از snapshot | هیچ image جدیدی Deploy نشده؛ DB، Redis، تنظیمات سایت و Volumeها تغییر نکرده‌اند؛ Migration اجرا نشده |
+| Backup پیش از Deploy | `/home/ubuntu/helpdesk-persian-recovery/pre-3d597d68`؛ SQL gzip، public/private TAR و JSON تنظیمات؛ checksum و خوانایی اعتبارسنجی شده؛ Restore آزمایشی نشده |
+| شاخه و PR | `feat/persian-setup-wizard`، PR #1 باز به `develop`؛ SHA `3d597d68e1b89b700884441e65d02ccc6f2a294a`، `CLEAN` و `MERGEABLE` |
+| وضعیت CI | Clean Frontend Build، Lint، Python Server Tests و هر دو Playwright shard موفق |
+| Build کامل | `docker/HelpdeskPersian.Containerfile` از archive commit `3d597d68` روی میزبان موفق؛ image نسخه‌بندی‌شده ساخته شد |
+| فضای میزبان | هنگام بررسی ۶٫۴ GB آزاد بود؛ بعد از Build/Deploy حدود ۶ GB آزاد ماند. هیچ Image یا Volume پاک نشد |
+| وضعیت سرویس | شش سرویس برنامه `helpdesk-persian:runtime-3d597d68` را اجرا می‌کنند؛ MariaDB healthy، Redisها Up؛ Home، Login، API ping و assetهای CSS/فونت/JavaScript HTTP 200 |
+| اثر Deploy | DB، Redis و Volumeها تغییر نکردند؛ Migration اجرا نشد؛ image قبلی برای Rollback نگهداری شده است |
 
-یک Container دیگر با نام `helpdesk-final-3790` و Image جداگانه نیز مشاهده شد؛ رابطه‌اش با دامنه و Stack فعلی تأیید نشده و دست‌کاری نشده است. به‌دلیل route عمومی و دو Container اجرایی، محیط را صرفاً بر اساس نام Compose «آزمایشی» یا «Production» طبقه‌بندی نکن.
+یک Container دیگر با نام `helpdesk-final-3790` و Image جداگانه نیز مشاهده شد؛ رابطه‌اش با دامنه و Stack فعلی تأیید نشده و دست‌کاری نشده است. به‌دلیل route عمومی و دادهٔ متصل، محیط را صرفاً بر اساس نام Compose «آزمایشی» یا «Production» طبقه‌بندی نکن.
 
 Image پایه محلی، مانع بازتولید Full image build روی یک میزبان خالی است؛ recipe ساخت پایه باید نسخه‌بندی شود. فضای آزاد میزبان نیز برای شروع build کامل بدون ارزیابی ظرفیت کافی، حاشیه اطمینان کمی دارد. هیچ Image یا Volume پاک نشده است.
