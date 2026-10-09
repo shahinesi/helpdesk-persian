@@ -19,7 +19,7 @@
 | هدف | فایل نسخه‌بندی‌شده | روش اعمال | پوشش |
 |---|---|---|---|
 | Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` از ریشه مخزن Frappe؛ پین SHA در checkout دارای Git اعتبارسنجی می‌شود | Activity timeline، نمایش متن تغییرات و ارقام onboarding |
-| پکیج `frappe-ui` | `desk/patches/frappe-ui+1.0.0-rc.1.patch` | `patch-package` در `postinstall` | ۳۶ فایل؛ Jalali picker، RTL، متن‌های انتخاب، فونت Vazirmatn، نمودارها، Editor و کنترل‌های مشترک |
+| پکیج `frappe-ui` | `desk/patches/frappe-ui+1.0.0-rc.1.patch` | `patch-package` در `postinstall` | ۳۷ فایل؛ Jalali picker، RTL، متن‌های انتخاب، فونت Vazirmatn، نمودارها، Editor و کنترل‌های مشترک |
 
 Patchها پس از ممیزی در دو Artifact ادغام شدند. Patchهای قدیمی حذف‌شده در Git bundle بازیابی‌پذیرند؛ قابلیت‌هایشان در Patch ادغام‌شده یا خود upstream حضور دارد. Patch اعمال‌نشده با خطا Build را متوقف می‌کند. اسکریپت Build نسخه `frappe-ui` را بررسی می‌کند و Patchهای منبع Frappe را فقط یک‌بار اعمال می‌کند.
 
@@ -34,7 +34,7 @@ yarn apply:ui-patches
 yarn build
 ```
 
-مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. برای Build مستقل، Frappe را روی SHA مندرج در `frappe-ui-source.ref` دریافت کن و در `frappe-bench/sites/common_site_config.json` مقدار `socketio_port` را تعریف کن. اسکریپت Patch از ریشه مخزن اجرا می‌شود تا هم در checkout دارای `.git` و هم در Image بدون `.git` همان مسیرها را تغییر دهد. Workflow `persian-clean-build.yml` همین ساختار را با cache خالی می‌سازد.
+مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` در ۹ اکتبر ۲۰۲۶ روی commit `3a07099cfa1c90a55f52287c5b53f7b5dbfde3d0` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین تست کامل Backend یا Runtime پذیرش نیست.
 
 ### ساخت image با Docker
 

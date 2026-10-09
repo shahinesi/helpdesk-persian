@@ -12,7 +12,11 @@ import {
 
 usePersona("agent");
 
-test("sidebar fields save once per change and persist", async ({ page, api, ticket }) => {
+test("sidebar fields save once per change and persist", async ({
+  page,
+  api,
+  ticket,
+}) => {
   const team = `E2E Team ${uid()}`;
   await createTeam(api, team, [personas.agent.email]);
   const setValue = recordCalls(page, "frappe.client.set_value");
@@ -33,9 +37,9 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   await expect.poll(() => setValue.length).toBe(3);
 
   // clearing is its own save; picking after it must not send a second one
-  await page.getByRole("button", { name: "High" }).hover();
+  await page.getByRole("button", { name: "High Clear", exact: true }).hover();
   await page
-    .getByRole("button", { name: "High", exact: true })
+    .getByRole("button", { name: "High Clear", exact: true })
     .locator('[data-slot="clear"]')
     .click();
   await expect.poll(() => setValue.length).toBe(4);
@@ -45,27 +49,44 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   expect(setValue).toHaveLength(5);
 
   await page.reload();
-  await expect(page.getByRole("button", { name: "Low", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Bug", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: team, exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Low", exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Bug", exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: team, exact: true })
+  ).toBeVisible();
   const saved = await api.get("HD Ticket", ticket.name);
-  expect(saved).toMatchObject({ priority: "Low", ticket_type: "Bug", agent_group: team });
+  expect(saved).toMatchObject({
+    priority: "Low",
+    ticket_type: "Bug",
+    agent_group: team,
+  });
 });
 
-test.fixme("setting a team that has no members does not error", async ({ page, ticket }) => {
-  // fresh sites ship Billing with an enabled, empty round robin rule: IndexError in get_user_round_robin
-  const errors: string[] = [];
-  page.on("pageerror", (error) => errors.push(error.message));
-  await openTicket(page, ticket.name);
-  const field = page.getByRole("combobox", { name: "Set Team..." });
-  await field.click();
-  await field.fill("Billing");
-  await page.getByRole("option", { name: "Billing", exact: true }).click();
-  await page.waitForLoadState("networkidle");
-  expect(errors).toEqual([]);
-});
+test.fixme(
+  "setting a team that has no members does not error",
+  async ({ page, ticket }) => {
+    // fresh sites ship Billing with an enabled, empty round robin rule: IndexError in get_user_round_robin
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await openTicket(page, ticket.name);
+    const field = page.getByRole("combobox", { name: "Set Team..." });
+    await field.click();
+    await field.fill("Billing");
+    await page.getByRole("option", { name: "Billing", exact: true }).click();
+    await page.waitForLoadState("networkidle");
+    expect(errors).toEqual([]);
+  }
+);
 
-test("tags can be created with a colour, added and removed", async ({ page, api, ticket }) => {
+test("tags can be created with a colour, added and removed", async ({
+  page,
+  api,
+  ticket,
+}) => {
   const tag = `e2e-${uid()}`;
   const tagsOnTicket = async () =>
     ((await api.get("HD Ticket", ticket.name))._user_tags || "")
@@ -94,24 +115,35 @@ test("tags can be created with a colour, added and removed", async ({ page, api,
   await expect(page.getByTitle(tag)).toHaveCount(0);
 });
 
-test.fixme("tag activity reads '&', not '&amp;'", async ({ page, api, ticket }) => {
-  // log_tag_activity joins with " & ", saving sanitises it to &amp; and the log row renders text
-  await api.call("helpdesk.api.tags.update_tags", {
-    doctype: "HD Ticket",
-    name: ticket.name,
-    added: [{ name: `e2e-${uid()}` }],
-    removed: ["First Ticket"],
-  });
-  await openTicket(page, ticket.name);
-  await expect(page.getByText(/added tag .* & removed tag/)).toBeVisible();
-});
+test.fixme(
+  "tag activity reads '&', not '&amp;'",
+  async ({ page, api, ticket }) => {
+    // log_tag_activity joins with " & ", saving sanitises it to &amp; and the log row renders text
+    await api.call("helpdesk.api.tags.update_tags", {
+      doctype: "HD Ticket",
+      name: ticket.name,
+      added: [{ name: `e2e-${uid()}` }],
+      removed: ["First Ticket"],
+    });
+    await openTicket(page, ticket.name);
+    await expect(page.getByText(/added tag .* & removed tag/)).toBeVisible();
+  }
+);
 
-test("agents are assigned and unassigned from the sidebar", async ({ page, api, ticket }) => {
+test("agents are assigned and unassigned from the sidebar", async ({
+  page,
+  api,
+  ticket,
+}) => {
   const assignees = async () =>
     (
       await api.list("ToDo", {
         fields: ["allocated_to"],
-        filters: { reference_type: "HD Ticket", reference_name: ticket.name, status: "Open" },
+        filters: {
+          reference_type: "HD Ticket",
+          reference_name: ticket.name,
+          status: "Open",
+        },
       })
     ).map((todo) => todo.allocated_to);
   await openTicket(page, ticket.name);
@@ -127,7 +159,9 @@ test("agents are assigned and unassigned from the sidebar", async ({ page, api, 
   await page.getByRole("button", { name: "Bela E2E" }).last().click();
   await page.keyboard.press("Escape");
   await expect.poll(assignees).toEqual([]);
-  await expect(page.getByRole("button", { name: "Set Assignee..." })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Set Assignee..." })
+  ).toBeVisible();
 });
 
 test.describe("assign within team", () => {
@@ -142,7 +176,11 @@ test.describe("assign within team", () => {
     for (const undo of restore.reverse()) await undo();
   });
 
-  test("only the ticket team's agents are offered", async ({ page, api, ticket }) => {
+  test("only the ticket team's agents are offered", async ({
+    page,
+    api,
+    ticket,
+  }) => {
     const team = `E2E Team ${uid()}`;
     await createTeam(api, team, [personas.agent.email, personas.manager.email]);
     await api.update("HD Ticket", ticket.name, { agent_group: team });
@@ -151,7 +189,9 @@ test.describe("assign within team", () => {
     // the team's rule may already have auto-assigned someone, so open via the shortcut
     await page.locator("body").click();
     await page.keyboard.press("a");
-    await expect(page.getByRole("button", { name: "Mona E2E" }).last()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Mona E2E" }).last()
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Bela E2E" })).toHaveCount(0);
   });
 });
@@ -185,7 +225,10 @@ test("status changes from the menu and the s shortcut, and the subject is rename
 });
 
 /** A personal saved reply that stages field, team and tag actions. */
-async function stagingReply(apiAs: (key: "agent") => Promise<Api>, tag: string) {
+async function stagingReply(
+  apiAs: (key: "agent") => Promise<Api>,
+  tag: string
+) {
   return (await apiAs("agent")).insert("HD Saved Reply", {
     title: `Escalate ${uid()}`,
     message: "<p>Thanks for writing in</p>",
@@ -201,13 +244,21 @@ async function stagingReply(apiAs: (key: "agent") => Promise<Api>, tag: string) 
 
 async function applySavedReply(page: Page, title: string) {
   await page.getByRole("button", { name: "Reply", exact: true }).click();
-  await page.locator("[data-slot=root]:has(input[type=file]) + *").first().click();
+  await page
+    .locator("[data-slot=root]:has(input[type=file]) + *")
+    .first()
+    .click();
   await page.getByRole("dialog").getByText(title).click();
   await expect(composer(page)).toContainText("Thanks for writing in");
   await page.getByRole("button", { name: "Show actions" }).click();
 }
 
-test("saved reply chips can be repointed and apply after sending", async ({ page, api, apiAs, ticket }) => {
+test("saved reply chips can be repointed and apply after sending", async ({
+  page,
+  api,
+  apiAs,
+  ticket,
+}) => {
   const team = `E2E Team ${uid()}`;
   const tag = `e2e-${uid()}`;
   await createTeam(api, team, [personas.agent.email]);
@@ -217,35 +268,54 @@ test("saved reply chips can be repointed and apply after sending", async ({ page
 
   await page.getByRole("button", { name: /^Type / }).click();
   for (const name of ["Bug", "Incident", "Question"]) {
-    await expect(page.getByRole("listbox").getByRole("option", { name })).toBeVisible();
+    await expect(
+      page.getByRole("listbox").getByRole("option", { name })
+    ).toBeVisible();
   }
   await page.getByRole("listbox").getByRole("option", { name: "Bug" }).click();
-  await expect(page.getByRole("button", { name: /^Type / })).toContainText("Bug");
+  await expect(page.getByRole("button", { name: /^Type / })).toContainText(
+    "Bug"
+  );
 
   await page.getByRole("button", { name: /^Team / }).click();
   await page.getByRole("combobox", { name: "Select team" }).fill(team);
   await page.getByRole("listbox").getByRole("option", { name: team }).click();
-  await expect(page.getByRole("button", { name: /^Team / })).toContainText(team);
+  await expect(page.getByRole("button", { name: /^Team / })).toContainText(
+    team
+  );
 
   await page.getByRole("button", { name: /^Send/ }).click();
   await expect
     .poll(async () => {
       const saved = await api.get("HD Ticket", ticket.name);
-      return [saved.priority, saved.ticket_type, saved.agent_group, saved._user_tags?.includes(tag)];
+      return [
+        saved.priority,
+        saved.ticket_type,
+        saved.agent_group,
+        saved._user_tags?.includes(tag),
+      ];
     })
     .toEqual(["High", "Bug", team, true]);
 });
 
-test.fixme("a repointed chip reopens with the full list", async ({ page, apiAs, ticket }) => {
-  // the picker keeps the picked label as its search text, so only that option shows
-  const reply = await stagingReply(apiAs, `e2e-${uid()}`);
-  await openTicket(page, ticket.name);
-  await applySavedReply(page, reply.title);
+test.fixme(
+  "a repointed chip reopens with the full list",
+  async ({ page, apiAs, ticket }) => {
+    // the picker keeps the picked label as its search text, so only that option shows
+    const reply = await stagingReply(apiAs, `e2e-${uid()}`);
+    await openTicket(page, ticket.name);
+    await applySavedReply(page, reply.title);
 
-  await page.getByRole("button", { name: /^Type / }).click();
-  await page.getByRole("listbox").getByRole("option", { name: "Bug" }).click();
-  await page.getByRole("button", { name: /^Type / }).click();
-  for (const name of ["Bug", "Incident", "Question"]) {
-    await expect(page.getByRole("listbox").getByRole("option", { name })).toBeVisible();
+    await page.getByRole("button", { name: /^Type / }).click();
+    await page
+      .getByRole("listbox")
+      .getByRole("option", { name: "Bug" })
+      .click();
+    await page.getByRole("button", { name: /^Type / }).click();
+    for (const name of ["Bug", "Incident", "Question"]) {
+      await expect(
+        page.getByRole("listbox").getByRole("option", { name })
+      ).toBeVisible();
+    }
   }
-});
+);

@@ -2,9 +2,9 @@
 
 ## اجرای فعلی
 
-Workflow در `.github/workflows/upstream-sync.yml` در شاخه فارسی فعلی برای اجرای روزانه و دستی تعریف شده است. ابتدا `main`، `main-hotfix`، `develop` و `legacy` را از `frappe/helpdesk` می‌گیرد و Mirrorهای `vendor/*` را فقط در صورت امکان Fast-forward به‌روزرسانی می‌کند. تاریخچه جلوتر یا واگرا باعث توقف و خطای روشن می‌شود؛ هیچ Force Push انجام نمی‌شود. بررسی GitHub در ۹ اکتبر ۲۰۲۶ نشان داد این Workflow هنوز روی Default Branch (`develop`) نیست؛ GitHub آن را در Default Branch پیدا نکرد، بنابراین زمان‌بندی خودکار فعلاً فعال نیست.
+Workflow در `.github/workflows/upstream-sync.yml` در شاخه فارسی فعلی برای اجرای روزانه و دستی تعریف شده است. ابتدا `main`، `main-hotfix`، `develop` و `legacy` را از `frappe/helpdesk` می‌گیرد و Mirrorهای `vendor/*` را فقط در صورت امکان Fast-forward به‌روزرسانی می‌کند. تاریخچه جلوتر یا واگرا باعث توقف و خطای روشن می‌شود؛ هیچ Force Push انجام نمی‌شود. در ۹ اکتبر ۲۰۲۶، این فایل روی Default Branch (`develop`) وجود نداشت؛ بنابراین Schedule خودکار و `workflow_dispatch` از Default Branch فعال نیستند.
 
-اگر `vendor/develop` تغییر کند و `custom/develop-fa` هنوز آن را نداشته باشد، Workflow یک شاخه ثابت `sync/upstream-develop-fa` می‌سازد یا جلو می‌برد و یک Draft PR به `custom/develop-fa` ایجاد یا به‌روزرسانی می‌کند. Merge Conflict باعث توقف پیش از Push می‌شود. هیچ Merge خودکار یا Deployment خودکاری فعال نیست.
+اگر `vendor/develop` تغییر کند و `custom/develop-fa` هنوز آن را نداشته باشد، Workflow یک شاخه ثابت `sync/upstream-develop-fa` می‌سازد یا جلو می‌برد و یک Draft PR به `custom/develop-fa` ایجاد یا به‌روزرسانی می‌کند. Merge Conflict باعث توقف پیش از Push می‌شود. هیچ Merge خودکار یا Deployment خودکاری فعال نیست. در وضعیت فعلی این Proposal path فقط برای `develop` پیاده‌سازی شده؛ `main` و `main-hotfix` Proposal مستقل ندارند.
 
 در حال حاضر برای `custom/main-fa` Proposal ساخته نمی‌شود، چون شاخه وجود ندارد و وابستگی‌های خط `main` با خط `develop` متفاوت‌اند. برای فعال‌شدن Schedule، Workflow باید پس از بازبینی روی Default Branch قرار بگیرد؛ پیش از آن، `workflow_dispatch` نیز به‌دلیل نبود Workflow در Default Branch در GitHub قابل اجرا نیست.
 
