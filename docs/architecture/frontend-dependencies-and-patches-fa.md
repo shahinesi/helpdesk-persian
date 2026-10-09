@@ -34,13 +34,13 @@ yarn apply:ui-patches
 yarn build
 ```
 
-مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` در ۹ اکتبر ۲۰۲۶ روی commit `3a07099cfa1c90a55f52287c5b53f7b5dbfde3d0` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین تست کامل Backend یا Runtime پذیرش نیست.
+مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` روی commit `3ac43410518fc4a4446815d5e756e1d65c727335` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین تست کامل Backend یا Runtime پذیرش نیست.
 
 ### ساخت image با Docker
 
-`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند؛ بنابراین image پایه نمی‌تواند سورس قدیمی یا تغییرکردهٔ این مسیر را بی‌صدا وارد Build کند. سپس Patch مشترک را اعمال می‌کند و نصب و build را با Node `20.20.0` و Yarn `1.22.18` اجرا می‌کند. نبود دسترسی به GitHub یا ناسازگاری Patch باید Build را متوقف کند.
+`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند؛ بنابراین image پایه نمی‌تواند سورس قدیمی یا تغییرکردهٔ این مسیر را بی‌صدا وارد Build کند. Node `20.20.0` و Yarn `1.22.18` از مرحلهٔ Node رسمی و نسخه‌بندی‌شده به image مبنا منتقل می‌شوند؛ نصب وابستگی و Build با همین نسخه‌ها انجام می‌شود. این مسیر جایگزین نصب Node با NVM در زمان Docker Build شده تا دریافت فهرست نسخه‌های NVM عامل ناپایداری نباشد. نبود دسترسی به GitHub یا ناسازگاری Patch باید Build را متوقف کند.
 
-این recipe به image پایهٔ موجود `helpdesk-persian:styled` نیاز دارد. Build فقط image کاندید تولید می‌کند و آن را Deploy نمی‌کند.
+این recipe به image پایهٔ موجود `helpdesk-persian:styled` نیاز دارد. تغییر Containerfile هنوز روی شاخه محلی است و Full Docker Image Build با آن اجرا نشده؛ بنابراین این اصلاح هنوز Clean Docker Build را اثبات نمی‌کند. Build فقط image کاندید تولید می‌کند و آن را Deploy نمی‌کند.
 
 ## ارتقا و بازگشت
 

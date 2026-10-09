@@ -17,8 +17,9 @@
 | نسخه Frappe | 17.0.0-dev، UNVERSIONED در Image |
 | نسخه frappe-ui | 1.0.0-rc.1 |
 | Snapshot | مسیر ثبت‌شده در `rollback-fa.md` |
-| همگامی با branch فعلی | سرور روی SHA `e0c78c32402c0789f8898db66d219c0c0290158d` است؛ branch محلی/PR روی `3a07099cfa1c90a55f52287c5b53f7b5dbfde3d0` قرار دارد |
-| Build prerequisites | `apps/frappe/ui` در checkout سرور موجود نیست؛ فضای آزاد حدود ۹ GB از ۷۷ GB است |
+| همگامی با branch فعلی | سرور روی SHA `e0c78c32402c0789f8898db66d219c0c0290158d` است؛ branch محلی/PR روی `3ac43410518fc4a4446815d5e756e1d65c727335` قرار دارد |
+| وضعیت CI شاخه محلی/PR | Lint، Clean Frontend Build، Server و UI Tests موفق‌اند؛ Full Docker image و runtime پذیرش هنوز تأیید نشده‌اند |
+| Build prerequisites | Containerfile سورس `frappe/ui` را از ref ثابت می‌گیرد؛ فضای آزاد آخرین مشاهده حدود ۹ GB از ۷۷ GB و image فعلی برنامه حدود ۱۴ GB است |
 
 یک Container دیگر با نام `helpdesk-final-3790` و Image جداگانه نیز مشاهده شد؛ رابطه‌اش با دامنه و Stack فعلی تأیید نشده و دست‌کاری نشده است. به‌دلیل route عمومی و دو Container اجرایی، محیط را صرفاً بر اساس نام Compose «آزمایشی» یا «Production» طبقه‌بندی نکن.
 

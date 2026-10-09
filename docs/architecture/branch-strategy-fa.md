@@ -14,9 +14,9 @@
 | `vendor/main-hotfix` | هم‌تراز `upstream/main-hotfix` | Mirror اصلاح‌های نسخه پایدار |
 | `vendor/develop` | هم‌تراز `upstream/develop` در Remote | Mirror توسعه |
 | `vendor/legacy` | هم‌تراز `upstream/legacy` | Mirror خط قدیمی |
-| `custom/develop-fa` | ۱۱۹ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop` | نسخه فارسی توسعه؛ به‌روزرسانی نیازمند Proposal و بازبینی است |
+| `custom/develop-fa` | ۱۷۹ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop`، بر پایهٔ Merge Base=`794c7b0895eb4b1ac652f6817d69d3879faef844` | نسخه فارسی توسعه؛ به‌روزرسانی نیازمند Proposal و بازبینی است |
 | `custom/main-fa` | وجود ندارد | تا اثبات سازگاری ایجاد/اعلام نمی‌شود |
-| `feat/persian-setup-wizard` | PR شماره ۱، باز؛ ۱۶۸ Commit و ۲۶۰ فایل تغییر، Head=`3a07099cfa1c90a55f52287c5b53f7b5dbfde3d0` | شاخه تغییرات فارسی فعلی |
+| `feat/persian-setup-wizard` | PR شماره ۱ باز و Mergeable؛ ۱۷۴ Commit جلوتر از `develop`، ۲۶۰ فایل تغییر، Head=`3ac43410518fc4a4446815d5e756e1d65c727335` | شاخه تغییرات فارسی فعلی |
 
 Default Branch روی `develop` باقی می‌ماند؛ تغییرش تا آماده‌شدن خط پایدار فارسی انجام نمی‌شود. `main` و `develop` دو خط مستقل‌اند: وابستگی Helpdesk در `main` به Frappe 15/16 و Python 3.10+ محدود است، در حالی که `develop` به Frappe 16/17 و Python 3.14 نیاز دارد.
 
