@@ -36,7 +36,7 @@ yarn build
 
 مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` روی commit `af3ed4a2de6f3698e21f2ccb909f4aca1be20236` و دوباره روی نامزد `57446ad5d4e78cae713b2b2edb48927b2a3b9828` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد؛ اجرای دوم GitHub Actions شماره `37982460203` است. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین Full Docker Build، تست کامل Backend یا Runtime پذیرش نیست.
 
-برای SHA نامزد `57446ad5`، Lint و Server Tests موفق شدند. Playwright ابتدا دو مورد ناموفق داشت: آزمون Settings نام قدیمی `GMail` را جست‌وجو می‌کرد؛ selector به `Gmail` اصلاح شد و در اجرای بعدی، shard اول Playwright موفق شد. آزمون Opening Date هم با fixture مبتنی بر UTC شکست می‌خورد، چون تاریخ فعلی سرور تست در timezone خودش روز بعد بود؛ مقدار `today` اکنون از مقدار واقعی ایجادشده توسط Backend می‌آید و فقط تاریخ دو رکورد قدیمی در fixture تنظیم می‌شود. CI این اصلاح هنوز در حال اجراست.
+روی SHA `4547143bcb56898c84154e7c053d74832edddd6f` همهٔ CIها موفق شدند: Persian Clean Frontend Build (`37985969881`)، Lint (`37985969792`)، Server Tests (`37985969807`) و هر دو shard از Playwright (`37985969826`). شکست قبلی Settings selector قدیمی `GMail` بود که با عنوان رسمی `Gmail` همسان شد. شکست Opening Date از fixture مبتنی بر UTC بود، چون Backend سایت تست در timezone خودش روز بعد را محاسبه می‌کرد؛ fixture اکنون تاریخ جاری تولیدشده توسط Backend را نگه می‌دارد. هیچ منطق فیلتر محصول تغییر نکرد.
 
 ### ساخت image با Docker
 
