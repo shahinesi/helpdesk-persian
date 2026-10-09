@@ -19,9 +19,8 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   await openTicket(page, ticket.name);
 
   const pick = async (placeholder: string, option: string) => {
-    const field = page.getByRole("combobox", { name: placeholder });
-    await field.click();
-    await field.fill(option);
+    await page.getByRole("button", { name: placeholder }).click();
+    await page.getByRole("combobox").fill(option);
     await page.getByRole("option", { name: option, exact: true }).click();
   };
   await pick("Set Priority...", "High");
@@ -32,7 +31,7 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   await expect.poll(() => setValue.length).toBe(3);
 
   // clearing is its own save; picking after it must not send a second one
-  await page.getByRole("combobox", { name: "Set Priority..." }).hover();
+  await page.getByRole("button", { name: "High" }).hover();
   await page.locator('[data-slot=trigger]:has([placeholder="Set Priority..."]) [data-slot=clear]').click();
   await expect.poll(() => setValue.length).toBe(4);
   await pick("Set Priority...", "Low");
@@ -41,9 +40,9 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   expect(setValue).toHaveLength(5);
 
   await page.reload();
-  await expect(page.getByRole("combobox", { name: "Set Priority..." })).toHaveValue("Low");
-  await expect(page.getByRole("combobox", { name: "Set Ticket Type..." })).toHaveValue("Bug");
-  await expect(page.getByRole("combobox", { name: "Set Team..." })).toHaveValue(team);
+  await expect(page.getByRole("button", { name: "Low", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Bug", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: team, exact: true })).toBeVisible();
   const saved = await api.get("HD Ticket", ticket.name);
   expect(saved).toMatchObject({ priority: "Low", ticket_type: "Bug", agent_group: team });
 });

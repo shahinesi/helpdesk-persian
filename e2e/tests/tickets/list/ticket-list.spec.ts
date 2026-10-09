@@ -152,7 +152,7 @@ test("an added datetime column renders relative time and can be removed", async 
   await page.getByRole("option", { name: "Last Modified", exact: true }).click();
   await page.keyboard.press("Escape");
   // Regression: the column was saved with type "option" and showed the raw value.
-  await expect(row).toContainText(/ago.*ago/);
+  await expect(row.getByText("Just now", { exact: true })).toHaveCount(2);
   await expect(row).not.toContainText(/\d{4}-\d{2}-\d{2}/);
 
   await page.getByRole("button", { name: "Columns" }).click();
@@ -162,7 +162,7 @@ test("an added datetime column renders relative time and can be removed", async 
     .getByRole("button")
     .last()
     .click();
-  await expect(row).not.toContainText(/ago.*ago/);
+  await expect(row.getByText("Just now", { exact: true })).toHaveCount(1);
 });
 
 test("page length and load more page through the list", async ({ page, apiAs }) => {

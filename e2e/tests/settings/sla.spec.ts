@@ -119,7 +119,7 @@ test("a holiday list gets a recurring weekend and its holidays are edited", asyn
   await expect(dialog.getByText("Total holidays in this list: 13")).toBeVisible();
 
   await dialog.getByRole("radio", { name: "List" }).click();
-  await rowMenu(page, holidayRow(dialog, "26 Jan 2027"), "Edit");
+  await rowMenu(page, holidayRow(dialog, "2027-01-26"), "Edit");
   const editHoliday = page.getByRole("dialog", { name: "Edit Holiday" });
   await editHoliday.getByPlaceholder("National holiday, etc.").fill("Republic Day, observed");
   await editHoliday.getByRole("button", { name: "Add Holiday" }).click();
@@ -128,8 +128,8 @@ test("a holiday list gets a recurring weekend and its holidays are edited", asyn
   await expect(page.getByText(/Holiday date must be between/)).toBeVisible();
   await page.getByRole("dialog", { name: "Add Holiday" }).getByRole("button", { name: "Cancel" }).click();
   await addHoliday(page, dialog, "2027-08-15", "Independence Day");
-  await deleteFromMenu(page, holidayRow(dialog, "15 Aug 2027").getByRole("button"));
-  await expect(holidayRow(dialog, "15 Aug 2027")).toHaveCount(0);
+  await deleteFromMenu(page, holidayRow(dialog, "2027-08-15").getByRole("button"));
+  await expect(holidayRow(dialog, "2027-08-15")).toHaveCount(0);
   await dialog.getByRole("button", { name: "Save", exact: true }).click();
 
   await expect.poll(async () => JSON.parse((await api.get(HOLIDAYS, list)).recurring_holidays || "[]")).toEqual([

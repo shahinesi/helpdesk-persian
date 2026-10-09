@@ -93,7 +93,7 @@ test.describe("Default template rows", () => {
 
     const agent = await pageAs("agent");
     await openTicket(agent, ticket.name);
-    await expect(agent.getByRole("combobox", { name: "Set Ticket Type..." })).toHaveValue("Bug");
+    await expect(agent.getByRole("button", { name: "Bug", exact: true })).toBeVisible();
     await agent.goto("/helpdesk/tickets/new");
     await expect(agent.getByText("Ticket Type", { exact: true })).toBeVisible();
   });
