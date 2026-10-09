@@ -6,6 +6,7 @@
 |---|---|
 | میزبان SSH | `carpet-erp` |
 | مسیر Repository | `/home/ubuntu/helpdesk-persian` |
+| Working Tree مخزن روی سرور | SHA `b978318cd83e249ba24d7702dd1be862a1596345`، پاک؛ image نامزد از archive commit جدیدتر ساخته شد |
 | SHA آخرین Image برنامه | `3d597d68e1b89b700884441e65d02ccc6f2a294a` |
 | روش اجرا | Docker Compose |
 | Compose project | `helpdesk-persian-test` |
@@ -17,8 +18,8 @@
 | نسخه Frappe | 17.0.0-dev، UNVERSIONED در Image |
 | نسخه frappe-ui | 1.0.0-rc.1 |
 | Backup پیش از Deploy | `/home/ubuntu/helpdesk-persian-recovery/pre-3d597d68`؛ SQL gzip، public/private TAR و JSON تنظیمات؛ checksum و خوانایی اعتبارسنجی شده؛ Restore آزمایشی نشده |
-| شاخه و PR | `feat/persian-setup-wizard`، PR #1 باز به `develop`؛ SHA `3d597d68e1b89b700884441e65d02ccc6f2a294a`، `CLEAN` و `MERGEABLE` |
-| وضعیت CI | Clean Frontend Build، Lint، Python Server Tests و هر دو Playwright shard موفق |
+| شاخه و PR | `feat/persian-setup-wizard`، PR #1 باز به `develop`؛ image از SHA `3d597d68e1b89b700884441e65d02ccc6f2a294a` ساخته شد. HEAD مستندات در زمان ثبت این گزارش `83ec277077c1ab064ac51745f479720d784b94f6` بود |
+| وضعیت CI | تمام گیت‌ها روی کد `3d597d68` موفق؛ اجرای مجدد CI برای HEAD مستندات `83ec277` در حال اجرا بود |
 | Build کامل | `docker/HelpdeskPersian.Containerfile` از archive commit `3d597d68` روی میزبان موفق؛ image نسخه‌بندی‌شده ساخته شد |
 | فضای میزبان | هنگام بررسی ۶٫۴ GB آزاد بود؛ بعد از Build/Deploy حدود ۶ GB آزاد ماند. هیچ Image یا Volume پاک نشد |
 | وضعیت سرویس | شش سرویس برنامه `helpdesk-persian:runtime-3d597d68` را اجرا می‌کنند؛ MariaDB healthy، Redisها Up؛ Home، Login، API ping و assetهای CSS/فونت/JavaScript HTTP 200 |

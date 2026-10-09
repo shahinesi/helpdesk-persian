@@ -18,7 +18,7 @@ Build موفق، هشدارهای فعلی را نشان داد: دو Component 
 
 ## وضعیت PR و محیط
 
-PR شماره ۱ باز است؛ Base=`develop`، Head=`feat/persian-setup-wizard` در SHA `3d597d68e1b89b700884441e65d02ccc6f2a294a`. همه Checkهای CI موفق‌اند و GitHub آخرین وضعیت را `CLEAN` و `MERGEABLE` گزارش کرده است. Merge انجام نشده است.
+PR شماره ۱ باز است؛ Base=`develop`، Head=`feat/persian-setup-wizard`. همهٔ Checkها روی کد و Image commit `3d597d68e1b89b700884441e65d02ccc6f2a294a` موفق‌اند. HEAD مستندات در زمان ثبت گزارش `83ec277077c1ab064ac51745f479720d784b94f6` بود و CI همان commit در حال اجرا بود؛ Merge انجام نشده است.
 
 Stack متصل به دامنه Image `helpdesk-persian:runtime-3d597d68` با digest `sha256:3a9a9823e5bc18e1c695c7340a50aca4380f1ea54e17acc4f41db622f52aebad` را اجرا می‌کند. Full Docker Build از archive دقیق همین commit موفق شد؛ Home، Login، API ping و assetهای CSS/فونت/JavaScript پاسخ HTTP 200 دادند. DB/Redis/Volumeها تغییر نکردند و Migration اجرا نشد. Backup تازه تهیه و خوانایی و checksum آن بررسی شد؛ Restore آزمایشی نشد. Rollback image قبلی حفظ شده است.
 
