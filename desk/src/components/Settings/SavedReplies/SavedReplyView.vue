@@ -139,6 +139,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { __ } from "@/translation";
 import { uploadFunction } from "@/utils";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import {
   Button,
   createListResource,
@@ -262,7 +263,7 @@ const getTeamsListResource = createListResource({
   transform: (data: Array<Team>) => {
     return data.map((item) => ({
       value: item.name,
-      label: item.name,
+      label: displayLinkOption("HD Team", item.name),
     }));
   },
 });
@@ -272,7 +273,7 @@ const teamsList = computed(() => {
     return (
       userTeams.value?.map((team: string) => ({
         value: team,
-        label: team,
+        label: displayLinkOption("HD Team", team),
       })) || []
     );
   }

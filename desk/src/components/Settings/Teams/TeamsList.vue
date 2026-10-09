@@ -60,7 +60,7 @@
               @click="() => emit('update:step', 'team-edit', team.name)"
             >
               <p class="text-base-medium text-ink-gray-7">
-                {{ team.name }}
+                {{ displayLinkOption("HD Team", team.name) }}
               </p>
               <Badge :label="__('Disabled')" v-if="team.disabled" />
             </div>
@@ -133,6 +133,7 @@ import AgentIcon from "@/components/icons/AgentIcon.vue";
 import SettingsLayoutBase from "@/components/layouts/SettingsLayoutBase.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { TeamListResourceSymbol } from "@/types";
 import { ConfirmDelete } from "@/utils";
 import { Dropdown, TextInput, toast } from "frappe-ui";

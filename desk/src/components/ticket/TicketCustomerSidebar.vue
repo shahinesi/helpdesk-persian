@@ -124,6 +124,7 @@ import {
 import { ITicket } from "@/pages/ticket/symbols";
 import { Field } from "@/types";
 import { formatLocalizedNumber } from "@/utils/number";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { dateFormat, dateTooltipFormat, formatLocalizedDate } from "@/utils";
 import { Avatar, dayjs, dayjsLocal, Tooltip } from "frappe-ui";
 import { computed, inject } from "vue";
@@ -194,7 +195,9 @@ const ticketAdditionalInfo = computed(() => {
     {
       fieldname: "team",
       label: __("Team"),
-      value: ticket.data.agent_group,
+      value: ticket.data.agent_group
+        ? displayLinkOption("HD Team", ticket.data.agent_group)
+        : ticket.data.agent_group,
     },
     {
       fieldname: "priority",

@@ -11,7 +11,9 @@
           <Dropdown :options="dropdownOptions">
             <template #default="{ open }">
               <Button
-                :label="displayLinkOption('HD Ticket Status', ticket.doc.status)"
+                :label="
+                  displayLinkOption('HD Ticket Status', ticket.doc.status)
+                "
               >
                 <template #prefix>
                   <IndicatorIcon
@@ -63,7 +65,11 @@
                         : 'text-ink-gray-5'
                     "
                   >
-                    {{ ticket.doc.agent_group || __("Team") }}
+                    {{
+                      ticket.doc.agent_group
+                        ? displayLinkOption("HD Team", ticket.doc.agent_group)
+                        : __("Team")
+                    }}
                   </span>
                 </div>
                 <template #suffix>

@@ -1,6 +1,6 @@
 <template>
   <SettingsLayoutBase
-    :back-label="teamName"
+    :back-label="displayLinkOption('HD Team', teamName)"
     :on-back="() => emit('update:step', 'team-list')"
   >
     <template #header-actions>
@@ -121,6 +121,7 @@ import { assignmentRulesActiveScreen } from "@/stores/assignmentRules";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { TeamListResourceSymbol } from "@/types";
 import { ConfirmDelete } from "@/utils";
 import {

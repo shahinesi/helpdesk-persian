@@ -61,7 +61,11 @@
               <TicketPriority :priority="ticket.priority" />
             </td>
             <td class="p-2 py-3 min-w-44 truncate">
-              {{ ticket.agent_group || __("Not Assigned") }}
+              {{
+                ticket.agent_group
+                  ? displayLinkOption("HD Team", ticket.agent_group)
+                  : __("Not Assigned")
+              }}
             </td>
             <td class="p-2 py-3 min-w-40">
               <div
