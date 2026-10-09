@@ -38,7 +38,7 @@ yarn build
 
 ### ساخت image با Docker
 
-`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند. Node `20.20.0` و Yarn `1.22.18` از مرحلهٔ Node رسمی و نسخه‌بندی‌شده می‌آیند؛ Node 20 فقط برای نصب قفل‌شدهٔ وابستگی‌های Desk در prefix جدا استفاده می‌شود. پیش از نصب، کل `desk/node_modules` image پایه حذف می‌شود تا نصب از Lockfile به ماژول‌های باقی‌مانده وابسته نباشد. مرحلهٔ نهایی، Node `24.14.0` موجود در image پایه را برای `bench build` نگه می‌دارد، چون bundler این خط Node `>=24` می‌خواهد. اگر ref یا Patch ناسازگار باشد، Build متوقف می‌شود.
+`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند. Node `20.20.0` و Yarn `1.22.18` از مرحلهٔ Node رسمی و نسخه‌بندی‌شده می‌آیند؛ Node 20 فقط برای نصب قفل‌شدهٔ وابستگی‌های Desk در prefix جدا استفاده می‌شود. پیش از نصب، کل `desk/node_modules` image پایه حذف می‌شود تا نصب از Lockfile به ماژول‌های باقی‌مانده وابسته نباشد. مرحلهٔ نهایی، Node `24.21.0` موجود در image پایه را برای `bench build` نگه می‌دارد، چون bundler این خط Node `>=24` می‌خواهد. اگر ref یا Patch ناسازگار باشد، Build متوقف می‌شود.
 
 این recipe به image پایهٔ موجود `helpdesk-persian:styled` نیاز دارد و نسخهٔ دقیق آن باید در manifest استقرار ثبت شود. image `runtime-324a2e118` ساخته و روی stack تست اجرا شد، اما آن build هنوز `node_modules` به‌ارث‌رسیده از image پایه داشت؛ پس Clean Docker Install محسوب نمی‌شود. اصلاح فعلی کل پوشه را پیش از نصب پاک می‌کند و باید با Build تازه اعتبارسنجی شود.
 
