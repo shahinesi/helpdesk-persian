@@ -67,6 +67,7 @@ export function editorLabel(label) {
     case "Table":
       return __("Table");
     case "Horizontal rule":
+    case "Horizontal Rule":
       return __("Horizontal rule");
     case "Clear formatting":
       return __("Clear formatting");

@@ -6493,6 +6493,10 @@ msgstr "انتخاب کشور"
 msgid "Select language"
 msgstr "انتخاب زبان"
 
+#: desk/src/components/Settings/FieldDependency/FieldDependencyFieldsSelection.vue
+msgid "Select option"
+msgstr "انتخاب گزینه"
+
 #: desk/src/components/SearchMultiSelect.vue:227
 msgid "Select options..."
 msgstr "گزینه‌ها را انتخاب کنید…"

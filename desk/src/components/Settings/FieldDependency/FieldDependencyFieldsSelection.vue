@@ -8,6 +8,7 @@
       <Combobox
         v-model="state.selectedParentField"
         :options="parentFields"
+        :placeholder="__('Select option')"
         :disabled="!isNew"
         :open-on-focus="true"
         class="w-full text-start"
@@ -21,6 +22,7 @@
       <Combobox
         v-model="state.selectedChildField"
         :options="state.childFields"
+        :placeholder="__('Select option')"
         :disabled="!state.selectedParentField || !isNew"
         :open-on-focus="true"
         class="w-full text-start"
