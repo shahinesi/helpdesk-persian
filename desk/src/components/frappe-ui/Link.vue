@@ -1,6 +1,7 @@
 <template>
   <Combobox
     class="group"
+    :dir="attrs.dir"
     :model-value="value || null"
     trigger="button"
     :options="linkOptions"
