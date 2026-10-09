@@ -7,11 +7,10 @@
   >
     <template #default>
       <div
-        class="flex z-50 overflow-hidden"
-        :style="{ height: 'calc(100vh - 8rem)' }"
+        class="z-50 flex h-[calc(100dvh-2rem)] flex-col overflow-hidden sm:h-[calc(100vh-8rem)] sm:flex-row"
       >
         <div
-          class="flex-col rounded-s-6 w-56 shrink-0 ps-1 py-1 bg-surface-sidebar overflow-y-auto hide-scrollbar"
+          class="hide-scrollbar flex max-h-[38vh] w-full shrink-0 flex-col overflow-y-auto rounded-t-6 bg-surface-sidebar py-1 ps-1 sm:max-h-none sm:w-56 sm:rounded-t-none sm:rounded-s-6"
         >
           <h1
             class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ms-1"
@@ -59,7 +58,7 @@
           </div>
         </div>
         <div
-          class="flex flex-1 flex-col bg-surface-elevation-2 max-w-[816px] overflow-hidden relative"
+          class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface-elevation-2 sm:max-w-[816px]"
         >
           <component
             :is="activeTab.component"

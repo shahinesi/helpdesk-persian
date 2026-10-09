@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col h-full w-full pb-8">
-    <div class="px-10 py-8 pb-6 relative z-10">
+  <div class="flex h-full w-full flex-col pb-8">
+    <div class="relative z-10 px-4 py-5 pb-4 sm:px-8 sm:py-8 sm:pb-6 lg:px-10">
       <div class="flex items-start justify-between">
         <div class="flex flex-col gap-1 text-start">
           <slot name="title">
@@ -34,7 +34,9 @@
         <slot name="header-bottom" />
       </div>
     </div>
-    <div class="px-10 pb-8 overflow-y-auto h-full flex flex-col text-start">
+    <div
+      class="flex h-full flex-col overflow-y-auto px-4 pb-8 text-start sm:px-8 lg:px-10"
+    >
       <slot name="content" />
     </div>
   </div>

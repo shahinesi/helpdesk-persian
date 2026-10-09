@@ -69,7 +69,9 @@
               <span class="text-ink-gray-8 font-medium truncate">
                 {{ e.email_account }}
               </span>
-              <span class="text-ink-gray-6 truncate">{{ e.email_id }}</span>
+              <span dir="ltr" class="text-ink-gray-6 truncate">{{
+                e.email_id
+              }}</span>
               <div
                 class="group-hover:opacity-100 opacity-0 transition-opacity [@media(hover:none)]:opacity-100"
               >
@@ -100,7 +102,7 @@
             <template #item-label="{ item }">
               <div class="flex flex-col gap-1 text-ink-gray-9">
                 <div>{{ item.label }}</div>
-                <div class="text-ink-gray-4 text-sm">
+                <div dir="ltr" class="text-ink-gray-4 text-sm">
                   {{ item.email }}
                 </div>
               </div>

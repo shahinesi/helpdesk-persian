@@ -49,7 +49,7 @@
             class="flex items-center justify-between px-3 py-1 rounded-6 bg-surface-gray-2"
           >
             <div class="text-base">
-              <span class="text-ink-gray-8">
+              <span dir="ltr" class="text-ink-gray-8">
                 {{ invite.email }}
               </span>
               <span class="text-ink-gray-5">

@@ -9,7 +9,7 @@
         <p class="text-p-base-medium text-ink-gray-7">
           {{ __(emailAccount.email_account_name) }}
         </p>
-        <div class="text-p-sm w-full text-ink-gray-5 mt-1">
+        <div dir="ltr" class="text-p-sm w-full text-ink-gray-5 mt-1">
           {{ __(emailAccount.email_id) }}
         </div>
       </div>
