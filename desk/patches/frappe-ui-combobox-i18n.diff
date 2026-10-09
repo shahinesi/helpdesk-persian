@@ -42,45 +42,6 @@ diff --git a/src/components/MultiSelect/MultiSelectResults.vue b/src/components/
 @@ -84 +88 @@
 -      <span>Loading...</span>
 +      <span>{{ __('Loading...') }}</span>
-diff --git a/src/components/DatePicker/DatePicker.vue b/src/components/DatePicker/DatePicker.vue
---- a/src/components/DatePicker/DatePicker.vue
-+++ b/src/components/DatePicker/DatePicker.vue
-@@ -46 +46 @@
--          aria-label="Shortcuts"
-+          :aria-label="(window as any).__?.('Shortcuts') ?? 'Shortcuts'"
-@@ -109 +109 @@
--  placeholder: "Select date",
-+  placeholder: (window as any).__?.("Select date") ?? "Select date",
-@@ -115 +115 @@
--  todayLabel: "Today",
-+  todayLabel: (window as any).__?.("Today") ?? "Today",
-diff --git a/src/components/DatePicker/DateTimePicker.vue b/src/components/DatePicker/DateTimePicker.vue
---- a/src/components/DatePicker/DateTimePicker.vue
-+++ b/src/components/DatePicker/DateTimePicker.vue
-@@ -46 +46 @@
--          aria-label="Shortcuts"
-+          :aria-label="(window as any).__?.('Shortcuts') ?? 'Shortcuts'"
-@@ -84 +84 @@
--              placeholder="Select time"
-+              :placeholder="(window as any).__?.('Select time') ?? 'Select time'"
-@@ -125 +125 @@
--  placeholder: "Select date & time",
-+  placeholder: (window as any).__?.("Select date & time") ?? "Select date & time",
-@@ -131 +131 @@
--  todayLabel: "Now",
-+  todayLabel: (window as any).__?.("Now") ?? "Now",
-diff --git a/src/components/DatePicker/DateRangePicker.vue b/src/components/DatePicker/DateRangePicker.vue
---- a/src/components/DatePicker/DateRangePicker.vue
-+++ b/src/components/DatePicker/DateRangePicker.vue
-@@ -46 +46 @@
--          aria-label="Shortcuts"
-+          :aria-label="(window as any).__?.('Shortcuts') ?? 'Shortcuts'"
-@@ -113 +113 @@
--  placeholder: "Select range",
-+  placeholder: (window as any).__?.("Select range") ?? "Select range",
-@@ -120 +120 @@
--  todayLabel: "Today",
-+  todayLabel: (window as any).__?.("Today") ?? "Today",
 diff --git a/src/components/Dialog/Dialog.vue b/src/components/Dialog/Dialog.vue
 --- a/src/components/Dialog/Dialog.vue
 +++ b/src/components/Dialog/Dialog.vue
@@ -114,3 +75,72 @@ diff --git a/src/charts/components/ChartContainer.vue b/src/charts/components/Ch
 @@ -117 +117 @@
 -            <span class="text-p-sm text-ink-gray-5">No data to show</span>
 +            <span class="text-p-sm text-ink-gray-5">{{ (window as any).__?.('No data to show') ?? 'No data to show' }}</span>
+--- a/src/components/DatePicker/DatePicker.vue
++++ b/src/components/DatePicker/DatePicker.vue
+@@ -19 +19 @@
+-    :placeholder="props.placeholder"
++    :placeholder="displayPlaceholder"
+@@ -49 +49 @@
+-          aria-label="Shortcuts"
++          :aria-label="__('Shortcuts')"
+@@ -68 +68 @@
+-          :today-label="props.todayLabel"
++          :today-label="displayTodayLabel"
+@@ -105,0 +106,2 @@
++const __ = (message: string) => (window as any).__?.(message) ?? message;
++
+@@ -116,0 +119,7 @@
++const displayPlaceholder = computed(() =>
++  props.placeholder === "Select date" ? __("Select date") : props.placeholder,
++);
++const displayTodayLabel = computed(() =>
++  props.todayLabel === "Today" ? __("Today") : props.todayLabel,
++);
++
+--- a/src/components/DatePicker/DateRangePicker.vue
++++ b/src/components/DatePicker/DateRangePicker.vue
+@@ -19 +19 @@
+-    :placeholder="props.placeholder"
++    :placeholder="displayPlaceholder"
+@@ -47 +47 @@
+-          aria-label="Shortcuts"
++          :aria-label="__('Shortcuts')"
+@@ -69 +69 @@
+-          :today-label="props.todayLabel"
++          :today-label="displayTodayLabel"
+@@ -109,0 +110,2 @@
++const __ = (message: string) => (window as any).__?.(message) ?? message;
++
+@@ -121,0 +124,7 @@
++const displayPlaceholder = computed(() =>
++  props.placeholder === "Select range" ? __("Select range") : props.placeholder,
++);
++const displayTodayLabel = computed(() =>
++  props.todayLabel === "Today" ? __("Today") : props.todayLabel,
++);
++
+--- a/src/components/DatePicker/DateTimePicker.vue
++++ b/src/components/DatePicker/DateTimePicker.vue
+@@ -19 +19 @@
+-    :placeholder="props.placeholder"
++    :placeholder="displayPlaceholder"
+@@ -49 +49 @@
+-          aria-label="Shortcuts"
++          :aria-label="__('Shortcuts')"
+@@ -70 +70 @@
+-            :today-label="props.todayLabel"
++            :today-label="displayTodayLabel"
+@@ -84 +84 @@
+-              placeholder="Select time"
++              :placeholder="__('Select time')"
+@@ -121,0 +122,2 @@
++const __ = (message: string) => (window as any).__?.(message) ?? message;
++
+@@ -132,0 +135,7 @@
++const displayPlaceholder = computed(() =>
++  props.placeholder === "Select date & time" ? __("Select date & time") : props.placeholder,
++);
++const displayTodayLabel = computed(() =>
++  props.todayLabel === "Now" ? __("Now") : props.todayLabel,
++);
++
