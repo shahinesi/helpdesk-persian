@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: frappe/frappe
-          ref: 144f608ecbe213fab33918aebeb126f8aef7344c
+          ref: c4472b622192e0b1cbdbaa9792a38f4e5006e9f6
           path: bench/apps/frappe
 
       - name: Set up Node
