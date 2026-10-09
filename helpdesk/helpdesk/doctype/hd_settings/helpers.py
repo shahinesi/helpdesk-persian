@@ -9,36 +9,36 @@ def is_email_content_empty(content: str | None) -> bool:
 def get_default_email_content(type: str) -> str:
     if type == "share_feedback":
         return """\
-<p>Hello,</p>
-<p>Thanks for reaching out to us. We’d love your feedback on your recent support experience with ticket #{{ doc.name }}.</p>
-<a href="{{ url }}" class="btn btn-primary">Share Feedback</a>
+<p>سلام،</p>
+<p>از اینکه با ما در ارتباط بودید سپاسگزاریم. خوشحال می‌شویم بازخوردتان را درباره تجربه اخیرتان از پشتیبانی تیکت شماره #{{ doc.name }} با ما در میان بگذارید.</p>
+<a href="{{ url }}" class="btn btn-primary">ثبت بازخورد</a>
 
-<p>Thank you!<br>Support Team</p>"""
+<p>سپاسگزاریم!<br>تیم پشتیبانی</p>"""
 
     if type == "acknowledgement":
         return """\
-<p>Hi,</p>
+<p>سلام،</p>
 <br />
-<p>Thank you for reaching out to us. We've received your request and created a support ticket.</p>
+<p>از اینکه با ما تماس گرفتید سپاسگزاریم. درخواست شما دریافت شد و تیکت پشتیبانی برای آن ثبت شد.</p>
 <p>
-    <strong>Ticket ID:</strong> {{ doc.name }}<br />
-    <strong>Subject:</strong> {{ doc.subject }}<br />
+    <strong>شماره تیکت:</strong> {{ doc.name }}<br />
+    <strong>موضوع:</strong> {{ doc.subject }}<br />
 </p>
-<p>Our team is reviewing it and will get back to you shortly.</p>
+<p>کارشناسان ما درخواست شما را بررسی می‌کنند و در کوتاه‌ترین زمان پاسخ خواهند داد.</p>
 <br />
-<p>Best,<br />Support Team</p>
+<p>با احترام،<br />تیم پشتیبانی</p>
 """
 
     if type == "reply_to_agents":
         return """\
 <div>
-  <p>Hello,</p>
-  <p>You have a new reply on the ticket <strong>#{{ doc.name }}</strong>.</p>
-  <p><strong>Subject:</strong> {{ doc.subject }}</p>
-  <p><strong>Raised By:</strong> {{ doc.raised_by }}</p>
-  <p><strong>Priority:</strong> {{ doc.priority }}</p>
+  <p>سلام،</p>
+  <p>پاسخ جدیدی برای تیکت شماره <strong>#{{ doc.name }}</strong> ثبت شده است.</p>
+  <p><strong>موضوع:</strong> {{ doc.subject }}</p>
+  <p><strong>ثبت‌کننده:</strong> {{ doc.raised_by }}</p>
+  <p><strong>اولویت:</strong> {{ doc.priority }}</p>
    <div style="margin-bottom: 10px">
-    <p style="margin-bottom: 20px">Message</p>
+    <p style="margin-bottom: 20px">پیام</p>
     <div
       style="
         background: #f3f5f8;
@@ -52,21 +52,21 @@ def get_default_email_content(type: str) -> str:
   </div>
   <br />
   <p>
-    You can view and respond to this ticket by
-    <a href="{{ ticket_url }}">clicking here</a>.
+    برای مشاهده و پاسخ به این تیکت،
+    <a href="{{ ticket_url }}">اینجا کلیک کنید</a>.
   </p>
-  <p>Regards,<br />Support Team</p>
+  <p>با احترام،<br />تیم پشتیبانی</p>
 </div>
 """
 
     if type == "reply_via_agent":
         return """\
 <div>
-  <h2><strong>Ticket #{{ doc.name }}</strong></h2>
-  <h3>You have a new reply on this ticket</h3>
+  <h2><strong>تیکت شماره #{{ doc.name }}</strong></h2>
+  <h3>پاسخ جدیدی برای این تیکت ثبت شده است</h3>
   <br />
   <div style="margin-bottom: 10px">
-    <h3 style="margin-bottom: 20px">Message</h3>
+    <h3 style="margin-bottom: 20px">پیام</h3>
     <div
       style="
         background: #f3f5f8;
@@ -78,13 +78,13 @@ def get_default_email_content(type: str) -> str:
       {{ message }}
     </div>
   </div>
-  <p>Please visit the customer portal to reply to this message</p>
+  <p>برای پاسخ به این پیام، لطفاً به پرتال مشتری مراجعه کنید.</p>
   <a
     class="btn btn-primary"
     href="{{ ticket_url }}"
     rel="noopener noreferrer"
     target="_blank"
-  >View in Portal</a>
+  >مشاهده در پرتال</a>
   <br />
 </div>
 """
