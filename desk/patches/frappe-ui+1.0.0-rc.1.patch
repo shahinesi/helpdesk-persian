@@ -3708,6 +3708,34 @@ index a3930bf..d7d47e2 100644
      </div>
  
      <template v-else>
+diff --git a/node_modules/frappe-ui/src/components/Popover/Popover.vue b/node_modules/frappe-ui/src/components/Popover/Popover.vue
+index 255096c..54a8fb4 100644
+--- a/node_modules/frappe-ui/src/components/Popover/Popover.vue
++++ b/node_modules/frappe-ui/src/components/Popover/Popover.vue
+@@ -22,6 +22,7 @@
+         ref="contentRef"
+         data-slot="content"
+         class="z-[100]"
++        :dir="textDirection"
+         :side="side"
+         :align="align"
+         :side-offset="offset"
+@@ -51,6 +52,7 @@
+ 
+ <script setup lang="ts">
+ import { computed, ref, watch } from 'vue'
++import { useTextDirection } from '@vueuse/core'
+ import {
+   PopoverAnchor,
+   PopoverArrow,
+@@ -83,6 +85,7 @@ const props = withDefaults(defineProps<PopoverProps>(), {
+ })
+ 
+ const portalTarget = usePortalTarget(() => props.portalTo)
++const textDirection = useTextDirection({ observe: true })
+ 
+ const emit = defineEmits<PopoverEmits>()
+ 
 diff --git a/node_modules/frappe-ui/src/components/Select/Select.vue b/node_modules/frappe-ui/src/components/Select/Select.vue
 index 6b949d0..f616e80 100644
 --- a/node_modules/frappe-ui/src/components/Select/Select.vue
