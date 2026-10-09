@@ -1,3 +1,6 @@
+import { __ } from "@/translation";
+import { formatLocalizedDigits } from "@/utils/number";
+
 export function formatTimeHMS(seconds) {
   const days = Math.floor(seconds / (3600 * 24));
   const hours = Math.floor((seconds % (3600 * 24)) / 3600);
@@ -7,19 +10,27 @@ export function formatTimeHMS(seconds) {
   let formattedTime = "";
 
   if (days > 0) {
-    formattedTime += ` ${days} ${days === 1 ? "day" : "days"}`;
+    formattedTime += ` ${formatLocalizedDigits(days)} ${
+      days === 1 ? __("day") : __("days")
+    }`;
   }
 
   if (hours > 0) {
-    formattedTime += ` ${hours} ${hours === 1 ? "hour" : "hours"}`;
+    formattedTime += ` ${formatLocalizedDigits(hours)} ${
+      hours === 1 ? __("hour") : __("hours")
+    }`;
   }
 
   if (minutes > 0) {
-    formattedTime += ` ${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+    formattedTime += ` ${formatLocalizedDigits(minutes)} ${
+      minutes === 1 ? __("minute") : __("minutes")
+    }`;
   }
 
   if (remainingSeconds > 0) {
-    formattedTime += ` ${remainingSeconds} ${remainingSeconds === 1 ? "second" : "seconds"}`;
+    formattedTime += ` ${formatLocalizedDigits(remainingSeconds)} ${
+      remainingSeconds === 1 ? __("second") : __("seconds")
+    }`;
   }
 
   return formattedTime.trim();

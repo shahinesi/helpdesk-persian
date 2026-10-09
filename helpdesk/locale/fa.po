@@ -8475,9 +8475,37 @@ msgstr "شرط"
 msgid "customize {0}"
 msgstr "سفارشی‌سازی {0}"
 
+#: desk/src/components/Settings/Sla/utils.ts
+msgid "day"
+msgstr "روز"
+
 #: helpdesk/api/dashboard.py:225 helpdesk/api/dashboard.py:227
 msgid "days"
 msgstr "روز"
+
+#: desk/src/components/Settings/Sla/utils.ts
+msgid "hour"
+msgstr "ساعت"
+
+#: desk/src/components/Settings/Sla/utils.ts
+msgid "hours"
+msgstr "ساعت"
+
+#: desk/src/components/Settings/Sla/utils.ts
+msgid "minute"
+msgstr "دقیقه"
+
+#: desk/src/components/Settings/Sla/utils.ts
+msgid "minutes"
+msgstr "دقیقه"
+
+#: desk/src/components/Settings/Sla/utils.ts
+msgid "second"
+msgstr "ثانیه"
+
+#: desk/src/components/Settings/Sla/utils.ts
+msgid "seconds"
+msgstr "ثانیه"
 
 #: Rules/AssignmentRuleView.vue:170 Rules/AssignmentRuleView.vue:253
 #: desk/src/components/Settings/Assignment

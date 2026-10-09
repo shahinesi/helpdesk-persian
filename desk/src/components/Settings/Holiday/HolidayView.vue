@@ -1,6 +1,10 @@
 <template>
   <SettingsLayoutBase
-    :back-label="holidayData?.holiday_list_name || __('New Business Holiday')"
+    :back-label="
+      holidayData?.holiday_list_name === 'Default'
+        ? __('Default')
+        : holidayData?.holiday_list_name || __('New Business Holiday')
+    "
     :on-back="goBack"
     :dirty="isDirty"
   >
@@ -24,7 +28,9 @@
         <div class="flex items-center gap-2 mt-2">
           <span class="text-sm">
             {{
-              __('Total holidays in this list: {0}', [holidayData.holidays.length])
+              __("Total holidays in this list: {0}", [
+                holidayData.holidays.length,
+              ])
             }}</span
           >
         </div>

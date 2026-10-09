@@ -94,7 +94,7 @@ createResource({
     priorityOptions.push(
       ...ranked.map((p) => {
         return {
-          label: p.name,
+          label: __(p.name),
           value: p.name,
         };
       })
