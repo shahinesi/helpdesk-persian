@@ -92,7 +92,7 @@ const selectOptions = computed<Option[]>(() =>
   (props.field.fieldtype === "Select"
     ? props.field.options.split("\n")
     : []
-  ).map((option) => ({ label: option, value: option }))
+  ).map((option) => ({ label: __(option), value: option }))
 );
 
 const isSearchableSelect = computed(

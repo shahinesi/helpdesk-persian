@@ -103,7 +103,9 @@ const component = computed(() => {
   } else if (props.field.fieldtype === "Select") {
     return optionControl(
       props.field.options
-        ? props.field.options.split("\n").map((o) => ({ label: o, value: o }))
+        ? props.field.options
+            .split("\n")
+            .map((option) => ({ label: __(option), value: option }))
         : []
     );
   } else if (props.field.fieldtype === "Check") {

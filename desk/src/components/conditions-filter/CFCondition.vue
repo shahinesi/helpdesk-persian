@@ -263,7 +263,7 @@ function getValueControl() {
             { label: __("No"), value: "No" },
           ]
         : getSelectOptions(options).map((option) => ({
-            label: fieldname === "sla_status" ? __(option) : option,
+            label: __(option),
             value: option,
           }));
     return h(FormControl, {
