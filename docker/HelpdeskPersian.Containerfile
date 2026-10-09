@@ -11,4 +11,5 @@ RUN rm -rf apps/helpdesk/desk/node_modules/frappe-ui \
     && cd apps/helpdesk/desk && yarn install --frozen-lockfile --non-interactive
 RUN mkdir -p sites && printf '{}' > sites/common_site_config.json \
     && bench set-config -gp socketio_port 9000 \
+    && bench compile-po-to-mo --app helpdesk --force \
     && CI=Yes bench build --apps frappe,helpdesk
