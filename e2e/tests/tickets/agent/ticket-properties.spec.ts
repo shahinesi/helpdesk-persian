@@ -41,7 +41,7 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   await expect.poll(() => setValue.length).toBe(4);
   await pick("Set Team...", team);
   await expect.poll(() => setValue.length).toBe(5);
-  await pick("Set Priority...", "Low");
+  await pick("High", "Low");
   await expect.poll(() => setValue.length).toBe(6);
   await page.waitForLoadState("networkidle");
   expect(setValue).toHaveLength(6);
