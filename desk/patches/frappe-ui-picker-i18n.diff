@@ -135,8 +135,3 @@
 +
 +const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
 +const translateLabel = (message: string) => translate?.(message) ?? message;
-@@ -483,2 +486,2 @@
--[dir="rtl"] .calendar-panel button[aria-label="previous"] > span,
--[dir="rtl"] .calendar-panel button[aria-label="next"] > span {
-+[dir="rtl"] .calendar-panel button[aria-:label="translateLabel('previous')"] > span,
-+[dir="rtl"] .calendar-panel button[aria-:label="translateLabel('next')"] > span {
