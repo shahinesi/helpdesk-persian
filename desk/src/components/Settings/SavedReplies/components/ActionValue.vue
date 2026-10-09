@@ -16,7 +16,6 @@
     :filters="linkFilters(type)"
     :model-value="(modelValue as string)"
     :placeholder="placeholder"
-    :title="(modelValue as string)"
     @update:model-value="emit('update:modelValue', ($event ?? '') as string)"
   />
   <Combobox
@@ -100,7 +99,7 @@ import { colorToken } from "@/composables/useTags";
 import { __ } from "@/translation";
 import { formatLocalizedNumber } from "@/utils/number";
 import { SavedReplyActionType } from "@/types";
-import { Link } from "@framework/ui";
+import Link from "@/components/frappe-ui/Link.vue";
 import { Avatar, Combobox, MultiSelect, Select } from "frappe-ui";
 import { Editor, EditorContent } from "frappe-ui/editor";
 import { computed } from "vue";

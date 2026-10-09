@@ -111,8 +111,8 @@
 
 <script setup lang="ts">
 import { StarRating } from "@/components";
+import Link from "@/components/frappe-ui/Link.vue";
 import { __ } from "@/translation";
-import { Link } from "@framework/ui";
 import {
   Button,
   Combobox,
