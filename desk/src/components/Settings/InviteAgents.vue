@@ -10,6 +10,7 @@
           :required="true"
           :label="__('Invite by email')"
           placeholder="user1@example.com, user2@example.com, ..."
+          dir="ltr"
           v-model="emails"
           :debounce="100"
           :description="__('Comma separated emails to invite.')"

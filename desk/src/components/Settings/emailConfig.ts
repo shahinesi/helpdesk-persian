@@ -33,232 +33,257 @@ type EmailAccountFormState = {
   sent_folder_name?: string;
 };
 
-const fixedFields: RenderField[] = [
-  {
-    label: __("Account name"),
-    name: "email_account_name",
-    type: "text",
-    placeholder: __("Support / Sales"),
-  },
-  {
-    label: __("Email ID"),
-    name: "email_id",
-    type: "email",
-    placeholder: __("johndoe@example.com"),
-  },
-];
+export function getEmailConfig() {
+  const fixedFields: RenderField[] = [
+    {
+      label: __("Account name"),
+      name: "email_account_name",
+      type: "text",
+      placeholder: __("Support / Sales"),
+    },
+    {
+      label: __("Email ID"),
+      name: "email_id",
+      type: "email",
+      placeholder: __("johndoe@example.com"),
+    },
+  ];
 
-export const incomingOutgoingFields: RenderField[] = [
-  {
-    label: __("Enable Incoming"),
-    name: "enable_incoming",
-    type: "checkbox",
-    description: __(
-      "When enabled, tickets are created from incoming emails received by this account."
-    ),
-  },
-  {
-    label: __("Enable Outgoing"),
-    name: "enable_outgoing",
-    type: "checkbox",
-    description: __(
-      "When enabled, outgoing emails are sent from this account."
-    ),
-  },
-  {
-    label: __("Default Incoming"),
-    name: "default_incoming",
-    type: "checkbox",
-    description: __(
-      "When enabled, replies to your company (for example, replies@yourcompany.com) are received by this account. Only one account can be the default incoming account."
-    ),
-  },
-  {
-    label: __("Default Outgoing"),
-    name: "default_outgoing",
-    type: "checkbox",
-    description: __(
-      "When enabled, all outgoing emails are sent from this account. Only one account can be the default outgoing account."
-    ),
-  },
-];
+  const incomingOutgoingFields: RenderField[] = [
+    {
+      label: __("Enable Incoming"),
+      name: "enable_incoming",
+      type: "checkbox",
+      description: __(
+        "When enabled, tickets are created from incoming emails received by this account."
+      ),
+    },
+    {
+      label: __("Enable Outgoing"),
+      name: "enable_outgoing",
+      type: "checkbox",
+      description: __(
+        "When enabled, outgoing emails are sent from this account."
+      ),
+    },
+    {
+      label: __("Default Incoming"),
+      name: "default_incoming",
+      type: "checkbox",
+      description: __(
+        "When enabled, replies to your company (for example, replies@yourcompany.com) are received by this account. Only one account can be the default incoming account."
+      ),
+    },
+    {
+      label: __("Default Outgoing"),
+      name: "default_outgoing",
+      type: "checkbox",
+      description: __(
+        "When enabled, all outgoing emails are sent from this account. Only one account can be the default outgoing account."
+      ),
+    },
+  ];
 
-export const popularProviderFields = [
-  ...fixedFields,
-  {
-    label: __("Password"),
-    name: "password",
-    type: "password",
-    placeholder: "********",
-  },
-];
+  const popularProviderFields = [
+    ...fixedFields,
+    {
+      label: __("Password"),
+      name: "password",
+      type: "password",
+      placeholder: "********",
+    },
+  ];
 
-export const frappeMailFields = [
-  ...fixedFields,
-  {
-    label: __("Frappe Mail site"),
-    name: "frappe_mail_site",
-    type: "text",
-    placeholder: "https://frappemail.com",
-  },
-  {
-    label: __("API Key"),
-    name: "api_key",
-    type: "text",
-    placeholder: "********",
-  },
-  {
-    label: __("API Secret"),
-    name: "api_secret",
-    type: "password",
-    placeholder: "********",
-  },
-];
+  const frappeMailFields = [
+    ...fixedFields,
+    {
+      label: __("Frappe Mail site"),
+      name: "frappe_mail_site",
+      type: "text",
+      placeholder: "https://frappemail.com",
+    },
+    {
+      label: __("API Key"),
+      name: "api_key",
+      type: "text",
+      placeholder: "********",
+    },
+    {
+      label: __("API Secret"),
+      name: "api_secret",
+      type: "password",
+      placeholder: "********",
+    },
+  ];
 
-export const customProviderTopFields = [
-  ...fixedFields,
-  {
-    label: __("Password"),
-    name: "password",
-    type: "password",
-    placeholder: "********",
-  },
-  {
-    label: __("Email Domain"),
-    name: "domain",
-    type: "text",
-    placeholder: __("example.com"),
-  },
-];
+  const customProviderTopFields = [
+    ...fixedFields,
+    {
+      label: __("Password"),
+      name: "password",
+      type: "password",
+      placeholder: "********",
+    },
+    {
+      label: __("Email Domain"),
+      name: "domain",
+      type: "text",
+      placeholder: __("example.com"),
+    },
+  ];
 
-export const customIncomingFields = [
-  {
-    label: __("Incoming Server (IMAP/POP)"),
-    name: "email_server",
-    type: "text",
-    placeholder: __("imap.example.com"),
-  },
-  {
-    label: __("Incoming Port"),
-    name: "incoming_port",
-    type: "text",
-    placeholder: "993",
-  },
-  {
-    label: __("Use SSL for Incoming"),
-    name: "use_ssl",
-    type: "checkbox",
-    placeholder: "",
-  },
-  {
-    label: __("Use TLS for Incoming"),
-    name: "use_starttls",
-    type: "checkbox",
-    placeholder: "",
-  },
-];
+  const customIncomingFields = [
+    {
+      label: __("Incoming Server (IMAP/POP)"),
+      name: "email_server",
+      type: "text",
+      placeholder: __("imap.example.com"),
+    },
+    {
+      label: __("Incoming Port"),
+      name: "incoming_port",
+      type: "text",
+      placeholder: "993",
+    },
+    {
+      label: __("Use SSL for Incoming"),
+      name: "use_ssl",
+      type: "checkbox",
+      placeholder: "",
+    },
+    {
+      label: __("Use TLS for Incoming"),
+      name: "use_starttls",
+      type: "checkbox",
+      placeholder: "",
+    },
+  ];
 
-export const customOutgoingFields = [
-  {
-    label: __("Outgoing Server (SMTP)"),
-    name: "smtp_server",
-    type: "text",
-    placeholder: "smtp.example.com",
-  },
-  {
-    label: __("Outgoing Port"),
-    name: "smtp_port",
-    type: "text",
-    placeholder: "587",
-  },
-  {
-    label: __("Use SSL for Outgoing"),
-    name: "use_ssl_for_outgoing",
-    type: "checkbox",
-    placeholder: "",
-  },
-  {
-    label: __("Use TLS for Outgoing"),
-    name: "use_tls",
-    type: "checkbox",
-    placeholder: "",
-  },
-];
+  const customOutgoingFields = [
+    {
+      label: __("Outgoing Server (SMTP)"),
+      name: "smtp_server",
+      type: "text",
+      placeholder: "smtp.example.com",
+    },
+    {
+      label: __("Outgoing Port"),
+      name: "smtp_port",
+      type: "text",
+      placeholder: "587",
+    },
+    {
+      label: __("Use SSL for Outgoing"),
+      name: "use_ssl_for_outgoing",
+      type: "checkbox",
+      placeholder: "",
+    },
+    {
+      label: __("Use TLS for Outgoing"),
+      name: "use_tls",
+      type: "checkbox",
+      placeholder: "",
+    },
+  ];
 
-export const customProviderFields = customProviderTopFields;
+  const services: EmailService[] = [
+    {
+      name: "GMail",
+      icon: LogoGmail,
+      info: __(
+        "Setting up GMail requires you to enable two-factor authentication and app passwords. Read more"
+      ),
+      link: "https://support.google.com/accounts/answer/185833",
+      custom: false,
+    },
+    {
+      name: "Outlook",
+      icon: LogoOutlook,
+      info: __(
+        "Setting up Outlook requires you to enable two-factor authentication and app passwords. Read more"
+      ),
+      link: "https://support.microsoft.com/en-us/account-billing/how-to-get-and-use-app-passwords-5896ed9b-4263-e681-128a-a6f2979a7944",
+      custom: false,
+    },
+    {
+      name: "Sendgrid",
+      icon: LogoSendgrid,
+      info: __(
+        "Setting up Sendgrid requires you to enable two-factor authentication and app passwords. Read more"
+      ),
+      link: "https://sendgrid.com/docs/ui/account-and-settings/two-factor-authentication/",
+      custom: false,
+    },
+    {
+      name: "SparkPost",
+      icon: LogoSparkpost,
+      info: __(
+        "Setting up SparkPost requires you to enable two-factor authentication and app passwords. Read more"
+      ),
+      link: "https://support.sparkpost.com/docs/my-account-and-profile/enabling-two-factor-authentication",
+      custom: false,
+    },
+    {
+      name: "Yahoo",
+      icon: LogoYahoo,
+      info: __(
+        "Setting up Yahoo requires you to enable two-factor authentication and app passwords. Read more"
+      ),
+      link: "https://help.yahoo.com/kb/SLN15241.html",
+      custom: false,
+    },
+    {
+      name: "Yandex",
+      icon: LogoYandex,
+      info: __(
+        "Setting up Yandex requires you to enable two-factor authentication and app passwords. Read more"
+      ),
+      link: "https://yandex.com/support/id/authorization/app-passwords.html",
+      custom: false,
+    },
+    {
+      name: "Frappe Mail",
+      icon: LogoFrappeMail,
+      info: __(
+        "Setting up Frappe Mail requires an API key and API secret for your email account. Read more"
+      ),
+      link: "https://github.com/frappe/mail",
+      custom: true,
+    },
+    {
+      name: "Custom",
+      icon: "",
+      info: __("Use your own IMAP/SMTP settings."),
+      link: "/desk/email-account/new-email-account",
+      custom: true,
+    },
+  ];
 
-export const services: EmailService[] = [
-  {
-    name: "GMail",
-    icon: LogoGmail,
-    info: __(
-      "Setting up GMail requires you to enable two-factor authentication and app passwords. Read more"
-    ),
-    link: "https://support.google.com/accounts/answer/185833",
-    custom: false,
-  },
-  {
-    name: "Outlook",
-    icon: LogoOutlook,
-    info: __(
-      "Setting up Outlook requires you to enable two-factor authentication and app passwords. Read more"
-    ),
-    link: "https://support.microsoft.com/en-us/account-billing/how-to-get-and-use-app-passwords-5896ed9b-4263-e681-128a-a6f2979a7944",
-    custom: false,
-  },
-  {
-    name: "Sendgrid",
-    icon: LogoSendgrid,
-    info: __(
-      "Setting up Sendgrid requires you to enable two-factor authentication and app passwords. Read more"
-    ),
-    link: "https://sendgrid.com/docs/ui/account-and-settings/two-factor-authentication/",
-    custom: false,
-  },
-  {
-    name: "SparkPost",
-    icon: LogoSparkpost,
-    info: __(
-      "Setting up SparkPost requires you to enable two-factor authentication and app passwords. Read more"
-    ),
-    link: "https://support.sparkpost.com/docs/my-account-and-profile/enabling-two-factor-authentication",
-    custom: false,
-  },
-  {
-    name: "Yahoo",
-    icon: LogoYahoo,
-    info: __(
-      "Setting up Yahoo requires you to enable two-factor authentication and app passwords. Read more"
-    ),
-    link: "https://help.yahoo.com/kb/SLN15241.html",
-    custom: false,
-  },
-  {
-    name: "Yandex",
-    icon: LogoYandex,
-    info: __(
-      "Setting up Yandex requires you to enable two-factor authentication and app passwords. Read more"
-    ),
-    link: "https://yandex.com/support/id/authorization/app-passwords.html",
-    custom: false,
-  },
-  {
-    name: "Frappe Mail",
-    icon: LogoFrappeMail,
-    info: __(
-      "Setting up Frappe Mail requires an API key and API secret for your email account. Read more"
-    ),
-    link: "https://github.com/frappe/mail",
-    custom: true,
-  },
-  {
-    name: "Custom",
-    icon: "",
-    info: __("Use your own IMAP/SMTP settings."),
-    link: "/desk/email-account/new-email-account",
-    custom: true,
-  },
-];
+  return {
+    incomingOutgoingFields,
+    popularProviderFields,
+    frappeMailFields,
+    customProviderTopFields,
+    customIncomingFields,
+    customOutgoingFields,
+    customProviderFields: customProviderTopFields,
+    services,
+  };
+}
+
+export function isLtrEmailField(name: string) {
+  return [
+    "email_id",
+    "frappe_mail_site",
+    "api_key",
+    "api_secret",
+    "domain",
+    "email_server",
+    "incoming_port",
+    "smtp_server",
+    "smtp_port",
+  ].includes(name);
+}
 
 export const emailIcon = {
   GMail: LogoGmail,

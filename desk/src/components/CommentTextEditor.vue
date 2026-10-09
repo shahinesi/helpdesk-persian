@@ -14,6 +14,7 @@
       <!-- Scroll here so selected nodes aren't clipped. -->
       <div :class="editable && 'max-h-[44vh] overflow-y-auto'">
         <EditorContent
+          dir="auto"
           :class="[
             'prose-sm max-w-none',
             editable && 'min-h-[7rem] mx-5 border-t py-3',

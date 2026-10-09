@@ -41,65 +41,115 @@ export interface ActionTypeConfig {
 /** Display config per action type, in menu/display order. */
 export const ACTION_TYPES: Record<SavedReplyActionType, ActionTypeConfig> = {
   "Set Status": {
-    label: __("Set status"),
-    chipLabel: __("Status"),
-    fieldname: __("Status"),
+    get label() {
+      return __("Set status");
+    },
+    get chipLabel() {
+      return __("Status");
+    },
+    get fieldname() {
+      return __("Status");
+    },
     icon: LucideCircleDot,
     control: "select",
   },
   "Set Priority": {
-    label: __("Set priority"),
-    chipLabel: __("Priority"),
-    fieldname: __("Priority"),
+    get label() {
+      return __("Set priority");
+    },
+    get chipLabel() {
+      return __("Priority");
+    },
+    get fieldname() {
+      return __("Priority");
+    },
     icon: LucideSignal,
     control: "select",
   },
   "Set Team": {
-    label: __("Set team"),
-    chipLabel: __("Team"),
-    fieldname: __("Team"),
+    get label() {
+      return __("Set team");
+    },
+    get chipLabel() {
+      return __("Team");
+    },
+    get fieldname() {
+      return __("Team");
+    },
     icon: LucideUsers,
     control: "link",
     doctype: "HD Team",
   },
   "Set Ticket Type": {
-    label: __("Set ticket type"),
-    chipLabel: __("Type"),
-    fieldname: __("Ticket Type"),
+    get label() {
+      return __("Set ticket type");
+    },
+    get chipLabel() {
+      return __("Type");
+    },
+    get fieldname() {
+      return __("Ticket Type");
+    },
     icon: LucideTicket,
     control: "link",
     doctype: "HD Ticket Type",
   },
   "Assign Agent": {
-    label: __("Assign agent"),
-    chipLabel: __("Assign"),
-    fieldname: __("Agent"),
+    get label() {
+      return __("Assign agent");
+    },
+    get chipLabel() {
+      return __("Assign");
+    },
+    get fieldname() {
+      return __("Agent");
+    },
     icon: LucideUserPlus,
     control: "combobox",
   },
   "Assign to Me": {
-    label: __("Assign to me"),
-    chipLabel: __("Assign to me"),
+    get label() {
+      return __("Assign to me");
+    },
+    get chipLabel() {
+      return __("Assign to me");
+    },
     icon: LucideUserCheck,
     control: "none",
-    hint: __("The agent who sends the reply"),
+    get hint() {
+      return __("The agent who sends the reply");
+    },
   },
   "Add Tag": {
-    label: __("Add tags"),
-    chipLabel: __("Tag"),
+    get label() {
+      return __("Add tags");
+    },
+    get chipLabel() {
+      return __("Tag");
+    },
     icon: LucideTag,
     control: "multiselect",
   },
   "Remove Tag": {
-    label: __("Remove tags"),
-    chipLabel: __("Remove tag"),
+    get label() {
+      return __("Remove tags");
+    },
+    get chipLabel() {
+      return __("Remove tag");
+    },
     icon: LucideTag,
     control: "multiselect",
   },
   "Add Comment": {
-    label: __("Add comment"),
-    chipLabel: __("Comment"),
-    fieldname: __("Comment"),
+    get label() {
+      return __("Add comment");
+    },
+    get chipLabel() {
+      return __("Comment");
+    },
+    get fieldname() {
+      return __("Comment");
+    },
     icon: LucideMessageSquare,
     control: "editor",
   },
@@ -111,12 +161,29 @@ export const ACTION_MENU_GROUPS: {
   types: SavedReplyActionType[];
 }[] = [
   {
-    label: __("Fields"),
+    get label() {
+      return __("Fields");
+    },
     types: ["Set Status", "Set Priority", "Set Team", "Set Ticket Type"],
   },
-  { label: __("Assignment"), types: ["Assign Agent", "Assign to Me"] },
-  { label: __("Tags"), types: ["Add Tag", "Remove Tag"] },
-  { label: __("Comment"), types: ["Add Comment"] },
+  {
+    get label() {
+      return __("Assignment");
+    },
+    types: ["Assign Agent", "Assign to Me"],
+  },
+  {
+    get label() {
+      return __("Tags");
+    },
+    types: ["Add Tag", "Remove Tag"],
+  },
+  {
+    get label() {
+      return __("Comment");
+    },
+    types: ["Add Comment"],
+  },
 ];
 
 /** Only one of these can be used per reply. */

@@ -1,0 +1,24 @@
+diff --git a/src/components/ActivityTimeline/VersionItem.vue b/src/components/ActivityTimeline/VersionItem.vue
+--- a/src/components/ActivityTimeline/VersionItem.vue
++++ b/src/components/ActivityTimeline/VersionItem.vue
+@@ -12,11 +12,10 @@
+ 				class="flex items-center gap-2 hover:text-ink-gray-7"
+ 				@click="expanded = !expanded"
+ 			>
+ 				<span class="text-ink-gray-5">
+ 					<span class="font-medium text-ink-gray-8">{{ authorName }}</span>
+-					made
+-					<span class="font-medium text-ink-gray-8"> {{ changes.length }} changes </span>
+-					<span v-if="sessionSpan">over {{ sessionSpan }}</span>
++					{{ __("{0} made {1} changes", authorName, changes.length) }}
++					<span v-if="sessionSpan">{{ __("over {0}", sessionSpan) }}</span>
+ 				</span>
+ 				<LucideChevronUp v-if="expanded" class="size-3.5" />
+ 				<LucideChevronDown v-else class="size-3.5" />
+@@ -119,4 +119,6 @@
+ import TimeAgo from "./TimeAgo.vue";
+ import type { FieldChange, VersionChange, VersionItemProps } from "./types";
+
++const __ = (window as any).__;
++
+ const props = defineProps<VersionItemProps>();

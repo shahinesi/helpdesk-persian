@@ -102,6 +102,7 @@
         <div class="overflow-y-auto min-h-[7rem] max-h-[30vh] flex flex-col">
           <div class="flex-1">
             <EditorContent
+              dir="auto"
               :class="[
                 'prose-sm max-w-full mx-6 md:mx-5 py-3',
                 getFontFamily(newEmail),
@@ -123,6 +124,7 @@
             <div
               ref="quotedContentRef"
               contenteditable="true"
+              dir="auto"
               class="prose !max-w-full mx-1 my-2 border-s-4 border-outline-gray-2 ps-4 text-sm focus:outline-none"
               @input="onQuotedInput"
             />

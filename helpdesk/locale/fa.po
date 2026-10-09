@@ -2579,7 +2579,7 @@ msgstr "محتوای ایمیل"
 #. Label of the email_id (Data) field in DocType 'HD Customer'
 #: helpdesk/helpdesk/doctype/hd_customer/hd_customer.json
 msgid "Email ID"
-msgstr "شناسه ایمیل"
+msgstr "نشانی ایمیل"
 
 #. Label of the email_customisations_tab (Tab Break) field in DocType 'HD
 #. Settings'
@@ -9415,11 +9415,11 @@ msgstr "فعال‌سازی ارسال ایمیل"
 
 #: desk/src/components/Settings/emailConfig.ts:70
 msgid "Default Incoming"
-msgstr "دریافت پیش‌فرض"
+msgstr "حساب پیش‌فرض دریافت"
 
 #: desk/src/components/Settings/emailConfig.ts:78
 msgid "Default Outgoing"
-msgstr "ارسال پیش‌فرض"
+msgstr "حساب پیش‌فرض ارسال"
 
 #: desk/src/components/Settings/emailConfig.ts:57
 msgid "When enabled, tickets are created from incoming emails received by this account."
@@ -9628,7 +9628,7 @@ msgstr "{0} از ۵"
 
 #: desk/src/components/CommunicationArea.vue
 msgid "@John could you please look into this?"
-msgstr "@John، لطفاً این مورد را بررسی می‌کنید؟"
+msgstr "@جان، لطفاً این موضوع را پیگیری کنید."
 
 #: desk/src/components/telephony/CallUI.vue
 #: desk/src/components/telephony/ExotelCallUI.vue

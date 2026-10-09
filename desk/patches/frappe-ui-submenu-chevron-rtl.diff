@@ -1,0 +1,11 @@
+diff --git a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
+--- a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
++++ b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
+@@ -193,6 +193,7 @@
+         :class="[
+           'lucide-chevron-right',
+           menuClasses.chevronIcon,
++          'rtl:rotate-180',
+           getMenuIconColor(item),
+         ]"
+         aria-hidden="true"

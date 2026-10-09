@@ -36,7 +36,7 @@
                 :key="item.label"
                 class="flex h-7 w-full items-center gap-2 rounded-4 px-2 py-[7px]"
                 :class="[
-                  activeTab?.label == item.label
+                  activeTab?.component === item.component
                     ? 'bg-surface-elevation-3 shadow-sm'
                     : 'hover:bg-surface-gray-2',
                 ]"
