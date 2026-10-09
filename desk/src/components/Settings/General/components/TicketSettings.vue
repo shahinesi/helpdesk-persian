@@ -262,6 +262,7 @@ import SelectDropdown from "@/components/SelectDropdown.vue";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { HDSettingsSymbol } from "@/types";
 import { HDTicketStatus } from "@/types/doctypes";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import {
   Checkbox,
   createListResource,
@@ -313,7 +314,7 @@ const ticketTypeList = createListResource({
   transform: (data) => {
     return data.map((item) => {
       return {
-        label: item.name,
+        label: displayLinkOption("HD Ticket Type", item.name),
         value: item.name,
       };
     });
@@ -324,7 +325,7 @@ const autoUpdateTicketStatusList = computed(() => {
   return (
     statuses.data?.map((s: HDTicketStatus) => {
       return {
-        label: s.label_agent,
+        label: displayLinkOption("HD Ticket Status", s.label_agent),
         value: s.label_agent,
       };
     }) || []
@@ -340,7 +341,7 @@ const autoCloseTicketStatusList = computed(() => {
       )
       ?.map((s: HDTicketStatus) => {
         return {
-          label: s.label_agent,
+          label: displayLinkOption("HD Ticket Status", s.label_agent),
           value: s.label_agent,
         };
       }) || []

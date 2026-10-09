@@ -6,7 +6,7 @@
   >
     <template #trigger>
       <Button
-        class="flex items-center justify-between min-w-36"
+        class="flex items-center justify-between min-w-36 text-start"
         :class="targetClass"
         icon-right="lucide-chevron-down"
       >
@@ -27,7 +27,7 @@
           <div
             v-for="option in options"
             :key="option.value"
-            class="p-2 cursor-pointer hover:bg-surface-gray-3 text-base flex items-center justify-between rounded-4"
+            class="p-2 cursor-pointer hover:bg-surface-gray-3 text-base flex items-center justify-between rounded-4 text-start"
             @click="
               () => {
                 onChange(option.value);
@@ -35,7 +35,7 @@
               }
             "
           >
-            <div class="w-full truncate">
+            <div class="w-full truncate text-start">
               {{ option.label }}
             </div>
             <LucideCheck v-if="model == option.value" class="size-4 ms-2" />
