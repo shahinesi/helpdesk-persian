@@ -34,7 +34,7 @@ yarn apply:ui-patches
 yarn build
 ```
 
-مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` روی commit `3ac43410518fc4a4446815d5e756e1d65c727335` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین تست کامل Backend یا Runtime پذیرش نیست.
+مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` روی commit `af3ed4a2de6f3698e21f2ccb909f4aca1be20236` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین Full Docker Build، تست کامل Backend یا Runtime پذیرش نیست.
 
 ### ساخت image با Docker
 
