@@ -1,6 +1,10 @@
 <template>
   <SettingsLayoutBase
-    :back-label="slaData.service_level || __('New SLA Policy')"
+    :back-label="
+      slaData.service_level
+        ? displayLinkOption('HD Service Level Agreement', slaData.service_level)
+        : __('New SLA Policy')
+    "
     :on-back="goBack"
     :dirty="isDirty"
   >
@@ -48,7 +52,13 @@
                 variant="subtle"
                 :placeholder="__('Name')"
                 :label="__('Name')"
-                v-model="slaData.service_level"
+                :model-value="
+                  displayLinkOption(
+                    'HD Service Level Agreement',
+                    slaData.service_level
+                  )
+                "
+                @update:model-value="slaData.service_level = $event"
                 required
                 @change="validateSlaData('service_level')"
                 :disabled="Boolean(slaActiveScreen.data)"
@@ -315,6 +325,7 @@ import SlaStatusList from "./SlaStatusList.vue";
 import { disableSettingModalOutsideClick } from "../settingsModal";
 import { useOnboarding } from "@framework/ui";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import SettingsLayoutBase from "@/components/layouts/SettingsLayoutBase.vue";
 import { SlaPolicyListResourceSymbol } from "@/types";
 import { HDServiceLevelAgreement } from "@/types/doctypes";

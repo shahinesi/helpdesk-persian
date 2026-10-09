@@ -1,9 +1,6 @@
 import { expect, test, uid, usePersona } from "../../helpers/fixtures";
 import { personas } from "../../helpers/personas";
-import {
-  createThrowawayAgent,
-  openSettings,
-} from "../../helpers/settings";
+import { createThrowawayAgent, openSettings } from "../../helpers/settings";
 import type { Locator, Page } from "@playwright/test";
 import type { Api } from "../../helpers/api";
 
@@ -24,17 +21,27 @@ test("every settings tab opens without errors", async ({ page }) => {
 
   for (const tab of await tabs.all()) {
     await tab.click();
-    await expect(dialog.getByRole("heading", { level: 1 }).nth(1)).toBeVisible();
+    await expect(
+      dialog.getByRole("heading", { level: 1 }).nth(1)
+    ).toBeVisible();
   }
   expect(errors).toEqual([]);
 });
 
-test("inviting an agent shows it pending, and accepting creates the agent", async ({ page, api }) => {
-  const [cancelled, accepted] = [`e2e-cancel-${uid()}@example.com`, `e2e-invite-${uid()}@example.com`];
+test("inviting an agent shows it pending, and accepting creates the agent", async ({
+  page,
+  api,
+}) => {
+  const [cancelled, accepted] = [
+    `e2e-cancel-${uid()}@example.com`,
+    `e2e-invite-${uid()}@example.com`,
+  ];
   await page.goto("/helpdesk/tickets");
   const dialog = await openSettings(page, "Invite Agents");
 
-  await dialog.getByRole("textbox", { name: /Invite by email/ }).fill(`${cancelled}, ${accepted}`);
+  await dialog
+    .getByRole("textbox", { name: /Invite by email/ })
+    .fill(`${cancelled}, ${accepted}`);
   // The textarea's v-model is debounced by 100ms.
   await page.waitForTimeout(300);
   await dialog.getByRole("button", { name: "Send Invites" }).click();
@@ -56,7 +63,10 @@ test("inviting an agent shows it pending, and accepting creates the agent", asyn
   expect(await api.exists("HD Agent", { user: accepted })).toBeTruthy();
 });
 
-test("inviting an agent ticks the invite onboarding step", async ({ page, api }) => {
+test("inviting an agent ticks the invite onboarding step", async ({
+  page,
+  api,
+}) => {
   const steps = [{ name: "invite_agents", completed: false }];
   await api.call("frappe.onboarding.update_user_onboarding_status", {
     steps: JSON.stringify(steps),
@@ -65,21 +75,31 @@ test("inviting an agent ticks the invite onboarding step", async ({ page, api })
   await page.addInitScript(() => localStorage.clear());
   await page.goto("/helpdesk/tickets");
   const dialog = await openSettings(page, "Invite Agents");
-  await dialog.getByRole("textbox", { name: /Invite by email/ }).fill(`e2e-step-${uid()}@example.com`);
+  await dialog
+    .getByRole("textbox", { name: /Invite by email/ })
+    .fill(`e2e-step-${uid()}@example.com`);
   await page.waitForTimeout(300);
   await dialog.getByRole("button", { name: "Send Invites" }).click();
   await expect
     .poll(async () => {
       const status = await api.call("frappe.onboarding.get_onboarding_status");
-      return status.helpdesk_onboarding_status?.find((step) => step.name === "invite_agents")?.completed;
+      return status.helpdesk_onboarding_status?.find(
+        (step) => step.name === "invite_agents"
+      )?.completed;
     })
     .toBe(true);
 });
 
-test("a disabled agent disappears from the assignee list", async ({ page, api }) => {
+test("a disabled agent disappears from the assignee list", async ({
+  page,
+  api,
+}) => {
   const email = `e2e-disable-${uid()}@example.com`;
   const agent = await createThrowawayAgent(api, email);
-  const ticket = await api.insert("HD Ticket", { subject: `Disable check ${uid()}`, description: "x" });
+  const ticket = await api.insert("HD Ticket", {
+    subject: `Disable check ${uid()}`,
+    description: "x",
+  });
 
   await page.goto(`/helpdesk/tickets/${ticket.name}`);
   await expect(await assigneeOption(page, agent.agent_name)).toBeVisible();
@@ -89,13 +109,18 @@ test("a disabled agent disappears from the assignee list", async ({ page, api })
   const row = dialog.locator("div.group").filter({ hasText: email });
   await row.getByRole("button").last().click();
   await page.getByRole("menuitem", { name: "Disable Agent" }).click();
-  await expect.poll(async () => (await api.get("HD Agent", email)).is_active).toBe(0);
+  await expect
+    .poll(async () => (await api.get("HD Agent", email)).is_active)
+    .toBe(0);
 
   await page.goto(`/helpdesk/tickets/${ticket.name}`);
   await expect(await assigneeOption(page, agent.agent_name)).toHaveCount(0);
 });
 
-test("teams can be created, staffed, renamed, disabled and deleted", async ({ page, api }) => {
+test("teams can be created, staffed, renamed, disabled and deleted", async ({
+  page,
+  api,
+}) => {
   const name = `E2E Team ${uid()}`;
   const renamed = `${name} Renamed`;
   await page.goto("/helpdesk/tickets");
@@ -105,7 +130,9 @@ test("teams can be created, staffed, renamed, disabled and deleted", async ({ pa
   await dialog.getByRole("textbox", { name: /Team Name/ }).fill(name);
   await pickAgent(page, dialog, "Bela E2E");
   await dialog.getByRole("button", { name: "Save", exact: true }).click();
-  await expect.poll(() => teamUsers(api, name)).toEqual([personas.agent2.email]);
+  await expect
+    .poll(() => teamUsers(api, name))
+    .toEqual([personas.agent2.email]);
 
   await pickAgent(page, dialog, "Arjun E2E");
   await dialog.getByRole("button", { name: "Add Member" }).click();
@@ -115,13 +142,20 @@ test("teams can be created, staffed, renamed, disabled and deleted", async ({ pa
 
   await teamMenu(page, dialog, "Rename");
   const rename = page.getByRole("dialog", { name: "Rename team" });
-  await rename.getByRole("textbox", { name: "Title" }).fill(renamed);
+  const renameField = rename.getByRole("textbox", { name: "Title" });
+  await expect(renameField).toHaveValue("");
+  await expect(rename.getByRole("button", { name: "Confirm" })).toBeDisabled();
+  await renameField.fill(renamed);
   await rename.getByRole("button", { name: "Confirm" }).click();
-  await expect.poll(() => api.exists("HD Team", { name: renamed })).toBeTruthy();
+  await expect
+    .poll(() => api.exists("HD Team", { name: renamed }))
+    .toBeTruthy();
 
   await dialog.getByText(renamed, { exact: true }).click();
   await dialog.getByRole("switch").click();
-  await expect.poll(async () => (await api.get("HD Team", renamed)).disabled).toBe(1);
+  await expect
+    .poll(async () => (await api.get("HD Team", renamed)).disabled)
+    .toBe(1);
 
   await teamMenu(page, dialog, "Delete");
   await page.getByRole("menuitem", { name: "Confirm Delete" }).click();
@@ -134,7 +168,9 @@ async function pickAgent(page: Page, dialog: Locator, agentName: string) {
 }
 
 async function teamMenu(page: Page, dialog: Locator, item: string) {
-  const header = dialog.getByText("Enabled", { exact: true }).locator("xpath=../..");
+  const header = dialog
+    .getByText("Enabled", { exact: true })
+    .locator("xpath=../..");
   await header.getByRole("button").click();
   await page.getByRole("menuitem", { name: item }).click();
 }

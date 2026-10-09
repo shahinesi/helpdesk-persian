@@ -8,7 +8,7 @@
       <FormControl
         v-model="teamName"
         :label="__('Title')"
-        :placeholder="__('Product Experts')"
+        :placeholder="displayLinkOption('HD Team', dialog.teamName)"
       />
     </template>
     <template #actions>
@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { createResource, Dialog, toast } from "frappe-ui";
 import { computed, ref, watch } from "vue";
 
@@ -36,7 +37,7 @@ const dialog = defineModel<{
   show: boolean;
   teamName: string;
 }>();
-const teamName = ref(dialog.value.teamName);
+const teamName = ref("");
 
 const renameTeamResource = createResource({
   url: "frappe.client.rename_doc",
@@ -71,7 +72,7 @@ function renameTeam() {
 watch(
   () => dialog.value.show,
   () => {
-    teamName.value = dialog.value.teamName;
+    teamName.value = "";
   }
 );
 </script>
