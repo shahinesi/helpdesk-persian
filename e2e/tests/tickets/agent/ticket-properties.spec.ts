@@ -35,7 +35,7 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   // clearing is its own save; picking after it must not send a second one
   await page.getByRole("button", { name: team, exact: true }).hover();
   await page
-    .getByRole("button", { name: team, exact: true })
+    .getByRole("button", { name: team })
     .locator('[data-slot="clear"]')
     .click();
   await expect.poll(() => setValue.length).toBe(4);
