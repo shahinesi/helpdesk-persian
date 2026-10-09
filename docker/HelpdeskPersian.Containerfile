@@ -32,7 +32,7 @@ ENV PATH="/opt/yarn-v1.22.18/bin:${PATH}"
 RUN export PATH="/opt/yarn-v1.22.18/bin:/opt/node-v20/bin:${PATH}" \
     && test "$(node --version)" = "v20.20.0" \
     && test "$(yarn --version)" = "1.22.18" \
-    && rm -rf apps/helpdesk/desk/node_modules/frappe-ui \
+    && rm -rf apps/helpdesk/desk/node_modules \
     && cd apps/helpdesk/desk \
     && yarn install --frozen-lockfile --non-interactive
 RUN mkdir -p sites && printf '{}' > sites/common_site_config.json \

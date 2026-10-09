@@ -18,7 +18,7 @@
 
 | هدف | فایل نسخه‌بندی‌شده | روش اعمال | پوشش |
 |---|---|---|---|
-| Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` از ریشه مخزن Frappe؛ پین SHA در checkout دارای Git اعتبارسنجی می‌شود | Activity timeline، نمایش متن تغییرات و ارقام onboarding |
+| Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` از ریشه مخزن Frappe؛ پین SHA در checkout دارای Git اعتبارسنجی می‌شود | Activity timeline، نمایش متن تغییرات، ارقام و تمام متن‌ها و برچسب‌های onboarding و Help Center |
 | پکیج `frappe-ui` | `desk/patches/frappe-ui+1.0.0-rc.1.patch` | `patch-package` در `postinstall` | ۳۷ فایل؛ Jalali picker، RTL، متن‌های انتخاب، فونت Vazirmatn، نمودارها، Editor و کنترل‌های مشترک |
 
 Patchها پس از ممیزی در دو Artifact ادغام شدند. Patchهای قدیمی حذف‌شده در Git bundle بازیابی‌پذیرند؛ قابلیت‌هایشان در Patch ادغام‌شده یا خود upstream حضور دارد. Patch اعمال‌نشده با خطا Build را متوقف می‌کند. اسکریپت Build نسخه `frappe-ui` را بررسی می‌کند و Patchهای منبع Frappe را فقط یک‌بار اعمال می‌کند.
@@ -38,9 +38,9 @@ yarn build
 
 ### ساخت image با Docker
 
-`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند؛ بنابراین image پایه نمی‌تواند سورس قدیمی یا تغییرکردهٔ این مسیر را بی‌صدا وارد Build کند. Node `20.20.0` و Yarn `1.22.18` از مرحلهٔ Node رسمی و نسخه‌بندی‌شده می‌آیند؛ Node 20 فقط برای نصب قفل‌شدهٔ وابستگی‌های Desk در prefix جدا استفاده می‌شود. مرحلهٔ نهایی، Node `24.21.0` موجود در image پایه را برای `bench build` نگه می‌دارد، چون bundler نسخهٔ Frappe این شاخه Node `>=24` می‌خواهد. این مسیر از نصب Node با NVM در زمان Docker Build پرهیز می‌کند و در صورت نبود نسخهٔ سازگار یا ناسازگاری Patch، Build را متوقف می‌سازد.
+`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند. Node `20.20.0` و Yarn `1.22.18` از مرحلهٔ Node رسمی و نسخه‌بندی‌شده می‌آیند؛ Node 20 فقط برای نصب قفل‌شدهٔ وابستگی‌های Desk در prefix جدا استفاده می‌شود. پیش از نصب، کل `desk/node_modules` image پایه حذف می‌شود تا نصب از Lockfile به ماژول‌های باقی‌مانده وابسته نباشد. مرحلهٔ نهایی، Node `24.14.0` موجود در image پایه را برای `bench build` نگه می‌دارد، چون bundler این خط Node `>=24` می‌خواهد. اگر ref یا Patch ناسازگار باشد، Build متوقف می‌شود.
 
-این recipe به image پایهٔ موجود `helpdesk-persian:styled` نیاز دارد. تغییر Containerfile هنوز روی شاخه محلی است و Full Docker Image Build با آن اجرا نشده؛ بنابراین این اصلاح هنوز Clean Docker Build را اثبات نمی‌کند. Build فقط image کاندید تولید می‌کند و آن را Deploy نمی‌کند.
+این recipe به image پایهٔ موجود `helpdesk-persian:styled` نیاز دارد و نسخهٔ دقیق آن باید در manifest استقرار ثبت شود. image `runtime-324a2e118` ساخته و روی stack تست اجرا شد، اما آن build هنوز `node_modules` به‌ارث‌رسیده از image پایه داشت؛ پس Clean Docker Install محسوب نمی‌شود. اصلاح فعلی کل پوشه را پیش از نصب پاک می‌کند و باید با Build تازه اعتبارسنجی شود.
 
 ## ارتقا و بازگشت
 

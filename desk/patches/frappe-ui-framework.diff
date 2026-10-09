@@ -161,48 +161,108 @@ index a148456..79a7bd2 100644
    /** every field change across merged saves; absent/length-1 ⇒ no chevron */
    history?: FieldChange[];
  }
-diff --git a/src/components/Onboarding/GettingStartedBanner.vue b/src/components/Onboarding/GettingStartedBanner.vue
-index 703ca8a..04ea7ad 100644
 --- a/src/components/Onboarding/GettingStartedBanner.vue
 +++ b/src/components/Onboarding/GettingStartedBanner.vue
-@@ -10,7 +10,7 @@
- 					{{ "Getting started" }}
+@@ -7,10 +7,10 @@
+ 			<StepsIcon class="h-4 my-0.5 shrink-0" />
+ 			<div class="flex flex-col text-p-sm gap-0.5">
+ 				<div class="font-medium">
+-					{{ "Getting started" }}
++					{{ __("Getting started") }}
  				</div>
  				<div class="text-ink-gray-7">
 -					{{ `${stepsCompleted}/${totalSteps} steps` }}
-+					{{ `${formatLocalizedNumber(stepsCompleted)}/${formatLocalizedNumber(totalSteps)} steps` }}
++					{{ __("{0}/{1} steps", formatLocalizedNumber(stepsCompleted), formatLocalizedNumber(totalSteps)) }}
  				</div>
  			</div>
  		</div>
-@@ -60,7 +60,7 @@ import { Button } from "frappe-ui";
- import LucideChevronsRight from "~icons/lucide/chevrons-right";
- import LucideX from "~icons/lucide/x";
- import { StepsIcon } from "frappe-ui/icons";
--import { useOnboarding } from "./onboarding";
-+import { formatLocalizedNumber, useOnboarding } from "./onboarding";
- import { showHelpCenter } from "./helpCenter";
- import { minimize, showHelpModal } from "./help";
- import type { GettingStartedBannerProps } from "./types";
-diff --git a/src/components/Onboarding/OnboardingSteps.vue b/src/components/Onboarding/OnboardingSteps.vue
-index b3a775c..649caf3 100644
+@@ -19,7 +19,7 @@
+ 				<div class="flex items-center gap-2 shrink-0">
+ 					<StepsIcon class="h-4 my-0.5" />
+ 					<div class="text-ink-gray-9 font-medium">
+-						{{ "You are all set" }}
++						{{ __("You are all set") }}
+ 					</div>
+ 				</div>
+ 				<LucideX
+@@ -33,12 +33,12 @@
+ 				/>
+ 			</div>
+ 			<div class="text-p-sm text-ink-gray-7">
+-				{{ "All steps are completed successfully" }}
++				{{ __("All steps are completed successfully") }}
+ 			</div>
+ 		</div>
+ 		<Button
+ 			v-if="stepsCompleted != totalSteps"
+-			:label="stepsCompleted == 0 ? 'Start now' : 'Continue'"
++			:label="stepsCompleted == 0 ? __('Start now') : __('Continue')"
+ 			theme="blue"
+ 			@click="openOnboarding"
+ 		>
+@@ -49,7 +49,7 @@
+ 	</div>
+ 	<Button
+ 		v-else-if="stepsCompleted != totalSteps"
+-		aria-label="Getting started"
++		:aria-label="__('Getting started')"
+ 		@click="openOnboarding"
+ 	>
+ 		<StepsIcon class="h-4 my-0.5 shrink-0" />
 --- a/src/components/Onboarding/OnboardingSteps.vue
 +++ b/src/components/Onboarding/OnboardingSteps.vue
-@@ -5,13 +5,13 @@
- 			{{ "Welcome to " + title }}
+@@ -2,16 +2,16 @@
+ 	<div class="flex flex-col justify-center items-center gap-1 mt-4 mb-7">
+ 		<component :is="logo" class="size-10 shrink-0 rounded-4 mb-4" />
+ 		<div class="text-base font-medium">
+-			{{ "Welcome to " + title }}
++			{{ __("Welcome to {0}", title) }}
  		</div>
  		<div class="text-p-base font-normal">
 -			{{ `${stepsCompleted}/${totalSteps} steps completed` }}
-+			{{ `${formatLocalizedNumber(stepsCompleted)}/${formatLocalizedNumber(totalSteps)} steps completed` }}
++			{{ __("{0}/{1} steps completed", formatLocalizedNumber(stepsCompleted), formatLocalizedNumber(totalSteps)) }}
  		</div>
  	</div>
  	<div class="flex flex-col gap-2.5 overflow-hidden">
  		<div class="flex justify-between items-center py-0.5">
  			<Badge
 -				:label="`${completedPercentage}% completed`"
-+				:label="`${formatLocalizedNumber(completedPercentage)}% completed`"
++				:label="__('{0}% completed', formatLocalizedNumber(completedPercentage))"
  				:theme="completedPercentage == 100 ? 'green' : 'amber'"
  				size="lg"
  			/>
+@@ -19,13 +19,13 @@
+ 				<Button
+ 					v-if="completedPercentage != 0"
+ 					variant="ghost"
+-					:label="'Reset all'"
++					:label="__('Reset all')"
+ 					@click="() => resetAll(afterResetAll)"
+ 				/>
+ 				<Button
+ 					v-if="completedPercentage != 100"
+ 					variant="ghost"
+-					:label="'Skip all'"
++					:label="__('Skip all')"
+ 					@click="() => skipAll(afterSkipAll)"
+ 				/>
+ 			</div>
+@@ -59,13 +59,13 @@
+ 				</component>
+ 				<Button
+ 					v-if="!step.completed && !isDependent(step)"
+-					:label="'Skip'"
++					:label="__('Skip')"
+ 					class="!h-4 text-xs !text-ink-gray-6 hidden group-hover:flex"
+ 					@click="() => skip(step.name, afterSkip)"
+ 				/>
+ 				<Button
+ 					v-else-if="!isDependent(step)"
+-					:label="'Reset'"
++					:label="__('Reset')"
+ 					class="!h-4 text-xs !text-ink-gray-6 hidden group-hover:flex"
+ 					@click.stop="() => reset(step.name, afterReset)"
+ 				/>
 @@ -75,7 +75,7 @@
  </template>
  <script setup lang="ts">
@@ -212,6 +272,98 @@ index b3a775c..649caf3 100644
  import type { OnboardingStep, OnboardingStepsProps } from "./types";
  
  const props = withDefaults(defineProps<OnboardingStepsProps>(), {
+@@ -97,7 +97,7 @@
+ 	if (step.dependsOn && !step.completed) {
+ 		const dependsOnStep = steps?.find((s) => s.name === step.dependsOn);
+ 		if (dependsOnStep && !dependsOnStep.completed) {
+-			return `You need to complete "${dependsOnStep.title}" first.`;
++			return __('You need to complete "{0}" first.', dependsOnStep.title);
+ 		}
+ 	}
+ 	return "";
+--- a/src/components/Onboarding/HelpModal.vue
++++ b/src/components/Onboarding/HelpModal.vue
+@@ -11,16 +11,16 @@
+ 			</div>
+ 			<div class="flex gap-1">
+ 				<Dropdown v-if="options.length" :options="options">
+-					<Button variant="ghost" icon="lucide-ellipsis" aria-label="More options" />
++					<Button variant="ghost" icon="lucide-ellipsis" :aria-label="__('More options')" />
+ 				</Dropdown>
+ 				<Button
+ 					@click="minimize = !minimize"
+ 					variant="ghost"
+-					:aria-label="minimize ? 'Maximize' : 'Minimize'"
++					:aria-label="minimize ? __('Maximize') : __('Minimize')"
+ 				>
+ 					<component :is="minimize ? MaximizeIcon : MinimizeIcon" class="h-3.5" />
+ 				</Button>
+-				<Button variant="ghost" aria-label="Close" @click="show = false">
++				<Button variant="ghost" :aria-label="__('Close')" @click="show = false">
+ 					<LucideX class="size-3.5" />
+ 				</Button>
+ 			</div>
+@@ -74,9 +74,9 @@
+ 
+ const headingTitle = computed(() => {
+ 	if (!isOnboardingStepsCompleted.value && !showHelpCenter.value) {
+-		return "Getting started";
++		return __("Getting started");
+ 	} else if (showHelpCenter.value) {
+-		return "Help center";
++		return __("Help center");
+ 	}
+ });
+ 
+@@ -84,7 +84,7 @@
+ 	let items = [
+ 		{
+ 			icon: StepsIcon,
+-			label: "Reset onboarding steps",
++			label: __("Reset onboarding steps"),
+ 			onClick: resetOnboardingSteps,
+ 			condition: () => showHelpCenter.value && isOnboardingStepsCompleted.value,
+ 		},
+@@ -97,7 +97,7 @@
+ 	let items = [
+ 		{
+ 			icon: HelpIcon,
+-			label: "Help centre",
++			label: __("Help centre"),
+ 			onClick: () => {
+ 				syncStatus();
+ 				showHelpCenter.value = true;
+@@ -106,7 +106,7 @@
+ 		},
+ 		{
+ 			icon: StepsIcon,
+-			label: "Getting started",
++			label: __("Getting started"),
+ 			onClick: () => (showHelpCenter.value = false),
+ 			condition: showHelpCenter.value && !isOnboardingStepsCompleted.value,
+ 		},
+--- a/src/components/Onboarding/HelpCenter.vue
++++ b/src/components/Onboarding/HelpCenter.vue
+@@ -3,7 +3,7 @@
+ 		<div class="m-1">
+ 			<TextInput
+ 				ref="searchInput"
+-				:placeholder="'Search articles...'"
++				:placeholder="__('Search articles...')"
+ 				v-model="search"
+ 				:debounce="300"
+ 			>
+@@ -13,8 +13,8 @@
+ 			</TextInput>
+ 		</div>
+ 		<div class="flex justify-between items-center text-base text-ink-gray-5 mx-2">
+-			<div>All articles</div>
+-			<Button variant="ghost" aria-label="Open docs" @click="openDocs">
++			<div>{{ __("All articles") }}</div>
++			<Button variant="ghost" :aria-label="__('Open docs')" @click="openDocs">
+ 				<LucideArrowUpRight class="size-4 text-ink-gray-5" />
+ 			</Button>
+ 		</div>
 diff --git a/src/components/Onboarding/onboarding.ts b/src/components/Onboarding/onboarding.ts
 index 03f0d51..76d17fe 100644
 --- a/src/components/Onboarding/onboarding.ts
