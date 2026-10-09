@@ -34,7 +34,7 @@
                 @click="handleParentValueClick(value)"
               >
                 <span class="text-base text-ink-gray-6 max-w-[90%] truncate">{{
-                  value
+                  displayFieldValue(state.selectedParentField, value)
                 }}</span>
                 <LucideChevronRight
                   class="h-4 w-4 text-ink-gray-6 rtl:rotate-180"
@@ -111,7 +111,9 @@
                   :model-value="isChildValueSelected(value)"
                   class="me-4"
                 />
-                <span class="text-base text-ink-gray-6">{{ value }}</span>
+                <span class="text-base text-ink-gray-6">{{
+                  displayFieldValue(state.selectedChildField, value)
+                }}</span>
               </li>
             </ul>
           </div>
@@ -137,6 +139,8 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
+import { formatLocalizedDigits } from "@/utils/number";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { FieldCriteriaState } from "@/types";
 import { computed } from "vue";
 
@@ -146,6 +150,13 @@ const props = defineProps<{
 }>();
 
 const state = defineModel<FieldCriteriaState>();
+
+function displayFieldValue(fieldname: string, value: string) {
+  const field = props.parentFields.find((item) => item.value === fieldname);
+  return field?.type === "Link"
+    ? displayLinkOption(field.options, value)
+    : __(value);
+}
 
 const filteredParentFieldValues = computed(() => {
   if (!state.value.parentSearch) return state.value.parentFieldValues;
@@ -238,12 +249,10 @@ const toggleAllChildValues = computed({
 
 const toggleCheckboxLabel = computed(() => {
   const parent = state.value.currentParentSelection;
-  if (!parent) return "Select All";
+  if (!parent) return __("Select All");
   const selectedCount = getSelectedChildValueCount(parent);
-  if (selectedCount === 0) return "Select All";
-  return `${selectedCount} ${
-    selectedCount === 1 ? "value" : "values"
-  } selected`;
+  if (selectedCount === 0) return __("Select All");
+  return __("{0} values selected", [formatLocalizedDigits(selectedCount)]);
 });
 
 function handleSelectAllChildValues(value: boolean) {

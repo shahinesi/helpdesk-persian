@@ -124,7 +124,7 @@ const parentFields = computed(() => {
       !notAllowedFields.includes(f.fieldname)
   );
   return _fields.map((f) => ({
-    label: f.label,
+    label: __(f.label),
     value: f.fieldname,
     options: f.options || [],
     type: f.fieldtype,

@@ -86,8 +86,8 @@ const { getField } = getMeta("HD Ticket");
 const selections = computed(() => {
   let childField = state.value.selectedChildField;
   let parentField = state.value.selectedParentField;
-  childField = getField(childField)?.label;
-  parentField = getField(parentField)?.label;
+  childField = __(getField(childField)?.label || childField);
+  parentField = __(getField(parentField)?.label || parentField);
   return { childField, parentField };
 });
 
@@ -95,7 +95,7 @@ const fieldCriteriaOptions = computed(() => {
   const _options = [{ label: __("Any"), value: "Any" }];
   props.parentFieldValues.forEach((value) => {
     if (!_options.some((o) => o.value === value)) {
-      _options.push({ label: value, value });
+      _options.push({ label: __(value), value });
     }
   });
   return _options;

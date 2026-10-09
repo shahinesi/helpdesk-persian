@@ -10441,6 +10441,9 @@ msgstr "پاک‌کردن همه"
 msgid "Select All"
 msgstr "انتخاب همه"
 
+msgid "{0} values selected"
+msgstr "{0} مقدار انتخاب شده"
+
 #: frappe-ui/src/charts/components/ChartContainer.vue
 msgid "Loading chart"
 msgstr "در حال بارگذاری نمودار"

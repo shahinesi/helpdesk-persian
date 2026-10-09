@@ -862,8 +862,8 @@ function getParentChildField(name: string) {
 export function getFieldDependencyLabel(name: string) {
   const { getField } = getMeta("HD Ticket");
   let [parent, child] = getParentChildField(name);
-  parent = getField(parent)?.label || parent;
-  child = getField(child)?.label || child;
+  parent = __(getField(parent)?.label || parent);
+  child = __(getField(child)?.label || child);
   return `${parent} → ${child}`;
 }
 
