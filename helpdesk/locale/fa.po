@@ -9482,16 +9482,16 @@ msgid "When enabled, all outgoing emails are sent from this account. Only one ac
 msgstr "با فعال‌کردن این گزینه، همهٔ ایمیل‌های خروجی از این حساب ارسال می‌شوند. فقط یک حساب می‌تواند فرستندهٔ پیش‌فرض باشد."
 
 #: desk/src/components/Settings/emailConfig.ts:195
-msgid "Setting up GMail requires you to enable two-factor authentication and app passwords. Read more"
-msgstr "برای راه‌اندازی GMail، باید تأیید هویت دومرحله‌ای را فعال کنید و گذرواژهٔ ویژهٔ برنامه بسازید. برای اطلاعات بیشتر"
+msgid "Setting up Gmail requires you to enable two-factor authentication and app passwords. Read more"
+msgstr "برای راه‌اندازی Gmail، باید تأیید هویت دومرحله‌ای را فعال کنید و گذرواژهٔ ویژهٔ برنامه بسازید. برای اطلاعات بیشتر"
 
 #: desk/src/components/Settings/emailConfig.ts:204
 msgid "Setting up Outlook requires you to enable two-factor authentication and app passwords. Read more"
 msgstr "برای راه‌اندازی Outlook، باید تأیید هویت دومرحله‌ای را فعال کنید و گذرواژهٔ ویژهٔ برنامه بسازید. برای اطلاعات بیشتر"
 
 #: desk/src/components/Settings/emailConfig.ts:213
-msgid "Setting up Sendgrid requires you to enable two-factor authentication and app passwords. Read more"
-msgstr "برای راه‌اندازی Sendgrid، باید تأیید هویت دومرحله‌ای را فعال کنید و گذرواژهٔ ویژهٔ برنامه بسازید. برای اطلاعات بیشتر"
+msgid "Setting up SendGrid requires you to enable two-factor authentication and app passwords. Read more"
+msgstr "برای راه‌اندازی SendGrid، باید تأیید هویت دومرحله‌ای را فعال کنید و گذرواژهٔ ویژهٔ برنامه بسازید. برای اطلاعات بیشتر"
 
 #: desk/src/components/Settings/emailConfig.ts:222
 msgid "Setting up SparkPost requires you to enable two-factor authentication and app passwords. Read more"

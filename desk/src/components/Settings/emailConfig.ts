@@ -189,9 +189,10 @@ export function getEmailConfig() {
   const services: EmailService[] = [
     {
       name: "GMail",
+      displayName: "Gmail",
       icon: LogoGmail,
       info: __(
-        "Setting up GMail requires you to enable two-factor authentication and app passwords. Read more"
+        "Setting up Gmail requires you to enable two-factor authentication and app passwords. Read more"
       ),
       link: "https://support.google.com/accounts/answer/185833",
       custom: false,
@@ -207,9 +208,10 @@ export function getEmailConfig() {
     },
     {
       name: "Sendgrid",
+      displayName: "SendGrid",
       icon: LogoSendgrid,
       info: __(
-        "Setting up Sendgrid requires you to enable two-factor authentication and app passwords. Read more"
+        "Setting up SendGrid requires you to enable two-factor authentication and app passwords. Read more"
       ),
       link: "https://sendgrid.com/docs/ui/account-and-settings/two-factor-authentication/",
       custom: false,

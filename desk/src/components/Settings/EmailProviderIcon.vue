@@ -7,7 +7,7 @@
     <LucideMail v-else class="size-4.5 text-ink-gray-7" />
   </div>
   <p v-if="serviceName" class="text-center text-p-xs text-ink-gray-7">
-    {{ serviceName === "Custom" ? __("Custom") : serviceName }}
+    {{ displayName || (serviceName === "Custom" ? __("Custom") : serviceName) }}
   </p>
 </template>
 
@@ -18,6 +18,7 @@ import { __ } from "@/translation";
 
 interface P {
   serviceName?: string;
+  displayName?: string;
   logo?: string;
   selected?: boolean;
 }

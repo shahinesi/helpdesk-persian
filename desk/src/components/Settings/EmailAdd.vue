@@ -18,6 +18,7 @@
             >
               <EmailProviderIcon
                 :service-name="s.name"
+                :display-name="s.displayName"
                 :logo="s.icon"
                 :selected="selectedService?.name === s?.name"
               />

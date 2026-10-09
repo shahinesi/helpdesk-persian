@@ -303,6 +303,7 @@ export interface RenderField {
 
 export interface EmailService {
   name: string;
+  displayName?: string;
   icon: string;
   info: string;
   link: string;
