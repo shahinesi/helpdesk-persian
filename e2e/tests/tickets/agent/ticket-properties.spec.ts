@@ -23,7 +23,9 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
     await page.getByRole("combobox").fill(option);
     await page.getByRole("option", { name: option, exact: true }).click();
   };
-  await pick("Set Priority...", "High");
+  await page.getByRole("button", { name: "Medium", exact: true }).click();
+  await page.getByRole("combobox").fill("High");
+  await page.getByRole("option", { name: "High", exact: true }).click();
   await expect.poll(() => setValue.length).toBe(1);
   await pick("Set Ticket Type...", "Bug");
   await expect.poll(() => setValue.length).toBe(2);

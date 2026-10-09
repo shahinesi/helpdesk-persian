@@ -43,7 +43,7 @@ test("filters and quick filters narrow the list and clear back", async ({
 
   const popover = page.getByRole("dialog", { name: "Filter" });
   await popover
-    .locator(".group", { hasText: "Priority is High" })
+    .locator(".group", { hasText: "Priority Equals High" })
     .getByRole("button", { name: "Remove filter" })
     .click();
   await expect(list.rows()).toHaveCount(2);
