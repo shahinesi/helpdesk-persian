@@ -777,6 +777,9 @@ msgstr "واگذاری یک تیکت به کارشناس"
 msgid "Assign by workload"
 msgstr "تخصیص بر اساس حجم کار"
 
+msgid "Assign conditions are invalid"
+msgstr "شرط‌های واگذاری معتبر نیستند"
+
 #: desk/src/components/modals/ShortcutsModal.vue:90
 msgid "Assign ticket"
 msgstr "اختصاص تیکت"
@@ -952,6 +955,9 @@ msgstr "پاسخ خودکار از {0} دریافت شد."
 #: Rules/AssigneeRules.vue:138 desk/src/components/Settings/Assignment
 msgid "Auto-rotate"
 msgstr "چرخش خودکار"
+
+msgid "Automatic Assignment"
+msgstr "واگذاری خودکار"
 
 #. Label of the auto_set_customer_from_contact (Check) field in DocType 'HD
 #. Settings'
@@ -7039,6 +7045,12 @@ msgstr "یک‌شنبه"
 #: desk/src/components/layouts/Sidebar.vue:166
 msgid "Support"
 msgstr "پشتیبانی"
+
+msgid "Support Rotation"
+msgstr "چرخش پشتیبانی"
+
+msgid "Unassign conditions are invalid"
+msgstr "شرط‌های لغو واگذاری معتبر نیستند"
 
 #: desk/src/components/knowledge-base/CategoryModal.vue:12
 msgid "Support Issues"

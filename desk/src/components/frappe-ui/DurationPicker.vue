@@ -137,6 +137,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import LucideChevronDown from "~icons/lucide/chevron-down";
 import LucideChevronUp from "~icons/lucide/chevron-up";
 import { ref, computed, watch, onUnmounted } from "vue";

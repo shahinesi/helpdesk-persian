@@ -6,12 +6,14 @@
       @click="assignmentRulesActiveScreen = { screen: 'view', data: data }"
       class="w-full ps-2 col-span-7 h-14 flex flex-col justify-center"
     >
-      <div class="text-base-medium text-ink-gray-7">{{ data.name }}</div>
+      <div class="text-base-medium text-ink-gray-7">
+        {{ displayRuleName(data.name) }}
+      </div>
       <div
         v-if="data.description && data.description.length > 0"
         class="text-sm w-full text-ink-gray-5 mt-1 truncate"
       >
-        {{ data.description }}
+        {{ displayRuleDescription(data.description) }}
       </div>
     </div>
     <div class="col-span-3">
@@ -78,6 +80,7 @@
 <script setup lang="ts">
 import { assignmentRulesActiveScreen } from "@/stores/assignmentRules";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { AssignmentRuleListResourceSymbol } from "@/types";
 import { AssignmentRule } from "@/types/doctypes";
 import { ConfirmDelete } from "@/utils";
@@ -116,6 +119,21 @@ const duplicateDialog = ref({
 });
 
 const isConfirmingDelete = ref(false);
+
+const displayRuleName = (name: string) => {
+  const suffix = " - Support Rotation";
+  if (name === "Support Rotation") return __("Support Rotation");
+  if (name.endsWith(suffix)) {
+    const team = name.slice(0, -suffix.length);
+    return `${displayLinkOption("HD Team", team)} - ${__("Support Rotation")}`;
+  }
+  return name;
+};
+
+const displayRuleDescription = (description: string) =>
+  description === "Automatic Assignment"
+    ? __("Automatic Assignment")
+    : description;
 
 const deleteAssignmentRule = () => {
   createResource({
