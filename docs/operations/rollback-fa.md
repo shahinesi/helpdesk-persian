@@ -10,4 +10,6 @@ Runbook:
 4. Health check، ورود، API، تیکت‌ها، پیوست‌ها، Worker و لاگ‌ها را بررسی کن.
 5. نتیجه و SHAهای قبل/بعد را ثبت کن.
 
-Snapshot ثبت‌شده پیشین در `/home/frappe/frappe-bench/sites/backups/pre-e0c78c324` شامل SQL فشرده، فایل‌های سایت و تنظیمات بود و صحت خواندن gzip، tar و JSON بررسی شده است. اطلاعات محرمانهٔ فایل تنظیمات نباید در گزارش یا Git کپی شود.
+Snapshot پیش از نامزد UI فعلی در `/home/frappe/frappe-bench/sites/backups/pre-57446ad5` شامل SQL فشرده، فایل‌های public/private و تنظیمات سایت است؛ gzip، فهرست TAR و JSON اعتبارسنجی شده‌اند و SHA-256 در `docs/operations/recovery-manifest-2026-10-09.md` ثبت شده است. Restore ایزوله آزمایش نشده؛ Backup در Volume پایدار سایت قرار دارد و نباید به‌عنوان نسخهٔ خارج از میزبان فرض شود. اطلاعات محرمانهٔ فایل تنظیمات نباید در گزارش یا Git کپی شود.
+
+نامزد `d11dc04b57a610aaef8684f3ce3c4db7294403aa` هنوز Deploy نشده و Image فعلی همان `helpdesk-persian:runtime-b978318cd` با digest `sha256:8a4ed272e5f8661bb270ed6b5930ed5fab692d385dc2d67abd01bcb1c9a3066d` است؛ تا این مرحله Rollback عملیاتی لازم نشده است.
