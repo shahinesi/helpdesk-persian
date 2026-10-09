@@ -116,7 +116,7 @@ test("a holiday list gets a recurring weekend and its holidays are edited", asyn
   await editRecurring.getByRole("checkbox", { name: "Every first week" }).check();
   await editRecurring.getByRole("button", { name: "Update Holiday" }).click();
   await expect(recurringRow(dialog, "Saturday")).toContainText("Every first");
-  await expect(dialog.getByText("There are in total 13 holidays")).toBeVisible();
+  await expect(dialog.getByText("Total holidays in this list: 13")).toBeVisible();
 
   await dialog.getByRole("radio", { name: "List" }).click();
   await rowMenu(page, holidayRow(dialog, "26 Jan 2027"), "Edit");

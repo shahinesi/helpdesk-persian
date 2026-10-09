@@ -84,7 +84,7 @@ test("an assignment rule for a team auto-assigns and notifies", async ({ page, a
     await dialog.getByText("Add a condition").first().click();
     await dialog.getByRole("button", { name: "Field", exact: true }).click();
     await page.getByRole("option", { name: "Team", exact: true }).click();
-    await dialog.getByRole("button", { name: "condition" }).click();
+    await dialog.getByRole("button", { name: "condition", exact: true }).click();
     await page.getByRole("combobox").last().fill(team);
     await page.getByRole("option", { name: team }).click();
     await dialog.getByRole("button", { name: "Add Assignee" }).click();

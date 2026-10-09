@@ -8,9 +8,9 @@ test.describe("logged out", () => {
     await page.goto("/helpdesk/tickets");
     await expect(page).toHaveURL(/\/login\?redirect-to=\/helpdesk\/tickets/);
 
-    await page.getByRole("textbox", { name: "Email" }).fill(personas.agent.email);
-    await page.getByRole("textbox", { name: "Password" }).fill(PASSWORD);
-    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByRole("textbox", { name: "ایمیل" }).fill(personas.agent.email);
+    await page.getByRole("textbox", { name: "گذرواژه" }).fill(PASSWORD);
+    await page.getByRole("button", { name: "ادامه" }).click();
 
     await expect(page).toHaveURL(/\/helpdesk\/tickets$/);
     await expect(page.getByRole("button", { name: "Filter", exact: true })).toBeVisible();
