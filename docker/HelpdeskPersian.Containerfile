@@ -29,7 +29,7 @@ USER frappe
 WORKDIR /home/frappe/frappe-bench
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV PATH="/opt/yarn-v1.22.18/bin:${PATH}"
-RUN export PATH="/opt/node-v20/bin:${PATH}" \
+RUN export PATH="/opt/yarn-v1.22.18/bin:/opt/node-v20/bin:${PATH}" \
     && test "$(node --version)" = "v20.20.0" \
     && test "$(yarn --version)" = "1.22.18" \
     && rm -rf apps/helpdesk/desk/node_modules/frappe-ui \
