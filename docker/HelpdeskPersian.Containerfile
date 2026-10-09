@@ -20,7 +20,7 @@ FROM helpdesk-persian:styled
 USER root
 RUN find /home/frappe/frappe-bench/apps/helpdesk -mindepth 1 -maxdepth 1 ! -name desk -exec rm -rf {} + \
     && find /home/frappe/frappe-bench/apps/helpdesk/desk -mindepth 1 -maxdepth 1 ! -name node_modules -exec rm -rf {} +
-COPY --from=node-runtime /usr/local/ /usr/local/
+COPY --from=node-runtime /usr/local/ /opt/node-v20/
 COPY --from=node-runtime /opt/yarn-v1.22.18/ /opt/yarn-v1.22.18/
 COPY --from=frappe-ui-source --chown=frappe:frappe /tmp/frappe-source/ui/ /home/frappe/frappe-bench/apps/frappe/ui/
 COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/helpdesk/
@@ -28,8 +28,9 @@ COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/helpdesk/
 USER frappe
 WORKDIR /home/frappe/frappe-bench
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-ENV PATH="/opt/yarn-v1.22.18/bin:/usr/local/bin:${PATH}"
-RUN test "$(node --version)" = "v20.20.0" \
+ENV PATH="/opt/yarn-v1.22.18/bin:${PATH}"
+RUN export PATH="/opt/node-v20/bin:${PATH}" \
+    && test "$(node --version)" = "v20.20.0" \
     && test "$(yarn --version)" = "1.22.18" \
     && rm -rf apps/helpdesk/desk/node_modules/frappe-ui \
     && cd apps/helpdesk/desk \

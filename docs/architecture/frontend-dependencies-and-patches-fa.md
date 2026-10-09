@@ -38,7 +38,7 @@ yarn build
 
 ### ساخت image با Docker
 
-`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند؛ بنابراین image پایه نمی‌تواند سورس قدیمی یا تغییرکردهٔ این مسیر را بی‌صدا وارد Build کند. Node `20.20.0` و Yarn `1.22.18` از مرحلهٔ Node رسمی و نسخه‌بندی‌شده به image مبنا منتقل می‌شوند؛ نصب وابستگی و Build با همین نسخه‌ها انجام می‌شود. این مسیر جایگزین نصب Node با NVM در زمان Docker Build شده تا دریافت فهرست نسخه‌های NVM عامل ناپایداری نباشد. نبود دسترسی به GitHub یا ناسازگاری Patch باید Build را متوقف کند.
+`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند؛ بنابراین image پایه نمی‌تواند سورس قدیمی یا تغییرکردهٔ این مسیر را بی‌صدا وارد Build کند. Node `20.20.0` و Yarn `1.22.18` از مرحلهٔ Node رسمی و نسخه‌بندی‌شده می‌آیند؛ Node 20 فقط برای نصب قفل‌شدهٔ وابستگی‌های Desk در prefix جدا استفاده می‌شود. مرحلهٔ نهایی، Node `24.21.0` موجود در image پایه را برای `bench build` نگه می‌دارد، چون bundler نسخهٔ Frappe این شاخه Node `>=24` می‌خواهد. این مسیر از نصب Node با NVM در زمان Docker Build پرهیز می‌کند و در صورت نبود نسخهٔ سازگار یا ناسازگاری Patch، Build را متوقف می‌سازد.
 
 این recipe به image پایهٔ موجود `helpdesk-persian:styled` نیاز دارد. تغییر Containerfile هنوز روی شاخه محلی است و Full Docker Image Build با آن اجرا نشده؛ بنابراین این اصلاح هنوز Clean Docker Build را اثبات نمی‌کند. Build فقط image کاندید تولید می‌کند و آن را Deploy نمی‌کند.
 
