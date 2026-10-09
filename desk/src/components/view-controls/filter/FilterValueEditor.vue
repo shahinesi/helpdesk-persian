@@ -7,9 +7,10 @@
         :label="field.label"
         size="sm"
         class="min-w-0"
-        @back="emit('back')"
+        @back="goBack"
       />
       <Dropdown
+        v-model:open="operatorMenuOpen"
         side="bottom"
         :options="operatorOptions"
         :portal-to="operatorMenuTarget || 'body'"
@@ -37,6 +38,7 @@
           :placeholder="__('Search...')"
           autocomplete="off"
           @keydown="onKeydown"
+          @paste="onSearchPaste"
         >
           <template #prefix>
             <LucideSearch class="size-4 text-ink-gray-5" />
@@ -60,16 +62,24 @@
           :aria-selected="isSelected(option.value)"
           :class="[
             'flex h-8 w-full items-center gap-2 rounded-4 px-1.5 text-base text-ink-gray-8',
-            index === activeIndex ? 'bg-surface-gray-2' : '',
+            rowBackground(option.value, index),
           ]"
           @mousemove="activeIndex = index"
           @click="pickOption(option.value)"
         >
+          <Checkbox
+            v-if="isMultiple"
+            :model-value="isSelected(option.value)"
+            size="sm"
+            tabindex="-1"
+            aria-hidden="true"
+            class="pointer-events-none"
+          />
           <span :title="option.label" class="flex-1 truncate text-start">{{
             option.label
           }}</span>
           <LucideCheck
-            v-if="isSelected(option.value)"
+            v-if="!isMultiple && isSelected(option.value)"
             class="size-4 text-ink-gray-7"
           />
         </button>
@@ -86,6 +96,17 @@
         >
           {{ __("No results") }}
         </div>
+      </div>
+      <div
+        v-if="isMultiple && selectedCount"
+        class="flex items-center border-t border-outline-gray-1 px-2 py-1.5"
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          :label="__('Clear All')"
+          @click="clearSelection"
+        />
       </div>
     </template>
     <div v-else class="flex flex-col gap-2 p-2">
@@ -110,7 +131,7 @@
       <TextInput
         v-else
         ref="valueInput"
-        :type="isNumber ? 'number' : 'text'"
+        :type="isNumber && !isMultiple ? 'number' : 'text'"
         v-model="textValue"
         :placeholder="isMultiple ? __('Comma separated values') : __('Value')"
         @update:model-value="onTextChange"
@@ -127,6 +148,7 @@ import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import { useDebounceFn, useEventListener } from "@vueuse/core";
 import {
+  Checkbox,
   DatePicker,
   DateRangePicker,
   DateTimePicker,
@@ -134,7 +156,7 @@ import {
   Rating,
   TextInput,
 } from "frappe-ui";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import {
   ActiveFilter,
   FilterField,
@@ -169,6 +191,8 @@ const value = ref(props.filter?.value ?? defaultValueFor(operator.value));
 const textValue = ref(plainText(value.value));
 const search = ref("");
 const activeIndex = ref(0);
+const operatorMenuOpen = ref(false);
+let textApplyPending = false;
 const searchInput = ref(null);
 const valueInput = ref(null);
 const listEl = ref<HTMLElement | null>(null);
@@ -240,7 +264,7 @@ const options = computed<Array<{ label: string; value: string }>>(() => {
     return timespanOptions.filter((option) => matches(option.label));
   if (isLink.value) {
     const doctype = linkDoctype(props.field);
-    return (linkSearch.results.data || []).map((option) => ({
+    return withSelectedOptions(linkSearch.results.data || []).map((option) => ({
       ...option,
       label: displayLinkOption(doctype, option.value),
     }));
@@ -253,6 +277,25 @@ const options = computed<Array<{ label: string; value: string }>>(() => {
     .map((value) => ({ label: __(value), value }))
     .filter((option) => matches(option.label));
 });
+
+// Selected values outside the search results (pasted, or past the first page)
+// are pinned on top so they stay visible and can be unselected
+function withSelectedOptions(results: Array<{ label: string; value: string }>) {
+  if (!Array.isArray(value.value)) return results;
+  const resultValues = new Set(results.map((option) => option.value));
+  const query = search.value.toLowerCase();
+  const pinned = value.value
+    .filter((selected: string) => !resultValues.has(selected))
+    .filter((selected: string) =>
+      String(selected).toLowerCase().includes(query)
+    )
+    .map((selected: string) => ({ label: selected, value: selected }));
+  return [...pinned, ...results];
+}
+
+const selectedCount = computed(() =>
+  Array.isArray(value.value) ? value.value.length : 0
+);
 
 const dateRangeValue = computed(() =>
   Array.isArray(value.value) ? value.value : []
@@ -288,6 +331,19 @@ function isSelected(option: string): boolean {
   return plainText(value.value) === String(option);
 }
 
+function rowBackground(option: string, index: number): string {
+  const active = index === activeIndex.value;
+  if (isMultiple.value && isSelected(option))
+    return active ? "bg-surface-gray-3" : "bg-surface-gray-2";
+  return active ? "bg-surface-gray-2" : "";
+}
+
+function clearSelection() {
+  value.value = [];
+  emit("clear");
+  focusSearch();
+}
+
 function pickOption(option: string) {
   if (!isMultiple.value) {
     // A single-select pick (Equals/Not Equals, Is, Timespan, single assignee)
@@ -306,6 +362,23 @@ function pickOption(option: string) {
   emit("apply", operator.value, [...selectedValues]);
   search.value = "";
   focusSearch();
+}
+
+// Pasting a list (e.g. ticket IDs) into the search box selects every value
+function onSearchPaste(event: ClipboardEvent) {
+  const pastedValues = splitValues(event.clipboardData?.getData("text") || "");
+  if (!isMultiple.value || pastedValues.length < 2) return;
+  event.preventDefault();
+  const selectedValues = Array.isArray(value.value) ? value.value : [];
+  applyValue([...new Set([...selectedValues, ...pastedValues])]);
+  search.value = "";
+}
+
+function splitValues(text: string): string[] {
+  return text
+    .split(/[,\n]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
 }
 
 function applyValue(nextValue: any) {
@@ -362,7 +435,7 @@ function onKeydown(event: KeyboardEvent) {
     selectActive();
   } else if (event.key === "Backspace" && !search.value) {
     event.stopPropagation();
-    emit("back");
+    goBack();
   }
 }
 
@@ -377,7 +450,7 @@ function focusSearch() {
 function onTextKeydown(event: KeyboardEvent) {
   if (event.key === "Backspace" && !textValue.value) {
     event.stopPropagation();
-    emit("back");
+    goBack();
   }
 }
 
@@ -389,16 +462,38 @@ function onTextChange() {
     emit("clear");
     return;
   }
+  textApplyPending = true;
   debouncedTextApply();
 }
 
-const debouncedTextApply = useDebounceFn(() => {
+// Leaving flushes typed text first, so a pending debounce can never fire
+// after another filter has been opened and land on that one
+function goBack() {
+  applyPendingText();
+  emit("back");
+}
+
+const debouncedTextApply = useDebounceFn(applyPendingText, 500);
+
+// Called before clearing every filter, so closing the editor can't bring one back
+function discardPendingText() {
+  textApplyPending = false;
+}
+
+function applyPendingText() {
+  if (!textApplyPending) return;
+  textApplyPending = false;
   if (!textValue.value) return;
   const nextValue = isMultiple.value
-    ? textValue.value.split(",").map((part: string) => part.trim())
+    ? splitValues(textValue.value)
     : textValue.value;
+  if (!hasValue(nextValue)) {
+    value.value = defaultValueFor(operator.value);
+    emit("clear");
+    return;
+  }
   applyValue(nextValue);
-}, 500);
+}
 
 function hasValue(candidate: any): boolean {
   if (Array.isArray(candidate)) return candidate.length > 0;
@@ -419,6 +514,8 @@ watch(activeIndex, (index) => {
 });
 
 watch(operator, (newOperator, oldOperator) => {
+  // typed text belongs to the old operator, so drop it instead of applying it late
+  discardPendingText();
   search.value = "";
   activeIndex.value = 0;
   if (newOperator === "is") {
@@ -458,13 +555,21 @@ function convertValue(rawValue: any): any {
   return single ? [single] : [];
 }
 
+// Moving focus while the operator menu is open makes the menu close the whole
+// popover, so wait for the menu to close first
 watch(
   () => isListMode.value,
   () => {
-    focusSearch();
+    if (!operatorMenuOpen.value) focusSearch();
   },
   { immediate: true }
 );
+
+watch(operatorMenuOpen, (open) => {
+  if (!open) focusSearch();
+});
+
+onBeforeUnmount(applyPendingText);
 
 function cycleOperator(direction: number) {
   const operatorList = operators.value;
@@ -508,7 +613,9 @@ useEventListener(document, "keydown", (event: KeyboardEvent) => {
       return;
     }
     event.preventDefault();
-    emit("back");
+    goBack();
   }
 });
+
+defineExpose({ discardPendingText });
 </script>

@@ -283,7 +283,7 @@ msgid "Add charts to get started"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRulesSection.vue:29
-#: desk/src/components/Settings/Assignment Rules/AssignmentRulesSection.vue:67
+#: Rules/AssignmentRulesSection.vue:67
 #: desk/src/components/Settings/Sla/SlaAssignmentConditions.vue:25
 #: desk/src/components/Settings/Sla/SlaAssignmentConditions.vue:60
 #: desk/src/components/conditions-filter/CFConditions.vue:81
@@ -1864,10 +1864,6 @@ msgstr ""
 msgid "Created"
 msgstr ""
 
-#: desk/src/components/Settings/FieldDependency/FieldDependencyList.vue:69
-msgid "Created by"
-msgstr ""
-
 #: desk/src/components/layouts/Sidebar.vue:372
 msgid "Creating a ticket"
 msgstr ""
@@ -2221,7 +2217,7 @@ msgstr ""
 #. Label of the description (Small Text) field in DocType 'HD Ticket Type'
 #. Label of a field in the tickets Web Form
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:103
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:104
+#: Rules/AssignmentRuleView.vue:104
 #: desk/src/components/Settings/Holiday/HolidayView.vue:53
 #: desk/src/components/Settings/Holiday/HolidayView.vue:54
 #: desk/src/components/Settings/Holiday/HolidaysTableView.vue:105
@@ -2379,7 +2375,7 @@ msgid "Due by"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleListItem.vue:72
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleListItem.vue:138
+#: Rules/AssignmentRuleListItem.vue:138
 #: desk/src/components/Settings/Holiday/HolidayListItem.vue:50
 #: desk/src/components/Settings/Holiday/HolidayListItem.vue:90
 #: desk/src/components/Settings/SavedReplies/SavedRepliesList.vue:179
@@ -2655,7 +2651,7 @@ msgstr ""
 #. Label of the enabled (Check) field in DocType 'HD Stopword'
 #. Label of the enabled (Check) field in DocType 'HD Ticket Status'
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:16
-#: desk/src/components/Settings/Assignment Rules/AssignmentRulesListView.vue:31
+#: Rules/AssignmentRulesListView.vue:31
 #: desk/src/components/Settings/EmailNotifications/Notification.vue:31
 #: desk/src/components/Settings/FieldDependency/FieldDependency.vue:17
 #: desk/src/components/Settings/FieldDependency/FieldDependencyList.vue:70
@@ -3550,7 +3546,7 @@ msgstr ""
 
 #. Option for the 'Level' (Select) field in DocType 'HD Ticket Priority'
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleListItem.vue:109
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:568
+#: Rules/AssignmentRuleView.vue:568
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "High"
 msgstr ""
@@ -4121,7 +4117,7 @@ msgid "Layout"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:133
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:212
+#: Rules/AssignmentRuleView.vue:212
 msgid "Learn about conditions"
 msgstr ""
 
@@ -4233,13 +4229,13 @@ msgstr ""
 
 #. Option for the 'Level' (Select) field in DocType 'HD Ticket Priority'
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleListItem.vue:105
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:564
+#: Rules/AssignmentRuleView.vue:564
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "Low"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleListItem.vue:106
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:565
+#: Rules/AssignmentRuleView.vue:565
 msgid "Low-Medium"
 msgstr ""
 
@@ -4321,13 +4317,13 @@ msgstr ""
 
 #. Option for the 'Level' (Select) field in DocType 'HD Ticket Priority'
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleListItem.vue:107
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:566
+#: Rules/AssignmentRuleView.vue:566
 #: helpdesk/helpdesk/doctype/hd_ticket_priority/hd_ticket_priority.json
 msgid "Medium"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleListItem.vue:108
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:567
+#: Rules/AssignmentRuleView.vue:567
 msgid "Medium-High"
 msgstr ""
 
@@ -4466,7 +4462,7 @@ msgstr ""
 #. Label of the team_name (Data) field in DocType 'HD Team'
 #: desk/src/components/ListViewBuilder.vue:546
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:46
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:47
+#: Rules/AssignmentRuleView.vue:47
 #: desk/src/components/Settings/FieldDependency/FieldDependencyList.vue:68
 #: desk/src/components/Settings/Holiday/HolidayView.vue:37
 #: desk/src/components/Settings/Holiday/HolidayView.vue:38
@@ -4997,7 +4993,7 @@ msgid "Notion"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:144
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:227
+#: Rules/AssignmentRuleView.vue:227
 msgid "Old Condition"
 msgstr ""
 
@@ -5066,7 +5062,8 @@ msgstr ""
 msgid "Open help"
 msgstr ""
 
-#: desk/src/components/Settings/EmailEdit.vue:37 desk/src/components/Settings/EmailAdd.vue:43
+#: desk/src/components/Settings/EmailEdit.vue:37
+#: desk/src/components/Settings/EmailAdd.vue:43
 msgid "Open in Desk"
 msgstr ""
 
@@ -5508,7 +5505,7 @@ msgstr ""
 #. Label of the priority (Link) field in DocType 'HD Ticket Type'
 #. Label of a field in the tickets Web Form
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:59
-#: desk/src/components/Settings/Assignment Rules/AssignmentRulesListView.vue:30
+#: Rules/AssignmentRulesListView.vue:30
 #: desk/src/components/Settings/Sla/SlaPriorityList.vue:142
 #: desk/src/components/customer/TicketsTab.vue:221
 #: desk/src/components/customer/TicketsTab.vue:254
@@ -6290,7 +6287,7 @@ msgstr ""
 #: desk/src/components/SavedRepliesSelectorModal.vue:20
 #: desk/src/components/Settings/Agents.vue:24
 #: desk/src/components/Settings/Assignment Rules/AssigneeSearch.vue:28
-#: desk/src/components/Settings/Assignment Rules/AssignmentRulesList.vue:38
+#: Rules/AssignmentRulesList.vue:38
 #: desk/src/components/Settings/Holiday/Holidays.vue:28
 #: desk/src/components/Settings/SavedReplies/SavedRepliesList.vue:26
 #: desk/src/components/Settings/Sla/SlaPolicies.vue:41
@@ -7931,7 +7928,7 @@ msgid "Unsaved"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssigneeSearch.vue:164
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:455
+#: Rules/AssignmentRuleView.vue:455
 #: desk/src/components/Settings/EmailNotifications/Notification.vue:103
 #: desk/src/components/Settings/FieldDependency/FieldDependency.vue:70
 #: desk/src/components/Settings/Holiday/HolidayView.vue:192
@@ -8452,7 +8449,7 @@ msgid "days"
 msgstr ""
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:170
-#: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue:253
+#: Rules/AssignmentRuleView.vue:253
 #: desk/src/components/Settings/Sla/SlaPolicyView.vue:137
 msgid "desk"
 msgstr ""
@@ -8884,59 +8881,73 @@ msgstr ""
 msgid "Tags"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "Due in {0}"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "Overdue by {0}"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "Fulfilled in {0}"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "Failed by {0}"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "On Hold"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "{0}y {1}mo"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "{0}mo {1}d"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "{0}d {1}h"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "{0}h {1}m"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "{0}m {1}s"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "{0}m"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "{0}s"
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "Set {0}..."
 msgstr ""
 
-#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue desk/src/components/ticket-agent/TicketDetailsTab.vue
+#: desk/src/composables/useSLA.ts desk/src/components/TicketField.vue
+#: desk/src/components/ticket-agent/TicketDetailsTab.vue
 msgid "Add {0}"
 msgstr ""
 
@@ -9403,4 +9414,9 @@ msgstr ""
 
 #: desk/src/components/DocumentationButton.vue
 msgid "View documentation"
+msgstr ""
+
+#: helpdesk/api/dashboard.py:192
+#, python-format
+msgid "% of tickets created that were resolved within SLA"
 msgstr ""
