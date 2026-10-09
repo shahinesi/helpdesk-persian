@@ -108,7 +108,7 @@ test("a holiday list gets a recurring weekend and its holidays are edited", asyn
   await expect(page.getByText("Please select at least one repetition option")).toBeVisible();
   await recurring.getByRole("checkbox", { name: "Every week", exact: true }).check();
   await recurring.getByRole("button", { name: "Add Holiday" }).click();
-  await expect(dialog.getByText(`There are in total ${daysIn2027(6).length + 1} holidays`)).toBeVisible();
+  await expect(dialog.getByText(`Total holidays in this list: ${daysIn2027(6).length + 1}`)).toBeVisible();
 
   await rowMenu(page, recurringRow(dialog, "Saturday"), "Edit");
   const editRecurring = page.getByRole("dialog", { name: "Edit Recurring Holiday" });

@@ -36,6 +36,12 @@ yarn build
 
 مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. برای Build مستقل، Frappe را روی SHA مندرج در `frappe-ui-source.ref` دریافت کن و در `frappe-bench/sites/common_site_config.json` مقدار `socketio_port` را تعریف کن. اسکریپت Patch از ریشه مخزن اجرا می‌شود تا هم در checkout دارای `.git` و هم در Image بدون `.git` همان مسیرها را تغییر دهد. Workflow `persian-clean-build.yml` همین ساختار را با cache خالی می‌سازد.
 
+### ساخت image با Docker
+
+`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند؛ بنابراین image پایه نمی‌تواند سورس قدیمی یا تغییرکردهٔ این مسیر را بی‌صدا وارد Build کند. سپس Patch مشترک را اعمال می‌کند و نصب و build را با Node `20.20.0` و Yarn `1.22.18` اجرا می‌کند. نبود دسترسی به GitHub یا ناسازگاری Patch باید Build را متوقف کند.
+
+این recipe به image پایهٔ موجود `helpdesk-persian:styled` نیاز دارد. Build فقط image کاندید تولید می‌کند و آن را Deploy نمی‌کند.
+
 ## ارتقا و بازگشت
 
 برای تغییر Frappe یا `frappe-ui`، ابتدا نسخه و ref را در یک branch آزمایشی به‌روزرسانی کن؛ تمام Patchها را از نصب خالی اعمال کن و Build و تست‌های RTL/Jalali/English را اجرا کن. عدم تطبیق Patch باید به Failure منجر شود؛ حذف خودکار Patch، `|| true` یا استفاده از `node_modules` قبلی مجاز نیست.

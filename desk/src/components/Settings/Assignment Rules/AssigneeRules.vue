@@ -41,12 +41,12 @@
           </template>
           <template #default="{ close: closePopover }">
             <div
-              class="p-1 text-ink-gray-7 mt-1 bg-surface-base shadow-xl rounded-4 w-[--reka-popper-anchor-width]"
+              class="p-1 text-ink-gray-7 mt-1 bg-surface-base shadow-xl rounded-4 w-[--reka-popover-trigger-width]"
             >
               <div
                 v-for="option in ticketRoutingOptions"
                 :key="option.value"
-                class="p-2 cursor-pointer hover:bg-surface-gray-3 text-sm flex items-center justify-between rounded-4"
+                class="p-2 cursor-pointer hover:bg-surface-gray-3 text-sm text-start flex items-center justify-between rounded-4"
                 @click="
                   () => {
                     assignmentRuleData.rule = option.value;
@@ -133,7 +133,7 @@ import AssigneeSearch from "./AssigneeSearch.vue";
 
 const { getUser } = useUserStore();
 
-const ticketRoutingOptions = [
+const ticketRoutingOptions = computed(() => [
   {
     label: __("Auto-rotate"),
     value: "Round Robin",
@@ -142,7 +142,7 @@ const ticketRoutingOptions = [
     label: __("Assign by workload"),
     value: "Load Balancing",
   },
-];
+]);
 
 const removeAssignedUser = (user) => {
   assignmentRuleData.value.users = assignmentRuleData.value.users.filter(

@@ -11,7 +11,7 @@ class TestFreshSetupLanguage(TestCase):
     def test_unconfigured_wizard_request_uses_persian(self):
         with (
             patch.object(frappe, "is_setup_complete", return_value=False),
-            patch.object(frappe, "db", SimpleNamespace(get_value=None)),
+            patch.object(frappe, "get_cached_doc", return_value={}),
             patch.object(
                 frappe.local,
                 "request",
@@ -20,8 +20,7 @@ class TestFreshSetupLanguage(TestCase):
             ),
             patch.object(frappe.local, "lang", "en", create=True),
         ):
-            with patch.object(frappe.db, "get_value", return_value={}):
-                set_fresh_setup_language()
+            set_fresh_setup_language()
             self.assertEqual(frappe.local.lang, "fa")
 
     def test_existing_settings_are_preserved(self):
@@ -33,7 +32,7 @@ class TestFreshSetupLanguage(TestCase):
         }
         with (
             patch.object(frappe, "is_setup_complete", return_value=False),
-            patch.object(frappe, "db", SimpleNamespace(get_value=None)),
+            patch.object(frappe, "get_cached_doc", return_value=settings),
             patch.object(
                 frappe.local,
                 "request",
@@ -42,15 +41,14 @@ class TestFreshSetupLanguage(TestCase):
             ),
             patch.object(frappe.local, "lang", "en", create=True),
         ):
-            with patch.object(frappe.db, "get_value", return_value=settings):
-                set_fresh_setup_language()
+            set_fresh_setup_language()
             self.assertEqual(frappe.local.lang, "en")
 
     def test_default_english_without_region_uses_persian(self):
         settings = {"language": "English"}
         with (
             patch.object(frappe, "is_setup_complete", return_value=False),
-            patch.object(frappe, "db", SimpleNamespace(get_value=None)),
+            patch.object(frappe, "get_cached_doc", return_value=settings),
             patch.object(
                 frappe.local,
                 "request",
@@ -59,8 +57,7 @@ class TestFreshSetupLanguage(TestCase):
             ),
             patch.object(frappe.local, "lang", "en", create=True),
         ):
-            with patch.object(frappe.db, "get_value", return_value=settings):
-                set_fresh_setup_language()
+            set_fresh_setup_language()
             self.assertEqual(frappe.local.lang, "fa")
 
     def test_missing_language_with_existing_region_uses_persian(self):
@@ -71,7 +68,7 @@ class TestFreshSetupLanguage(TestCase):
         }
         with (
             patch.object(frappe, "is_setup_complete", return_value=False),
-            patch.object(frappe, "db", SimpleNamespace(get_value=None)),
+            patch.object(frappe, "get_cached_doc", return_value=settings),
             patch.object(
                 frappe.local,
                 "request",
@@ -80,6 +77,5 @@ class TestFreshSetupLanguage(TestCase):
             ),
             patch.object(frappe.local, "lang", "en", create=True),
         ):
-            with patch.object(frappe.db, "get_value", return_value=settings):
-                set_fresh_setup_language()
+            set_fresh_setup_language()
             self.assertEqual(frappe.local.lang, "fa")

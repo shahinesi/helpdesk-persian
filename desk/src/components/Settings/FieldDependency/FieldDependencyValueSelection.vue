@@ -252,6 +252,7 @@ const toggleCheckboxLabel = computed(() => {
   if (!parent) return __("Select All");
   const selectedCount = getSelectedChildValueCount(parent);
   if (selectedCount === 0) return __("Select All");
+  if (selectedCount === 1) return __("1 value selected");
   return __("{0} values selected", [formatLocalizedDigits(selectedCount)]);
 });
 
