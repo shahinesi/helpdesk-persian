@@ -59,3 +59,5 @@ No backup contents or credential values are committed here.
 ## Safe changes after the snapshot
 
 The remote `main-hotfix` and `vendor/main-hotfix` refs were each fast-forwarded from `26dbace988e0664ce0fbecedf91f1e63a80d46de` to upstream SHA `d978f39d2a0186d2d03aa21cf9a679a483bf2146`. The update used ordinary non-force pushes; the remote refs were read back and verified. All other refs and the running site remained unchanged at that point.
+
+After the snapshot, the feature branch advanced through commits `09a6ea8a1e9e5eb3536ed08e6035bb3a24f17c3b` (official Gmail/SendGrid display labels), `57446ad5d4e78cae713b2b2edb48927b2a3b9828` (forward LTR direction to the email-domain combobox), and `6db0e1ded942608df344ae8277d5b8010dde8686` (align the email E2E selector with `Gmail`). The last CI run passed Clean Frontend Build, Lint, and Server Tests; the date-filter test still failed. Its UTC fixture was corrected afterward to retain the Backend-created current date; CI for that correction is pending. No candidate image has been built or deployed; the site remains on the recorded previous SHA and digest.

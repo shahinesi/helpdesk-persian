@@ -56,7 +56,7 @@ const stars = (count: number) => async ({ list }: Context) => {
   await list.filterPopover().getByRole("radio", { name: `${count} of 5` }).click();
 };
 
-const each = (values: Record<Key, unknown>, field: string) => async ({ api, names }: Context) => {
+const each = (values: Partial<Record<Key, unknown>>, field: string) => async ({ api, names }: Context) => {
   for (const key of Object.keys(values) as Key[]) {
     await api.update("HD Ticket", names[key], { [field]: values[key] });
   }
@@ -154,14 +154,14 @@ const cases: FilterCase[] = [
   },
   {
     field: "Opening Date",
-    setup: each({ a: "2020-01-15", b: daysAgo(3), c: daysAgo(0) }, "opening_date"),
+    setup: each({ a: "2020-01-15", b: daysAgo(3) }, "opening_date"),
     enter: pick("Today"),
     shown: ["c"],
     hidden: ["a", "b"],
   },
   {
     field: "Opening Date",
-    setup: each({ a: "2020-01-15", b: daysAgo(3), c: daysAgo(0) }, "opening_date"),
+    setup: each({ a: "2020-01-15", b: daysAgo(3) }, "opening_date"),
     enter: pick("Last 7 Days"),
     shown: ["b", "c"],
     hidden: ["a"],
