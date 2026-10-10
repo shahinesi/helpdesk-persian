@@ -1,12 +1,12 @@
 <template>
-  <div class="flex items-center">
+  <div class="helpdesk-view-breadcrumbs flex items-center">
     <router-link
       :to="{ name: routeName }"
       class="ps-0 pe-0.5 py-1 text-lg-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-5 hover:text-ink-gray-7 flex items-center justify-center"
     >
       {{ isMobileView ? "..." : label }}
     </router-link>
-    <span class="ml-0.5 text-base text-ink-gray-4" aria-hidden="true"> / </span>
+    <span class="ms-0.5 text-base text-ink-gray-4" aria-hidden="true"> / </span>
     <Dropdown v-model:open="isOpen" :options="options">
       <template #default="{ open }">
         <Button
@@ -15,7 +15,7 @@
           :class="open && '!bg-surface-gray-3'"
         >
           <span class="text-lg-medium text-nowrap truncate">{{
-            currentView.label
+            currentView.is_standard ? __(currentView.label) : currentView.label
           }}</span>
           <template #prefix>
             <component
@@ -48,7 +48,7 @@
             v-if="item.is_standard"
             class="ms-1 flex-shrink-0"
             size="sm"
-            label="Standard"
+            :label="__(`Standard`)"
           />
         </div>
       </template>
@@ -87,6 +87,7 @@ import LucideCheck from "~icons/lucide/check";
 import Icon from "@/components/Icon.vue";
 import { useScreenSize } from "@/composables/screen";
 import { Badge, Dropdown } from "frappe-ui";
+import { __ } from "@/translation";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 

@@ -65,7 +65,7 @@
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
-        :item="column"
+        :item="{ ...column, label: __(column.label) }"
         @columnWidthUpdated="handleColumnResize"
       />
     </ListHeader>
@@ -127,7 +127,12 @@
       <template #left>
         <TabButtons
           :model-value="defaultParams.page_length_count"
-          :options="[20, 50, 100].map((o) => ({ label: String(o), value: o }))"
+          :options="
+            [20, 50, 100].map((o) => ({
+              label: formatLocalizedNumber(o),
+              value: o,
+            }))
+          "
           @update:model-value="(count) => handlePageLength(count)"
         />
       </template>
@@ -144,6 +149,7 @@
 
 <script setup lang="ts">
 import { MultipleAvatar, StarRating } from "@/components";
+import { formatLocalizedNumber } from "@/utils/number";
 import {
   ColumnSettings,
   QuickFilters,
@@ -163,11 +169,10 @@ import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { capture } from "@/telemetry";
 import { __ } from "@/translation";
 import { View, ViewType } from "@/types";
-import { getIcon } from "@/utils";
+import { getIcon, prettyDate } from "@/utils";
 import { useStorage } from "@vueuse/core";
 import {
   createResource,
-  dayjsLocal,
   Dropdown,
   frappeRequest,
   LoadingIndicator,
@@ -516,9 +521,9 @@ const filterableFields = createResource({
   transform: (data) => {
     data = data.map((field) => {
       return {
-        label: field.label,
-        value: field.fieldname,
         ...field,
+        label: __(field.label),
+        value: field.fieldname,
       };
     });
     return data;
@@ -532,6 +537,8 @@ const sortableFields = createResource({
     doctype: options.value.doctype,
     show_customer_portal_fields: defaultParams.show_customer_portal_fields,
   },
+  transform: (data) =>
+    data.map((field) => ({ ...field, label: __(field.label) })),
 });
 
 const quickFilters = createResource({
@@ -542,9 +549,19 @@ const quickFilters = createResource({
     show_customer_portal_fields: defaultParams.show_customer_portal_fields,
   },
   transform: (data) => {
-    if (Boolean(data.length)) return;
-    data = [{ name: "name", label: "Name", fieldtype: "Data" }];
-    return data;
+    if (!data?.length) {
+      data = [{ name: "name", label: __("Name"), fieldtype: "Data" }];
+    }
+    return data.map((filter) => ({
+      ...filter,
+      label: __(filter.label),
+      options: Array.isArray(filter.options)
+        ? filter.options.map((option) => ({
+            ...option,
+            label: __(option.label ?? option.value),
+          }))
+        : filter.options,
+    }));
   },
 });
 
@@ -562,7 +579,7 @@ function listCell(column: any, row: any, item: any, idx: number) {
   if (column.type === "Datetime") {
     return h("span", {
       class: "text-base",
-      textContent: dayjsLocal(item).fromNow(),
+      textContent: prettyDate(item),
     });
   }
   if (column.type === "MultipleAvatar") {
@@ -903,7 +920,9 @@ onMounted(async () => {
     if (route.query.view) {
       const currentView = findCurrentView();
       if (!currentView) return;
-      headerView.value.label = currentView.label || __("List");
+      headerView.value.label = currentView.is_standard
+        ? __(currentView.label || "List")
+        : currentView.label || __("List");
       headerView.value.icon = getIcon(currentView.icon);
     }
     return;

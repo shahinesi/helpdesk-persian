@@ -7,8 +7,10 @@
       class="w-full ps-2 col-span-5 flex flex-col justify-center h-14"
     >
       <div class="text-base-medium text-ink-gray-7 flex items-center gap-2">
-        {{ data.name }}
-        <Badge v-if="data.default_sla" color="gray" size="sm">Default</Badge>
+        {{ data.name === "Standard" ? __("Standard") : data.name }}
+        <Badge v-if="data.default_sla" color="gray" size="sm">{{
+          __("Default")
+        }}</Badge>
       </div>
       <div
         v-if="data.description && data.description.length > 0"

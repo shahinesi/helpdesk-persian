@@ -33,7 +33,7 @@
           <div class="space-y-2.5 pb-3 pt-0.5">
             <!-- Assignee -->
             <div class="flex items-center gap-2 leading-5">
-              <FieldLabel label="Assignee" />
+              <FieldLabel :label="__(`Assignee`)" />
               <div
                 class="-m-1 min-h-[28px] min-w-0 flex-1 items-center overflow-hidden p-1"
               >
@@ -60,7 +60,7 @@
                sit 2px higher and the gap to the Assignee row reads tighter
                than the field-to-field gap. Nudge the row down to even it. -->
             <div class="flex items-start gap-2 pt-1">
-              <FieldLabel label="Tags" class="pt-0.5" />
+              <FieldLabel :label="__(`Tags`)" class="pt-0.5" />
               <!-- 9px = the Link triggers' 8px padding + 1px border, so chips
                  and the add button start on the same column as the values -->
               <div class="min-w-0 flex-1 py-0.5 ps-[9px]">
@@ -132,7 +132,12 @@
                         class="font-base shrink-0 rounded-1 px-2 py-0.5 text-xs"
                         :class="getStatusColor(t.status as string)"
                       >
-                        {{ t.status }}
+                        {{
+                          displayLinkOption(
+                            "HD Ticket Status",
+                            t.status as string
+                          )
+                        }}
                       </span>
                     </div>
                   </div>
@@ -156,6 +161,8 @@ import { useShortcut } from "@/composables/shortcuts";
 import { getMeta } from "@/stores/meta";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation.ts";
+import { formatLocalizedDate } from "@/utils";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import {
   AssigneeSymbol,
   CustomizationSymbol,
@@ -310,7 +317,7 @@ function getStatusColor(status: string) {
 }
 
 function formatDate(date: string) {
-  return dayjs(date).format(dateFormat.toUpperCase());
+  return formatLocalizedDate(dayjs(date), dateFormat.toUpperCase());
 }
 
 function openTicket(name: string) {
@@ -325,9 +332,9 @@ function getFieldInFormat(fieldTemplate, fieldMeta) {
     fieldtype: fieldMeta?.fieldtype,
     doctype: fieldMeta?.options || "",
     options: fieldMeta?.options || "",
-    placeholder:
-      fieldTemplate.placeholder ||
-      `Set ${fieldMeta?.label || fieldTemplate.fieldname}...`,
+    placeholder: fieldTemplate.placeholder
+      ? __(fieldTemplate.placeholder)
+      : __("Set {0}...", [__(fieldMeta?.label || fieldTemplate.fieldname)]),
     readonly: Boolean(fieldMeta.read_only),
     disabled: Boolean(fieldMeta.read_only),
     url_method: fieldTemplate.url_method || "",

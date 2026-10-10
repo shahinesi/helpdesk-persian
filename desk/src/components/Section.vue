@@ -28,7 +28,7 @@
         <LucideChevronRight
           v-if="collapsible"
           class="size-3.5 text-ink-gray-5 transition-transform"
-          :class="{ 'rotate-90': opened }"
+          :class="opened ? 'rotate-90 rtl:-rotate-90' : 'rtl:rotate-180'"
         />
         <slot name="actions"></slot>
       </div>

@@ -40,6 +40,7 @@ import { createResource, toast } from "frappe-ui";
 import type { BaseSettings, Notification as NotificationType } from "./types";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 
 const props = defineProps<{
   onBack: () => void;
@@ -55,7 +56,7 @@ const statusOptions = computed<Record<"label" | "value", string>[]>(() =>
   statuses.data
     .filter((s) => s.category === "Resolved")
     .map((s) => ({
-      label: __(s.label_agent),
+      label: displayLinkOption("HD Ticket Status", s.label_agent),
       value: s.label_agent,
     }))
 );
@@ -85,7 +86,7 @@ function onSubmit() {
 
 function onGetDataSuccess(data: Data & { default_content: string }) {
   ticketStatus.value = {
-    label: __(data.ticket_status.label),
+    label: displayLinkOption("HD Ticket Status", data.ticket_status.label),
     value: data.ticket_status.value,
   };
   enabled.value = data.enabled;

@@ -4,7 +4,7 @@
   >
     <LayoutHeader>
       <template #left-header>
-        <Breadcrumbs :items="breadcrumbs" class="-ml-[2px]" />
+        <Breadcrumbs :items="breadcrumbs" class="-ms-[2px]" />
       </template>
     </LayoutHeader>
     <div
@@ -56,7 +56,7 @@
                 theme="gray"
                 size="sm"
               >
-                {{ tab.count }}
+                {{ formatLocalizedNumber(tab.count) }}
               </Badge>
             </span>
           </template>
@@ -110,7 +110,7 @@ import { useCustomer } from "@/composables/customer";
 import { useScreenSize } from "@/composables/screen";
 import { __ } from "@/translation";
 import { CustomerResourceSymbol } from "@/types";
-import { hasPermission } from "@/utils";
+import { formatLocalizedNumber, hasPermission } from "@/utils";
 import {
   Badge,
   Breadcrumbs,
@@ -254,7 +254,7 @@ onMounted(() => {
 
 usePageMeta(() => {
   return {
-    title: `Customer: ${props.id}`,
+    title: __("Customer: {0}", [props.id]),
   };
 });
 </script>

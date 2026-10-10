@@ -1,1 +1,1 @@
-Holiday date in Holiday List.
+تاریخ تعطیلی در فهرست تعطیلات.

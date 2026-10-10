@@ -38,7 +38,7 @@
               "
             >
               <span class="sr-only">{{
-                __("customize {0}", notification.name)
+                __("customize {0}", notification.label)
               }}</span>
             </div>
           </li>

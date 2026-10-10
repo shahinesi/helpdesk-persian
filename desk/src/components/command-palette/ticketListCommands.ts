@@ -2,7 +2,7 @@ import {
   applyListFilters,
   type FilterCondition,
 } from "@/components/listViewFilters";
-import { views } from "@/composables/useView";
+import { getViewLabel, views } from "@/composables/useView";
 import { router } from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
@@ -107,7 +107,7 @@ function viewChildren(): Command[] {
     },
     ...ticketViews.map((view: View) => ({
       id: `list-view-${view.name}`,
-      title: view.label ?? view.name,
+      title: getViewLabel(view) ?? view.name,
       subtitle: viewScope(view),
       group: "Switch view",
       // Same resolver as the sidebar: emoji, lucide name, or the ticket default.

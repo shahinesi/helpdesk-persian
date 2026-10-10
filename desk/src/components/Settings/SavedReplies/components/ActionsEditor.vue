@@ -124,14 +124,14 @@ const actions = defineModel<SavedReplyAction[]>({ required: true });
 const { valueOptions: sharedValueOptions, tagOptions } =
   useSavedReplyActionOptions();
 
-const columns = [
+const columns = computed(() => [
   { key: "action_type", label: __("Action"), width: "190px" },
   { key: "value", label: __("Value") },
-];
+]);
 
 // Trailing 22px column holds the remove button
 const gridTemplateColumns = computed(() =>
-  getGridTemplateColumnsForTable(columns)
+  getGridTemplateColumnsForTable(columns.value)
 );
 
 // The table edits rows in place, so it needs a real ref; the flat model is derived.

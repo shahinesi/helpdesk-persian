@@ -10,7 +10,7 @@
         <span
           class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-base pt-px text-xs-medium text-ink-gray-8 shadow-sm"
         >
-          {{ count }}
+          {{ formatLocalizedNumber(count) }}
         </span>
       </template>
     </Button>
@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import FilterIcon from "@/components/icons/FilterIcon.vue";
 import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import { Button, Tooltip } from "frappe-ui";
 
 interface P {
@@ -42,6 +43,6 @@ interface E {
   (event: "clear"): void;
 }
 
-withDefaults(defineProps<P>(), { label: "Filter" });
+withDefaults(defineProps<P>(), { label: __("Filter") });
 defineEmits<E>();
 </script>

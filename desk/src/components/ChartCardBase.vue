@@ -17,7 +17,7 @@
           <div
             class="text-2xl-medium text-center text-ink-gray-8 whitespace-nowrap"
           >
-            {{ text }}
+            {{ formatChartValue(text) }}
           </div>
         </slot>
         <div v-if="timelineFilter" class="flex items-center text-sm gap-1">
@@ -27,14 +27,18 @@
               :class="percentageChange.icon"
               class="size-4"
             />
-            <div>{{ percentageChange.value }}%</div>
+            <div>
+              <bdi dir="ltr">{{
+                formatPercentage(percentageChange.value)
+              }}</bdi>
+            </div>
           </div>
           <Dropdown :options="durationOptions">
             <div
               class="flex items-center gap-0.5 text-ink-gray-5 hover:text-ink-gray-6 cursor-pointer shrink-0"
             >
               <div class="flex gap-1">
-                <span>vs</span>
+                <span>{{ __("vs") }}</span>
                 <span>{{ __(currentDuration).toLowerCase() }}</span>
               </div>
               <LucideChevronDown class="size-4" />
@@ -69,7 +73,7 @@
           <span
             class="text-2xl-medium text-center text-ink-gray-8 whitespace-nowrap"
           >
-            {{ text }}
+            {{ formatChartValue(text) }}
           </span>
         </slot>
         <slot name="chart">
@@ -85,13 +89,15 @@
             :class="percentageChange.icon"
             class="size-4"
           />
-          <div>{{ percentageChange.value }}%</div>
+          <div>
+            <bdi dir="ltr">{{ formatPercentage(percentageChange.value) }}</bdi>
+          </div>
         </div>
         <Dropdown :options="durationOptions">
           <div
             class="flex items-center gap-0.5 text-ink-gray-5 hover:text-ink-gray-6 cursor-pointer shrink-0"
           >
-            vs {{ __(currentDuration).toLowerCase() }}
+            {{ __("vs") }} {{ __(currentDuration).toLowerCase() }}
             <LucideChevronDown class="size-4" />
           </div>
           <template #item-label="{ item }">
@@ -123,6 +129,8 @@ import { EChartsOption } from "echarts";
 import { Dropdown } from "frappe-ui";
 import { ECharts } from "frappe-ui/experimental";
 import { computed, type PropType } from "vue";
+import { dayjs } from "frappe-ui";
+import { formatLocalizedDigits, formatLocalizedNumber } from "@/utils/number";
 
 const props = defineProps({
   title: {
@@ -164,10 +172,26 @@ const emit = defineEmits(["changeDuration"]);
 // period, so only the label goes through __()
 const DURATIONS = ["Last week", "Last month", "Last 3 months"];
 
-const durationOptions = DURATIONS.map((duration) => ({
-  label: __(duration),
-  onClick: () => {
-    if (currentDuration.value !== duration) emit("changeDuration", duration);
-  },
-}));
+const durationOptions = computed(() =>
+  DURATIONS.map((duration) => ({
+    label: __(duration),
+    onClick: () => {
+      if (currentDuration.value !== duration) emit("changeDuration", duration);
+    },
+  }))
+);
+
+function formatPercentage(value: string) {
+  if (value === "—") return value;
+  return dayjs.locale().split("-")[0] === "fa"
+    ? `${formatLocalizedNumber(Number(value))}٪`
+    : `${value}%`;
+}
+
+function formatChartValue(value: number | string) {
+  if (dayjs.locale().split("-")[0] !== "fa") return value;
+  return typeof value === "number"
+    ? formatLocalizedNumber(value)
+    : formatLocalizedDigits(value);
+}
 </script>

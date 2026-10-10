@@ -55,7 +55,7 @@
                   </p>
                   <p class="text-sm text-ink-gray-5 truncate">
                     {{ __("Invited by") }} {{ invite.invited_by }} ·
-                    {{ dayjsLocal(invite.invited_on).fromNow() }}
+                    {{ prettyDate(invite.invited_on) }}
                   </p>
                 </div>
               </div>
@@ -93,9 +93,10 @@ import { CustomerResourceSymbol } from "@/types";
 import {
   getErrorMessage,
   handleInviteUserSuccess,
+  prettyDate,
   validateEmailWithZod,
 } from "@/utils";
-import { Button, Dialog, FormControl, dayjsLocal, toast } from "frappe-ui";
+import { Button, Dialog, FormControl, toast } from "frappe-ui";
 import { computed, inject, ref, watch } from "vue";
 import LucideUser from "~icons/lucide/user";
 

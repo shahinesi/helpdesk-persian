@@ -79,17 +79,25 @@ import BulkEditModal from "@/components/ticket-agent/BulkEditModal.vue";
 import BulkReplyModal from "@/components/ticket-agent/BulkReplyModal.vue";
 import ExportModal from "@/components/ticket/ExportModal.vue";
 import ViewBreadcrumbs from "@/components/ViewBreadcrumbs.vue";
-import { normalizeFilters } from "@/components/view-controls/filter";
+import {
+  displayLinkOption,
+  normalizeFilters,
+} from "@/components/view-controls/filter";
 import ViewModal from "@/components/ViewModal.vue";
-import { currentView, useView } from "@/composables/useView";
+import { currentView, getViewLabel, useView } from "@/composables/useView";
 import { useAuthStore } from "@/stores/auth";
 import { globalStore } from "@/stores/globalStore";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
 import { View } from "@/types";
-import { isCustomerPortal, shortDuration } from "@/utils";
+import {
+  formatLocalizedDate,
+  getIcon,
+  isCustomerPortal,
+  shortDuration,
+} from "@/utils";
 import { Badge, dayjsLocal, Tooltip, usePageMeta } from "frappe-ui";
-import { computed, h, onMounted, onUnmounted, reactive, ref } from "vue";
+import { computed, h, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
@@ -107,6 +115,25 @@ const {
 } = useView("HD Ticket");
 
 const activeView = computed(() => findView(route.query.view as string).value);
+watch(
+  activeView,
+  (view) => {
+    if (view) {
+      currentView.value = {
+        label: getViewLabel(view),
+        icon: getIcon(view.icon),
+        is_standard: Boolean(view.is_standard),
+      };
+    } else if (!route.query.view) {
+      currentView.value = {
+        label: __("List"),
+        icon: LucideAlignJustify,
+        is_standard: true,
+      };
+    }
+  },
+  { immediate: true }
+);
 const hasActiveFilters = computed(
   () => Object.keys(listViewRef.value?.list?.params?.filters || {}).length > 0
 );
@@ -190,18 +217,30 @@ const options = computed(() => ({
         const label = isCustomerPortal.value
           ? status?.["label_customer"]
           : status?.["label_agent"];
+        const displayLabel = displayLinkOption(
+          "HD Ticket Status",
+          label || item
+        );
         return h(
           "div",
           { class: "flex items-center gap-1.5 justify-start w-full" },
           [
             h(IndicatorIcon, { class: status?.["parsed_color"] }),
-            h("span", { class: "truncate flex-1 text-base" }, label),
+            h("span", { class: "truncate flex-1 text-base" }, displayLabel),
           ]
         );
       },
     },
     priority: {
       custom: ({ item }) => h(TicketPriority, { priority: item }),
+    },
+    ticket_type: {
+      custom: ({ item }) =>
+        h(
+          "span",
+          { class: "truncate flex-1" },
+          displayLinkOption("HD Ticket Type", String(item || ""))
+        ),
     },
     agreement_status: {
       custom: ({ item }) => {
@@ -260,7 +299,7 @@ function handleResponseByField(row: any, item: string) {
   return h(
     Tooltip,
     {
-      text: dayjsLocal(item).format("LLLL"),
+      text: formatLocalizedDate(dayjsLocal(item), "dddd, MMM D, YYYY h:mm A"),
     },
     h(Badge, {
       label: shortDuration(item),
@@ -272,7 +311,7 @@ function handleResponseByField(row: any, item: string) {
 
 function slaOutcomeBadge(fulfilled: boolean) {
   return h(Badge, {
-    label: fulfilled ? __("Fulfilled") : __("Failed"),
+    label: fulfilled ? __("Fulfilled") : __("SLA breached"),
     theme: fulfilled ? "gray" : "red",
     variant: "subtle",
   });
@@ -300,7 +339,7 @@ function handleResolutionByField(row: any, item: string) {
   return h(
     Tooltip,
     {
-      text: dayjsLocal(item).format("LLLL"),
+      text: formatLocalizedDate(dayjsLocal(item), "dddd, MMM D, YYYY h:mm A"),
     },
     h(Badge, {
       label: shortDuration(item),
@@ -440,8 +479,9 @@ function parseViews(views: View[]) {
       ...view,
       onClick: () => {
         currentView.value = {
-          label: view.label,
+          label: getViewLabel(view),
           icon: view.icon,
+          is_standard: Boolean(view.is_standard),
         };
         router.push({
           name: view.route_name,
@@ -459,12 +499,6 @@ function onViewModalUpdate(viewInfo: any, action: string) {
 }
 
 onMounted(() => {
-  if (!route.query.view) {
-    currentView.value = {
-      label: __("List"),
-      icon: LucideAlignJustify,
-    };
-  }
   if (!isCustomerPortal.value) {
     $socket.on("helpdesk:new-ticket", () => {
       listViewRef.value?.reload();

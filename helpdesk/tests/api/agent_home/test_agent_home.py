@@ -8,6 +8,7 @@ from frappe.tests.utils import FrappeTestCase
 
 from helpdesk.api.agent_home.agent_home import (
     RECENT_ACTIVITY_LIMIT,
+    _updated_label,
     get_agent_tickets,
     get_avg_first_response_time,
     get_avg_resolution_time,
@@ -92,6 +93,19 @@ def create_ticket_with_agent(
 
 
 class TestAgentHome(FrappeTestCase):
+    def test_recent_activity_localizes_standard_ticket_type_only(self):
+        standard_type = json.dumps({"changed": [["ticket_type", None, "Incident"]]})
+        custom_type = json.dumps({"changed": [["ticket_type", None, "VIP Support"]]})
+
+        self.assertEqual(
+            _updated_label(standard_type),
+            frappe._("Ticket type set to {0}").format(frappe._("Incident")),
+        )
+        self.assertEqual(
+            _updated_label(custom_type),
+            frappe._("Ticket type set to {0}").format("VIP Support"),
+        )
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -417,9 +431,9 @@ class TestAgentHome(FrappeTestCase):
         self.assertEqual(result["averages"]["resolution"], 20.0)
 
         # Verify data points exist for the months
-        month_labels = [row[0] for row in result["data"]]
-        t1_month = frappe.utils.add_months(now, -1).strftime("%b")
-        self.assertIn(t1_month, month_labels)
+        month_dates = [row[0] for row in result["data"]]
+        t1_month = frappe.utils.add_months(now, -1).strftime("%Y-%m")
+        self.assertTrue(any(month.startswith(t1_month) for month in month_dates))
 
         # Test 6m period (Should see T1, T2)
         # Avg First = (10 + 20) / 2 = 15

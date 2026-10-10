@@ -4,7 +4,7 @@
       <Breadcrumbs
         :items="[
           {
-            label: 'Tickets',
+            label: __('Tickets'),
             route: {
               name: parent,
             },
@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { inject } from "vue";
 import { Breadcrumbs } from "frappe-ui";
 import { PageTitle } from "@/components";

@@ -14,7 +14,7 @@
         <template #trigger>
           <button
             type="button"
-            class="flex h-full items-center gap-1 rounded-l-4 px-2 min-w-[50px] focus:outline-none"
+            class="flex h-full items-center gap-1 rounded-s-4 px-2 min-w-[50px] focus:outline-none"
             :class="[
               { 'pointer-events-none': disabled },
               flagCode ? '' : 'justify-center',
@@ -55,7 +55,7 @@
                 :key="country.name"
                 :ref="(el) => setItemRef(el as HTMLElement | null, idx)"
                 type="button"
-                class="flex w-full items-center gap-2 rounded-5 px-2 py-1.5 text-left text-base text-ink-gray-7 outline-none"
+                class="flex w-full items-center gap-2 rounded-5 px-2 py-1.5 text-start text-base text-ink-gray-7 outline-none"
                 :class="
                   idx === highlightedIndex
                     ? 'bg-surface-gray-3'
@@ -85,7 +85,7 @@
         </template>
       </Popover>
       <div
-        class="self-stretch border-l border-outline-gray-2"
+        class="self-stretch border-s border-outline-gray-2"
         aria-hidden="true"
       />
       <span

@@ -6,6 +6,7 @@ import { useConfigStore } from "@/stores/config";
 import { useTicketPriorityStore } from "@/stores/ticketPriority";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { SavedReplyActionType } from "@/types";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 
@@ -54,13 +55,16 @@ function buildActionOptions() {
         return (statusStore.statuses.data || [])
           .filter((status) => status.enabled)
           .map((status) => ({
-            label: status.label_agent,
+            label: displayLinkOption("HD Ticket Status", status.label_agent),
             value: status.label_agent,
           }));
       case "Set Priority":
         return (priorityStore.priorities.data || [])
           .filter((priority) => !priority.disabled)
-          .map((priority) => ({ label: priority.name, value: priority.name }));
+          .map((priority) => ({
+            label: displayLinkOption("HD Ticket Priority", priority.name),
+            value: priority.name,
+          }));
       case "Assign Agent":
         return agentStore.dropdown || [];
       case "Add Tag":

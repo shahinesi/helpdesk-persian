@@ -2,15 +2,11 @@ import { EditIcon, PinIcon, UnpinIcon } from "@/components/icons";
 import { useAuthStore } from "@/stores/auth";
 import { globalStore } from "@/stores/globalStore";
 import { __ } from "@/translation";
+import { translateViewLabel } from "@/translationLabels";
 import { View } from "@/types";
 import { getIcon, isCustomerPortal } from "@/utils";
 import { useDebounceFn } from "@vueuse/core";
-import {
-  call,
-  createListResource,
-  createResource,
-  toast,
-} from "frappe-ui";
+import { call, createListResource, createResource, toast } from "frappe-ui";
 import { Icon } from "frappe-ui/experimental";
 import { computed, h, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -41,7 +37,12 @@ export const views = createListResource({
 export const currentView = ref({
   label: "List",
   icon: LucideAlignJustify,
+  is_standard: true,
 });
+
+export function getViewLabel(view: Pick<View, "label" | "is_standard">) {
+  return translateViewLabel(view);
+}
 
 export function useView(dt: string = null) {
   const auth = useAuthStore();
@@ -175,7 +176,7 @@ export function useView(dt: string = null) {
 
   function parseView(view: View) {
     return {
-      label: view.label,
+      label: getViewLabel(view),
       name: view.name,
       icon: getIcon(view.icon),
       route_name: view.route_name,
@@ -366,6 +367,7 @@ export function useView(dt: string = null) {
       currentView.value = {
         label: viewInfo.label,
         icon: getIcon(viewInfo.icon),
+        is_standard: false,
       };
       return;
     } else if (action === "duplicate") {
@@ -402,6 +404,7 @@ export function useView(dt: string = null) {
       currentView.value = {
         label: d.label || __("List"),
         icon: getIcon(d.icon),
+        is_standard: false,
       };
       router.push({
         name: isCustomerPortal.value ? "TicketsCustomer" : "TicketsAgent",

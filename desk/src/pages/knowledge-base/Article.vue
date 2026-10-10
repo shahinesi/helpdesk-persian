@@ -9,7 +9,7 @@
             variant="subtle"
             :theme="article.data?.status === 'Draft' ? 'amber' : 'green'"
             size="md"
-            >{{ article.data?.status }}</Badge
+            >{{ displayArticleStatus }}</Badge
           >
         </div>
       </template>
@@ -44,7 +44,8 @@
               <textarea
                 ref="titleRef"
                 class="w-full resize-none border-0 text-3xl-bold bg-transparent placeholder-ink-gray-3 p-0 focus:ring-0 overflow-hidden"
-                v-model="title"
+                :value="editable ? title : displayArticleTitle"
+                @input="updateTitle"
                 :placeholder="__('Title')"
                 rows="1"
                 wrap="soft"
@@ -70,7 +71,8 @@
                     <IconDot class="h-4 w-4 text-ink-gray-5" />
                     <div class="text-base text-ink-gray-7">
                       {{
-                        dayjsLocal(article.data.modified).format(
+                        formatLocalizedDate(
+                          article.data.modified,
                           "MMM D, h:mm A"
                         )
                       }}
@@ -82,7 +84,7 @@
                 v-if="!editable && !isCustomerPortal && !isMobileView"
                 class="text-p-sm text-ink-gray-4 items-center"
               >
-                <span>{{ views }} {{ __("views") }}</span>
+                <span>{{ __("{0} views", [views]) }}</span>
               </div>
             </div>
             <div class="flex gap-4 justify-between sm:items-start">
@@ -201,14 +203,18 @@
             <div class="flex flex-col justify-start gap-1">
               <p class="truncate capitalize text-p-base-medium text-ink-gray-9">
                 <span class="text-base text-ink-gray-5"
-                  >{{ __("published by") }}
+                  >{{
+                    article.data?.status === "Draft"
+                      ? __("Created by")
+                      : __("Published by")
+                  }}
                 </span>
                 {{ article.data.author.name }}
               </p>
               <div class="flex items-center gap-1">
                 <span class="text-p-xs text-ink-gray-6">
                   {{
-                    dayjsLocal(article.data.modified).format("MMM D, h:mm A")
+                    formatLocalizedDate(article.data.modified, "MMM D, h:mm A")
                   }}
                 </span>
                 <IconDot
@@ -219,7 +225,7 @@
                 <span
                   v-if="!editable && !isCustomerPortal && isMobileView"
                   class="text-p-xs text-ink-gray-4 items-center"
-                  >{{ views }} views</span
+                  >{{ __("{0} views", [views]) }}</span
                 >
               </div>
             </div>
@@ -280,6 +286,7 @@ import { Article, Breadcrumb, Error, FeedbackAction, Resource } from "@/types";
 import {
   ConfirmDelete,
   copyToClipboard,
+  formatLocalizedDate,
   isCustomerPortal,
   uploadFunction,
 } from "@/utils";
@@ -418,6 +425,26 @@ const article: Resource<Article> = createResource({
   },
 });
 
+const isDefaultIntroductionArticle = computed(
+  () =>
+    article.data?.title === "Introduction" &&
+    article.data?.content === "Content for your Article"
+);
+const displayArticleTitle = computed(() =>
+  !editable.value && isDefaultIntroductionArticle.value
+    ? __("Introduction")
+    : title.value
+);
+const displayArticleStatus = computed(() =>
+  ["Draft", "Published", "Archived"].includes(article.data?.status)
+    ? __(article.data.status)
+    : article.data?.status
+);
+
+function updateTitle(event: Event) {
+  title.value = (event.target as HTMLTextAreaElement).value;
+}
+
 const articleStats = createResource({
   url: "helpdesk.api.article.get_article_stats",
   params: { article_name: props.articleId },
@@ -456,8 +483,8 @@ const toggleStatus = debounce(() => {
     {
       onSuccess: () => {
         if (status === "Published")
-          toast.success("Article published successfully.");
-        else toast.success("Article unpublished successfully.");
+          toast.success(__("Article published successfully."));
+        else toast.success(__("Article unpublished successfully."));
         article.reload();
       },
     }
@@ -572,10 +599,14 @@ function handleDelete() {
 }
 const textEditorContentWithIDs = ref(null);
 watch(
-  () => article.data?.content,
-  (newContent) => {
+  [() => article.data?.content, () => editable.value],
+  ([newContent]) => {
     if (newContent) {
-      textEditorContentWithIDs.value = addLinksToHeadings(newContent);
+      const displayContent =
+        !editable.value && isDefaultIntroductionArticle.value
+          ? __("Content for your Article")
+          : newContent;
+      textEditorContentWithIDs.value = addLinksToHeadings(displayContent);
     }
   },
   { immediate: true }
@@ -689,7 +720,10 @@ const breadcrumbs = computed(() => {
   ];
   if (article.data?.category_name) {
     let item = {
-      label: article.data?.category_name,
+      label:
+        article.data?.category_name === "General"
+          ? __("General")
+          : article.data?.category_name,
     };
     if (isCustomerPortal.value) {
       item["route"] = {
@@ -707,7 +741,7 @@ const breadcrumbs = computed(() => {
   }
   if (article.data?.title) {
     items.push({
-      label: article.data?.title,
+      label: displayArticleTitle.value,
       route: { name: "Article" },
     });
   }
@@ -722,7 +756,9 @@ onMounted(() => {
 
 usePageMeta(() => {
   return {
-    title: article.data?.title + ` - ${article.data?.category_name} `,
+    title: `${displayArticleTitle.value} - ${
+      breadcrumbs.value.at(-2)?.label ?? ""
+    }`,
   };
 });
 </script>

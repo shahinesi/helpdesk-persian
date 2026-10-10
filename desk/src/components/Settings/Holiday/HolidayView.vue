@@ -1,6 +1,10 @@
 <template>
   <SettingsLayoutBase
-    :back-label="holidayData?.holiday_list_name || __('New Business Holiday')"
+    :back-label="
+      holidayData?.holiday_list_name === 'Default'
+        ? __('Default')
+        : holidayData?.holiday_list_name || __('New Business Holiday')
+    "
     :on-back="goBack"
     :dirty="isDirty"
   >
@@ -23,8 +27,11 @@
       <div v-if="!holidayData.loading" class="h-full">
         <div class="flex items-center gap-2 mt-2">
           <span class="text-sm">
-            There are in total <b>{{ holidayData.holidays.length }}</b> holidays
-            in this list</span
+            {{
+              __("Total holidays in this list: {0}", [
+                holidayData.holidays.length,
+              ])
+            }}</span
           >
         </div>
         <hr class="mb-8 mt-2" />
@@ -70,9 +77,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('From date')" for="from_date" required />
               <DatePicker
+                :today-label="__('Today')"
                 v-model="holidayData.from_date"
                 variant="subtle"
-                placeholder="11/01/2025"
                 class="w-full"
                 id="from_date"
                 :format="getDateFormat()"
@@ -91,9 +98,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('To date')" for="to_date" required />
               <DatePicker
+                :today-label="__('Today')"
                 v-model="holidayData.to_date"
                 variant="subtle"
-                placeholder="25/12/2025"
                 class="w-full"
                 id="to_date"
                 :format="getDateFormat()"

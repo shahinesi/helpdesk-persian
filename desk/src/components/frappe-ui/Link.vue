@@ -1,6 +1,7 @@
 <template>
   <Combobox
     class="group"
+    :dir="attrs.dir"
     :model-value="value || null"
     trigger="button"
     :options="linkOptions"
@@ -72,6 +73,7 @@ import LucidePlus from "~icons/lucide/plus";
 import { watchDebounced } from "@vueuse/core";
 import { Button, Combobox, createResource } from "frappe-ui";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { computed, ref, useAttrs, watch } from "vue";
 
 const props = defineProps({
@@ -135,13 +137,26 @@ const linkOptions = computed(() => {
   const rows = props.showDescription
     ? data
     : data.map(({ description, ...rest }) => rest);
+  const displayRows = rows.map((row) => ({
+    ...row,
+    label:
+      displayLinkOption(props.doctype, row.value) === row.value
+        ? row.label
+        : displayLinkOption(props.doctype, row.value),
+  }));
   // The button trigger prints only an option it has loaded, and the search
   // returns one page. A value saved outside that page needs a row of its own
   // or the field reads as empty.
-  if (value.value && !rows.some((row) => row.value === value.value)) {
-    return [{ label: value.value, value: value.value }, ...rows];
+  if (value.value && !displayRows.some((row) => row.value === value.value)) {
+    return [
+      {
+        label: displayLinkOption(props.doctype, value.value),
+        value: value.value,
+      },
+      ...displayRows,
+    ];
   }
-  return rows;
+  return displayRows;
 });
 
 // Listening to the query at all makes Combobox treat it as consumer-owned, so

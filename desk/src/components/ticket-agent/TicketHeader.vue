@@ -45,7 +45,10 @@
         <!-- Status -->
         <Dropdown :options="statusDropdown" align="end">
           <template #default="{ open }">
-            <Button :label="__(ticket.doc.status)" ref="statusRef">
+            <Button
+              :label="displayLinkOption('HD Ticket Status', ticket.doc.status)"
+              ref="statusRef"
+            >
               <template #prefix>
                 <IndicatorIcon
                   :class="
@@ -90,7 +93,7 @@ import {
 } from "@/composables/formCustomisation";
 import { useNotifyTicketUpdate } from "@/composables/realtime";
 import { useShortcut } from "@/composables/shortcuts";
-import { useView } from "@/composables/useView";
+import { getViewLabel, useView } from "@/composables/useView";
 import { useAuthStore } from "@/stores/auth";
 import { globalStore } from "@/stores/globalStore";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
@@ -98,6 +101,7 @@ import { __ } from "@/translation";
 import { CustomizationSymbol, TicketSymbol, View } from "@/types";
 import { HDTicketStatus } from "@/types/doctypes";
 import { getIcon } from "@/utils";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import {
   Breadcrumbs,
   Button,
@@ -145,7 +149,7 @@ const statusDropdown = computed(() => {
   const statuses =
     ticketStatusStore.statuses.data?.filter((s) => s.enabled) || [];
   return statuses.map((o: HDTicketStatus) => ({
-    label: __(o.label_agent),
+    label: displayLinkOption("HD Ticket Status", o.label_agent),
     value: o.label_agent,
     onClick: () => {
       notifyTicketUpdate("Status", o.label_agent);
@@ -164,7 +168,7 @@ const breadcrumbs = computed(() => {
     const currView: ComputedRef<View> = findView(route.query.view as string);
     if (currView) {
       items.push({
-        label: __(currView.value?.label),
+        label: getViewLabel(currView.value),
         icon: getIcon(currView.value?.icon),
         route: { name: "TicketsAgent", query: { view: currView.value?.name } },
       });

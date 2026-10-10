@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { APIOptions, Field } from "@/types";
 import { parseApiOptions } from "@/utils";
 import { Link } from "@framework/ui";
@@ -102,13 +103,15 @@ const component = computed(() => {
   } else if (props.field.fieldtype === "Select") {
     return optionControl(
       props.field.options
-        ? props.field.options.split("\n").map((o) => ({ label: o, value: o }))
+        ? props.field.options
+            .split("\n")
+            .map((option) => ({ label: __(option), value: option }))
         : []
     );
   } else if (props.field.fieldtype === "Check") {
     return select([
-      { label: "Yes", value: 1 },
-      { label: "No", value: 0 },
+      { label: __("Yes"), value: 1 },
+      { label: __("No"), value: 0 },
     ]);
   } else if (props.field.fieldtype === "Datetime") {
     return h(DateTimePicker, {
@@ -147,15 +150,15 @@ const placeholder = computed(() => {
     return props.field.placeholder;
   }
   if (props.field.fieldtype === "Data" && !props.field.url_method) {
-    return "Type something";
+    return __("Type something");
   } else if (
     props.field.fieldtype === "Select" ||
     props.field.fieldtype === "Link" ||
     props.field.fieldtype === "Check"
   ) {
-    return "Select an option";
+    return __("Select an option");
   }
-  return "Type something";
+  return __("Type something");
 });
 
 function emitUpdate(fieldname: Field["fieldname"], value: Value) {

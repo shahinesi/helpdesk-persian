@@ -1,7 +1,7 @@
 app_name = "helpdesk"
-app_title = "Helpdesk"
+app_title = "هلپ‌دسک فارسی"
 app_publisher = "Frappe Technologies"
-app_description = "Customer Service Software"
+app_description = "سامانه پشتیبانی مشتریان"
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
 app_email = "hello@frappe.io"
@@ -13,7 +13,7 @@ add_to_apps_screen = [
     {
         "name": "helpdesk",
         "logo": "/assets/helpdesk/desk/favicon.svg",
-        "title": "Helpdesk",
+        "title": "هلپ‌دسک فارسی",
         "route": "/helpdesk",
         "has_permission": "helpdesk.api.permission.has_app_permission",
     }
@@ -23,9 +23,18 @@ get_site_info = "helpdesk.activation.get_site_info"
 
 after_install = "helpdesk.setup.install.after_install"
 after_migrate = [
+    "helpdesk.hooks.invalidate_merged_translation_cache",
     "helpdesk.search.build_index_in_background",
     "helpdesk.search.download_corpus",
 ]
+
+
+def invalidate_merged_translation_cache():
+    import frappe
+    from frappe.translate import MERGED_TRANSLATION_KEY
+
+    # The merged catalog lives in Redis and survives replacing compiled .mo files.
+    frappe.cache.delete_value(MERGED_TRANSLATION_KEY)
 
 
 # Full Text Search
@@ -150,7 +159,9 @@ ignore_links_on_delete = [
 ]
 
 # setup wizard
-# setup_wizard_requires = "assets/helpdesk/js/setup_wizard.js"
+before_request = ["helpdesk.setup.setup_wizard.set_fresh_setup_language"]
+setup_wizard_requires = "assets/helpdesk/js/setup_wizard.js"
+web_include_css = "/assets/helpdesk/css/persian-font.css"
 # setup_wizard_stages = "helpdesk.setup.setup_wizard.get_setup_stages"
 setup_wizard_complete = "helpdesk.setup.setup_wizard.setup_complete"
 

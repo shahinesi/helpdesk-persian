@@ -1,6 +1,7 @@
 <template>
   <CommentItem
     :comment="activity"
+    :editor-class="editorClass"
     :editable="editing"
     @save="saveContent"
     @discard="editing = false"
@@ -17,9 +18,9 @@
           </Badge>
         </div>
         <div class="flex items-center gap-2">
-          <Tooltip :text="postedAt.format(TOOLTIP_DATE_FORMAT)">
+          <Tooltip :text="formatLocalizedDate(postedAt, TOOLTIP_DATE_FORMAT)">
             <span class="whitespace-nowrap text-sm leading-6 text-ink-gray-5">
-              {{ postedAt.fromNow() }}
+              {{ timeAgo(postedAt) }}
             </span>
           </Tooltip>
           <!-- -me-1.5 matches the tighter edge the framework gives a header with actions -->
@@ -63,7 +64,13 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
 import { __ } from "@/translation";
-import { ConfirmDelete, copyActivityLink, isContentEmpty } from "@/utils";
+import { formatLocalizedDate, getFontFamily } from "@/utils";
+import {
+  ConfirmDelete,
+  copyActivityLink,
+  isContentEmpty,
+  timeAgo,
+} from "@/utils";
 import {
   AttachmentChip,
   CommentItem,
@@ -108,6 +115,10 @@ const { enableCommentReactions: reactionsEnabled } = storeToRefs(
 
 const editing = ref(false);
 const isConfirmingDelete = ref(false);
+const editorClass = computed(() => [
+  "prose-f max-w-none",
+  getFontFamily(props.activity.data.content),
+]);
 
 // author.email is the resolved address; userId may be the raw session user
 // ("Administrator"), so match either form

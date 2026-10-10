@@ -3,15 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "yarn@1.22.18",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "yarn apply:ui-patches && vite build",
     "serve": "vite preview",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "apply:ui-patches": "bash scripts/apply-ui-patches.sh"
   },
   "dependencies": {
     "@framework/ui": "link:../../frappe/ui",
     "@headlessui/vue": "^1.7.22",
+    "@persian-tools/persian-tools": "^4.0.4",
     "@tailwindcss/typography": "^0.5.9",
     "@tiptap/core": "^3.26.0",
     "@tiptap/extension-table": "^3.26.0",
@@ -26,8 +29,9 @@
     "@vueuse/integrations": "^14.1.0",
     "dayjs": "^1.11.7",
     "echarts": "^6.1.0",
-    "grid-layout-plus": "^1.1.0",
     "frappe-ui": "1.0.0-rc.1",
+    "grid-layout-plus": "^1.1.0",
+    "jalaali-js": "^2.0.1",
     "mime": "^3.0.0",
     "pinia": "^2.0.33",
     "sanitize-html": "^2.10.0",

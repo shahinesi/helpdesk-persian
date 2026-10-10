@@ -2,6 +2,20 @@ import frappeUIPreset, { content as frappeUIContent } from "frappe-ui/tailwind";
 
 export default {
   presets: [frappeUIPreset],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: [
+          "Vazirmatn",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif",
+        ],
+      },
+    },
+  },
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",

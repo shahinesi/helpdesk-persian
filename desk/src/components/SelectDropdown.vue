@@ -7,12 +7,13 @@
     <template #trigger>
       <Button
         class="flex items-center justify-between min-w-36"
-        :class="targetClass"
+        :class="[targetClass, isRtl ? 'text-right' : 'text-left']"
         icon-right="lucide-chevron-down"
       >
         <div class="w-full truncate">
           {{
-            options?.find((option) => option.value == model)?.label || "Select"
+            options?.find((option) => option.value == model)?.label ||
+            __("Select")
           }}
         </div>
       </Button>
@@ -20,13 +21,15 @@
     <template #default="{ close: closePopover }">
       <div
         class="mt-1 p-1 text-ink-gray-6 w-[--reka-popper-anchor-width] bg-surface-base shadow-2xl rounded-4"
-        :class="bodyClass"
+        :dir="isRtl ? 'rtl' : 'ltr'"
+        :class="[bodyClass, isRtl ? 'text-right' : 'text-left']"
       >
         <div class="max-h-52 overflow-y-auto">
           <div
             v-for="option in options"
             :key="option.value"
             class="p-2 cursor-pointer hover:bg-surface-gray-3 text-base flex items-center justify-between rounded-4"
+            :class="isRtl ? 'text-right' : 'text-left'"
             @click="
               () => {
                 onChange(option.value);
@@ -34,7 +37,10 @@
               }
             "
           >
-            <div class="w-full truncate">
+            <div
+              class="w-full truncate"
+              :class="isRtl ? 'text-right' : 'text-left'"
+            >
               {{ option.label }}
             </div>
             <LucideCheck v-if="model == option.value" class="size-4 ms-2" />
@@ -72,6 +78,7 @@ const props = withDefaults(defineProps<Props>(), {
   placement: "bottom-start",
   defaultValue: undefined,
 });
+const isRtl = document.documentElement.dir === "rtl";
 
 const onReset = (closePopover: () => void) => {
   model.value = props.defaultValue !== undefined ? props.defaultValue : null;

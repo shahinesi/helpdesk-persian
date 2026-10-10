@@ -1,4 +1,6 @@
 import { dayjs, dayjsLocal } from "frappe-ui";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { __ } from "@/translation";
 import { computed, type ComputedRef, type Ref } from "vue";
 
 export type SLAState = "due" | "fulfilled" | "overdue" | "failed" | "hold";
@@ -44,8 +46,8 @@ export function slaTextColor(metric: SLAMetric): string {
 export function slaLabel(metric: SLAMetric): string {
   if (metric.state !== "fulfilled") return metric.value;
   return metric.fulfilledIn
-    ? `Fulfilled in ${metric.fulfilledIn}`
-    : "Fulfilled";
+    ? __("Fulfilled in {0}", [metric.fulfilledIn])
+    : __("Fulfilled");
 }
 
 export function useSLA(ticket: Ref<TicketLike | null | undefined>): {
@@ -83,7 +85,7 @@ export function useSLA(ticket: Ref<TicketLike | null | undefined>): {
         ? twoUnitDuration(d.first_response_failed_by * 1000)
         : shortDuration(d.first_responded_on, d.response_by);
       return {
-        ...metric("failed", `Failed by ${failed}`, "red", {
+        ...metric("failed", __("Failed by {0}", [failed]), "red", {
           dueBy: d.response_by,
           actual: d.first_responded_on,
           delay: `+${failed}`,
@@ -100,7 +102,7 @@ export function useSLA(ticket: Ref<TicketLike | null | undefined>): {
     if (dayjsLocal().isBefore(dayjsLocal(d.response_by))) {
       return metric(
         "due",
-        `Due in ${coarseDuration(d.response_by)}`,
+        __("Due in {0}", [coarseDuration(d.response_by)]),
         "orange",
         {
           dueBy: d.response_by,
@@ -108,7 +110,7 @@ export function useSLA(ticket: Ref<TicketLike | null | undefined>): {
       );
     }
     const overdue = coarseDuration(d.response_by);
-    return metric("overdue", `Overdue by ${overdue}`, "red", {
+    return metric("overdue", __("Overdue by {0}", [overdue]), "red", {
       dueBy: d.response_by,
       delay: `+${overdue}`,
     });
@@ -129,7 +131,7 @@ export function useSLA(ticket: Ref<TicketLike | null | undefined>): {
       d.on_hold_since &&
       pausedBeforeBreach
     ) {
-      return metric("hold", "On Hold", "blue", { dueBy: d.resolution_by });
+      return metric("hold", __("On Hold"), "blue", { dueBy: d.resolution_by });
     }
 
     if (d.resolution_date) {
@@ -151,7 +153,7 @@ export function useSLA(ticket: Ref<TicketLike | null | undefined>): {
         ? twoUnitDuration(d.resolution_failed_by * 1000)
         : shortDuration(d.resolution_date, d.resolution_by);
       return {
-        ...metric("failed", `Failed by ${failed}`, "red", {
+        ...metric("failed", __("Failed by {0}", [failed]), "red", {
           dueBy: d.resolution_by,
           actual: d.resolution_date,
           delay: `+${failed}`,
@@ -168,13 +170,13 @@ export function useSLA(ticket: Ref<TicketLike | null | undefined>): {
     if (dayjsLocal().isBefore(dayjsLocal(d.resolution_by))) {
       return metric(
         "due",
-        `Due in ${coarseDuration(d.resolution_by)}`,
+        __("Due in {0}", [coarseDuration(d.resolution_by)]),
         "violet",
         { dueBy: d.resolution_by }
       );
     }
     const overdue = coarseDuration(d.resolution_by);
-    return metric("overdue", `Overdue by ${overdue}`, "red", {
+    return metric("overdue", __("Overdue by {0}", [overdue]), "red", {
       dueBy: d.resolution_by,
       delay: `+${overdue}`,
     });
@@ -217,6 +219,8 @@ function coarseDuration(date: string): string {
 /** Format a duration using its two most significant units, e.g. "1d 9h" */
 function twoUnitDuration(milliseconds: number): string {
   const duration = dayjs.duration(milliseconds);
+  const localize = (value: number) =>
+    dayjs.locale().split("-")[0] === "fa" ? digitsEnToFa(String(value)) : value;
 
   const years = duration.years();
   const months = duration.months();
@@ -226,15 +230,17 @@ function twoUnitDuration(milliseconds: number): string {
   const seconds = duration.seconds();
 
   if (years > 0) {
-    return `${years}y ${months}mo`;
+    return __("{0}y {1}mo", [localize(years), localize(months)]);
   } else if (months > 0) {
-    return `${months}mo ${days}d`;
+    return __("{0}mo {1}d", [localize(months), localize(days)]);
   } else if (days > 0) {
-    return `${days}d ${hours}h`;
+    return __("{0}d {1}h", [localize(days), localize(hours)]);
   } else if (hours > 0) {
-    return `${hours}h ${minutes}m`;
+    return __("{0}h {1}m", [localize(hours), localize(minutes)]);
   } else if (minutes > 0) {
-    return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+    return seconds > 0
+      ? __("{0}m {1}s", [localize(minutes), localize(seconds)])
+      : __("{0}m", [localize(minutes)]);
   }
-  return `${seconds}s`;
+  return __("{0}s", [localize(seconds)]);
 }

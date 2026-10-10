@@ -43,7 +43,7 @@ test("pasting ticket IDs into an In filter selects them all and narrows the list
 
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Filter", exact: true }).click();
-  await expect(popover).toContainText(`ID in ${picked.slice(0, 3).join(", ")} and 1 other`);
+  await expect(popover).toContainText(`ID in ${picked.join(", ")}`);
 });
 
 test("the clear all X empties the filters and closes the popover", async ({
@@ -59,7 +59,7 @@ test("the clear all X empties the filters and closes the popover", async ({
   await list.goto();
   await list.addFilter("Priority", "High");
   const popover = list.filterPopover();
-  await expect(popover).toContainText("Priority is High");
+  await expect(popover).toContainText("Priority Equals High");
 
   const clearAll = page.getByRole("button", { name: "Clear all Filter" });
   await clearAll.click();

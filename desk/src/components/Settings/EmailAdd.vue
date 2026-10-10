@@ -18,6 +18,7 @@
             >
               <EmailProviderIcon
                 :service-name="s.name"
+                :display-name="s.displayName"
                 :logo="s.icon"
                 :selected="selectedService?.name === s?.name"
               />
@@ -32,13 +33,17 @@
                 <CircleAlert
                   class="h-6 w-5 w-min-5 w-max-5 min-h-5 max-w-5 text-ink-blue-5"
                 />
-                <div class="text-wrap text-xs text-ink-gray-7">
+                <div dir="auto" class="text-wrap text-xs text-ink-gray-7">
                   {{ selectedService.info }}
                   <a
                     :href="selectedService.link"
                     target="_blank"
                     class="text-ink-blue-5 underline"
-                    >here</a
+                    >{{
+                      selectedService.name === "Custom"
+                        ? __("Open in Desk")
+                        : __("here")
+                    }}</a
                   >.
                 </div>
               </div>
@@ -57,6 +62,7 @@
                   >
                     <Link
                       v-model="customState.domain"
+                      dir="ltr"
                       :label="field.label"
                       :placeholder="field.placeholder"
                       doctype="Email Domain"
@@ -79,6 +85,7 @@
                     :name="field.name"
                     :type="field.type"
                     :placeholder="field.placeholder"
+                    :dir="isLtrEmailField(field.name) ? 'ltr' : undefined"
                   />
                 </div>
               </div>
@@ -98,6 +105,7 @@
                       :name="field.name"
                       :type="field.type"
                       :placeholder="field.placeholder"
+                      :dir="isLtrEmailField(field.name) ? 'ltr' : undefined"
                     />
                   </div>
                 </div>
@@ -113,11 +121,12 @@
                       :name="field.name"
                       :type="field.type"
                       :placeholder="field.placeholder"
+                      :dir="isLtrEmailField(field.name) ? 'ltr' : undefined"
                     />
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div
                   v-for="field in incomingOutgoingFields"
                   :key="field.name"
@@ -170,16 +179,7 @@ import { call, createResource, toast } from "frappe-ui";
 import { useOnboarding } from "@framework/ui";
 import { computed, reactive, Ref, ref, watch } from "vue";
 import CircleAlert from "~icons/lucide/circle-alert";
-import {
-  customIncomingFields,
-  customOutgoingFields,
-  customProviderTopFields,
-  frappeMailFields,
-  incomingOutgoingFields,
-  popularProviderFields,
-  services,
-  validateInputs,
-} from "./emailConfig";
+import { getEmailConfig, isLtrEmailField, validateInputs } from "./emailConfig";
 import EmailProviderIcon from "./EmailProviderIcon.vue";
 
 interface EmailAccountBaseState {
@@ -256,6 +256,17 @@ const getDefaultCustomState = (): CustomEmailAccountState => ({
 });
 
 const customState = reactive<CustomEmailAccountState>(getDefaultCustomState());
+const emailConfig = computed(getEmailConfig);
+const services = computed(() => emailConfig.value.services);
+const incomingOutgoingFields = computed(
+  () => emailConfig.value.incomingOutgoingFields
+);
+const customIncomingFields = computed(
+  () => emailConfig.value.customIncomingFields
+);
+const customOutgoingFields = computed(
+  () => emailConfig.value.customOutgoingFields
+);
 
 function resetCustomState() {
   Object.assign(customState, getDefaultCustomState());
@@ -265,12 +276,12 @@ const selectedService: Ref<EmailService> = ref(null);
 const fields = computed(() => {
   if (!selectedService.value) return [];
   if (selectedService.value.name === "Frappe Mail") {
-    return frappeMailFields;
+    return emailConfig.value.frappeMailFields;
   }
   if (selectedService.value.custom) {
-    return customProviderTopFields;
+    return emailConfig.value.customProviderTopFields;
   }
-  return popularProviderFields;
+  return emailConfig.value.popularProviderFields;
 });
 
 const isCustomSelected = computed(

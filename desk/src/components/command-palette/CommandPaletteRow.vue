@@ -22,7 +22,11 @@
       v-else-if="command.icon"
       v-bind="command.iconProps"
       class="me-2.5 size-3.5 shrink-0"
-      :class="active ? 'text-ink-gray-7' : 'text-ink-gray-5'"
+      :class="[
+        active ? 'text-ink-gray-7' : 'text-ink-gray-5',
+        ['ticket-next', 'ticket-previous'].includes(command.id) &&
+          'rtl:rotate-180',
+      ]"
     />
 
     <span
@@ -53,7 +57,7 @@
     />
     <LucideChevronRight
       v-if="command.children"
-      class="ms-2 size-3.5 shrink-0 text-ink-gray-4"
+      class="ms-2 size-3.5 shrink-0 text-ink-gray-4 rtl:rotate-180"
     />
   </div>
 </template>

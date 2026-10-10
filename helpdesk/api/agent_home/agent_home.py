@@ -3,6 +3,7 @@ from datetime import date, timedelta
 
 import frappe
 from dateutil.relativedelta import relativedelta
+from frappe import _
 from frappe.query_builder import DocType
 from frappe.query_builder.functions import Avg, Count, Function
 from frappe.utils import add_months, today
@@ -68,11 +69,8 @@ def _resolve_window(period: str):
     current_to = frappe.utils.nowdate()
     current_from = frappe.utils.add_days(current_to, -(days - 1))
 
-    diff = frappe.utils.date_diff(current_to, current_from)
-    if diff == 0:
-        diff = 1
-    previous_from = frappe.utils.add_days(current_from, -diff)
     previous_to = frappe.utils.add_days(current_from, -1)
+    previous_from = frappe.utils.add_days(previous_to, -(days - 1))
 
     return current_from, current_to, previous_from, previous_to
 
@@ -159,6 +157,7 @@ def get_recent_feedback(
     to_date: str = None,
 ):
     agent = frappe.session.user
+
     Ticket = DocType("HD Ticket")
     Contact = DocType("Contact")
 
@@ -309,7 +308,6 @@ def get_avg_time_metrics(
     # Monthly aggregation query using query builder. Per-series gating mirrors
     # dashboard.py: both averages require an SLA; first-response also requires
     # first_responded_on, resolution also requires status IN resolved_statuses.
-    month_abbr = Function("DATE_FORMAT", Ticket.creation, "%b")
     year_val = Function("YEAR", Ticket.creation)
     month_val = Function("MONTH", Ticket.creation)
 
@@ -329,7 +327,6 @@ def get_avg_time_metrics(
     result = (
         frappe.qb.from_(Ticket)
         .select(
-            month_abbr.as_("month"),
             year_val.as_("year"),
             month_val.as_("month_num"),
             Avg(first_response_value).as_("avg_first_response"),
@@ -348,7 +345,6 @@ def get_avg_time_metrics(
     for row in result:
         key = f"{row['year']}-{row['month_num']:02d}"
         data_dict[key] = {
-            "month": row["month"],
             "avg_first": round(row["avg_first_response"] or 0),
             "avg_resolution": round(row["avg_resolution"] or 0),
         }
@@ -366,10 +362,11 @@ def get_avg_time_metrics(
     for i in range(num_months - 1, -1, -1):
         month_date = current_to_date - relativedelta(months=i)
         key = f"{month_date.year}-{month_date.month:02d}"
+        month_label_date = month_date.replace(day=15).strftime("%Y-%m-%d")
         if key in data_dict:
             data.append(
                 [
-                    data_dict[key]["month"],
+                    month_label_date,
                     data_dict[key]["avg_first"],
                     data_dict[key]["avg_resolution"],
                 ]
@@ -377,7 +374,7 @@ def get_avg_time_metrics(
         else:
             data.append(
                 [
-                    month_date.strftime("%b"),
+                    month_label_date,
                     0,
                     0,
                 ]
@@ -450,17 +447,17 @@ def _get_upcoming_sla_tickets(limit=10):
             due_time = ticket.get("resolution_by")
             time_until = format_time_difference(due_time, context="until")
             reason_text = (
-                f"Resolution due in {time_until}"
+                _("Resolution due in {0}").format(time_until)
                 if time_until != "overdue"
-                else "Resolution overdue"
+                else _("Resolution overdue")
             )
         else:
             due_time = ticket.get("response_by")
             time_until = format_time_difference(due_time, context="until")
             reason_text = (
-                f"Response due in {time_until}"
+                _("Response due in {0}").format(time_until)
                 if time_until != "overdue"
-                else "Response overdue"
+                else _("Response overdue")
             )
 
         # Calculate seconds until due for frontend urgency coloring
@@ -526,7 +523,7 @@ def _get_new_tickets(limit=10):
     for ticket in tickets:
         ticket["reason"] = {
             "type": "new_tickets",
-            "text": "Recently assigned",
+            "text": _("Recently assigned"),
         }
 
     total_count = get_ticket_count(filters=filters)
@@ -561,10 +558,12 @@ def _get_pending_response_tickets(limit=10):
     total_count = get_ticket_count(filters)
 
     for t in tickets:
-        time_ago = format_time_difference(t.get("last_customer_response"))
+        time_ago = format_time_difference(
+            t.get("last_customer_response"), context="duration"
+        )
         t["reason"] = {
             "type": "pending",
-            "text": f"Pending for {time_ago}",
+            "text": _("Pending for {0}").format(time_ago),
         }
 
     return tickets, total_count
@@ -704,6 +703,7 @@ FEED_FIELD_LABELS = {
     "agent_group": "team",
     "ticket_type": "type",
 }
+STANDARD_TICKET_TYPES = {"Unspecified", "Question", "Bug", "Incident"}
 
 
 def _updated_label(data: str | None) -> str | None:
@@ -718,6 +718,16 @@ def _updated_label(data: str | None) -> str | None:
         if field not in changed:
             continue
         new = changed[field]
-        text = f"set {label} to {new}" if new else f"cleared {label}"
-        return text[:1].upper() + text[1:]
+        if field == "ticket_type":
+            if not new:
+                return _("Ticket type cleared")
+            value = str(new)
+            if value in STANDARD_TICKET_TYPES:
+                value = _(value)
+            return _("Ticket type set to {0}").format(value)
+        display_label = _(label)
+        if new:
+            value = _(str(new)) if field in {"status", "priority"} else str(new)
+            return _("Set {0} to {1}").format(display_label, value)
+        return _("Cleared {0}").format(display_label)
     return None

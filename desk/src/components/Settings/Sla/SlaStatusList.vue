@@ -2,14 +2,14 @@
   <div class="flex gap-5 w-full">
     <FormControl
       type="combobox"
-      label="Default ticket status"
+      :label="__(`Default ticket status`)"
       :options="openStatuses"
       class="flex-1"
       v-model="slaData.default_ticket_status"
     />
     <FormControl
       type="combobox"
-      label="Ticket reopen status"
+      :label="__(`Ticket reopen status`)"
       :options="openStatuses"
       class="flex-1"
       v-model="slaData.reopen_ticket_status"
@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 import { computed, ComputedRef } from "vue";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { slaData } from "@/stores/sla";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { HDTicketStatus } from "@/types/doctypes";
@@ -31,7 +32,7 @@ const openStatuses: ComputedRef<HDTicketStatus[]> = computed(() => {
       ?.filter((s: HDTicketStatus) => s.category === "Open")
       ?.map((s: HDTicketStatus) => {
         return {
-          label: s.label_agent,
+          label: displayLinkOption("HD Ticket Status", s.label_agent),
           value: s.label_agent,
         };
       }) || []

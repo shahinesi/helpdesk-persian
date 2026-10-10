@@ -1,4 +1,5 @@
 import TicketPriority from "@/components/TicketPriority.vue";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { useTicketPriorityStore } from "@/stores/ticketPriority";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
@@ -22,7 +23,7 @@ export function statusOptions(config: OptionListConfig): Command[] {
   return statuses
     .filter((status) => status.enabled)
     .map((status) => ({
-      ...optionRow(config, status.label_agent),
+      ...optionRow(config, status.label_agent, "HD Ticket Status"),
       id: `status-${status.label_agent}`,
       dotClass: status.parsed_color,
     }));
@@ -33,7 +34,7 @@ export function priorityOptions(config: OptionListConfig): Command[] {
   return priorities
     .filter((priority) => !priority.disabled)
     .map((priority) => ({
-      ...optionRow(config, priority.name),
+      ...optionRow(config, priority.name, "HD Ticket Priority"),
       id: `priority-${priority.name}`,
       // The app's own level-aware icon, not a flat flag for every priority.
       icon: TicketPriority,
@@ -57,8 +58,12 @@ export function priorityKeywords(): string {
     .join(" ");
 }
 
-function optionRow(config: OptionListConfig, value: string): Command {
-  const label = __(value);
+function optionRow(
+  config: OptionListConfig,
+  value: string,
+  doctype: "HD Ticket Status" | "HD Ticket Priority"
+): Command {
+  const label = displayLinkOption(doctype, value);
   return {
     id: value,
     title: config.titlePrefix ? `${__(config.titlePrefix)}: ${label}` : label,

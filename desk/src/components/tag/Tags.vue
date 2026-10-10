@@ -57,7 +57,7 @@
             </div>
             <!-- own wrap item: grouped with the last chip it would inflate
                  the row's min-content width past the panel edge -->
-            <Tooltip v-if="hiddenTags.length" :text="hiddenTags.join(', ')">
+            <Tooltip v-if="hiddenTags.length" :text="hiddenTagLabel">
               <Badge
                 theme="gray"
                 variant="outline"
@@ -102,6 +102,7 @@ import ShortcutKey from "@/components/ShortcutKey.vue";
 import { useShortcut } from "@/composables/shortcuts";
 import { colorToken, useTags, type Tag } from "@/composables/useTags";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { useEventListener } from "@vueuse/core";
 import { Badge, call, MultiSelect, toast, Tooltip } from "frappe-ui";
 import { computed, h, onBeforeUnmount, ref, watch } from "vue";
@@ -153,6 +154,9 @@ const visibleTags = computed(() =>
 const hiddenTags = computed(() =>
   localTags.value.slice(visibleTags.value.length)
 );
+const hiddenTagLabel = computed(() =>
+  hiddenTags.value.map((tag) => displayLinkOption("Tag", tag)).join(", ")
+);
 const headTags = computed(() => visibleTags.value.slice(0, -1));
 const lastTag = computed(() => visibleTags.value.at(-1));
 
@@ -171,7 +175,7 @@ const existingTagOptions = computed(() => {
         a.name.localeCompare(b.name)
     )
     .map((tag) => ({
-      label: tag.name,
+      label: displayLinkOption("Tag", tag.name),
       value: tag.name,
       color: tag.color,
     }));

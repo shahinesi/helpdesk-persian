@@ -19,12 +19,13 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   await openTicket(page, ticket.name);
 
   const pick = async (placeholder: string, option: string) => {
-    const field = page.getByRole("combobox", { name: placeholder });
-    await field.click();
-    await field.fill(option);
+    await page.getByRole("button", { name: placeholder }).click();
+    await page.getByRole("combobox").fill(option);
     await page.getByRole("option", { name: option, exact: true }).click();
   };
-  await pick("Set Priority...", "High");
+  await page.getByRole("button", { name: "Medium", exact: true }).click();
+  await page.getByRole("combobox").fill("High");
+  await page.getByRole("option", { name: "High", exact: true }).click();
   await expect.poll(() => setValue.length).toBe(1);
   await pick("Set Ticket Type...", "Bug");
   await expect.poll(() => setValue.length).toBe(2);
@@ -32,18 +33,23 @@ test("sidebar fields save once per change and persist", async ({ page, api, tick
   await expect.poll(() => setValue.length).toBe(3);
 
   // clearing is its own save; picking after it must not send a second one
-  await page.getByRole("combobox", { name: "Set Priority..." }).hover();
-  await page.locator('[data-slot=trigger]:has([placeholder="Set Priority..."]) [data-slot=clear]').click();
+  await page.getByRole("button", { name: team, exact: true }).hover();
+  await page
+    .getByRole("button", { name: team })
+    .locator('[data-slot="clear"]')
+    .click();
   await expect.poll(() => setValue.length).toBe(4);
-  await pick("Set Priority...", "Low");
+  await pick("Set Team...", team);
   await expect.poll(() => setValue.length).toBe(5);
+  await pick("High", "Low");
+  await expect.poll(() => setValue.length).toBe(6);
   await page.waitForLoadState("networkidle");
-  expect(setValue).toHaveLength(5);
+  expect(setValue).toHaveLength(6);
 
   await page.reload();
-  await expect(page.getByRole("combobox", { name: "Set Priority..." })).toHaveValue("Low");
-  await expect(page.getByRole("combobox", { name: "Set Ticket Type..." })).toHaveValue("Bug");
-  await expect(page.getByRole("combobox", { name: "Set Team..." })).toHaveValue(team);
+  await expect(page.getByRole("button", { name: "Low", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Bug", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: team, exact: true })).toBeVisible();
   const saved = await api.get("HD Ticket", ticket.name);
   expect(saved).toMatchObject({ priority: "Low", ticket_type: "Bug", agent_group: team });
 });

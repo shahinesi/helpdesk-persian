@@ -2,13 +2,17 @@
   <Sidebar
     v-model:collapsed="collapsed"
     :collapsible="!mobile"
-    class="border-e border-outline-gray-1"
+    class="helpdesk-sidebar border-e border-outline-gray-1"
     :class="{ '!bg-surface-base': mobile }"
   >
     <div class="flex h-full flex-col p-2">
       <UserMenu :options="profileSettings" :is-collapsed="isCollapsed" />
 
-      <ScrollArea class="mt-2 min-h-0 flex-1 -mx-2" viewport-class="px-2">
+      <ScrollArea
+        dir="rtl"
+        class="mt-2 min-h-0 flex-1 -mx-2"
+        viewport-class="px-2"
+      >
         <template v-for="(section, index) in sections" :key="index">
           <SidebarLabel
             v-if="section.label"
@@ -19,8 +23,10 @@
           >
             <span class="flex items-center gap-1.5 text-sm font-medium">
               <span
-                class="lucide-chevron-right size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out -ml-0.5"
-                :class="{ 'rotate-90': isSectionOpen(section.label) }"
+                class="lucide-chevron-right size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out -ms-0.5"
+                :class="
+                  isSectionOpen(section.label) ? 'rotate-90' : 'rtl:rotate-180'
+                "
               />
               <span class="truncate leading-snug">{{ section.label }}</span>
             </span>
@@ -33,7 +39,7 @@
               v-for="item in section.items"
               :key="item.key"
               :id="item.id"
-              :label="__(item.label)"
+              :label="item.view ? item.label : __(item.label)"
               :active="item.isActive"
               :class="item.spacedTop && 'mt-4'"
               @click="item.onClick && item.onClick()"
@@ -47,7 +53,7 @@
                     v-if="
                       isCollapsed && item.key === 'notifications' && item.badge
                     "
-                    class="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-surface-gray-9"
+                    class="absolute -end-0.5 -top-0.5 size-1.5 rounded-full bg-surface-gray-9"
                   />
                 </span>
               </template>
@@ -68,7 +74,7 @@
                 />
                 <Dropdown
                   v-else-if="item.view"
-                  side="right"
+                  :side="isRtl ? 'left' : 'right'"
                   align="start"
                   :options="viewActions(item.view, viewDialogConfig)"
                 >
@@ -115,7 +121,7 @@ import {
 import UserMenu from "@/components/UserMenu.vue";
 import ViewModal from "@/components/ViewModal.vue";
 import { useDevice } from "@/composables";
-import { currentView, useView } from "@/composables/useView";
+import { currentView, getViewLabel, useView } from "@/composables/useView";
 import { useNotificationStore } from "@/stores/notification";
 import { useSidebarStore } from "@/stores/sidebar";
 import { useTelephonyStore } from "@/stores/telephony";
@@ -142,6 +148,7 @@ import {
   customerPortalSidebarOptions,
 } from "./layoutSettings";
 
+const isRtl = document.documentElement.dir === "rtl";
 const props = defineProps<{
   profileSettings: any[];
   mobile?: boolean;
@@ -202,7 +209,7 @@ const navItems = computed(() => {
     ? customerPortalSidebarOptions
     : agentPortalSidebarOptions;
   return options
-    .filter((item) => isCallingEnabled.value || item.label !== __("Call Logs"))
+    .filter((item) => isCallingEnabled.value || item.label !== "Call Logs")
     .map((option, index) => ({
       label: option.label,
       icon: option.icon,
@@ -274,7 +281,7 @@ const sections = computed(() => {
 
 function parseViews(views: any[]) {
   return views.map((view) => ({
-    label: view.label,
+    label: getViewLabel(view),
     icon: getIcon(view.icon),
     isActive: activeItem.value === view.name,
     onClick: () =>
@@ -282,7 +289,11 @@ function parseViews(views: any[]) {
         view.name,
         { name: view.route_name, query: { view: view.name } },
         () => {
-          currentView.value = { label: view.label, icon: view.icon };
+          currentView.value = {
+            label: view.label,
+            icon: view.icon,
+            is_standard: Boolean(view.is_standard),
+          };
         }
       ),
     key: view.name,

@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-3 w-full justify-between flex-1">
-    <div class="flex-1 flex flex-col gap-1.5">
+    <div class="min-w-0 flex-1 flex flex-col gap-1.5">
       <span class="block text-xs text-ink-gray-5"
         >{{ __("Parent field") }}
         <span class="text-ink-red-6 select-none">*</span>
@@ -8,12 +8,13 @@
       <Combobox
         v-model="state.selectedParentField"
         :options="parentFields"
+        :placeholder="__('Select option')"
         :disabled="!isNew"
         :open-on-focus="true"
-        class="w-full"
+        class="w-full text-start"
       />
     </div>
-    <div class="flex-1 flex flex-col gap-1.5">
+    <div class="min-w-0 flex-1 flex flex-col gap-1.5">
       <span class="block text-xs text-ink-gray-5"
         >{{ __("Child field") }}
         <span class="text-ink-red-6 select-none">*</span>
@@ -21,9 +22,10 @@
       <Combobox
         v-model="state.selectedChildField"
         :options="state.childFields"
+        :placeholder="__('Select option')"
         :disabled="!state.selectedParentField || !isNew"
         :open-on-focus="true"
-        class="w-full"
+        class="w-full text-start"
       />
     </div>
   </div>

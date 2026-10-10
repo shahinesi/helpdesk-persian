@@ -1,6 +1,10 @@
 <template>
   <SettingsLayoutBase
-    :back-label="slaData.service_level || __('New SLA Policy')"
+    :back-label="
+      slaData.service_level
+        ? displayLinkOption('HD Service Level Agreement', slaData.service_level)
+        : __('New SLA Policy')
+    "
     :on-back="goBack"
     :dirty="isDirty"
   >
@@ -48,7 +52,13 @@
                 variant="subtle"
                 :placeholder="__('Name')"
                 :label="__('Name')"
-                v-model="slaData.service_level"
+                :model-value="
+                  displayLinkOption(
+                    'HD Service Level Agreement',
+                    slaData.service_level
+                  )
+                "
+                @update:model-value="slaData.service_level = $event"
                 required
                 @change="validateSlaData('service_level')"
                 :disabled="Boolean(slaActiveScreen.data)"
@@ -132,11 +142,15 @@
                 v-if="!useNewUI"
               >
                 <span class="text-p-sm">
-                  Conditions for this SLA were created from
-                  <a :href="deskUrl" target="_blank" class="underline">desk</a>
-                  which are not compatible with this UI, you will need to
-                  recreate the conditions here if you want to manage and add new
-                  conditions from this UI.
+                  {{ __("Conditions for this SLA were created in") }}
+                  <a :href="deskUrl" target="_blank" class="underline">{{
+                    __("Desk")
+                  }}</a>
+                  {{
+                    __(
+                      ". They are not compatible with this interface. Recreate them here to manage or add conditions."
+                    )
+                  }}
                 </span>
                 <Button
                   :label="__('I understand, add conditions')"
@@ -166,9 +180,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('From date')" for="from_date" />
               <DatePicker
+                :today-label="__('Today')"
                 v-model="slaData.start_date"
                 variant="subtle"
-                placeholder="11/01/2025"
                 class="w-full"
                 id="from_date"
                 @update:model-value="validateSlaData('start_date')"
@@ -183,9 +197,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('To date')" for="to_date" />
               <DatePicker
+                :today-label="__('Today')"
                 v-model="slaData.end_date"
                 variant="subtle"
-                placeholder="25/12/2025"
                 class="w-full"
                 id="to_date"
                 @update:model-value="validateSlaData('end_date')"
@@ -311,6 +325,7 @@ import SlaStatusList from "./SlaStatusList.vue";
 import { disableSettingModalOutsideClick } from "../settingsModal";
 import { useOnboarding } from "@framework/ui";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import SettingsLayoutBase from "@/components/layouts/SettingsLayoutBase.vue";
 import { SlaPolicyListResourceSymbol } from "@/types";
 import { HDServiceLevelAgreement } from "@/types/doctypes";
@@ -344,7 +359,9 @@ const getSlaData = createResource({
       condition_json = JSON.parse(data.condition_json || "[]");
     } catch (error) {
       toast.error(
-        "Assignment conditions are invalid or corrupt, recreate the conditions."
+        __(
+          "Assignment conditions are invalid or corrupt, recreate the conditions."
+        )
       );
       condition_json = [];
     }

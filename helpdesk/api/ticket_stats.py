@@ -142,7 +142,7 @@ def _get_sla_violations(
                 key = Function("DATE_FORMAT", Ticket.creation, "%x-%v")
                 sort = key
             else:  # monthly
-                key = Function("DATE_FORMAT", Ticket.creation, "%b %Y")
+                key = Function("DATE_FORMAT", Ticket.creation, "%Y-%m")
                 sort = Function("DATE_FORMAT", Ticket.creation, "%Y%m")
             q = (
                 frappe.qb.from_(Ticket)
@@ -170,7 +170,7 @@ def _get_sla_violations(
     if bucket == "daily":
         data = _fill_date_series(current_from, current_to, current_rows)
     elif bucket == "weekly":
-        # Build ~4 week buckets: label "Mar 2 – Mar 8"
+        # Keep ISO dates in the response; the frontend formats them per locale.
         week_dict: dict[str, dict] = {}
         cur = date.fromisoformat(str(current_from))
         end = date.fromisoformat(str(current_to))
@@ -178,28 +178,38 @@ def _get_sla_violations(
         cur -= timedelta(days=cur.weekday())
         while cur <= end:
             iso = cur.strftime("%G-%V")  # matches %x-%v from MySQL
-            label = f"{cur.strftime('%b %-d')} – {(cur + timedelta(days=6)).strftime('%b %-d')}"
-            week_dict[iso] = {"label": label, "count": 0}
+            week_dict[iso] = {
+                "date": cur.isoformat(),
+                "end_date": (cur + timedelta(days=6)).isoformat(),
+                "count": 0,
+            }
             cur += timedelta(weeks=1)
         for row in current_rows:
             key = str(row["date"])
             if key in week_dict:
                 week_dict[key]["count"] = row["count"]
-        data = [{"date": v["label"], "count": v["count"]} for v in week_dict.values()]
+        data = list(week_dict.values())
     else:  # monthly
         num_months = days // 30
         month_dict: dict[str, int] = {}
         for i in range(num_months - 1, -1, -1):
             m = now - relativedelta(months=i)
-            month_dict[m.strftime("%b %Y")] = 0
+            month_dict[m.strftime("%Y-%m")] = 0
         for row in current_rows:
             key = str(row["date"])
             if key in month_dict:
                 month_dict[key] = row["count"]
-        data = [{"date": label, "count": count} for label, count in month_dict.items()]
+        data = [
+            {
+                "date": date.fromisoformat(f"{month}-01").isoformat(),
+                "count": count,
+            }
+            for month, count in month_dict.items()
+        ]
 
     return {
         "data": data,
+        "bucket": bucket,
         "total": current_total,
         "percentage_change": calculate_percentage_change(current_total, previous_total),
     }

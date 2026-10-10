@@ -17,6 +17,7 @@ import { getMeta } from "@/stores/meta";
 import { capture } from "@/telemetry";
 import { __ } from "@/translation";
 import { copyToClipboard } from "@/utils";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { createListResource, createResource, toast } from "frappe-ui";
 import { priorityOptions, statusOptions } from "./optionCommands";
 import {
@@ -304,7 +305,7 @@ async function teamChildren(ticketId: string): Promise<Command[]> {
   const current = useTicket(ticketId).ticket.doc?.agent_group;
   return (teams.data ?? []).map((team) => ({
     id: `team-${team.name}`,
-    title: team.name,
+    title: displayLinkOption("HD Team", team.name),
     group: "Set team",
     checked: team.name === current,
     perform: () => updateTicket(ticketId, { agent_group: team.name }),

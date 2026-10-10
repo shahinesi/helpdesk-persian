@@ -6,7 +6,7 @@
     <template #header-actions>
       <Button
         @click="() => setActiveSettingsTab('Invite Agents')"
-        label="New"
+        :label="__(`New`)"
         variant="solid"
         class="rtl:flex-row-reverse"
       >
@@ -40,7 +40,7 @@
         </div>
         <Dropdown :options="dropdownOptions" align="end">
           <template #default="{ open }">
-            <Button :label="activeFilter">
+            <Button :label="activeFilterLabel">
               <template #suffix>
                 <component
                   :is="open ? LucideChevronUp : LucideChevronDown"
@@ -59,7 +59,7 @@
                   {{ item.label }}
                 </span>
                 <LucideCheck
-                  v-if="activeFilter === item.label"
+                  v-if="activeFilter === item.value"
                   class="size-4 text-ink-gray-7"
                 />
               </div>
@@ -87,11 +87,11 @@
           v-if="!agents.loading && !agents.data?.length"
           variant="badge"
           :icon="AgentIcon"
-          title="No agent found"
+          :title="__(`No agent found`)"
           :description="
             activeFilter.length
-              ? 'Change your search terms or filters'
-              : 'Add one to get started.'
+              ? __('Change your search terms or filters')
+              : __('Add one to get started.')
           "
         />
         <!-- Agent List -->
@@ -135,9 +135,9 @@
                   v-if="isManager"
                   class="flex justify-end items-center"
                   :options="getRoles(agent.name)"
-                  :label="getUserRole(agent.name)"
+                  :label="getRoleLabel(getUserRole(agent.name))"
                   :button="{
-                    label: getUserRole(agent.name),
+                    label: getRoleLabel(getUserRole(agent.name)),
                     iconRight: 'lucide-chevron-down',
                     iconLeft:
                       getUserRole(agent.name) === 'Agent'
@@ -182,7 +182,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
 import { __ } from "@/translation";
 import { Avatar, Button, call, Dropdown, toast } from "frappe-ui";
-import { h, onUnmounted } from "vue";
+import { computed, h, onUnmounted } from "vue";
 import AgentIcon from "../icons/AgentIcon.vue";
 import { activeFilter, useAgents } from "./agents";
 import { setActiveSettingsTab } from "./settingsModal";
@@ -193,11 +193,12 @@ const { isManager } = useAuthStore();
 const agentStore = useAgents();
 const search = agentStore.search;
 const agents = agentStore.agents;
+const activeFilterLabel = computed(() => __(activeFilter.value));
 
 function getRoles(agent: string) {
   const agentRole = getUserRole(agent);
   const role = (label: string, icon: string) => ({
-    label,
+    label: getRoleLabel(label),
     icon,
     selected: agentRole === label,
     onClick: () => updateRole(agent, label),
@@ -208,6 +209,11 @@ function getRoles(agent: string) {
   }
 
   return roles;
+}
+
+function getRoleLabel(role: string) {
+  if (role === "Agent Manager") return __("Manager");
+  return role === "Agent" || role === "Manager" ? __(role) : role;
 }
 
 function updateRole(agent: string, newRole: string) {
@@ -221,7 +227,9 @@ function updateRole(agent: string, newRole: string) {
     new_role: newRole,
   }).then(() => {
     updateUserRoleCache(agent, newRole);
-    toast.success(__(`Role updated to ${newRole} successfully.`));
+    toast.success(
+      __("Role updated to {0} successfully.", [getRoleLabel(newRole)])
+    );
   });
 }
 
@@ -229,7 +237,7 @@ function getOptions(agent) {
   let filters = agentStore.filters;
   return [
     {
-      label: "Disable Agent",
+      label: __("Disable Agent"),
       icon: "lucide-x-circle",
       onClick: async () => {
         await agentStore.updateAgent(agent.name, 0);
@@ -238,7 +246,7 @@ function getOptions(agent) {
       condition: () => agent.is_active,
     },
     {
-      label: "Enable Agent",
+      label: __("Enable Agent"),
       icon: "lucide-check-circle",
       onClick: async () => {
         await agentStore.updateAgent(agent.name, 1);
@@ -251,21 +259,24 @@ function getOptions(agent) {
 
 const dropdownOptions = [
   {
-    label: "All",
+    label: __("All"),
+    value: "All",
     onClick: () => {
       agentStore.filters["is_active"] = ["in", [0, 1]];
       activeFilter.value = "All";
     },
   },
   {
-    label: "Active",
+    label: __("Active"),
+    value: "Active",
     onClick: () => {
       agentStore.filters["is_active"] = ["=", 1];
       activeFilter.value = "Active";
     },
   },
   {
-    label: "Inactive",
+    label: __("Inactive"),
+    value: "Inactive",
     onClick: () => {
       agentStore.filters["is_active"] = ["=", 0];
       activeFilter.value = "Inactive";

@@ -18,14 +18,17 @@
             <CircleAlert
               class="h-6 w-5 w-min-5 w-max-5 min-h-5 max-w-5 text-ink-blue-5"
             />
-            <div class="text-wrap text-xs text-ink-gray-7 flex flex-col gap-1">
+            <div
+              dir="auto"
+              class="text-wrap text-xs text-ink-gray-7 flex flex-col gap-1"
+            >
               <span>
                 {{ info.description }}
                 <a
                   :href="info.link"
                   target="_blank"
                   class="text-ink-blue-5 underline"
-                  >here</a
+                  >{{ __("here") }}</a
                 >.
               </span>
               <span v-if="deskEditUrl" class="flex items-center gap-1">
@@ -50,6 +53,7 @@
                 <div v-if="field.name === 'domain'" class="flex flex-col gap-2">
                   <Link
                     v-model="customState.domain"
+                    dir="ltr"
                     :label="field.label"
                     :placeholder="field.placeholder"
                     doctype="Email Domain"
@@ -72,6 +76,7 @@
                   :name="field.name"
                   :type="field.type"
                   :placeholder="field.placeholder"
+                  :dir="isLtrEmailField(field.name) ? 'ltr' : undefined"
                 />
               </div>
             </div>
@@ -91,6 +96,7 @@
                     :name="field.name"
                     :type="field.type"
                     :placeholder="field.placeholder"
+                    :dir="isLtrEmailField(field.name) ? 'ltr' : undefined"
                   />
                 </div>
               </div>
@@ -106,6 +112,7 @@
                     :name="field.name"
                     :type="field.type"
                     :placeholder="field.placeholder"
+                    :dir="isLtrEmailField(field.name) ? 'ltr' : undefined"
                   />
                 </div>
               </div>
@@ -171,14 +178,9 @@ import { computed, h, reactive, ref, watch } from "vue";
 import CircleAlert from "~icons/lucide/circle-alert";
 import EmailProviderIcon from "./EmailProviderIcon.vue";
 import {
-  customIncomingFields,
-  customOutgoingFields,
-  customProviderTopFields,
+  getEmailConfig,
+  isLtrEmailField,
   emailIcon,
-  frappeMailFields,
-  incomingOutgoingFields,
-  popularProviderFields,
-  services,
   validateInputs,
 } from "./emailConfig";
 
@@ -267,10 +269,20 @@ const getInitialCustomState = (): CustomEmailAccountState => ({
 
 const customState = reactive<CustomEmailAccountState>(getInitialCustomState());
 
-const info = {
+const info = computed(() => ({
   description: __("To know more about setting up email accounts, click"),
   link: "https://docs.frappe.io/erpnext/user/manual/en/email-domain",
-};
+}));
+const emailConfig = computed(getEmailConfig);
+const incomingOutgoingFields = computed(
+  () => emailConfig.value.incomingOutgoingFields
+);
+const customIncomingFields = computed(
+  () => emailConfig.value.customIncomingFields
+);
+const customOutgoingFields = computed(
+  () => emailConfig.value.customOutgoingFields
+);
 
 const deskEditUrl = computed(() => {
   const name = state.email_account_name || props.accountData.email_account_name;
@@ -284,7 +296,7 @@ const currentServiceName = computed(
 
 const serviceDef = computed(() => {
   const currentService = currentServiceName.value;
-  return services.find((s) => s.name === currentService);
+  return emailConfig.value.services.find((s) => s.name === currentService);
 });
 
 const isCustomProvider = computed(() => {
@@ -306,15 +318,15 @@ const isCustomProvider = computed(() => {
 
 const fields = computed(() => {
   if (isCustomProvider.value) {
-    return customProviderTopFields;
+    return emailConfig.value.customProviderTopFields;
   }
   if (!serviceDef.value) {
-    return popularProviderFields;
+    return emailConfig.value.popularProviderFields;
   }
   if (serviceDef.value.name === "Frappe Mail") {
-    return frappeMailFields;
+    return emailConfig.value.frappeMailFields;
   }
-  return popularProviderFields;
+  return emailConfig.value.popularProviderFields;
 });
 
 const error = ref<string | undefined>();

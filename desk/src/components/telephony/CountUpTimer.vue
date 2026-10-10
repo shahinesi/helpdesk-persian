@@ -3,13 +3,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { formatLocalizedDigits } from "@/utils/number";
+import { computed, ref } from "vue";
 
 const hours = ref(0);
 const minutes = ref(0);
 const seconds = ref(0);
 const timer = ref(null);
 const updatedTime = ref("0:00");
+const localizedTime = computed(() => formatLocalizedDigits(updatedTime.value));
 
 function startCounter() {
   updatedTime.value = getTime();
@@ -78,5 +80,5 @@ function getTime(_seconds = 0) {
   return hoursCount + minutesCount + ":" + secondsCount;
 }
 
-defineExpose({ start, stop, getTime, updatedTime });
+defineExpose({ start, stop, getTime, updatedTime, localizedTime });
 </script>

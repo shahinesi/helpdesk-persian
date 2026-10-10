@@ -51,7 +51,7 @@
         />
         <button v-if="overflowCount" type="button" @click="showAllChips = true">
           <Badge theme="gray" variant="outline" size="lg">
-            {{ __("+{0} more", overflowCount) }}
+            {{ __("+{0} more", formatLocalizedNumber(overflowCount)) }}
           </Badge>
         </button>
       </div>
@@ -70,6 +70,7 @@ import { isTagAction } from "@/components/Settings/SavedReplies/components/actio
 import { reloadTicket, reloadTicketFeed } from "@/composables/useTicket";
 import { userStorage } from "@/composables/userStorage";
 import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import { RenderedSavedReply, SavedReplyAction } from "@/types";
 import { useElementSize } from "@vueuse/core";
 import { Badge, Button, Tooltip, createResource, toast } from "frappe-ui";
@@ -137,11 +138,14 @@ const sourceLabel = computed(() => pendingActions.value[0]?.source ?? "");
 const countSentence = computed(() => {
   const count = pendingActions.value.length;
   if (width.value && width.value < NARROW_WIDTH) {
-    return __("{0} actions after sending", count);
+    return __("{0} actions after sending", formatLocalizedNumber(count));
   }
   return count === 1
     ? __("1 action will be applied after sending the email")
-    : __("{0} actions will be applied after sending the email", count);
+    : __(
+        "{0} actions will be applied after sending the email",
+        formatLocalizedNumber(count)
+      );
 });
 
 /** Stage the actions of an applied saved reply, replacing whatever was staged. */
@@ -207,14 +211,17 @@ const applyActions = createResource({
   }) => {
     if (result.applied?.length) {
       toast.success(
-        __("Applied {0} saved reply action(s)", result.applied.length)
+        __(
+          "Applied {0} saved reply action(s)",
+          formatLocalizedNumber(result.applied.length)
+        )
       );
     }
     if (result.skipped?.length) {
       toast.warning(
         __(
           "Skipped {0} saved reply action(s) that are no longer valid",
-          result.skipped.length
+          formatLocalizedNumber(result.skipped.length)
         )
       );
     }

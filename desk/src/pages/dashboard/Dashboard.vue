@@ -33,6 +33,7 @@
         <DateRangePicker
           v-else
           class="!w-48"
+          :today-label="__('Today')"
           ref="datePickerRef"
           v-model="periodRange"
           variant="outline"
@@ -60,7 +61,7 @@
           </template>
           <!-- One line per row: the filter only needs the name. -->
           <template #item-label="{ item }">
-            <div class="truncate">{{ item.label }}</div>
+            <div class="truncate">{{ translateDefaultTeam(item.label) }}</div>
           </template>
         </Link>
         <Link
@@ -215,6 +216,9 @@
 import { useScreenSize } from "@/composables/screen";
 import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
+import { formatLocalizedDate, formatLocalizedDateRange } from "@/utils";
+import { formatLocalizedDigits } from "@/utils/number";
 import { Link } from "@framework/ui";
 import { useStorage } from "@vueuse/core";
 import {
@@ -231,6 +235,12 @@ import { computed, h, onMounted, reactive, ref, watch } from "vue";
 import LucideBuilding2 from "~icons/lucide/building-2";
 import LucideUser from "~icons/lucide/user";
 const { isMobileView } = useScreenSize();
+
+function translateDefaultTeam(label: string) {
+  if (label === "Billing") return __("Billing");
+  if (label === "Product Experts") return __("Product Experts");
+  return label;
+}
 
 interface NumberCardData {
   title: string;
@@ -295,44 +305,46 @@ interface ChartEmptyState {
 // Chart key (stable, untranslated identifier from the dashboard APIs) → empty state copy.
 const emptyStateByChart: Record<string, ChartEmptyState> = {
   ticket_trend: {
-    chartTitle: "Ticket Trend",
-    title: "No ticket activity",
-    message: "Ticket trends will appear here once tickets are created.",
+    chartTitle: __("Ticket Trend"),
+    title: __("No ticket activity"),
+    message: __("Ticket trends will appear here once tickets are created."),
   },
   feedback_trend: {
-    chartTitle: "Feedback Trend",
-    title: "No feedback data",
-    message: "Feedback insights will appear once responses are collected.",
+    chartTitle: __("Feedback Trend"),
+    title: __("No feedback data"),
+    message: __("Feedback insights will appear once responses are collected."),
   },
   tickets_by_team: {
-    chartTitle: "Tickets by Team",
-    title: "No team data",
-    message: "Tickets will be grouped by team once available.",
+    chartTitle: __("Tickets by Team"),
+    title: __("No team data"),
+    message: __("Tickets will be grouped by team once available."),
   },
   tickets_by_type: {
-    chartTitle: "Tickets by Type",
-    title: "No ticket type data",
-    message: "Tickets will be categorized by type once created.",
+    chartTitle: __("Tickets by Type"),
+    title: __("No ticket type data"),
+    message: __("Tickets will be categorized by type once created."),
   },
   tickets_by_priority: {
-    chartTitle: "Tickets by Priority",
-    title: "No priority data",
-    message: "Ticket priorities will be reflected here once assigned.",
+    chartTitle: __("Tickets by Priority"),
+    title: __("No priority data"),
+    message: __("Ticket priorities will be reflected here once assigned."),
   },
   tickets_by_channel: {
-    chartTitle: "Tickets by Channel",
-    title: "No channel data",
-    message: "Tickets will be grouped by channel once received.",
+    chartTitle: __("Tickets by Channel"),
+    title: __("No channel data"),
+    message: __("Tickets will be grouped by channel once received."),
   },
   top_tags: {
-    chartTitle: "Top Tags",
-    title: "No tags used yet",
-    message: "The most used tags will be ranked here once tickets are tagged.",
+    chartTitle: __("Top Tags"),
+    title: __("No tags used yet"),
+    message: __(
+      "The most used tags will be ranked here once tickets are tagged."
+    ),
   },
   tag_trend: {
-    chartTitle: "Tag Trend",
-    title: "No tag activity",
-    message: "Daily tag volume will appear here once tickets are tagged.",
+    chartTitle: __("Tag Trend"),
+    title: __("No tag activity"),
+    message: __("Daily tag volume will appear here once tickets are tagged."),
   },
 };
 
@@ -347,10 +359,16 @@ const emptyStates = computed(() =>
 
 function chartEmptyState(chart: any) {
   const state = emptyStateByChart[chart?.key] ?? {
-    title: `No ${String(chart?.title).toLowerCase()} available`,
+    title: __("No chart data available"),
   };
   return [
-    { ...state, chartTitle: chart?.title, chartSubtitle: chart?.subtitle },
+    {
+      ...state,
+      chartTitle: chart?.title,
+      chartSubtitle: formatLocalizedDigits(
+        chart?.subtitle || state.chartSubtitle || ""
+      ),
+    },
   ];
 }
 
@@ -507,15 +525,56 @@ const loading = computed(() => {
 });
 
 function getChartType(chart: any) {
-  chart.colors = colors;
+  const data =
+    chart.key === "tickets_by_type"
+      ? chart.data.map((row: any) => ({
+          ...row,
+          [chart.categoryColumn]: displayLinkOption(
+            "HD Ticket Type",
+            row[chart.categoryColumn] || "Unspecified"
+          ),
+        }))
+      : chart.key === "tickets_by_team"
+      ? chart.data.map((row: any) => ({
+          ...row,
+          [chart.categoryColumn]: translateDefaultTeam(
+            row[chart.categoryColumn]
+          ),
+        }))
+      : chart.data;
+  const xAxis =
+    chart.xAxis?.type === "time"
+      ? {
+          ...chart.xAxis,
+          echartOptions: {
+            ...chart.xAxis.echartOptions,
+            axisLabel: {
+              ...chart.xAxis.echartOptions?.axisLabel,
+              formatter: (value: string | number) =>
+                formatLocalizedDate(
+                  value,
+                  chart.xAxis.timeGrain === "month" ? "MMM YYYY" : "MMM D"
+                ),
+            },
+          },
+        }
+      : chart.xAxis;
+  const config = {
+    ...chart,
+    subtitle: formatLocalizedDigits(chart.subtitle || ""),
+    data,
+    xAxis,
+    colors,
+    fontFamily: '"Vazirmatn", sans-serif',
+  };
   if (chart["type"] === "axis") {
     return h(AxisChart, {
-      config: chart,
+      config,
     });
   }
   if (chart["type"] === "pie") {
     return h(DonutChart, {
-      config: chart,
+      config,
     });
   }
 }
@@ -616,19 +675,10 @@ function formatter(range: string) {
     return preset.value;
   }
   let [from, to] = range.split(",");
-  return `${formatRange(from)} to ${formatRange(to)}`;
-}
-
-function formatRange(date: string) {
-  const dateObj = new Date(date);
-  return dateObj.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year:
-      dateObj.getFullYear() === new Date().getFullYear()
-        ? undefined
-        : "numeric",
-  });
+  const sameYear =
+    formatLocalizedDate(from, "YYYY") ===
+    formatLocalizedDate(new Date(), "YYYY");
+  return formatLocalizedDateRange(from, to, sameYear ? "MMM D" : "MMM D, YYYY");
 }
 
 watch(

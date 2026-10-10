@@ -43,7 +43,7 @@
           @success="
             (f: File) => $emit('update:attachments', [...attachments, f])
           "
-          @failure="() => toast.error('Error uploading file')"
+          @failure="() => toast.error(__('Error uploading file'))"
         >
           <template #default="{ openFileSelector }">
             <Button
@@ -52,7 +52,7 @@
               @click="openFileSelector()"
               size="xs"
               icon="lucide-paperclip"
-              class="mr-2"
+              class="me-2"
             />
           </template>
         </FileUploader>
@@ -84,6 +84,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { __ } from "@/translation";
 import {
   AttachmentItem,
   TextEditor as HTextEditor,

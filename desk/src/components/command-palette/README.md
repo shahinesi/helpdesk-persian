@@ -1,120 +1,76 @@
-# Command Palette (Cmd/Ctrl + K)
+# صفحه‌کلید فرمان (Cmd/Ctrl + K)
 
-Leads with the actions for whatever you're looking at — on a ticket, that
-ticket's actions behind a removable context chip; on the ticket list, that list's
-filters and views — then falls back to search, recents and navigation.
+صفحه‌کلید فرمان ابتدا کارهای مرتبط با صفحهٔ فعلی را نشان می‌دهد: در صفحهٔ تیکت، کارهای همان تیکت همراه با برچسب زمینه‌ای قابل حذف؛ در فهرست تیکت‌ها، فیلترها و نماهای همان فهرست. سپس نتایج جست‌وجو، موارد اخیر و مسیرهای پیمایش را نمایش می‌دهد.
 
-Mounted once, in `layouts/AppSidebar.vue`. Desktop agent portal only: the gate is
-`isPaletteAvailable` in `useCommandPalette.ts`, which lives with the state rather
-than the mount site because AppSidebar is shared with the customer portal.
+این پنجره فقط یک بار در `layouts/AppSidebar.vue` نصب می‌شود و فقط در درگاه کارشناسان دسکتاپ در دسترس است. شرط `isPaletteAvailable` در `useCommandPalette.ts` قرار دارد، نه در محل نصب، چون `AppSidebar` بین درگاه کارشناس و مشتری مشترک است.
 
-## The `Command` shape
+## ساختار `Command`
 
 ```ts
 interface Command {
-  id: string
-  title: string            // plain text; this is what gets scored and read out
-  group: string
-  icon?: Component
-  iconProps?: Record<string, unknown>   // props for data-driven icons
-  subtitle?: string        // muted right-aligned text
-  keywords?: string        // matched at a scoring penalty
-  hint?: string            // combo string, e.g. "Mod+."
-  weight?: number          // multiplies fuzzy score; <1 sinks a row
-  dotClass?: string        // leading colour dot (status rows)
-  rank?: number            // fixed score, bypasses the scorer
-  marked?: string          // server's <mark> highlighting; rendered as text runs
-  checked?: boolean        // trailing tick: this value is already set
-  keepOpen?: boolean       // perform, then pop back a level; optimistic tick
-  hideWhenEmpty?: boolean  // flat option rows, hidden until the user types
-  children?: () => Command[] | Promise<Command[]>   // drill-down
-  perform?: () => void
+  id: string;
+  title: string; // plain text; this is what gets scored and read out
+  group: string;
+  icon?: Component;
+  iconProps?: Record<string, unknown>; // props for data-driven icons
+  subtitle?: string; // muted right-aligned text
+  keywords?: string; // matched at a scoring penalty
+  hint?: string; // combo string, e.g. "Mod+."
+  weight?: number; // multiplies fuzzy score; <1 sinks a row
+  dotClass?: string; // leading colour dot (status rows)
+  rank?: number; // fixed score, bypasses the scorer
+  marked?: string; // server's <mark> highlighting; rendered as text runs
+  checked?: boolean; // trailing tick: this value is already set
+  keepOpen?: boolean; // perform, then pop back a level; optimistic tick
+  hideWhenEmpty?: boolean; // flat option rows, hidden until the user types
+  children?: () => Command[] | Promise<Command[]>; // drill-down
+  perform?: () => void;
 }
 ```
 
-A command either drills in (`children`) or acts (`perform`); `run()` picks based
-on which is present. `keepOpen` is the third path, for toggle rows (tags): the
-tick flips before the write returns and flips back if it throws; on success the
-palette pops back to the parent level instead of closing.
+هر فرمان یا کاربر را به فهرست فرعی می‌برد (`children`) یا کاری انجام می‌دهد (`perform`)؛ `run()` بر اساس همین دو ویژگی تصمیم می‌گیرد. حالت سوم، `keepOpen`، برای گزینه‌های تغییر وضعیت مانند برچسب‌هاست: علامت گزینه پیش از پایان درخواست تغییر می‌کند و در صورت خطا برمی‌گردد؛ پس از موفقیت، صفحه‌کلید به سطح قبل برمی‌گردد.
 
-**Only set `hint` when the key reaches the same end result as the row** — not when
-it reaches it the same way. Hinted keys are *page* shortcuts and are inert while
-the palette is open, which is what stops `s`/`p`/`a` firing as you type. The chip
-teaches the key for next time; it is not an accelerator for this dialog.
+`hint` را فقط وقتی تعیین کنید که فشردن آن کلید همان نتیجهٔ فرمان را ایجاد کند؛ لازم نیست مسیر رسیدن به نتیجه یکی باشد. کلیدهای راهنما میان‌برهای صفحه هستند و هنگام بازبودن صفحه‌کلید فرمان غیرفعال‌اند تا مثلاً تایپ `s` یا `p` باعث اجرای ناخواستهٔ میان‌بر نشود. نشان کنار فرمان فقط کلید میان‌بر را برای استفادهٔ بعدی یادآوری می‌کند.
 
-## Ranking
+## رتبه‌بندی
 
-`fuzzyScore(text, term)` — prefix (1000) beats word-boundary substring beats
-mid-word substring beats scattered subsequence; `-1` means no match.
+`fuzzyScore(text, term)` تطبیق ابتدای واژه را بالاتر از تطبیق در مرز واژه، تطبیق میانی و تطبیق حروف پراکنده قرار می‌دهد؛ مقدار `-1` یعنی هیچ تطبیقی پیدا نشده است.
 
-- **`rank`** wins outright: server hits arrive relevance-ordered from SQLite BM25
-  and are not re-scored locally.
-- **`weight`** multiplies. `CONTEXT_WEIGHT = 1.2` puts ticket rows above search
-  hits deliberately rather than by luck; `FLAT_OPTION_WEIGHT = 1.15` keeps
-  "Set priority: Urgent" under the "Change priority" parent; nav links use `0.7`
-  so they sink once you have typed something real.
-- Scope **ranks, it never gates**: scoped rows are appended above the global list,
-  not returned instead of it. Returning early made a ticket whose subject
-  contains "open" unreachable, because `Set status: Open` matched.
-- On an empty query every score is 0, which is why `hideWhenEmpty` exists — a low
-  weight cannot separate rows that all tie.
+- `rank` امتیاز نهایی را تعیین می‌کند. نتایج جست‌وجوی سرور بر پایهٔ رتبه‌بندی SQLite BM25 می‌رسند و دوباره رتبه‌بندی نمی‌شوند.
+- `weight` امتیاز را ضریب می‌دهد. `CONTEXT_WEIGHT = 1.2` باعث می‌شود فرمان‌های تیکت بالاتر از نتایج جست‌وجو قرار گیرند؛ `FLAT_OPTION_WEIGHT = 1.15` گزینه‌هایی مثل «تغییر اولویت: فوری» را زیر فرمان «تغییر اولویت» نگه می‌دارد؛ وزن `0.7` مسیرهای پیمایش را پس از شروع جست‌وجوی واقعی پایین‌تر می‌برد.
+- زمینه فقط رتبه را تغییر می‌دهد، نه دسترسی را. فرمان‌های صفحهٔ فعلی بالاتر از فهرست عمومی قرار می‌گیرند، اما جای آن را نمی‌گیرند. اگر جست‌وجوی عمومی حذف شود، مثلاً تیکتی که عنوانش `open` است زیر فرمان «وضعیت را باز کنید» پیدا نخواهد شد.
+- در جست‌وجوی خالی، امتیاز همهٔ فرمان‌ها صفر است؛ `hideWhenEmpty` گزینه‌های تخت را تا زمان شروع تایپ پنهان می‌کند.
 
-## Three decisions worth knowing
+## سه تصمیم معماری
 
-**State is module-scope**, in `useCommandPalette.ts`, not in the component. That
-is what lets the sidebar button, `Cmd+K` and the dialog drive one instance.
-`paletteTypes.ts` exists only to break the cycle between the engine and the
-command modules.
+**وضعیت در سطح ماژول نگهداری می‌شود.** به همین دلیل دکمهٔ نوار کناری، `Cmd+K` و پنجره همگی یک نمونه را کنترل می‌کنند. `paletteTypes.ts` فقط برای شکستن چرخهٔ import میان موتور و ماژول‌های فرمان وجود دارد.
 
-**The shortcut uses `useShortcut` from `frappe-ui`, not `@/composables/shortcuts`.**
-The local one bails whenever focus is in an input or inside `[role="dialog"]`, so
-`Cmd+K` could neither open from a filter box nor close the palette once open. A
-`condition` bows out inside `.ProseMirror`, which binds `Mod-k` for insert-link.
+**میان‌بر از `useShortcut` در `frappe-ui` استفاده می‌کند.** میان‌بر محلی هنگام تمرکز روی ورودی یا داخل `[role="dialog"]` غیرفعال می‌شود؛ در نتیجه نمی‌توانست از داخل فیلتر باز شود یا پنجره را ببندد. شرط میان‌بر داخل `.ProseMirror` نیز از تداخل با `Mod-k` برای افزودن پیوند جلوگیری می‌کند.
 
-**List and composer state is published module-scope, not routed through the URL.**
-The palette sits outside `ListViewBuilder`'s and `EmailEditor`'s provide chains,
-so it cannot inject. `listViewFilters.ts` and `modalStates.ts` each hold a
-`shallowRef` the mounted component fills in and clears on unmount, and the
-palette handles their absence. Filters merge through the list's own
-`applyFilters`, which preserves sort, columns and the active view — an earlier
-URL-write approach reset the user's sort on every filter.
+**وضعیت فهرست و ویرایشگر در سطح ماژول منتشر می‌شود، نه در URL.** صفحه‌کلید فرمان بیرون از زنجیرهٔ `provide` در `ListViewBuilder` و `EmailEditor` قرار دارد. فایل‌های `listViewFilters.ts` و `modalStates.ts` یک `shallowRef` دارند که component هنگام mount پر و هنگام unmount خالی می‌کند. فیلترها از `applyFilters` خود فهرست عبور می‌کنند تا مرتب‌سازی، ستون‌ها و نمای فعال حفظ شوند.
 
-## Search
+## جست‌وجو
 
-The existing SQLite FTS5 index, via `helpdesk.api.search.search`. 200 ms
-debounce, minimum 2 characters, stale responses dropped by an incrementing token,
-results sliced to 6 client-side.
+جست‌وجو از نمایهٔ SQLite FTS5 موجود و از مسیر `helpdesk.api.search.search` استفاده می‌کند. تأخیر ورودی ۲۰۰ میلی‌ثانیه است، حداقل دو نویسه لازم دارد، پاسخ‌های کهنه با شمارندهٔ افزایشی کنار گذاشته می‌شوند و حداکثر شش نتیجه در سمت کاربر نمایش داده می‌شود.
 
-`title_only: true` narrows the **SELECT clause**, not the MATCH — so it returns
-subjects rather than restricting where the term is looked for. A body phrase can
-still produce `No results` in the palette, which is why the `Search for "…"`
-fallback is pinned below the results whenever the query is long enough
-to search, instead of appearing only when nothing matched. Subsequence matching
-means something almost always matched, so the escape hatch used to stay hidden
-exactly when it was needed.
+گزینهٔ `title_only: true` فقط ستون‌های `SELECT` را محدود می‌کند و شرط `MATCH` را تغییر نمی‌دهد؛ بنابراین ممکن است عبارت موجود در متن پیام جست‌وجو شود اما موضوعی برای نمایش در پنجره پیدا نشود. به همین دلیل «جست‌وجوی …» پس از رسیدن عبارت به حداقل طول جست‌وجو همیشه زیر نتیجه‌ها قرار می‌گیرد، نه فقط وقتی نتیجه‌ای وجود ندارد.
 
-Next to it sits `Create ticket "…"`, which lands on the new-ticket page with the
-subject pre-filled from the query — suppressed for `#`-prefixed queries, since
-`#123` is someone reaching for a ticket, not naming one.
+کنار آن، فرمان «ایجاد تیکت …» صفحهٔ تیکت جدید را با موضوعی از عبارت جست‌وجو باز می‌کند. این فرمان برای عبارت‌هایی که با `#` شروع می‌شوند پنهان است؛ چون `#123` معمولاً شمارهٔ تیکت است، نه موضوع تازه.
 
-## Telemetry
+## رویدادهای ثبت‌شده
 
-| Event | Payload | When |
-|---|---|---|
-| `command_palette_opened` | `context`: current route name | Every open — all paths route through `openPalette()`, so the count is honest |
-| `command_palette_command_run` | `command_id`, `query_length`, `depth` | A leaf command executes, tag toggles included; drilling into a sub-list is not captured |
-| `ticket_assigned` | `doctype`, `source: "command_palette"` | Assigning an agent via the Assign-to drill-down |
-| `saved_reply_applied` | `source: "command_palette"` or `"composer"` | Applying a saved reply; each surface tags its own source so the funnels are separable |
+| رویداد                        | داده                                        | زمان ثبت                                                    |
+| ----------------------------- | ------------------------------------------- | ----------------------------------------------------------- |
+| `command_palette_opened`      | `context`: نام مسیر فعلی                    | هر بار بازشدن؛ همهٔ مسیرها از `openPalette()` عبور می‌کنند. |
+| `command_palette_command_run` | `command_id`, `query_length`, `depth`       | هنگام اجرای فرمان نهایی؛ بازکردن فهرست فرعی ثبت نمی‌شود.    |
+| `ticket_assigned`             | `doctype`, `source: "command_palette"`      | هنگام واگذاری تیکت از فهرست انتخاب کارشناس.                 |
+| `saved_reply_applied`         | `source: "command_palette"` یا `"composer"` | هنگام اعمال پاسخ آماده؛ هر محل منبع خودش را ثبت می‌کند.     |
 
-`context` says *where* people reach for the palette, `query_length` separates
-browsed-to from searched-for, `depth` says whether drill-downs get used, and
-`source` compares the palette against the pre-existing UI for the same action.
-Closes, chip dismissals and abandoned opens are not captured — "opened but ran
-nothing" is only inferable by differencing the first two counts.
+`context` نشان می‌دهد کاربر در کدام صفحه سراغ فرمان‌ها می‌رود؛ `query_length` تفاوت مرور فهرست و جست‌وجو را مشخص می‌کند؛ `depth` میزان استفاده از فهرست‌های فرعی و `source` محل اعمال پاسخ آماده را نشان می‌دهد. بستن پنجره، حذف برچسب زمینه و بازکردن بدون اجرای فرمان ثبت نمی‌شوند؛ تعداد این موارد را فقط می‌توان با مقایسهٔ دو شمارندهٔ اول برآورد کرد.
 
-## Checks
+## بررسی‌ها
 
-No test runner in `desk/`; each pure module leaves a runnable assertion file.
+در `desk/` اجراکنندهٔ تستی وجود ندارد؛ هر ماژول خالص فایل بررسی assertionمحور خودش را دارد.
 
 ```bash
 cd desk && ../node_modules/.bin/tsx src/components/command-palette/fuzzyScore.check.ts

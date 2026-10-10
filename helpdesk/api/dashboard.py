@@ -189,7 +189,7 @@ class HelpdeskDashboard:
             "suffix": "%",
             "delta": current_pct - prev_pct,
             "deltaSuffix": "%",
-            "tooltip": _("% of tickets created that were resolved within SLA"),
+            "tooltip": _("Percentage of tickets created that were resolved within SLA"),
         }
 
     def get_avg_first_response_time(self):
@@ -307,6 +307,13 @@ class HelpdeskDashboard:
         )
 
         result = query.run(as_dict=True)
+        closed_label = _(closed_status)
+        open_label = _(open_status)
+        sla_fulfilled_label = _(sla_fulfilled_status)
+        for row in result:
+            row[closed_label] = row.pop(closed_status)
+            row[open_label] = row.pop(open_status)
+            row[sla_fulfilled_label] = row.pop(sla_fulfilled_status)
         avg_tickets = self.get_avg_tickets_per_day()
         subtitle = _("Average tickets per day is around {0}").format(
             "{:.0f}".format(avg_tickets)
@@ -320,10 +327,10 @@ class HelpdeskDashboard:
             {"key": "date", "type": "time", "title": "Date", "timeGrain": "day"},
             _("Tickets"),
             [
-                {"name": closed_status, "type": "bar"},
-                {"name": open_status, "type": "bar"},
+                {"name": closed_label, "type": "bar"},
+                {"name": open_label, "type": "bar"},
                 {
-                    "name": sla_fulfilled_status,
+                    "name": sla_fulfilled_label,
                     "type": "line",
                     "showDataPoints": True,
                     "axis": "y2",
@@ -540,6 +547,10 @@ def get_ticket_priority_chart_data(
         group_by="priority",
         order_by=COUNT_DESC,
     )
+    for row in result:
+        # Priority names are canonical records; translate only known system labels.
+        if row.priority in {"Low", "Medium", "High", "Urgent"}:
+            row.priority = _(row.priority)
     # based on length show different chart, if len greater than 5 then show pie chart else bar chart
     if len(result) < 7:
         return get_pie_chart_config(
@@ -582,7 +593,7 @@ def get_ticket_channel_chart_data(
     )
 
     for row in result:
-        row.channel = "Portal" if row.channel == 1 else "Email"
+        row.channel = _("Portal") if row.channel == 1 else _("Email")
 
     return get_pie_chart_config(
         result,

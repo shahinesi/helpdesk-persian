@@ -19,7 +19,12 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
-import { buildPercentageChange } from "@/utils";
+import {
+  buildPercentageChange,
+  formatLocalizedDate,
+  formatLocalizedDateRange,
+  formatLocalizedNumber,
+} from "@/utils";
 import { EChartsOption } from "echarts";
 import { createResource } from "frappe-ui";
 import { computed, onMounted, ref, type PropType } from "vue";
@@ -29,7 +34,10 @@ interface BarChartData {
   percentage_change?: number;
   total?: number;
   average?: number;
-  data: { date: string; count: number }[] | Record<number, number>;
+  bucket?: "daily" | "weekly" | "monthly";
+  data:
+    | { date: string; end_date?: string; count: number }[]
+    | Record<number, number>;
   total_reviews?: number;
 }
 
@@ -88,7 +96,7 @@ const chartData = computed(() => {
     const distribution = _data.data as Record<number, number>;
     const values = [1, 2, 3, 4, 5].map((s) => distribution[s] ?? 0);
     return {
-      labels: ["1", "2", "3", "4", "5"],
+      labels: [1, 2, 3, 4, 5].map(formatLocalizedNumber),
       counts: values,
       percentageChange: buildPercentageChange(0, props.negativeIsBetter),
       text: _data?.average ?? 0,
@@ -98,11 +106,21 @@ const chartData = computed(() => {
 
   // Time-series shape: data is [{ date, count }, ...]
   const timeData = Array.isArray(_data?.data)
-    ? (_data.data as { date: string; count: number }[])
+    ? (_data.data as { date: string; end_date?: string; count: number }[])
     : [];
-  const labels = timeData.map((item) => item.date);
+  const labels = timeData.map((item) => {
+    if (item.end_date && _data?.bucket === "weekly") {
+      return formatLocalizedDateRange(item.date, item.end_date, "MMM D");
+    }
+    if (_data?.bucket === "monthly") {
+      return formatLocalizedDate(item.date, "MMM YYYY");
+    }
+    return _data?.bucket === "daily"
+      ? formatLocalizedDate(item.date, "MMM D")
+      : item.date;
+  });
   const counts = timeData.map((item) => item.count);
-  const _percentageChange = _data?.percentage_change || 0;
+  const _percentageChange = _data?.percentage_change ?? null;
   const percentageChange = buildPercentageChange(
     _percentageChange,
     props.negativeIsBetter
@@ -169,7 +187,7 @@ const chartConfig = computed<EChartsOption>(() => {
             label: {
               show: true,
               position: "top" as const,
-              formatter: value > 0 ? String(value) : "",
+              formatter: value > 0 ? formatLocalizedNumber(value) : "",
               color: "#6b7280",
               fontSize: 11,
             },
@@ -224,7 +242,11 @@ const chartConfig = computed<EChartsOption>(() => {
       formatter: (params: any) => {
         const p = Array.isArray(params) ? params[0] : params;
         if (!p.value) return "";
-        return `<span style="font-size:12px;color:#6b7280">${p.name}: <b style="color:#374151">${p.value}</b></span>`;
+        return `<span style="font-size:12px;color:#6b7280">${
+          p.name
+        }: <b style="color:#374151">${formatLocalizedNumber(
+          Number(p.value)
+        )}</b></span>`;
       },
     },
   };

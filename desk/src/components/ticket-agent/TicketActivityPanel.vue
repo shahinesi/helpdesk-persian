@@ -48,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import CommunicationArea from "@/components/CommunicationArea.vue";
 import {
   ActivityIcon,
@@ -79,17 +80,17 @@ const tabs: ComputedRef<TabObject[]> = computed(() => {
   const _tabs: TabObject[] = [
     {
       value: "activity",
-      label: "Activity",
+      label: __("Activity"),
       iconLeft: ActivityIcon,
     },
     {
       value: "email",
-      label: "Emails",
+      label: __("Emails"),
       iconLeft: EmailIcon,
     },
     {
       value: "comment",
-      label: "Comments",
+      label: __("Comments"),
       iconLeft: CommentIcon,
     },
   ];
@@ -97,13 +98,13 @@ const tabs: ComputedRef<TabObject[]> = computed(() => {
   if (isCallingEnabled.value) {
     _tabs.push({
       value: "call",
-      label: "Calls",
+      label: __("Calls"),
       iconLeft: PhoneIcon,
     });
   }
   _tabs.push({
     value: "analytics",
-    label: "Analytics",
+    label: __("Analytics"),
     iconLeft: LucideChartNoAxesColumn,
   });
   return _tabs;

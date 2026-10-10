@@ -23,7 +23,7 @@ test("first response counts down, then reads Fulfilled after the agent replies",
   await page.goto(`/helpdesk/tickets/${ticket.name}`);
   await expect(sidebarValue(page, "First Response")).toHaveText(/^Due in /);
   const row = await listRow(api, pageAs, ticket.name);
-  await expect(row).toContainText(/\d+h \d+m|\d+ days?/);
+  await expect(row).toContainText(/\d+d(?: \d+h)?|\d+h \d+m|\d+ days?/);
   await expect(row).not.toContainText("Fulfilled");
 
   await replyAsAgent(await apiAs("agent"), ticket.name);

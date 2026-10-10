@@ -2,7 +2,39 @@
 # License: GNU General Public License v3. See license.txt
 import frappe
 
-# from frappe import _
+
+def set_fresh_setup_language():
+    """Default first-time setup and guest login to Persian without saving it."""
+    request = getattr(frappe.local, "request", None)
+    if (
+        request
+        and request.path.rstrip("/") == "/login"
+        and not frappe.form_dict.get("_lang")
+        and not request.cookies.get("preferred_language")
+    ):
+        frappe.local.lang = "fa"
+        return
+
+    if (
+        not request
+        or not request.path.startswith("/desk/")
+        or "setup-wizard" not in request.path
+        or frappe.is_setup_complete()
+    ):
+        return
+
+    settings = frappe.get_cached_doc("System Settings")
+    if (
+        settings
+        and settings.get("language")
+        and (
+            settings.get("language") != "English"
+            or any(settings.get(key) for key in ("country", "time_zone", "currency"))
+        )
+    ):
+        return
+
+    frappe.local.lang = "fa"
 
 
 # nosemgrep

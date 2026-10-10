@@ -212,6 +212,7 @@ import { LayoutHeader } from "@/components";
 import SearchMultiSelect from "@/components/SearchMultiSelect.vue";
 import { useShortcut } from "@/composables/shortcuts";
 import { __ } from "@/translation";
+import { formatLocalizedDate } from "@/utils";
 import {
   Breadcrumbs,
   createResource,
@@ -332,7 +333,7 @@ const statusFilterOptions = computed(() => {
   const options = filterOptions.data?.statuses || {};
   return Object.entries(options).map(([value]) => ({
     value,
-    label: `${value}`,
+    label: __(value),
     // count,
   }));
 });
@@ -341,7 +342,7 @@ const priorityFilterOptions = computed(() => {
   const options = filterOptions.data?.priorities || {};
   return Object.entries(options).map(([value]) => ({
     value,
-    label: `${value}`,
+    label: __(value),
     // count,
   }));
 });
@@ -456,12 +457,10 @@ function formatDate(date: number | string) {
   if (!date) return "";
   let FORMAT = "MMM D, YYYY hh:mm A";
   try {
-    // Handle Unix timestamp (seconds) - use dayjs.unix()
-    if (typeof date === "number") {
-      return dayjs.unix(date).format(FORMAT);
-    }
-    // Handle string dates
-    return dayjs(date).format(FORMAT);
+    return formatLocalizedDate(
+      typeof date === "number" ? dayjs.unix(date) : dayjs(date),
+      FORMAT
+    );
   } catch (error) {
     return "";
   }

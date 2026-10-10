@@ -46,10 +46,15 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { ref } from "vue";
 import { Button, Dropdown } from "frappe-ui";
 import WorkDayModal from "./Modals/WorkDayModal.vue";
-import { ConfirmDelete, getGridTemplateColumnsForTable } from "@/utils";
+import {
+  ConfirmDelete,
+  formatLocalizedDate,
+  getGridTemplateColumnsForTable,
+} from "@/utils";
 import { slaData } from "@/stores/sla";
 
 interface Column {
@@ -72,13 +77,13 @@ const props = defineProps<{
 }>();
 
 const workDayOptions = [
-  { label: "Monday", value: "Monday" },
-  { label: "Tuesday", value: "Tuesday" },
-  { label: "Wednesday", value: "Wednesday" },
-  { label: "Thursday", value: "Thursday" },
-  { label: "Friday", value: "Friday" },
-  { label: "Saturday", value: "Saturday" },
-  { label: "Sunday", value: "Sunday" },
+  { label: __("Monday"), value: "Monday" },
+  { label: __("Tuesday"), value: "Tuesday" },
+  { label: __("Wednesday"), value: "Wednesday" },
+  { label: __("Thursday"), value: "Thursday" },
+  { label: __("Friday"), value: "Friday" },
+  { label: __("Saturday"), value: "Saturday" },
+  { label: __("Sunday"), value: "Sunday" },
 ];
 
 const dialog = ref({
@@ -91,7 +96,7 @@ const isConfirmingDelete = ref(false);
 
 const dropdownOptions = [
   {
-    label: "Edit",
+    label: __("Edit"),
     onClick: () => editWorkDay(),
     icon: "lucide-edit",
   },
@@ -124,15 +129,9 @@ const editWorkDay = () => {
 };
 
 const formatTime = (time) => {
-  if (!time) return "00:00";
-  const [hours, minutes] = time.split(":");
+  const [hours = "0", minutes = "0"] = (time || "00:00").split(":");
   const date = new Date();
   date.setHours(parseInt(hours) || 0, parseInt(minutes) || 0, 0);
-
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  return formatLocalizedDate(date, "hh:mm A");
 };
 </script>

@@ -25,7 +25,11 @@
         <!-- Scroll here so selected nodes aren't clipped. -->
         <div class="-mx-3 px-3 max-h-64 overflow-auto my-4">
           <EditorContent
-            :class="['prose-f max-w-none min-h-[5rem]', getFontFamily(content)]"
+            dir="auto"
+            :class="[
+              'helpdesk-richtext prose-f max-w-none min-h-[5rem]',
+              getFontFamily(content),
+            ]"
           />
         </div>
 
@@ -34,7 +38,7 @@
           <div
             class="flex flex-col space-y-1.5 overflow-auto sm:flex-row sm:justify-between"
           >
-            <div class="flex items-center">
+            <div class="helpdesk-editor-toolbar flex items-center">
               <slot name="bottom-left" />
               <EditorFixedMenu :items="ticketToolbar" />
             </div>

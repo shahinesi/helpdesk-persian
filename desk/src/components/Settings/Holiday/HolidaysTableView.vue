@@ -28,12 +28,12 @@
           <input
             v-if="column.key === 'description'"
             :type="'text'"
-            placeholder="Description"
+            :placeholder="__(`Description`)"
             v-model="holiday[column.key]"
             class="!bg-surface-base w-full text-base px-0 focus:!ring-0 border-none hover:bg-surface-base outline-none no-underline focus:!outline-none"
           />
           <div v-else>
-            {{ dayjs(holiday[column.key]).format("DD MMM YYYY") }}
+            {{ getFormattedDate(holiday[column.key]) }}
           </div>
         </div>
         <div class="flex justify-end">
@@ -49,15 +49,16 @@
       <hr v-if="index !== holidays.length - 1" />
     </div>
     <div v-if="holidays?.length === 0" class="text-center p-4 text-ink-gray-5">
-      No items in the list
+      {{ __("No items in the list") }}
     </div>
   </div>
   <AddHolidayModal v-model="dialog" />
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { computed, ref } from "vue";
-import { ConfirmDelete, getFormattedDate } from "@/utils";
+import { ConfirmDelete, getDateKey, getFormattedDate } from "@/utils";
 import { holidayData } from "@/stores/holidayList";
 import AddHolidayModal from "./Modals/AddHolidayModal.vue";
 import { dayjs, Dropdown } from "frappe-ui";
@@ -72,7 +73,7 @@ interface Holiday {
 
 const dropdownOptions = (holiday: Holiday) => [
   {
-    label: "Edit",
+    label: __("Edit"),
     onClick: () => editHoliday(holiday),
     icon: "lucide-edit",
   },
@@ -97,11 +98,11 @@ const holidays = computed(() => {
 
 const columns = [
   {
-    label: "Date",
+    label: __("Date"),
     key: "holiday_date",
   },
   {
-    label: "Description",
+    label: __("Description"),
     key: "description",
   },
 ];
@@ -121,8 +122,8 @@ const deleteHoliday = (holidayToDelete?: Holiday) => {
     return;
   }
   const index = holidayData.value.holidays.findIndex((h: Holiday) => {
-    const holidayDate = getFormattedDate(h.holiday_date);
-    const editDate = getFormattedDate(holidayToDelete?.holiday_date);
+    const holidayDate = getDateKey(h.holiday_date);
+    const editDate = getDateKey(holidayToDelete?.holiday_date);
     return holidayDate === editDate;
   });
 

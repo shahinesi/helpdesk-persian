@@ -36,14 +36,19 @@
               <div class="flex items-center gap-1">
                 <LucideStar class="size-4 fill-[#de9735] text-[#de9735]" />
                 <div class="text-2xl-medium text-ink-gray-8">
-                  {{ chartConfig.averageRating }}
+                  {{ formatLocalizedNumber(chartConfig.averageRating) }}
                 </div>
               </div>
               <div
                 class="flex items-center text-ink-gray-5 text-sm cursor-pointer hover:text-ink-gray-7"
                 @click="redirectToSeeAllReviews"
               >
-                {{ __("{0} reviews", chartConfig.totalFeedbacks) }}
+                {{
+                  __(
+                    "{0} reviews",
+                    formatLocalizedNumber(chartConfig.totalFeedbacks)
+                  )
+                }}
                 <LucideArrowUpRight class="size-3.5 ms-0.5" />
               </div>
             </div>
@@ -143,6 +148,7 @@
                 </template>
               </Dropdown>
               <DateRangePicker
+                :today-label="__('Today')"
                 v-if="showDatePicker || currentPeriod === 'custom_range'"
                 ref="datePickerRef"
                 :model-value="customDateRange ? customDateRange.split(',') : []"
@@ -190,7 +196,9 @@
                   <span
                     class="text-base-medium text-ink-gray-7"
                     :class="getRatingColor(currentFeedback.star_rating).text"
-                    >{{ currentFeedback.star_rating }}</span
+                    >{{
+                      formatLocalizedNumber(currentFeedback.star_rating)
+                    }}</span
                   >
                 </div>
                 <span class="text-base-medium text-ink-gray-7">{{
@@ -302,6 +310,7 @@ import LucideStar from "~icons/lucide/star";
 import { useRouter } from "vue-router";
 import { dayjsLocal } from "frappe-ui";
 import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import { timeAgo } from "@/utils";
 import type { EChartsOption } from "echarts";
 import { useView } from "@/composables/useView";
@@ -513,7 +522,7 @@ const barChartOptions = computed<EChartsOption>(() => {
       label: {
         show: isMax,
         position: "top" as const,
-        formatter: value > 0 ? String(value) : "",
+        formatter: value > 0 ? formatLocalizedNumber(value) : "",
         color: axisLabelColor,
         fontSize: 12,
       },
@@ -535,7 +544,7 @@ const barChartOptions = computed<EChartsOption>(() => {
     },
     xAxis: {
       type: "category",
-      data: ["1", "2", "3", "4", "5"],
+      data: [1, 2, 3, 4, 5].map(formatLocalizedNumber),
       axisLine: { show: true, lineStyle: { color: axisLineColor } },
       axisTick: { show: false },
       axisLabel: {
@@ -556,7 +565,8 @@ const barChartOptions = computed<EChartsOption>(() => {
           position: "top",
           color: axisLabelColor,
           fontSize: 12,
-          formatter: (params: any) => (params.value > 0 ? params.value : ""),
+          formatter: (params: any) =>
+            params.value > 0 ? formatLocalizedNumber(params.value) : "",
         },
         emphasis: {
           focus: "none",

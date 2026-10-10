@@ -114,6 +114,7 @@
         <Rating v-model="ratingStars" size="md" />
       </div>
       <DateRangePicker
+        :today-label="__('Today')"
         v-else-if="isDate && operator === 'between'"
         :model-value="dateRangeValue"
         icon-left=""
@@ -122,6 +123,7 @@
       <component
         v-else-if="isDate"
         :is="field.fieldtype === 'Date' ? DatePicker : DateTimePicker"
+        :today-label="__('Today')"
         :model-value="value"
         icon-left=""
         @change="(date) => commitAndClose(date)"
@@ -143,6 +145,7 @@
 import BackButton from "@/components/BackButton.vue";
 import { useDevice } from "@/composables";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { useDebounceFn, useEventListener } from "@vueuse/core";
 import {
   Checkbox,
@@ -259,14 +262,20 @@ const options = computed<Array<{ label: string; value: string }>>(() => {
   }
   if (isDate.value)
     return timespanOptions.filter((option) => matches(option.label));
-  if (isLink.value) return withSelectedOptions(linkSearch.results.data || []);
+  if (isLink.value) {
+    const doctype = linkDoctype(props.field);
+    return withSelectedOptions(linkSearch.results.data || []).map((option) => ({
+      ...option,
+      label: displayLinkOption(doctype, option.value),
+    }));
+  }
   const values =
     props.field.fieldtype === "Check"
       ? ["Yes", "No"]
       : getSelectOptions(props.field.options);
   return values
-    .filter(matches)
-    .map((option) => ({ label: option, value: option }));
+    .map((value) => ({ label: __(value), value }))
+    .filter((option) => matches(option.label));
 });
 
 // Selected values outside the search results (pasted, or past the first page)

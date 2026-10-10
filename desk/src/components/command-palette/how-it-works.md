@@ -1,80 +1,57 @@
-# How the Command Palette Works
+# سازوکار صفحه‌کلید فرمان
 
-One sentence: **the palette is a single module-scope state machine
-(`useCommandPalette.ts`) that turns `query` + `stack` + `context` into a ranked
-list of `Command` objects, and `run()` decides what Enter does — perform,
-drill in, or toggle.**
+در یک جمله: صفحه‌کلید فرمان یک ماشین حالت در سطح ماژول (`useCommandPalette.ts`) است که از `query`، `stack` و `context` فهرستی رتبه‌بندی‌شده از فرمان‌های `Command` می‌سازد. تابع `run()` تعیین می‌کند کلید Enter کاری را اجرا کند، وارد فهرست فرعی شود یا گزینه‌ای را تغییر دهد.
 
-All paths are under `desk/src/components/command-palette/`.
+تمام فایل‌های این قابلیت در `desk/src/components/command-palette/` هستند.
 
-## The cast
+## اجزای اصلی
 
-| File | Job |
-|---|---|
-| `useCommandPalette.ts` | The engine. All state, ranking, `run()`, server search. |
-| `CommandPalette.vue` | The dialog. Renders `groups`, owns keyboard/mouse, calls `run()`. |
-| `CommandPaletteRow.vue` | One row: icon, title, tick, hint. |
-| `paletteTypes.ts` | The `Command` interface + shared constants. Exists to break import cycles. |
-| `commands.ts` | Global root commands (nav, create, account, recents, `#123` jump). |
-| `ticketCommands.ts` | Commands scoped to the open ticket (status, priority, assign…). |
-| `tagCommands.ts` | The tag toggle list (the `keepOpen` case). |
-| `searchCommands.ts` | Turns server FTS hits into `Command` rows. |
-| `fuzzyScore.ts` | The local scorer. |
+| فایل                    | مسئولیت                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| `useCommandPalette.ts`  | موتور، وضعیت، رتبه‌بندی، `run()` و جست‌وجوی سرور                                      |
+| `CommandPalette.vue`    | پنجره؛ نمایش `groups`، دریافت ورودی صفحه‌کلید و ماوس و فراخوانی `run()`               |
+| `CommandPaletteRow.vue` | نمایش یک ردیف شامل آیکون، عنوان، علامت انتخاب و میان‌بر                               |
+| `paletteTypes.ts`       | interface مربوط به `Command` و ثابت‌های مشترک؛ برای شکستن چرخهٔ import                |
+| `commands.ts`           | فرمان‌های عمومی ریشه: پیمایش، ایجاد، حساب کاربری، موارد اخیر و رفتن به تیکت با `#123` |
+| `ticketCommands.ts`     | فرمان‌های مرتبط با تیکت باز، مانند وضعیت، اولویت و واگذاری                            |
+| `tagCommands.ts`        | فهرست تغییر برچسب‌ها با حالت `keepOpen`                                               |
+| `searchCommands.ts`     | تبدیل نتیجه‌های FTS سرور به ردیف فرمان                                                |
+| `fuzzyScore.ts`         | محاسبهٔ امتیاز تطبیق در سمت کاربر                                                     |
 
-## State (module scope, not component scope)
+## وضعیت در سطح ماژول
 
-`useCommandPalette.ts:20-39` — everything lives at module level so the sidebar
-button, `Cmd+K`, and the dialog all drive **one** instance:
+در `useCommandPalette.ts:20-39` وضعیت در سطح ماژول نگهداری می‌شود تا دکمهٔ نوار کناری، `Cmd+K` و پنجره یک نمونه را کنترل کنند:
 
 ```ts
 export const isOpen = ref(false);
 export const query = ref("");
-const stack = shallowRef<Level[]>([]);   // drill-down levels, empty = root
+const stack = shallowRef<Level[]>([]); // drill-down levels, empty = root
 ```
 
-Three values decide what you see:
+سه مقدار آنچه را روی صفحه می‌بینید تعیین می‌کنند:
 
-- **`query`** — what you typed.
-- **`stack`** — a stack of `Level`s. Empty stack = root list. "Change status" →
-  pushes a level whose commands are the status options. Backspace pops it
-  (`back()`, `useCommandPalette.ts:98`).
-- **`context`** (`useCommandPalette.ts:59`) — the ticket you have open, derived
-  from the route (never stored, so it can't go stale). Non-null means the chip
-  is up and ticket commands are prepended.
+- `query`: متنی که تایپ کرده‌اید.
+- `stack`: پشته‌ای از سطح‌های `Level`؛ پشتهٔ خالی یعنی فهرست ریشه. انتخاب «تغییر وضعیت» یک سطح با گزینه‌های وضعیت اضافه می‌کند و Backspace با `back()` به سطح قبل برمی‌گردد.
+- `context` در `useCommandPalette.ts:59`: تیکت فعلی را از مسیر می‌خواند و ذخیره نمی‌کند؛ بنابراین زمینه کهنه نمی‌شود. اگر مقدار آن خالی نباشد، برچسب تیکت نمایش داده می‌شود و فرمان‌های همان تیکت بالاتر می‌آیند.
 
-## The list: `groups` (useCommandPalette.ts:173)
+## ساخت فهرست `groups`
 
-A single computed produces everything on screen. In order:
+یک مقدار محاسبه‌شده همهٔ فرمان‌های قابل نمایش را می‌سازد (`useCommandPalette.ts:173`):
 
-1. **Inside a level?** Just score and group that level's commands. Done.
-2. **At root with a chip?** Build `ticketCommands(context.id)` as untitled
-   scoped groups.
-3. **Empty query + chip** → scoped rows, then recents.
-   **Empty query, no chip** → the global root (`buildRootCommands` + search).
-4. **Typed query** → `[...scoped, ...global, ...fallback]`. Scope **ranks but
-   never gates**: scoped rows win via `CONTEXT_WEIGHT = 1.2`
-   (`paletteTypes.ts:92`), but global search stays reachable underneath.
-5. **Fallback** (`useCommandPalette.ts:212`) — `Search for "…"` and
-   `Create ticket "…"` are *pinned* under any query ≥ 2 chars, not shown only
-   when nothing matched (subsequence matching means something almost always
-   matches, so a last-resort fallback would never appear).
+1. اگر داخل یک سطح فرعی هستید، فقط فرمان‌های همان سطح رتبه‌بندی می‌شوند.
+2. در ریشه، اگر زمینهٔ تیکت وجود داشته باشد، فرمان‌های `ticketCommands(context.id)` افزوده می‌شوند.
+3. اگر عبارت جست‌وجو خالی و زمینه موجود باشد، فرمان‌های تیکت و سپس موارد اخیر نمایش داده می‌شوند. بدون زمینه، فرمان‌های عمومی ریشه و جست‌وجو نمایش داده می‌شوند.
+4. با شروع تایپ، ترتیب `[...scoped, ...global, ...fallback]` است. زمینه فرمان‌های تیکت را بالاتر می‌آورد اما جست‌وجوی عمومی را حذف نمی‌کند.
+5. فرمان‌های جایگزین در `useCommandPalette.ts:212`، مثل «جست‌وجوی …» و «ایجاد تیکت …»، پس از دو نویسه زیر نتیجه‌ها ثابت می‌مانند. چون تطبیق حروف پراکنده معمولاً نتیجه‌ای پیدا می‌کند، نمایش جایگزین فقط هنگام خالی‌بودن نتایج قابل اتکا نیست.
 
-Ranking inside `groupCommands` (`useCommandPalette.ts:226`): each command gets
-`scoreCommand(command, term)` — prefix beats word-boundary beats mid-word beats
-scattered subsequence (`fuzzyScore.ts`), `keywords` match at a penalty,
-`weight` multiplies, `rank` (server hits) bypasses scoring entirely. Sort,
-bucket by `group`, render.
-
-`flatItems` (`useCommandPalette.ts:246`) flattens the groups back into one
-array — that's what arrow keys and Enter index into
-(`CommandPalette.vue:313`):
+در `groupCommands` (`useCommandPalette.ts:226`) ابتدا `scoreCommand` امتیاز هر فرمان را می‌سازد؛ سپس نتیجه‌ها مرتب و بر اساس `group` دسته‌بندی می‌شوند. `flatItems` در `useCommandPalette.ts:246` گروه‌ها را برای حرکت با کلیدهای جهت‌دار و اجرای Enter به یک فهرست تبدیل می‌کند:
 
 ```ts
 const command = flatItems.value[activeIndex.value];
 run(command);
 ```
 
-## Enter: `run()` (useCommandPalette.ts:112)
+## Enter: اجرای `run()`
 
 ```ts
 if (!command || running) return;      // double-Enter guard
@@ -84,14 +61,11 @@ closePalette();
 command.perform?.();                  // the plain case
 ```
 
-A command declares which path it takes by shape: `perform` only → act and
-close; `children` → drill in; `keepOpen + perform` → act, then pop back a level.
+شکل خود فرمان مسیر را تعیین می‌کند: فقط `perform` یعنی اجرا و بستن؛ `children` یعنی ورود به فهرست فرعی؛ و `keepOpen + perform` یعنی اجرا و بازگشت به سطح قبل.
 
----
+## نمونهٔ ۱: فرمان ساده، «تغییر پوسته»
 
-## Example 1 — no nesting: "Toggle theme"
-
-Defined in `commands.ts:130`:
+در `commands.ts:130` تعریف شده است:
 
 ```ts
 {
@@ -104,26 +78,18 @@ Defined in `commands.ts:130`:
 }
 ```
 
-Full trace of `⌘K → "them" → Enter`:
+مسیر `⌘K → "them" → Enter`:
 
-1. `Cmd+K` → `openPalette()` (`useCommandPalette.ts:78`) sets `isOpen = true`
-   (and logs telemetry).
-2. Each keystroke → `onQueryChange("them")` (`useCommandPalette.ts:284`) →
-   `groups` recomputes → `fuzzyScore("Toggle theme", "them")` gives a
-   word-boundary match → the row surfaces near the top.
-3. Enter → `CommandPalette.vue:313` → `run(command)`.
-4. No `children`, no `keepOpen` → `closePalette(); command.perform()` →
-   theme flips. **The palette closes first** so the action lands on a clean
-   screen.
+1. `Cmd+K` تابع `openPalette()` را صدا می‌زند (`useCommandPalette.ts:78`)، پنجره را باز و رویداد را ثبت می‌کند.
+2. هر نویسه از `onQueryChange("them")` (`useCommandPalette.ts:284`) می‌گذرد؛ `groups` دوباره محاسبه و تطبیق واژه‌ای `fuzzyScore("Toggle theme", "them")` نزدیک بالای فهرست ظاهر می‌شود.
+3. Enter از `CommandPalette.vue:313` به `run(command)` می‌رسد.
+4. چون `children` و `keepOpen` وجود ندارد، ابتدا `closePalette()` و سپس `command.perform()` اجرا می‌شود و پوسته تغییر می‌کند.
 
-`Set status: Open` (a *flat option row*, `ticketCommands.ts:256`) is the same
-non-nested path — it exists so typing "open" sets the status in one Enter
-without visiting the drill-down. It's `hideWhenEmpty` (`paletteTypes.ts:36`)
-because on an empty query every score is 0 and weights can't separate ties.
+«تعیین وضعیت: باز» در `ticketCommands.ts:256` نیز فرمانی تخت است تا با یک Enter وضعیت را عوض کند. چون امتیاز همهٔ گزینه‌ها در جست‌وجوی خالی صفر است، این ردیف `hideWhenEmpty` دارد (`paletteTypes.ts:36`).
 
-## Example 2 — nested: "Change status" → "Open"
+## نمونهٔ ۲: فهرست فرعی، «تغییر وضعیت» ← «باز»
 
-Defined in `ticketCommands.ts:56`:
+در `ticketCommands.ts:56` تعریف شده است:
 
 ```ts
 {
@@ -133,31 +99,18 @@ Defined in `ticketCommands.ts:56`:
 }
 ```
 
-Trace of `⌘K → "status" → Enter → "op" → Enter` on ticket #247:
+مسیر `⌘K → "status" → Enter → "op" → Enter` در تیکت ۲۴۷:
 
-1. Root list: "Change status" wins (scoped, ×1.2 weight).
-2. Enter → `run()` sees `children` → sets `loadingChildren` (drives the 2px
-   loading bar), awaits `statusChildren("247")`
-   (`ticketCommands.ts:270`), which builds one `Command` per status, the
-   current one carrying `checked: true`.
-3. Pushes `{ title: "Change status", commands }` onto `stack`, clears the
-   query. `groups` now takes branch 1 (inside a level) — you see only
-   statuses; the breadcrumb shows where you are.
-4. Type "op" → same scorer, now over 5 rows instead of the whole world.
-5. Enter on "Open" → that row has only `perform` → **Example 1's path**:
-   close, write the status.
-6. Backspace on an empty query instead? `back()` pops the level and you're at
-   the root again.
+1. «تغییر وضعیت» به‌دلیل زمینهٔ تیکت بالاتر قرار می‌گیرد.
+2. Enter با دیدن `children` مقدار `loadingChildren` را تنظیم می‌کند، `statusChildren("247")` را صدا می‌زند (`ticketCommands.ts:270`) و برای هر وضعیت یک فرمان می‌سازد؛ وضعیت فعلی `checked: true` دارد.
+3. سطح جدید به `stack` افزوده و عبارت جست‌وجو خالی می‌شود. اکنون فقط وضعیت‌ها دیده می‌شوند و مسیر بازگشت موقعیت را نشان می‌دهد.
+4. تایپ `op` همین تطبیق را این بار روی گزینه‌های وضعیت اجرا می‌کند.
+5. Enter روی «باز» مسیر اجرای ساده را دنبال می‌کند: پنجره بسته و وضعیت ذخیره می‌شود.
+6. اگر به‌جای آن با عبارت خالی Backspace بزنید، `back()` سطح را حذف و به ریشه برمی‌گردد.
 
-So nesting is nothing special: a parent whose `children()` returns more
-commands, and a stack the UI renders the top of. Leaf rows are ordinary
-non-nested commands.
+## نمونهٔ ۳: تغییر برچسب با `keepOpen`
 
-## Example 3 — nested + `keepOpen`: Tags
-
-Toggling a tag shouldn't close the palette — but once it lands you're done
-with the list, so the palette pops back to the ticket's commands.
-`tagCommands.ts:20`:
+تغییر برچسب نباید صفحه‌کلید فرمان را ببندد. پس از تغییر، فهرست برچسب‌ها کنار می‌رود و فرمان‌های تیکت دوباره دیده می‌شوند. این حالت در `tagCommands.ts:20` تعریف شده است:
 
 ```ts
 {
@@ -168,144 +121,43 @@ with the list, so the palette pops back to the ticket's commands.
 }
 ```
 
-Trace of Enter on "billing":
+هنگام Enter، مسیر `keepOpen` در `useCommandPalette.ts:139` ابتدا علامت را فوری و خوش‌بینانه تغییر می‌دهد. سپس یک درخواست `update_tags` ارسال می‌شود؛ پاسخ همان `_user_tags` جدید را دارد و برای به‌روزرسانی تیکت نیازی به درخواست دوم نیست. اگر ذخیره شکست بخورد، `run()` علامت را برمی‌گرداند و پیام خطا نشان می‌دهد؛ اگر موفق شود، `back()` فهرست برچسب‌ها را می‌بندد اما پنجرهٔ اصلی را باز نگه می‌دارد.
 
-1. `run()` takes the `keepOpen` branch (`useCommandPalette.ts:139`):
-   `flipChecked(command)` flips the tick **immediately** — optimistic, no
-   waiting on the network.
-2. `await command.perform()` → one API call, `update_tags`, whose response
-   already carries the new `_user_tags`, so the ticket doc is patched from it
-   — no second fetch.
-3. If the write **fails**: `perform` re-throws, `run()`'s catch calls
-   `flipChecked` again — the tick reverts, a toast explains.
-4. On success `back()` pops the tag list — you land on the ticket's commands,
-   palette still open. On failure you stay in the list to retry.
+## تعیین زمینه
 
-## How context is given
+زمینه هیچ‌جا دستی تنظیم نمی‌شود؛ از مسیر فعلی محاسبه می‌شود. `context` در `useCommandPalette.ts:59` نام مسیر را بررسی می‌کند و فقط در صفحهٔ تیکت کارشناس شناسه و عنوان تیکت را برمی‌گرداند. رفتن به فهرست تیکت‌ها زمینه را خودکار خالی می‌کند.
 
-Context is **never set by anyone — it is derived**. There is no
-`setContext()` call anywhere. `context` is a computed
-(`useCommandPalette.ts:59`) that looks at the router every time it's read:
+تنها استثنا `contextDismissed` است: فشردن Backspace روی عبارت خالی در ریشه، `dismissContext()` را اجرا و برچسب زمینه را پنهان می‌کند. با بستن صفحه‌کلید، `resetPalette()` این حالت را پاک می‌کند تا بازشدن بعدی روی صفحهٔ تیکت دوباره زمینه را نشان دهد.
 
-```ts
-export const context = computed<PaletteContext | null>(() => {
-  if (contextDismissed.value) return null;        // the one manual override
-  const route = router.currentRoute.value;
-  if (route.name !== "TicketAgent") return null;  // only ticket pages scope
-  const id = String(route.params.ticketId);
-  return { id, label: `#${id}`, title: useTicket(id).ticket.doc?.subject ?? "" };
-});
-```
+زمینه در دو جا اثر می‌گذارد:
 
-So "giving" context = **being on the route**. Open ticket #247 → the route is
-`TicketAgent` with `ticketId=247` → `context` is
-`{ id: "247", label: "#247", title: "Email sync broken" }`. Navigate to the
-ticket list → the computed re-evaluates → `null`. The palette never has to
-clean up after a navigation it didn't cause, because nothing was stored to go
-stale — that's why it's derived instead of set.
+1. `groups` فرمان‌های تیکت را پیش از فرمان‌های عمومی قرار می‌دهد و با `CONTEXT_WEIGHT` برابر ۱٫۲ به آن‌ها امتیاز بیشتری می‌دهد؛ عنوان تیکت در برچسب زمینه است و نیازی به سرعنوان تکراری «تیکت» نیست.
+2. `CommandPalette.vue:24` برچسب و عنوان را نمایش می‌دهد. حذف آن با Backspace انجام می‌شود و راهنمای صفحه آن را اعلام می‌کند.
 
-The only mutable piece is `contextDismissed` (`useCommandPalette.ts:52`), a
-boolean veto. Backspace on an empty query at root calls `dismissContext()`
-(`:72`) → veto on → computed returns `null` → chip gone, list widens to the
-global root. Closing the palette runs `resetPalette()` (`:92`), which clears
-the veto — next open on a ticket page, the chip is back.
+برای افزودن زمینه به صفحهٔ دیگری، مقدار محاسبه‌شدهٔ `context` را برای مسیر آن صفحه توسعه دهید و فرمان‌ساز متناظر را به `groups` بدهید. این کار با `routeCommands` در `commands.ts` فرق دارد؛ آن map ردیف‌های دیگری به فهرست عمومی اضافه می‌کند و برچسب زمینه نمی‌سازد.
 
-What consumes it:
+## جزئیات امتیازدهی
 
-1. **`groups`** (`useCommandPalette.ts:183`) — non-null context prepends
-   `ticketCommands(context.id)` as untitled groups (the chip already names the
-   ticket, so a "Ticket" header would repeat it). Each scoped row carries
-   `weight: CONTEXT_WEIGHT` (1.2, `paletteTypes.ts:92`) — that's *how* scoped
-   rows lead once you type: they outrank, they don't exclude.
-2. **The chip** (`CommandPalette.vue:24`) — renders `label + title` above the
-   input. Inert by design; removal is Backspace, advertised by the footer's
-   esc label.
-3. **The command builders** — `ticketCommands(ticketId)` closes over the id,
-   so every `perform` ("Set status", "Assign to me", tag toggles) knows which
-   document to write without any global "current ticket" variable.
-
-To scope a future page the same way (say a customer page), the extension point
-is this one computed: return a `PaletteContext` for `route.name ===
-"CustomerAgent"` too, and hand `groups` a matching command builder. (Distinct
-from the `routeCommands` map in `commands.ts`, which mixes extra rows into the
-global list without the chip posture.)
-
-## Scoring, in detail (fuzzyScore.ts)
-
-Two layers: `scoreCommand` decides **which fields** of a command compete;
-`fuzzyScore` decides **how well one string matches** the term.
-
-### Layer 1 — `scoreCommand` (fuzzyScore.ts:9)
+`scoreCommand` در `fuzzyScore.ts:9` مشخص می‌کند کدام متن‌های هر فرمان با عبارت رقابت کنند:
 
 ```ts
-if (command.rank !== undefined) return command.rank;  // server hits: pre-ranked, skip scoring
+if (command.rank !== undefined) return command.rank; // server hits: pre-ranked, skip scoring
 const base = Math.max(
   fuzzyScore(title, term),
-  fuzzyScore(keywords, term) - 50,    // a title match always beats a keyword tie
-  fuzzyScore(subtitle, term) - 100,
+  fuzzyScore(keywords, term) - 50, // a title match always beats a keyword tie
+  fuzzyScore(subtitle, term) - 100
 );
-return base * (command.weight ?? 1);  // nav 0.7 sinks, context 1.2 lifts
+return base * (command.weight ?? 1); // nav 0.7 sinks, context 1.2 lifts
 ```
 
-The row's score is the **best field minus that field's penalty, times weight**.
-`groupCommands` (`useCommandPalette.ts:226`) then drops rows scoring `< 0` and
-sorts descending; ties keep source order (`a.index - b.index`).
+امتیاز فرمان برابر بهترین تطبیق پس از جریمهٔ کلیدواژه یا زیرعنوان، ضرب‌در وزن است. سپس `groupCommands` ردیف‌های با امتیاز منفی را کنار می‌گذارد، بقیه را نزولی مرتب می‌کند و گروه‌بندی می‌کند؛ در امتیاز برابر ترتیب اولیه حفظ می‌شود.
 
-### Layer 2 — `fuzzyScore` (fuzzyScore.ts:26): three match classes
+`fuzzyScore` در `fuzzyScore.ts:26` سه نوع تطبیق دارد:
 
-| Class | Score | Example for term `con` |
-|---|---|---|
-| Prefix | `1000` | `Contacts` |
-| Substring | `900 − offset` (+60 if it starts a word) | `configure` inside Settings' keywords → 900 − 12 + 60 = **948** |
-| Scattered subsequence | `400 + 20·longestStreak − gaps` (gaps capped at 200) | see below |
-| No match | `−1` (row filtered out) | `Settings` title for `con` |
+| نوع              | امتیاز                                                        | نمونه برای عبارت `con`                                           |
+| ---------------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
+| پیشوند           | `1000`                                                        | `Contacts`                                                       |
+| زیررشته          | `900 − offset` و ۶۰ امتیاز بیشتر در ابتدای واژه               | تطبیق `configure` در کلیدواژه‌های تنظیمات: `900 − 12 + 60 = 948` |
+| زیرتوالی پراکنده | `400 + 20 ×` طولانی‌ترین بخش پیوسته `−` فاصله‌ها (حداکثر ۲۰۰) | برای نمونهٔ بعدی در فایل `fuzzyScore.ts` توضیح داده شده است.     |
 
-### How letters are "stored": they aren't
-
-There's no trie, no index, no preprocessing. Both strings are lowercased per
-call and the needle is walked left-to-right over the haystack with plain
-`indexOf`, carrying four counters:
-
-```ts
-let position = 0;   // where in the haystack the next letter may start
-let streak = 0;     // current run of consecutive hits
-let longestStreak;  // best run seen (rewards clustered letters)
-let gaps = 0;       // total characters skipped over (punishes scatter)
-```
-
-Each needle letter must be found **at or after** `position` — that's what makes
-it an *in-order* subsequence, not a bag of letters. Any letter missing → `-1`.
-This is O(needle × haystack) per row, which is nothing: the palette scores
-~50 short strings per keystroke. Storing anything smarter would be solving a
-problem the input size doesn't have.
-
-### Worked example: why "cont" showed Settings under Contacts
-
-Settings has `keywords: "preferences configure email agents teams sla telephony"`.
-
-Term `cont`, walking the keywords (`·` = skipped, counted into `gaps`):
-
-```
-preferen c es  c on figure email agen t s ...
-         ↑c    ↑o↑n (streak 1)      ↑t
-gaps: 8 (before c) + 4 (to o) + 17 (to t) = 29
-score: 400 + 20·1 − 29 = 391 → keyword penalty −50 → 341
-```
-
-Contacts: `cont` is a prefix of the title → 1000, × nav weight 0.7 = **700**.
-So the list reads Contacts (700) above Settings (341) — both visible, because
-a weak match is still a match. One keystroke earlier (`con`) the order was
-*reversed*: Settings scored 948 − 50 = **898** via the `configure` substring,
-beating Contacts' 700 — which is why the highlight was sitting on Settings,
-and the follow-the-row watch (`CommandPalette.vue:388`) kept it there as the
-row sank.
-
-## Server search, in one paragraph
-
-Typing ≥2 chars at root fires `onQueryChange` → 200ms debounce →
-`helpdesk.api.search.search` (SQLite FTS5). An incrementing token
-(`useCommandPalette.ts:266`) drops stale responses; old rows are deliberately
-kept on screen during the debounce so the panel never blanks between
-keystrokes. Hits arrive BM25-ranked and carry `rank`, bypassing the local
-scorer; `<mark>` highlights are split into text runs (`paletteTypes.ts:81`) —
-never `v-html`.
+این رتبه‌بندی باعث می‌شود عنوان فرمان معمولاً از کلیدواژه جلوتر باشد؛ کلیدواژه با جریمهٔ ۵۰ و زیرعنوان با جریمهٔ ۱۰۰ بررسی می‌شوند. نتایج سرور با `rank` از این محاسبه عبور می‌کنند.

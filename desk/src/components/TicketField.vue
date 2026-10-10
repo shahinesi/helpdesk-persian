@@ -23,18 +23,23 @@
 
 <script setup lang="ts">
 import FieldLabel from "@/components/FieldLabel.vue";
+import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
+import { formatLocalizedNumber } from "@/utils/number";
+import { digitsArToFa, digitsFaToEn } from "@persian-tools/persian-tools";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { APIOptions, Field, FieldValue } from "@/types";
-import { parseApiOptions } from "@/utils";
-import { Link } from "@framework/ui";
+import { formatLocalizedDate, getDateFormat, parseApiOptions } from "@/utils";
+import { Link as FrameworkLink } from "@framework/ui";
+import HelpdeskLink from "@/components/frappe-ui/Link.vue";
 import {
   Combobox,
   createResource,
   DatePicker,
   DateTimePicker,
-  dayjs,
   Select,
   TextInput,
+  dayjs,
 } from "frappe-ui";
 import { computed, h, nextTick } from "vue";
 
@@ -87,7 +92,7 @@ const selectOptions = computed<Option[]>(() =>
   (props.field.fieldtype === "Select"
     ? props.field.options.split("\n")
     : []
-  ).map((option) => ({ label: option, value: option }))
+  ).map((option) => ({ label: __(option), value: option }))
 );
 
 const isSearchableSelect = computed(
@@ -96,8 +101,10 @@ const isSearchableSelect = computed(
 
 // the Combobox feeds one placeholder to both trigger and search box, so it
 // gets none and its prefix slot carries the empty state instead
-const emptyLabel = computed(
-  () => props.field.placeholder || `Add ${props.field.label}`
+const emptyLabel = computed(() =>
+  props.field.placeholder
+    ? __(props.field.placeholder)
+    : __("Add {0}", [__(props.field.label)])
 );
 
 const usesCombobox = computed(
@@ -156,33 +163,47 @@ const component = computed(() => {
       redirectable: props.field.options in REDIRECT_ROUTES,
       class: "!w-full !bg-surface-base !border-transparent !text-base",
       onRedirect: handleRedirect,
+      placeholder: placeholder.value,
     };
     // item-prefix drives both the options and the control, so one slot puts
     // the level icon everywhere
     if (props.field.options === "HD Ticket Priority") {
-      return h(Link, linkProps, {
-        "item-prefix": ({ item }: { item: { value: string } }) =>
-          h(TicketPriority, { priority: item.value, iconOnly: true }),
-        // typing can drop the committed value from the options, so the
-        // control falls back here; keep its icon until it changes
-        prefix: () =>
-          props.value
-            ? h(TicketPriority, {
-                priority: String(props.value),
-                iconOnly: true,
-              })
-            : null,
-      });
+      return h(
+        HelpdeskLink,
+        {
+          doctype: props.field.options,
+          class: linkProps.class,
+          placeholder: linkProps.placeholder,
+        },
+        {
+          "item-prefix": ({ item }: { item: { value: string } }) =>
+            h(TicketPriority, { priority: item.value, iconOnly: true }),
+          // typing can drop the committed value from the options, so the
+          // control falls back here; keep its icon until it changes
+          prefix: () =>
+            props.value
+              ? h(TicketPriority, {
+                  priority: String(props.value),
+                  iconOnly: true,
+                })
+              : null,
+        }
+      );
     }
-    return h(Link, linkProps);
+    if (
+      ["HD Ticket Type", "HD Team", "HD Customer"].includes(props.field.options)
+    ) {
+      return h(HelpdeskLink, linkProps);
+    }
+    return h(FrameworkLink, linkProps);
   } else if (props.field.fieldtype === "Select") {
     return isSearchableSelect.value
       ? combobox(selectOptions.value)
       : select(selectOptions.value);
   } else if (props.field.fieldtype === "Check") {
     return select([
-      { label: "Yes", value: 1 },
-      { label: "No", value: 0 },
+      { label: __("Yes"), value: 1 },
+      { label: __("No"), value: 0 },
     ]);
   } else if (textFields.includes(props.field.fieldtype)) {
     return textInput();
@@ -214,11 +235,16 @@ const listeners = computed(() => {
   const fieldtype = props.field.fieldtype;
   if ([...textFields, ...numberFields].includes(fieldtype)) {
     return {
-      blur: (event: FocusEvent) =>
-        emitUpdate(
-          props.field.fieldname,
-          (event.target as HTMLInputElement).value
-        ),
+      blur: (event: FocusEvent) => {
+        const value = (event.target as HTMLInputElement).value;
+        const canonicalValue =
+          dayjs.locale().split("-")[0] === "fa"
+            ? digitsFaToEn(digitsArToFa(value))
+                .replace(/[٬,]/g, "")
+                .replace(/٫/g, ".")
+            : value;
+        emitUpdate(props.field.fieldname, canonicalValue);
+      },
     };
   }
   if (fieldtype === "Link") {
@@ -272,7 +298,15 @@ const transValue = computed(() => {
     return props.value ? 1 : 0;
   } else if (fieldtype === "Date") {
     if (!props.value) return props.value;
-    return dayjs(props.value).format(window.date_format.toUpperCase());
+    return formatLocalizedDate(String(props.value), getDateFormat());
+  } else if (
+    numberFields.includes(fieldtype) &&
+    dayjs.locale().split("-")[0] === "fa" &&
+    props.value !== null &&
+    props.value !== ""
+  ) {
+    const value = Number(props.value);
+    if (Number.isFinite(value)) return formatLocalizedNumber(value);
   }
   // else if (fieldtype === "Duration") {
   //   if (!props.value) return null;
@@ -331,7 +365,7 @@ function handleRedirect(value: string) {
   visibility: visible;
 }
 :deep(.form-control [type="checkbox"]) {
-  margin-left: 9px;
+  margin-inline-start: 9px;
   cursor: pointer;
 }
 

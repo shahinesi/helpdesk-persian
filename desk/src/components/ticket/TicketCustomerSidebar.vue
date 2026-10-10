@@ -2,7 +2,9 @@
   <div class="flex w-[382px] flex-col border-s gap-4">
     <!-- Ticket ID -->
     <div class="flex items-center justify-between border-b px-5 py-3">
-      <span class="cursor-copy text-md-semibold">Ticket details</span>
+      <span class="cursor-copy text-md-semibold">{{
+        __("Ticket details")
+      }}</span>
     </div>
     <!-- user info and sla info -->
     <div class="flex flex-col gap-4 pt-0 px-5 py-3 border-b">
@@ -112,6 +114,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import {
   slaLabel,
   slaTextColor,
@@ -120,7 +123,9 @@ import {
 } from "@/composables/useSLA";
 import { ITicket } from "@/pages/ticket/symbols";
 import { Field } from "@/types";
-import { dateFormat, dateTooltipFormat } from "@/utils";
+import { formatLocalizedNumber } from "@/utils/number";
+import { displayLinkOption } from "@/utils/displayLinkOption";
+import { dateFormat, dateTooltipFormat, formatLocalizedDate } from "@/utils";
 import { Avatar, dayjs, dayjsLocal, Tooltip } from "frappe-ui";
 import { computed, inject } from "vue";
 
@@ -141,12 +146,12 @@ const { firstResponse, resolution } = useSLA(
 const slaData = computed(() =>
   [
     {
-      title: "First Response",
+      title: __("First Response"),
       metric: firstResponse.value,
       value: ticket.data.first_responded_on || ticket.data.response_by,
     },
     {
-      title: "Resolution",
+      title: __("Resolution"),
       metric: resolution.value,
       value: ticket.data.resolution_date || ticket.data.resolution_by,
     },
@@ -162,11 +167,11 @@ const slaData = computed(() =>
 
 const ticketBasicInfo = computed(() => [
   {
-    label: "Ticket ID",
+    label: __("Ticket ID"),
     value: ticket.data.name,
   },
   {
-    label: "Status",
+    label: __("Status"),
     value: ticket.data.status,
     bold: true,
   },
@@ -174,9 +179,9 @@ const ticketBasicInfo = computed(() => [
 
 function storedStamp(field) {
   if (field.fieldtype === "Date")
-    return dayjs(field.raw).format("ddd, MMM D, YYYY");
+    return formatLocalizedDate(dayjs(field.raw), "ddd, MMM D, YYYY");
   if (field.fieldtype === "Datetime")
-    return dayjs(field.raw).format(dateTooltipFormat);
+    return formatLocalizedDate(dayjs(field.raw), dateTooltipFormat);
   return "";
 }
 
@@ -184,17 +189,19 @@ const ticketAdditionalInfo = computed(() => {
   const fields = [
     {
       fieldname: "subject",
-      label: "Subject",
+      label: __("Subject"),
       value: ticket.data.subject,
     },
     {
       fieldname: "team",
-      label: "Team",
-      value: ticket.data.agent_group,
+      label: __("Team"),
+      value: ticket.data.agent_group
+        ? displayLinkOption("HD Team", ticket.data.agent_group)
+        : ticket.data.agent_group,
     },
     {
       fieldname: "priority",
-      label: "Priority",
+      label: __("Priority"),
       value: ticket.data.priority,
     },
   ];
@@ -214,15 +221,24 @@ const ticketAdditionalInfo = computed(() => {
         raw: ticket.data[field.fieldname],
       };
       if (field.fieldtype === "Date") {
-        option.value = dayjs(option.value).format(
+        option.value = formatLocalizedDate(
+          dayjs(option.value),
           window.date_format.toUpperCase()
         );
       }
       if (field.fieldtype === "Datetime") {
         // window.time_format
-        option.value = dayjs(option.value).format(
+        option.value = formatLocalizedDate(
+          dayjs(option.value),
           `${window.date_format.toUpperCase()} ${window.time_format}`
         );
+      }
+      if (
+        ["Int", "Float", "Currency", "Percent"].includes(field.fieldtype) &&
+        dayjs.locale().split("-")[0] === "fa"
+      ) {
+        const value = Number(option.value);
+        if (Number.isFinite(value)) option.value = formatLocalizedNumber(value);
       }
       return option;
     });

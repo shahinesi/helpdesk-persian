@@ -6,7 +6,6 @@ import LucideLayoutDashboard from "~icons/lucide/layout-dashboard";
 import { OrganizationsIcon } from "../icons";
 import PhoneIcon from "../icons/PhoneIcon.vue";
 import LucideHome from "~icons/lucide/home";
-import { __ } from "@/translation";
 
 /**
  * Shared rather than local to Sidebar.vue: the command palette opens it too, and
@@ -16,22 +15,22 @@ export const showShortcutsModal = ref(false);
 
 export const agentPortalSidebarOptions = [
   {
-    label: __("Home"),
+    label: "Home",
     icon: LucideHome,
     to: "Home",
   },
   {
-    label: __("Dashboard"),
+    label: "Dashboard",
     icon: LucideLayoutDashboard,
-    to: "Dashboard"
+    to: "Dashboard",
   },
   {
-    label: __("Tickets"),
+    label: "Tickets",
     icon: LucideTicket,
     to: "TicketsAgent",
   },
   {
-    label: __("Knowledge Base"),
+    label: "Knowledge Base",
     icon: LucideBookOpen,
     to: "AgentKnowledgeBase",
   },
@@ -41,12 +40,12 @@ export const agentPortalSidebarOptions = [
     to: "CustomerList",
   },
   {
-    label: __("Contacts"),
+    label: "Contacts",
     icon: LucideUsers,
     to: "ContactList",
   },
   {
-    label: __("Call Logs"),
+    label: "Call Logs",
     icon: PhoneIcon,
     to: "CallLogs",
   },
@@ -54,12 +53,12 @@ export const agentPortalSidebarOptions = [
 
 export const customerPortalSidebarOptions = [
   {
-    label: __("Tickets"),
+    label: "Tickets",
     icon: LucideTicket,
     to: "TicketsCustomer",
   },
   {
-    label: __("Knowledge Base"),
+    label: "Knowledge Base",
     icon: LucideBookOpen,
     to: "CustomerKnowledgeBase",
   },

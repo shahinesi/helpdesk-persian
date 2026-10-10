@@ -7,14 +7,13 @@
   >
     <template #default>
       <div
-        class="flex z-50 overflow-hidden"
-        :style="{ height: 'calc(100vh - 8rem)' }"
+        class="z-50 flex h-[calc(100dvh-2rem)] flex-col overflow-hidden sm:h-[calc(100vh-8rem)] sm:flex-row"
       >
         <div
-          class="flex-col rounded-l-6 w-56 shrink-0 ps-1 py-1 bg-surface-sidebar overflow-y-auto hide-scrollbar"
+          class="hide-scrollbar flex max-h-[38vh] w-full shrink-0 flex-col overflow-y-auto rounded-t-6 bg-surface-sidebar py-1 ps-1 sm:max-h-none sm:w-56 sm:rounded-t-none sm:rounded-s-6"
         >
           <h1
-            class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ml-1"
+            class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ms-1"
           >
             {{ __("Account") }}
           </h1>
@@ -23,20 +22,20 @@
 
             <div
               v-if="!tab.hideLabel"
-              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ml-1"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar ms-1"
             >
-              <Tooltip :text="__(tab.label)" side="right">
+              <Tooltip :text="__(tab.label)" :side="isRtl ? 'left' : 'right'">
                 <span class="truncate">{{ __(tab.label) }}</span>
               </Tooltip>
             </div>
 
-            <nav class="space-y-[3px] pr-2 pl-1">
+            <nav class="space-y-[3px] pe-2 ps-1">
               <button
                 v-for="item in tab.items"
                 :key="item.label"
                 class="flex h-7 w-full items-center gap-2 rounded-4 px-2 py-[7px]"
                 :class="[
-                  activeTab?.label == item.label
+                  activeTab?.component === item.component
                     ? 'bg-surface-elevation-3 shadow-sm'
                     : 'hover:bg-surface-gray-2',
                 ]"
@@ -46,7 +45,10 @@
                   :is="item.icon"
                   class="h-4 w-4 text-ink-gray-7 shrink-0"
                 />
-                <Tooltip :text="__(item.label)" side="right">
+                <Tooltip
+                  :text="__(item.label)"
+                  :side="isRtl ? 'left' : 'right'"
+                >
                   <span class="text-p-sm text-ink-gray-8 truncate">
                     {{ __(item.label) }}
                   </span>
@@ -56,7 +58,7 @@
           </div>
         </div>
         <div
-          class="flex flex-1 flex-col bg-surface-elevation-2 max-w-[816px] overflow-hidden relative"
+          class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface-elevation-2 sm:max-w-[816px]"
         >
           <component
             :is="activeTab.component"
@@ -101,6 +103,7 @@ import {
   tabs,
 } from "./settingsModal";
 
+const isRtl = document.documentElement.dir === "rtl";
 const show: ModelRef<boolean> = defineModel();
 
 const showConfirmDialog = ref(false);

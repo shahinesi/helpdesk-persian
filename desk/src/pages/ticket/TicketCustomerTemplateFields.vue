@@ -1,20 +1,24 @@
 <template>
   <div class="space-y-2 px-6 py-3.5 border-b">
     <div class="flex items-center gap-4">
-      <span class="w-[150px] shrink-0 text-p-sm text-ink-gray-5">Status</span>
+      <span class="w-[150px] shrink-0 text-p-sm text-ink-gray-5">{{
+        __("Status")
+      }}</span>
       <span
         class="flex-1 truncate rounded-4 border border-outline-gray-2 bg-surface-base px-2 py-1 text-p-sm text-ink-gray-9"
       >
-        {{ ticket.data.status }}
+        {{ displayLinkOption("HD Ticket Status", ticket.data.status) }}
       </span>
     </div>
 
     <div v-if="ticket.data.priority" class="flex items-center gap-4">
-      <span class="w-[150px] shrink-0 text-p-sm text-ink-gray-5">Priority</span>
+      <span class="w-[150px] shrink-0 text-p-sm text-ink-gray-5">{{
+        __("Priority")
+      }}</span>
       <span
         class="flex-1 truncate rounded-4 border border-outline-gray-2 bg-surface-base px-2 py-1 text-p-sm text-ink-gray-9"
       >
-        {{ ticket.data.priority }}
+        {{ displayLinkOption("HD Ticket Priority", ticket.data.priority) }}
       </span>
     </div>
 
@@ -23,7 +27,11 @@
       :key="data.title"
       class="flex items-center gap-4"
     >
-      <Tooltip :text="dayjs(data.value).format('LLLL')">
+      <Tooltip
+        :text="
+          formatLocalizedDate(dayjs(data.value), 'dddd, MMM D, YYYY h:mm A')
+        "
+      >
         <span class="w-[150px] shrink-0 text-p-sm text-ink-gray-5">{{
           data.title
         }}</span>
@@ -51,6 +59,8 @@
 </template>
 
 <script setup lang="ts">
+import { formatLocalizedDate } from "@/utils";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { dayjs } from "frappe-ui";
 import {
   slaLabel,
@@ -70,8 +80,8 @@ const { firstResponse, resolution } = useSLA(
 
 const slaData = computed(() =>
   [
-    { title: "Expected First Response", metric: firstResponse.value },
-    { title: "Expected Resolution", metric: resolution.value },
+    { title: __("Expected First Response"), metric: firstResponse.value },
+    { title: __("Expected Resolution"), metric: resolution.value },
   ]
     .filter((row): row is { title: string; metric: SLAMetric } =>
       Boolean(row.metric)

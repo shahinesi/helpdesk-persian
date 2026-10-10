@@ -13,11 +13,8 @@
             >
               <span>{{ __(group.group.label) }}</span>
               <span class="text-xs text-ink-gray-5"
-                >{{
-                  group.rows.length +
-                  " Article" +
-                  (group.rows.length > 1 ? "s" : "")
-                }}
+                >{{ formatLocalizedNumber(group.rows.length) }}
+                {{ __(group.rows.length > 1 ? "Articles" : "Article") }}
               </span>
             </div>
           </div>
@@ -58,6 +55,7 @@
 
 <script setup>
 import { Button, Dropdown } from "frappe-ui";
+import { formatLocalizedNumber } from "@/utils/number";
 import {
   ListGroupHeader,
   ListGroupRows,

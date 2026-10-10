@@ -6,7 +6,9 @@
       class="w-full ps-2 flex flex-col justify-center h-14"
       @click="holidayListActiveScreen = { screen: 'view', data: data }"
     >
-      <div class="text-base-medium text-ink-gray-7">{{ data.name }}</div>
+      <div class="text-base-medium text-ink-gray-7">
+        {{ data.name === "Default" ? __("Default") : data.name }}
+      </div>
       <div
         v-if="data.description && data.description.length > 0"
         class="text-sm text-ink-gray-5 mt-1 truncate"

@@ -10,11 +10,11 @@
     <div class="relative mx-4">
       <div
         v-show="showLeftFade"
-        class="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[var(--surface-base)] to-transparent"
+        class="pointer-events-none absolute start-0 inset-y-0 z-10 w-10 bg-gradient-to-r from-[var(--surface-base)] to-transparent rtl:bg-gradient-to-l"
       />
       <div
         v-show="showRightFade"
-        class="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[var(--surface-base)] to-transparent"
+        class="pointer-events-none absolute end-0 inset-y-0 z-10 w-10 bg-gradient-to-l from-[var(--surface-base)] to-transparent rtl:bg-gradient-to-r"
       />
       <div
         ref="scroller"
@@ -23,7 +23,7 @@
       >
         <div
           ref="rail"
-          class="flex w-max min-w-full items-start pl-12 pr-16 pb-16 pt-8"
+          class="flex w-max min-w-full items-start ps-12 pe-16 pb-16 pt-8"
         >
           <template v-for="(segment, index) in segments" :key="index">
             <Tooltip bare v-if="segment.kind === 'node'" :hover-delay="200">
@@ -117,6 +117,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
+import { formatLocalizedDate } from "@/utils";
 import { dayjsLocal, Tooltip } from "frappe-ui";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import type {
@@ -150,6 +151,11 @@ const props = defineProps<{
   timeline: TimelineNode[];
   events: TimelineEvent[];
 }>();
+
+const locale = ((window as any).lang || document.documentElement.lang || "en")
+  .toLowerCase()
+  .split("-")[0];
+const isRtlLocale = locale === "fa" || locale === "ar";
 
 const scroller = ref<HTMLElement>();
 const rail = ref<HTMLElement>();
@@ -248,7 +254,7 @@ const segments = computed<RailSegment[]>(() => {
     );
   result.push(...drainMarkers(markers, null, IDLE));
   if (!resolutionMarkers.value.length) result.push(...getEndingSegments());
-  hideRepeatedDates(result);
+  if (!isRtlLocale) hideRepeatedDates(result);
   preventLabelOverlap(result);
   return result;
 });
@@ -373,11 +379,11 @@ function getOverdueTailSegments(
   markers: RailMarker[]
 ): RailSegment[] {
   const result: RailSegment[] = [];
-  let previousDay = dayjsLocal(deadline).format("MMM D");
-  let previousYear = dayjsLocal(deadline).year();
+  let previousDay = dayjsLocal(deadline).format("YYYY-MM-DD");
+  let previousYear = formatLocalizedDate(dayjsLocal(deadline), "YYYY");
   for (const event of events) {
     const at = dayjsLocal(event.at);
-    const day = at.format("MMM D");
+    const day = at.format("YYYY-MM-DD");
     result.push(...drainMarkers(markers, event.at, OVERDUE));
     result.push(getLine(OVERDUE, { width: 72, isGrowing: true }));
     result.push(
@@ -387,7 +393,7 @@ function getOverdueTailSegments(
       )
     );
     previousDay = day;
-    previousYear = at.year();
+    previousYear = formatLocalizedDate(at, "YYYY");
   }
   result.push(...drainMarkers(markers, null, OVERDUE));
   result.push(getLine(OVERDUE, { width: 140, isGrowing: true }));
@@ -395,7 +401,7 @@ function getOverdueTailSegments(
     kind: "node",
     colorClass: TODAY,
     tooltip: [],
-    label: getLabel(__("Today"), dayjsLocal().format("MMM D")),
+    label: getLabel(__("Today"), formatDate(dayjsLocal())),
   });
   return result;
 }
@@ -472,11 +478,14 @@ function getEventSegments(
   const result: RailSegment[] = [];
   let previousEvent = carriedEvent;
   let isGroupStart = true;
-  let previousDay = startAt ? dayjsLocal(startAt).format("MMM D") : "";
-  let previousYear = dayjsLocal(startAt ?? undefined).year();
+  let previousDay = startAt ? dayjsLocal(startAt).format("YYYY-MM-DD") : "";
+  let previousYear = formatLocalizedDate(
+    dayjsLocal(startAt ?? undefined),
+    "YYYY"
+  );
   for (const event of events) {
     const at = dayjsLocal(event.at);
-    const day = at.format("MMM D");
+    const day = at.format("YYYY-MM-DD");
     const isNewDay = day !== previousDay;
     const drained = drainMarkers(markers, event.at, IDLE);
     if (drained.length) {
@@ -489,7 +498,7 @@ function getEventSegments(
       getEventNode(event, isNewDay ? getDayTitle(at, previousYear) : undefined)
     );
     previousDay = day;
-    previousYear = at.year();
+    previousYear = formatLocalizedDate(at, "YYYY");
     previousEvent = event;
     isGroupStart = false;
   }
@@ -499,11 +508,12 @@ function getEventSegments(
 // a day label carries its year when it differs from the last one on the rail
 function getDayTitle(
   at: ReturnType<typeof dayjsLocal>,
-  previousYear: number
+  previousYear: string
 ): string {
-  return at.year() === previousYear
-    ? at.format("MMM D")
-    : at.format("MMM D, YYYY");
+  return formatLocalizedDate(
+    at,
+    formatLocalizedDate(at, "YYYY") === previousYear ? "MMM D" : "MMM D, YYYY"
+  );
 }
 
 function getConnectorLine(
@@ -548,7 +558,7 @@ function getEventNode(event: TimelineEvent, dayTitle?: string): RailNode {
     colorClass: isSlowest ? RED : colorClass,
     tooltip: getEventTooltip(event, isSlowest),
     label: dayTitle
-      ? { title: dayTitle, subtitle: dayjsLocal(event.at).format("h:mm a") }
+      ? { title: dayTitle, subtitle: formatTime(dayjsLocal(event.at)) }
       : undefined,
   };
 }
@@ -744,9 +754,25 @@ function formatDateTime(timestamp?: string | null): string | undefined;
 function formatDateTime(timestamp?: string | null): string | undefined {
   if (!timestamp) return undefined;
   const at = dayjsLocal(timestamp);
-  return at.year() === dayjsLocal().year()
-    ? at.format("MMM D, h:mm a")
-    : at.format("MMM D, YYYY, h:mm a");
+  const sameYear =
+    formatLocalizedDate(at, "YYYY") ===
+    formatLocalizedDate(dayjsLocal(), "YYYY");
+  const format = isRtlLocale
+    ? sameYear
+      ? "D MMM، HH:mm"
+      : "D MMM YYYY، HH:mm"
+    : sameYear
+    ? "MMM D, h:mm a"
+    : "MMM D, YYYY, h:mm a";
+  return formatLocalizedDate(at, format);
+}
+
+function formatDate(date: ReturnType<typeof dayjsLocal>): string {
+  return formatLocalizedDate(date, isRtlLocale ? "D MMM" : "MMM D");
+}
+
+function formatTime(date: ReturnType<typeof dayjsLocal>): string {
+  return formatLocalizedDate(date, isRtlLocale ? "HH:mm" : "h:mm a");
 }
 
 // the first label is centered under its dot but its left edge must sit on the

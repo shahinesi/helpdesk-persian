@@ -55,13 +55,17 @@
               {{ ticket.subject }}
             </td>
             <td class="p-2 py-3 min-w-16 truncate">
-              {{ ticket.status }}
+              {{ displayLinkOption("HD Ticket Status", ticket.status) }}
             </td>
             <td class="p-2 py-3 min-w-28 truncate">
               <TicketPriority :priority="ticket.priority" />
             </td>
             <td class="p-2 py-3 min-w-44 truncate">
-              {{ ticket.agent_group || __("Not Assigned") }}
+              {{
+                ticket.agent_group
+                  ? displayLinkOption("HD Team", ticket.agent_group)
+                  : __("Not Assigned")
+              }}
             </td>
             <td class="p-2 py-3 min-w-40">
               <div
@@ -166,6 +170,7 @@ import EmptyState from "@/components/EmptyState.vue";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { useView } from "@/composables/useView";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { View } from "@/types";
 import { createResource, TabButtons } from "frappe-ui";
 import { computed, onMounted, ref, watch, type PropType } from "vue";

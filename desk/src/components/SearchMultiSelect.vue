@@ -33,7 +33,7 @@
               {{
                 selectedCount === 1
                   ? selectedOptions[0]?.label
-                  : `${selectedCount} ${selectionText}`
+                  : `${formatLocalizedNumber(selectedCount)} ${selectionText}`
               }}
             </span>
           </template>
@@ -50,7 +50,7 @@
 
     <div
       v-if="isOpen"
-      class="absolute z-50 mt-2 w-64 divide-y divide-outline-elevation-2 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none start-0 origin-top-left"
+      class="absolute z-50 mt-2 w-64 divide-y divide-outline-elevation-2 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none start-0 origin-top-start"
     >
       <!-- Header -->
       <div class="py-1.5 px-1.5">
@@ -112,7 +112,7 @@
               v-if="(option.count ?? 0) > 0"
               class="text-xs text-ink-gray-5 ms-auto"
             >
-              {{ option.count }}
+              {{ formatLocalizedNumber(option.count) }}
             </span>
           </button>
         </div>
@@ -163,7 +163,7 @@
               v-if="(option.count ?? 0) > 0"
               class="text-xs text-ink-gray-5 ms-auto"
             >
-              {{ option.count }}
+              {{ formatLocalizedNumber(option.count) }}
             </span>
           </button>
         </div>
@@ -173,7 +173,7 @@
           v-if="filteredOptions.length === 0"
           class="px-2 py-4 text-center text-sm text-ink-gray-5"
         >
-          No options found
+          {{ __("No options found") }}
         </div>
       </div>
     </div>
@@ -184,6 +184,8 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
+import { formatLocalizedNumber } from "@/utils/number";
 import { Avatar, Button, Checkbox } from "frappe-ui";
 import {
   computed,
@@ -223,8 +225,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: "Select options...",
-  label: "Options",
+  placeholder: __("Select options..."),
+  label: __("Options"),
   selectionText: "items",
   options: () => [],
 });

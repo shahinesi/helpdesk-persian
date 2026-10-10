@@ -17,7 +17,11 @@
         <Button
           class="text-sm"
           :icon-right="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
-          :label="slaData.holiday_list"
+          :label="
+            slaData.holiday_list === 'Default'
+              ? __('Default')
+              : slaData.holiday_list
+          "
         />
       </template>
       <template #default>
@@ -37,7 +41,13 @@
                   :checked="holiday.name === slaData.holiday_list"
                   type="radio"
                 />
-                <div class="select-none">{{ holiday.holiday_list_name }}</div>
+                <div class="select-none">
+                  {{
+                    holiday.holiday_list_name === "Default"
+                      ? __("Default")
+                      : holiday.holiday_list_name
+                  }}
+                </div>
               </div>
               <div class="flex cursor-pointer items-center gap-1">
                 <Button
@@ -69,6 +79,7 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
 import { Button, createListResource, Popover } from "frappe-ui";
 import SlaWorkDaysList from "./SlaWorkDaysList.vue";
 import { setActiveSettingsTab } from "../settingsModal";

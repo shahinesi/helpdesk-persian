@@ -1,44 +1,44 @@
-# Helpdesk E2E tests
+# آزمون‌های سرتاسری Helpdesk
 
-Playwright specs for the core user journeys, run against a real bench site.
+مشخصات Playwright برای جریان‌های اصلی کاربر؛ آزمون‌ها روی یک Frappe site واقعی اجرا می‌شوند.
 
-## Run locally
+## اجرای محلی
 
 ```sh
 bench new-site e2e.localhost --admin-password admin --install-app helpdesk
 cd apps/helpdesk && yarn install --ignore-scripts && npx playwright install chromium
-yarn build   # the webserver serves the built desk bundle
+yarn build   # سرور آزمون bundle ساخته‌شده را ارائه می‌کند
 
 BASE_URL=http://localhost:8000 SITE_NAME=e2e.localhost yarn test:e2e
 ```
 
-`SITE_NAME` sends `X-Frappe-Site-Name`, so no `/etc/hosts` entry is needed.
-Set `ADMIN_PASSWORD` if the site's Administrator password is not `admin`.
+`SITE_NAME` مقدار `X-Frappe-Site-Name` را می‌فرستد و بنابراین نیازی به افزودن دامنه در `/etc/hosts` نیست. اگر رمز Administrator برابر `admin` نیست، مقدار `ADMIN_PASSWORD` را تنظیم کنید.
 
-## Layout
+## ساختار
 
-- `global.setup.ts` seeds the personas and saves a logged-in session for each.
-- `helpers/` holds the REST client, personas, fixtures and data factories.
-- `tests/` groups the specs by page, so a change to a page runs the folder that mirrors it:
-  - `tickets/list/`: `Tickets.vue` (`/tickets`, `/my-tickets`)
-  - `tickets/agent/`: `TicketAgent.vue` (`/tickets/:id`)
-  - `tickets/customer/`: `TicketCustomer.vue` (`/my-tickets/:id`)
-  - `tickets/new/`: `TicketNew.vue` (`/tickets/new`, `/my-tickets/new`)
-  - `knowledge-base/`, `customer-management/` and `settings/`: one spec per page or settings tab
-  - A feature spanning several pages, like `tickets/form-script.spec.ts`, keeps one file.
-  - App wide specs (`auth`, `onboarding`, `permissions`, `navigation`) sit at the top of `tests/`.
+- `global.setup.ts` نقش‌های آزمون را می‌سازد و برای هرکدام نشست ورود ذخیره می‌کند.
+- `helpers/` شامل REST client، نقش‌ها، fixtureها و factoryهای داده است.
+- `tests/` آزمون‌ها را براساس صفحه گروه‌بندی می‌کند؛ تغییر یک صفحه معمولاً آزمون همان پوشه را اجرا می‌کند:
+  - `tickets/list/`: صفحهٔ `Tickets.vue` و مسیرهای `/tickets` و `/my-tickets`
+  - `tickets/agent/`: صفحهٔ `TicketAgent.vue` و مسیر `/tickets/:id`
+  - `tickets/customer/`: صفحهٔ `TicketCustomer.vue` و مسیر `/my-tickets/:id`
+  - `tickets/new/`: صفحهٔ `TicketNew.vue` و مسیرهای ثبت تیکت
+  - `knowledge-base/`، `customer-management/` و `settings/`: آزمون مستقل برای هر صفحه یا زبانهٔ تنظیمات
+  - قابلیتی که چند صفحه را در بر می‌گیرد، مانند `tickets/form-script.spec.ts`، در یک فایل آزمون نگهداری می‌شود.
+  - آزمون‌های عمومی برنامه مانند ورود، راه‌اندازی اولیه، مجوزها و ناوبری در ریشهٔ `tests/` هستند.
 
-  Every role that touches a page is tested in its spec. Each spec creates its own data with unique names.
-- `fixtures/` holds files the specs upload.
+هر نقشی که صفحه‌ای را استفاده می‌کند باید در آزمون آن صفحه پوشش داده شود. هر آزمون دادهٔ مستقل با نام یکتا می‌سازد.
 
-## Writing a spec
+- `fixtures/` فایل‌هایی را نگه می‌دارد که آزمون‌ها بارگذاری می‌کنند.
 
-- Import `test`, `expect` and `uid` from `helpers/fixtures`, never from `@playwright/test`.
-- Call `usePersona("agent")` at file or `describe` level to pick who `page` is. `pageAs` opens a second user.
-- Seed over REST with `api`, `apiAs` or the `ticket` fixture. Click only through the flow under test.
-- Assert what was saved with `api` after the UI action, not only what the screen shows.
-- Give every record a `uid()` name so specs never depend on each other or on old runs.
-- Restore anything site-wide you change. `snapshotSettings` does this for HD Settings.
-- Title a test with a present-tense sentence about the behaviour, e.g. "comments post once, edit, delete and survive leaving the ticket".
-- A bug the spec finds gets fixed in the same PR, or the test becomes `test.fixme` with a one-line comment naming the cause.
-- Keep a folder under 15 specs. Split a growing area into its own folder under `tests/`.
+## نوشتن آزمون
+
+- `test`، `expect` و `uid` را از `helpers/fixtures` وارد کنید؛ مستقیماً از `@playwright/test` وارد نکنید.
+- در سطح فایل یا `describe` با `usePersona("agent")` نقش `page` را تعیین کنید. برای بازکردن نشست کاربر دوم از `pageAs` استفاده کنید.
+- داده را از REST با `api`، `apiAs` یا fixture `ticket` بسازید؛ فقط از مسیر رابط کاربری مورد آزمون عبور کنید.
+- پس از اقدام در UI، با `api` مقدار ذخیره‌شده را بررسی کنید؛ نمایش صفحه به‌تنهایی کافی نیست.
+- برای هر رکورد از نام `uid()` استفاده کنید تا آزمون‌ها به هم یا به اجرای قبلی وابسته نباشند.
+- هر تنظیم سراسری site را که تغییر می‌دهید بازگردانید. `snapshotSettings` این کار را برای HD Settings انجام می‌دهد.
+- عنوان آزمون را جمله‌ای کوتاه و زمان حال بنویسید که رفتار را شرح دهد.
+- باگی که آزمون آشکار می‌کند باید در همان PR رفع شود؛ اگر علت خارج از این مخزن است، آزمون را با `test.fixme` و توضیح یک‌خطی علت علامت بزنید.
+- هر پوشه حداکثر ۱۴ فایل آزمون داشته باشد. اگر بزرگ‌تر شد، بخش را به پوشهٔ جداگانه تقسیم کنید.

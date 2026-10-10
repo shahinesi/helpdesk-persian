@@ -23,7 +23,6 @@
             type="select"
             variant="ghost"
             class="w-full"
-            :placeholder="__('')"
             :options="from"
           />
         </div>
@@ -103,6 +102,7 @@
         <div class="overflow-y-auto min-h-[7rem] max-h-[30vh] flex flex-col">
           <div class="flex-1">
             <EditorContent
+              dir="auto"
               :class="[
                 'prose-sm max-w-full mx-6 md:mx-5 py-3',
                 getFontFamily(newEmail),
@@ -124,6 +124,7 @@
             <div
               ref="quotedContentRef"
               contenteditable="true"
+              dir="auto"
               class="prose !max-w-full mx-1 my-2 border-s-4 border-outline-gray-2 ps-4 text-sm focus:outline-none"
               @input="onQuotedInput"
             />
@@ -185,13 +186,13 @@
                   <ZapIcon class="h-4 w-4" />
                 </button>
               </Tooltip>
-              <div class="h-4 w-[2px] border-s ml-1" />
+              <div class="h-4 w-[2px] border-s ms-1" />
             </div>
             <EditorFixedMenu :items="fullToolbar" />
             <EditorTableMenu />
           </div>
           <div class="flex shrink-0 items-center justify-end gap-x-2">
-            <Button label="Discard" @click="handleDiscard" />
+            <Button :label="__(`Discard`)" @click="handleDiscard" />
             <!-- A disabled button fires no pointer events, so the span
                  carries the hover for the tooltip -->
             <Tooltip
@@ -533,7 +534,9 @@ function submitMail() {
     !bccEmailsClone.value.length
   ) {
     toast.warning(
-      "Email has no recipients. Please add at least one recipient (To, Cc, or Bcc) before sending."
+      __(
+        "Email has no recipients. Please add at least one recipient (To, Cc, or Bcc) before sending."
+      )
     );
     return false;
   }

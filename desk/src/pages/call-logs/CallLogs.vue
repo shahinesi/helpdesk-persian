@@ -2,11 +2,11 @@
   <div class="flex flex-col">
     <LayoutHeader>
       <template #left-header>
-        <div class="text-lg-medium text-ink-gray-9">Call Logs</div>
+        <div class="text-lg-medium text-ink-gray-9">{{ __("Call Logs") }}</div>
       </template>
       <template #right-header>
         <Button
-          label="New Call Log"
+          :label="__(`New Call Log`)"
           theme="gray"
           variant="solid"
           @click="newCallLog"
@@ -45,6 +45,7 @@ import { computed, h, ref } from "vue";
 import CallLogDetailModal from "./CallLogDetailModal.vue";
 import CallLogModal from "./CallLogModal.vue";
 import { statusColorMap, statusLabelMap } from "./utils";
+import { __ } from "@/translation";
 import { PhoneIcon } from "@/components/icons";
 
 const showCallLogModal = ref(false);
@@ -59,7 +60,7 @@ const options = computed(() => {
     selectable: true,
     showSelectBanner: true,
     emptyState: {
-      title: "No Call Logs Found",
+      title: __("No Call Logs Found"),
       icon: PhoneIcon,
     },
     columnConfig: {
@@ -67,26 +68,26 @@ const options = computed(() => {
         prefix: ({ row }) => {
           return h(Avatar, {
             shape: "circle",
-            image: row._caller?.image || "Unknown",
-            label: row._caller?.label || "Unknown",
+            image: row._caller?.image,
+            label: row._caller?.label || __("Unknown"),
             size: "sm",
           });
         },
         custom: ({ row }) => {
-          return h("span", row._caller?.label || "Unknown");
+          return h("span", row._caller?.label || __("Unknown"));
         },
       },
       receiver: {
         prefix: ({ row }) => {
           return h(Avatar, {
             shape: "circle",
-            image: row._receiver?.image || "Unknown",
-            label: row._receiver?.label || "Unknown",
+            image: row._receiver?.image,
+            label: row._receiver?.label || __("Unknown"),
             size: "sm",
           });
         },
         custom: ({ row }) => {
-          return h("span", row._receiver?.label || "Unknown");
+          return h("span", row._receiver?.label || __("Unknown"));
         },
       },
       type: {
@@ -100,11 +101,17 @@ const options = computed(() => {
             class: ["size-3 shrink-0"],
           });
         },
+        custom: ({ row }) => {
+          return h(
+            "span",
+            __(row.type === "Incoming" ? "Incoming Call" : "Outgoing Call")
+          );
+        },
       },
       status: {
         custom: ({ row }) => {
           return h(Badge, {
-            label: statusLabelMap[row.status],
+            label: __(statusLabelMap[row.status]),
             variant: "subtle",
             theme: statusColorMap[row.status],
           });
@@ -118,7 +125,7 @@ const options = computed(() => {
           });
         },
         custom: ({ row }) => {
-          return h("span", row.duration ? row.duration + "s" : "0s");
+          return h("span", __("{0}s", [row.duration || 0]));
         },
       },
     },
@@ -137,7 +144,7 @@ function openCallLog(id: string): void {
 
 usePageMeta(() => {
   return {
-    title: "Call Logs",
+    title: __("Call Logs"),
   };
 });
 </script>

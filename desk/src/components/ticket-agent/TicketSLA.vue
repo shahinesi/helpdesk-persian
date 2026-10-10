@@ -30,7 +30,7 @@
                 :key="row.label"
                 class="flex items-baseline justify-between gap-8"
               >
-                <span class="text-ink-gray-5">{{ __(row.label) }}</span>
+                <span class="text-ink-gray-5">{{ row.label }}</span>
                 <span
                   class="tabular-nums"
                   :class="row.danger ? 'text-ink-red-6' : 'text-ink-gray-8'"
@@ -52,7 +52,7 @@ import { slaTextColor, useSLA, type SLAMetric } from "@/composables/useSLA";
 import { __ } from "@/translation";
 import { TicketSymbol } from "@/types";
 import { dateFormat } from "@/utils";
-import { HoverCard } from "frappe-ui";
+import { dayjs, HoverCard } from "frappe-ui";
 import { computed, inject } from "vue";
 import LucideInfo from "~icons/lucide/info";
 
@@ -69,35 +69,39 @@ const { firstResponse, resolution } = useSLA(ticket);
 const cards = computed<SLACard[]>(() =>
   [
     {
-      title: "First Response",
+      title: __("First Response"),
       metric: firstResponse.value,
       fulfilledLabel: "Fulfilled",
-      actualLabel: "Responded on",
+      actualLabel: __("Responded on"),
     },
     {
-      title: "Resolution",
+      title: __("Resolution"),
       metric: resolution.value,
       fulfilledLabel: "Fulfilled",
-      actualLabel: "Resolved on",
+      actualLabel: __("Resolved on"),
     },
   ].filter((card): card is SLACard => Boolean(card.metric))
 );
 
 function cardValue(card: SLACard): string {
-  if (card.metric.state !== "fulfilled") return __(card.metric.value);
+  if (card.metric.state !== "fulfilled") return card.metric.value;
   if (!card.metric.fulfilledIn) return __(card.fulfilledLabel);
-  return `${__(card.fulfilledLabel)} ${__("in")} ${card.metric.fulfilledIn}`;
+  return __("Fulfilled in {0}", [card.metric.fulfilledIn]);
 }
 
 function cardDetails(card: SLACard) {
   const metric = card.metric;
   const rows = [];
   if (metric.dueBy) {
-    rows.push({ label: "Due by", value: fmt(metric.dueBy), danger: false });
+    rows.push({
+      label: __("Due by"),
+      value: fmt(metric.dueBy),
+      danger: false,
+    });
   }
   if (metric.state === "hold") {
     rows.push({
-      label: "On hold since",
+      label: __("On hold since"),
       value: fmt(ticket.value.doc.on_hold_since as string),
       danger: false,
     });
@@ -113,13 +117,15 @@ function cardDetails(card: SLACard) {
   }
   if (metric.delay) {
     rows.push({
-      label: metric.delayInWorkingHours ? "Delay (working hours)" : "Delay",
+      label: metric.delayInWorkingHours
+        ? __("Delay (working hours)")
+        : __("Delay"),
       value: metric.delay,
       danger: true,
     });
     if (metric.calendarDelay) {
       rows.push({
-        label: "Delay (total)",
+        label: __("Delay (total)"),
         value: `+${metric.calendarDelay}`,
         danger: true,
       });
@@ -127,7 +133,7 @@ function cardDetails(card: SLACard) {
   }
   if (metric.fulfilledIn) {
     rows.push({
-      label: "Fulfilled in",
+      label: __("Fulfilled in"),
       value: metric.fulfilledIn,
       danger: false,
     });
@@ -138,6 +144,10 @@ function cardDetails(card: SLACard) {
 function fmt(date: string): string {
   // Year included: SLA breaches span months/years, so a bare "MMM D" makes the
   // due/actual dates read as contradictory (e.g. resolved "before" the due date).
-  return dateFormat(date, "MMM D, YYYY, h:mm A");
+  const format =
+    dayjs.locale().split("-")[0] === "fa"
+      ? "D MMMM YYYY، HH:mm"
+      : "MMM D, YYYY, h:mm A";
+  return dateFormat(date, format);
 }
 </script>

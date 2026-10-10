@@ -5,7 +5,7 @@
     <!-- left box -->
     <div class="flex-1 flex flex-col gap-1.5">
       <span class="block text-xs text-ink-gray-5">
-        Select parent field value
+        {{ __("Select parent field value") }}
       </span>
       <div
         class="border border-outline-elevation-2 flex-1 border-e-0 rounded-s-4 p-2 flex flex-col gap-2"
@@ -34,7 +34,7 @@
                 @click="handleParentValueClick(value)"
               >
                 <span class="text-base text-ink-gray-6 max-w-[90%] truncate">{{
-                  value
+                  displayFieldValue(state.selectedParentField, value)
                 }}</span>
                 <LucideChevronRight
                   class="h-4 w-4 text-ink-gray-6 rtl:rotate-180"
@@ -58,7 +58,7 @@
           <div
             class="flex flex-col items-center mt-20 h-full text-ink-gray-4 text-sm"
           >
-            Please select a parent field first
+            {{ __("Please select a parent field first") }}
           </div>
         </template>
       </div>
@@ -66,7 +66,7 @@
     <!-- right box -->
     <div class="flex-1 flex flex-col gap-1.5">
       <span class="block text-xs text-ink-gray-5 ps-1.5">
-        Select child field value
+        {{ __("Select child field value") }}
       </span>
       <div
         class="border border-outline-elevation-2 flex-1 rounded-e-4 p-2 flex flex-col gap-2"
@@ -111,7 +111,9 @@
                   :model-value="isChildValueSelected(value)"
                   class="me-4"
                 />
-                <span class="text-base text-ink-gray-6">{{ value }}</span>
+                <span class="text-base text-ink-gray-6">{{
+                  displayFieldValue(state.selectedChildField, value)
+                }}</span>
               </li>
             </ul>
           </div>
@@ -120,14 +122,14 @@
           <div
             class="flex flex-col items-center mt-20 h-full text-ink-gray-4 text-sm"
           >
-            Please select a child field first
+            {{ __("Please select a child field first") }}
           </div>
         </template>
         <template v-else>
           <div
             class="flex flex-col items-center mt-20 h-full text-ink-gray-4 text-sm"
           >
-            Please select a parent value first
+            {{ __("Please select a parent value first") }}
           </div>
         </template>
       </div>
@@ -136,6 +138,9 @@
 </template>
 
 <script setup lang="ts">
+import { __ } from "@/translation";
+import { formatLocalizedDigits } from "@/utils/number";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { FieldCriteriaState } from "@/types";
 import { computed } from "vue";
 
@@ -145,6 +150,13 @@ const props = defineProps<{
 }>();
 
 const state = defineModel<FieldCriteriaState>();
+
+function displayFieldValue(fieldname: string, value: string) {
+  const field = props.parentFields.find((item) => item.value === fieldname);
+  return field?.type === "Link"
+    ? displayLinkOption(field.options, value)
+    : __(value);
+}
 
 const filteredParentFieldValues = computed(() => {
   if (!state.value.parentSearch) return state.value.parentFieldValues;
@@ -179,15 +191,15 @@ const filteredChildFieldValues = computed(() => {
 });
 
 const parentPlaceholder = computed(() => {
-  if (!state.value.selectedParentField) return "Search values";
+  if (!state.value.selectedParentField) return __("Search values");
   let label = props.parentFields.find(
     (f) => f.value === state.value.selectedParentField
   )?.label;
-  return `Search ${label} values`;
+  return __("Search {0} values", [label]);
 });
 const childPlaceholder = computed(() => {
-  if (!state.value.currentParentSelection) return "Search values";
-  return `Search ${state.value.currentParentSelection} values`;
+  if (!state.value.currentParentSelection) return __("Search values");
+  return __("Search {0} values", [state.value.currentParentSelection]);
 });
 
 function handleParentValueClick(value: string) {
@@ -237,12 +249,11 @@ const toggleAllChildValues = computed({
 
 const toggleCheckboxLabel = computed(() => {
   const parent = state.value.currentParentSelection;
-  if (!parent) return "Select All";
+  if (!parent) return __("Select All");
   const selectedCount = getSelectedChildValueCount(parent);
-  if (selectedCount === 0) return "Select All";
-  return `${selectedCount} ${
-    selectedCount === 1 ? "value" : "values"
-  } selected`;
+  if (selectedCount === 0) return __("Select All");
+  if (selectedCount === 1) return __("1 value selected");
+  return __("{0} values selected", [formatLocalizedDigits(selectedCount)]);
 });
 
 function handleSelectAllChildValues(value: boolean) {

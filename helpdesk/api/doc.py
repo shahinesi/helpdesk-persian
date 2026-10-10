@@ -406,7 +406,7 @@ def sort_options(doctype: str, show_customer_portal_fields: bool = False):
     standard_fields = [
         {"label": "Name", "value": "name"},
         {"label": "Created On", "value": "creation"},
-        {"label": "Last Modified", "value": "modified"},
+        {"label": _("Last Modified"), "value": "modified"},
         {"label": "Modified By", "value": "modified_by"},
         {"label": "Owner", "value": "owner"},
     ]

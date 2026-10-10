@@ -1,45 +1,44 @@
 ---
-name: Bug Report
-description: Report a bug encountered while using Frappe Helpdesk
+name: گزارش ایراد
+description: گزارش مشکلی که هنگام استفاده از هلپ‌دسک دیده‌اید
 labels: ["bug"]
 
 body:
   - type: markdown
     attributes:
       value: |
-        Welcome to Frappe Helpdesk issue tracker! Before creating an issue, please consider the following:
+        به بخش ثبت مسئلهٔ هلپ‌دسک خوش آمدید. پیش از ثبت، این موارد را بخوانید:
 
-        1. This tracker should only be used to report bugs and request features / enhancements to Frappe Helpdesk
-            - For questions and general support, checkout the [documentation](https://docs.frappe.io/helpdesk) or use the [forum](https://discuss.frappe.io) to get inputs from the open source community.
-            - For documentation issues, propose edit on the [documentation site](https://docs.frappe.io/helpdesk) directly.
-        2. When making a bug report, make sure you provide all required information. The easier it is for
-           maintainers to reproduce, the faster it'll be fixed.
-        3. If you think you know what the reason for the bug is, share it with us. Maybe put in a PR 😉
+        ۱. از این بخش فقط برای گزارش ایراد یا پیشنهاد قابلیت و بهبود هلپ‌دسک استفاده کنید.
+            - برای پرسش و پشتیبانی عمومی، [مستندات](https://docs.frappe.io/helpdesk) یا [انجمن](https://discuss.frappe.io) را ببینید.
+            - برای اصلاح مستندات، پیشنهاد تغییر را مستقیماً در [وب‌سایت مستندات](https://docs.frappe.io/helpdesk) ثبت کنید.
+        ۲. همهٔ اطلاعات لازم را بنویسید تا بازتولید مشکل برای نگه‌دارندگان آسان‌تر شود.
+        ۳. اگر علت احتمالی را می‌دانید، توضیح دهید؛ حتی می‌توانید Pull Request بفرستید 😉
 
   - type: textarea
     id: bug-info
     attributes:
-      label: Information about bug
-      description: Also tell us, what did you expect to happen? If applicable, add screenshots to help explain your problem.
-      placeholder: Please provide as much information as possible.
+      label: شرح ایراد
+      description: بگویید انتظار داشتید چه اتفاقی بیفتد. در صورت نیاز برای توضیح مشکل تصویر اضافه کنید.
+      placeholder: لطفاً جزئیات لازم را بنویسید.
     validations:
       required: true
 
   - type: textarea
     id: exact-version
     attributes:
-      label: Version
-      description: Share exact version number of Frappe, and Frappe Helpdesk you are using.
+      label: نسخه
+      description: شمارهٔ دقیق نسخهٔ Frappe و Helpdesk را بنویسید.
       placeholder: |
-        Frappe version -
-        Frappe Helpdesk version -
+        نسخهٔ Frappe:
+        نسخهٔ Helpdesk:
     validations:
       required: true
 
   - type: dropdown
     id: install-method
     attributes:
-      label: Installation method
+      label: روش نصب
       options:
         - docker
         - easy-install
@@ -51,8 +50,6 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Relevant log output / Stack trace / Full Error Message.
-      description: Please copy and paste any relevant log output. This will be automatically formatted.
+      label: خروجی مرتبط لاگ، Stack trace یا متن کامل خطا
+      description: خروجی مرتبط را کپی کنید؛ متن به‌صورت خودکار قالب‌بندی می‌شود.
       render: shell
-
-...

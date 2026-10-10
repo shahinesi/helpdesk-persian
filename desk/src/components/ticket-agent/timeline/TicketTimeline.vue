@@ -142,6 +142,7 @@ import { useAuthStore } from "@/stores/auth";
 import { globalStore } from "@/stores/globalStore";
 import { useUserStore } from "@/stores/user";
 import { __ } from "@/translation";
+import { displayLinkOption } from "@/utils/displayLinkOption";
 import { TicketSymbol } from "@/types";
 import { copyActivityLink } from "@/utils";
 import {
@@ -155,6 +156,8 @@ import {
   type CustomActivity,
   type EmailActivity,
   type LogActivity,
+  type VersionActivity,
+  type VersionChange,
 } from "@framework/ui/ActivityTimeline";
 import { Button, Dropdown, call } from "frappe-ui";
 import {
@@ -236,9 +239,88 @@ const filtered = computed(() => {
     (a) =>
       !(a.type === "log" && ["edited", "created"].includes(a.data?.subtype))
   );
-  if (props.tab === "activity") return rows;
-  return rows.filter((a) => a.type === props.tab);
+  return rows
+    .filter((a) => props.tab === "activity" || a.type === props.tab)
+    .map((activity) =>
+      activity.type === "version" ? localizeStandardValues(activity) : activity
+    );
 });
+
+const STANDARD_PRIORITIES = new Set(["Low", "Medium", "High", "Urgent"]);
+const VERSION_FIELD_LABELS: Record<string, string> = {
+  status: "Status",
+  priority: "Priority",
+  agent_group: "Team",
+  ticket_type: "Ticket Type",
+  sla: "SLA",
+};
+
+function localizeStandardValue(fieldname: string, value: string | undefined) {
+  if (fieldname === "status" && value) {
+    return displayLinkOption("HD Ticket Status", value);
+  }
+  if (fieldname === "priority" && value && STANDARD_PRIORITIES.has(value)) {
+    return __(value);
+  }
+  if (fieldname === "agent_group" && value) {
+    return displayLinkOption("HD Team", value);
+  }
+  if (fieldname === "ticket_type" && value)
+    return displayLinkOption("HD Ticket Type", value);
+  return value;
+}
+
+function localizeStandardValues(activity: VersionActivity): VersionActivity {
+  const localizeChange = (change: VersionChange): VersionChange => {
+    if (
+      change.type !== "diff" ||
+      !change.fieldname ||
+      !(change.fieldname in VERSION_FIELD_LABELS)
+    ) {
+      return change;
+    }
+    const fieldLabel = __(VERSION_FIELD_LABELS[change.fieldname]);
+    const to = localizeStandardValue(change.fieldname, change.to) ?? change.to;
+    return {
+      ...change,
+      displayText: change.from
+        ? __(
+            "{0} changed from {1} to {2}",
+            fieldLabel,
+            localizeStandardValue(change.fieldname, change.from) ?? change.from,
+            to
+          )
+        : __("{0} set to {1}", fieldLabel, to),
+      from: localizeStandardValue(change.fieldname, change.from),
+      to,
+      history: change.history?.map((entry) => ({
+        ...entry,
+        from: localizeStandardValue(change.fieldname, entry.from) ?? entry.from,
+        to: localizeStandardValue(change.fieldname, entry.to) ?? entry.to,
+        displayText: entry.from
+          ? __(
+              "{0} changed from {1} to {2}",
+              fieldLabel,
+              localizeStandardValue(change.fieldname, entry.from) ?? entry.from,
+              localizeStandardValue(change.fieldname, entry.to) ?? entry.to
+            )
+          : __(
+              "{0} set to {1}",
+              fieldLabel,
+              localizeStandardValue(change.fieldname, entry.to) ?? entry.to
+            ),
+      })),
+    };
+  };
+
+  return {
+    ...activity,
+    data: {
+      ...localizeChange(activity.data),
+      group: activity.data.group?.map(localizeChange),
+    },
+  };
+}
 
 const emptyIcon = computed(
   () =>

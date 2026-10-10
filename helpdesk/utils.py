@@ -338,7 +338,7 @@ call_log_default_columns = [
 
 def seconds_to_duration(seconds):
     if not seconds:
-        return "0s"
+        return _("{0}s").format(0)
 
     hours = floor(seconds // 3600)
     minutes = floor((seconds % 3600) // 60)
@@ -352,22 +352,14 @@ def seconds_to_duration(seconds):
     # 0h 1m 1s -> 1m 1s
     # 1h 1m 1s -> 1h 1m 1s
 
-    if hours and minutes and seconds:
-        return f"{hours}h {minutes}m {seconds}s"
-    elif hours and minutes:
-        return f"{hours}h {minutes}m"
-    elif hours and seconds:
-        return f"{hours}h {seconds}s"
-    elif minutes and seconds:
-        return f"{minutes}m {seconds}s"
-    elif hours:
-        return f"{hours}h"
-    elif minutes:
-        return f"{minutes}m"
-    elif seconds:
-        return f"{seconds}s"
-    else:
-        return "0s"
+    parts = []
+    if hours:
+        parts.append(_("{0}h").format(hours))
+    if minutes:
+        parts.append(_("{0}m").format(minutes))
+    if seconds:
+        parts.append(_("{0}s").format(seconds))
+    return " ".join(parts) or _("{0}s").format(0)
 
 
 def parse_phone_number(phone_number, default_country="IN"):
@@ -518,7 +510,7 @@ def format_time_difference(dt, context="ago"):
         past_label = "overdue"
     else:
         diff = now - dt
-        past_label = "0m"
+        past_label = _("Just now")
 
     total_seconds = diff.total_seconds()
 
@@ -526,11 +518,30 @@ def format_time_difference(dt, context="ago"):
         return past_label
 
     if total_seconds < 3600:
-        return f"{int(total_seconds // 60)}m"
+        value, unit = int(total_seconds // 60), "minute"
     elif total_seconds < 86400:
-        return f"{int(total_seconds // 3600)}h"
+        value, unit = int(total_seconds // 3600), "hour"
     else:
-        return f"{int(total_seconds // 86400)}d"
+        value, unit = int(total_seconds // 86400), "day"
+
+    if context == "ago":
+        if value == 1:
+            return {
+                "minute": _("1 minute ago"),
+                "hour": _("1 hour ago"),
+                "day": _("1 day ago"),
+            }[unit]
+        return {
+            "minute": _("{0} minutes ago").format(value),
+            "hour": _("{0} hours ago").format(value),
+            "day": _("{0} days ago").format(value),
+        }[unit]
+
+    return {
+        "minute": _("{0}m").format(value),
+        "hour": _("{0}h").format(value),
+        "day": _("{0}d").format(value),
+    }[unit]
 
 
 def get_country_from_timezone(time_zone: str):

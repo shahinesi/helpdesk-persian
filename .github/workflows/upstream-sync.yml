@@ -1,0 +1,192 @@
+name: Safe upstream sync
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync-and-propose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout all repository refs
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch upstream and fast-forward vendor mirrors
+        id: mirrors
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git remote add upstream https://github.com/frappe/helpdesk.git
+          git fetch --no-tags upstream \
+            +refs/heads/main:refs/remotes/upstream/main \
+            +refs/heads/main-hotfix:refs/remotes/upstream/main-hotfix \
+            +refs/heads/develop:refs/remotes/upstream/develop \
+            +refs/heads/legacy:refs/remotes/upstream/legacy
+
+          for branch in main main-hotfix develop legacy; do
+            source="refs/remotes/upstream/$branch"
+            mirror="vendor/$branch"
+            remote_sha="$(git ls-remote origin "refs/heads/$mirror" | cut -f1)"
+            source_sha="$(git rev-parse "$source")"
+
+            if [[ -z "$remote_sha" ]]; then
+              git push origin "$source_sha:refs/heads/$mirror"
+            elif git merge-base --is-ancestor "$remote_sha" "$source_sha"; then
+              if [[ "$remote_sha" != "$source_sha" ]]; then
+                git push origin "$source_sha:refs/heads/$mirror"
+              fi
+            elif git merge-base --is-ancestor "$source_sha" "$remote_sha"; then
+              echo "::error title=Vendor mirror ahead::$mirror contains commits absent upstream; refusing to move it backwards."
+              exit 1
+            else
+              echo "::error title=Vendor history diverged::$mirror cannot be fast-forwarded safely."
+              exit 1
+            fi
+          done
+
+      - name: Prepare Persian develop update proposal
+        id: proposal
+        run: |
+          set -euo pipefail
+          git fetch origin \
+            refs/heads/custom/develop-fa:refs/remotes/origin/custom/develop-fa \
+            refs/heads/vendor/develop:refs/remotes/origin/vendor/develop
+          base="refs/remotes/origin/custom/develop-fa"
+          upstream="refs/remotes/origin/vendor/develop"
+          branch="sync/upstream-develop-fa"
+
+          if git merge-base --is-ancestor "$upstream" "$base"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            git fetch origin "refs/heads/$branch:refs/remotes/origin/$branch"
+            git switch --create "$branch" --track "refs/remotes/origin/$branch"
+            git merge --no-edit --no-ff "$base"
+          else
+            git switch --create "$branch" "$base"
+          fi
+
+          git merge --no-edit --no-ff "$upstream"
+          git push --set-upstream origin "$branch"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse "$base")" >> "$GITHUB_OUTPUT"
+          echo "upstream_sha=$(git rev-parse "$upstream")" >> "$GITHUB_OUTPUT"
+          echo "proposal_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update draft update proposal
+        if: steps.proposal.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ steps.proposal.outputs.base_sha }}
+          UPSTREAM_SHA: ${{ steps.proposal.outputs.upstream_sha }}
+          PROPOSAL_SHA: ${{ steps.proposal.outputs.proposal_sha }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/upstream-proposal.md" <<EOF
+          ## Upstream update proposal
+
+          - Persian base: \`$BASE_SHA\`
+          - Upstream develop: \`$UPSTREAM_SHA\`
+          - Candidate merge: \`$PROPOSAL_SHA\`
+          - Conflict handling: clean merge only; conflicts stop this workflow.
+          - Validation: automated CI runs on this proposal. No automatic merge or deployment is enabled.
+
+          Review dependency changes, migrations, translations, RTL behavior, and Jalali date behavior before merging.
+          EOF
+
+          existing="$(gh pr list --state open --base custom/develop-fa --head "${GITHUB_REPOSITORY_OWNER}:sync/upstream-develop-fa" --json url --jq '.[0].url // empty')"
+          if [[ -n "$existing" ]]; then
+            gh pr edit "$existing" --title "chore(upstream): propose develop update" --body-file "$RUNNER_TEMP/upstream-proposal.md"
+          else
+            gh pr create --draft --base custom/develop-fa --head sync/upstream-develop-fa \
+              --title "chore(upstream): propose develop update" \
+              --body-file "$RUNNER_TEMP/upstream-proposal.md"
+          fi
+
+      - name: Prepare Persian main update proposal
+        id: main-proposal
+        run: |
+          set -euo pipefail
+          base_branch="custom/main-fa"
+          upstream_branch="vendor/main"
+          proposal_branch="sync/upstream-main-fa"
+
+          if ! git ls-remote --exit-code --heads origin "$base_branch" >/dev/null 2>&1; then
+            echo "custom/main-fa is not initialized; skipping stable proposal."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git fetch origin \
+            "refs/heads/$base_branch:refs/remotes/origin/$base_branch" \
+            "refs/heads/$upstream_branch:refs/remotes/origin/$upstream_branch"
+          base="refs/remotes/origin/$base_branch"
+          upstream="refs/remotes/origin/$upstream_branch"
+
+          if git merge-base --is-ancestor "$upstream" "$base"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git switch --detach "$GITHUB_SHA"
+          if git ls-remote --exit-code --heads origin "$proposal_branch" >/dev/null 2>&1; then
+            git fetch origin "refs/heads/$proposal_branch:refs/remotes/origin/$proposal_branch"
+            git switch --create "$proposal_branch" --track "refs/remotes/origin/$proposal_branch"
+            git merge --no-edit --no-ff "$base"
+          else
+            git switch --create "$proposal_branch" "$base"
+          fi
+
+          git merge --no-edit --no-ff "$upstream"
+          git push --set-upstream origin "$proposal_branch"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git rev-parse "$base")" >> "$GITHUB_OUTPUT"
+          echo "upstream_sha=$(git rev-parse "$upstream")" >> "$GITHUB_OUTPUT"
+          echo "proposal_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update draft stable proposal
+        if: steps.main-proposal.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ steps.main-proposal.outputs.base_sha }}
+          UPSTREAM_SHA: ${{ steps.main-proposal.outputs.upstream_sha }}
+          PROPOSAL_SHA: ${{ steps.main-proposal.outputs.proposal_sha }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/upstream-main-proposal.md" <<EOF
+          ## Upstream stable update proposal
+
+          - Persian base: \`$BASE_SHA\`
+          - Upstream main: \`$UPSTREAM_SHA\`
+          - Candidate merge: \`$PROPOSAL_SHA\`
+          - Conflict handling: clean merge only; conflicts stop this workflow.
+          - Validation: automated CI runs on this proposal. No automatic merge or deployment is enabled.
+
+          Review dependency changes, migrations, translations, RTL behavior, and Jalali date behavior before merging.
+          EOF
+
+          existing="$(gh pr list --state open --base custom/main-fa --head "${GITHUB_REPOSITORY_OWNER}:sync/upstream-main-fa" --json url --jq '.[0].url // empty')"
+          if [[ -n "$existing" ]]; then
+            gh pr edit "$existing" --title "chore(upstream): propose main update" --body-file "$RUNNER_TEMP/upstream-main-proposal.md"
+          else
+            gh pr create --draft --base custom/main-fa --head sync/upstream-main-fa \
+              --title "chore(upstream): propose main update" \
+              --body-file "$RUNNER_TEMP/upstream-main-proposal.md"
+          fi

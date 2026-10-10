@@ -15,7 +15,12 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
-import { buildPercentageChange, formatTime } from "@/utils";
+import {
+  buildPercentageChange,
+  formatLocalizedDate,
+  formatLocalizedNumber,
+  formatTime,
+} from "@/utils";
 import { EChartsOption } from "echarts";
 import { createResource } from "frappe-ui";
 import { computed, onMounted, ref, type PropType } from "vue";
@@ -78,13 +83,14 @@ const chartData = computed(() => {
   const isDataFetched = resource.fetched;
   const _data: AverageResponseData = isDataFetched ? resource.data : props.data;
 
-  const dates = _data?.data?.map((item) => item.date) || [];
+  const dates =
+    _data?.data?.map((item) => formatLocalizedDate(item.date, "MMM D")) || [];
 
   const seriesData =
     _data?.data?.map((item) =>
       props.type === "Time" ? item.avg_time : item.count
     ) || [];
-  const _percentageChange = _data?.percentage_change || 0;
+  const _percentageChange = _data?.percentage_change ?? null;
   const percentageChange = buildPercentageChange(_percentageChange);
 
   // for time take average and for count take total
@@ -95,7 +101,7 @@ const chartData = computed(() => {
           hour: true,
           minute: true,
           maxUnits: 2,
-        }) || "0m"
+        }) || __("0m")
       : _data?.total || 0;
 
   return {
@@ -174,8 +180,8 @@ const chartConfig = computed<EChartsOption>(() => {
                 hour: true,
                 minute: true,
                 maxUnits: 2,
-              }) || "0m"
-            : p.value;
+              }) || __("0m")
+            : formatLocalizedNumber(Number(p.value));
         return `<span style="font-size:12px;color:#6b7280">${p.name}: <b style="color:#374151">${value}</b></span>`;
       },
     },

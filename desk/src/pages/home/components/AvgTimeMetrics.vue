@@ -30,6 +30,7 @@
           </template>
         </Dropdown>
         <DateRangePicker
+          :today-label="__('Today')"
           v-else
           ref="datePickerRef"
           :model-value="customDateRange ? customDateRange.split(',') : []"
@@ -143,7 +144,7 @@ import { computed, onMounted, ref, type PropType, nextTick } from "vue";
 import { EChartsOption } from "echarts";
 import { createResource, Dropdown, DateRangePicker, Button } from "frappe-ui";
 import { ECharts } from "frappe-ui/experimental";
-import { dataTheme, formatTime } from "@/utils";
+import { dataTheme, formatLocalizedDate, formatTime } from "@/utils";
 import { __ } from "@/translation";
 import EmptyState from "@/components/EmptyState.vue";
 
@@ -248,13 +249,13 @@ const timeAverages = computed(() => {
         day: true,
         hour: true,
         minute: true,
-      }) || "0m",
+      }) || __("0m"),
     resolution:
       formatTime(_averageResolution, {
         day: true,
         hour: true,
         minute: true,
-      }) || "0m",
+      }) || __("0m"),
   };
 });
 
@@ -268,6 +269,11 @@ const chartConfig = computed<EChartsOption>(() => {
   let data = getAvgTimeMetricsResource.fetched
     ? getAvgTimeMetricsResource.data?.data
     : props.data?.data || [];
+  data = data.map(([month, firstResponse, resolution]) => [
+    formatLocalizedDate(month, "MMM"),
+    firstResponse,
+    resolution,
+  ]);
 
   return {
     legend: {},
@@ -315,15 +321,13 @@ const chartConfig = computed<EChartsOption>(() => {
     },
     yAxis: {
       axisLabel: {
-        formatter: (value: number) => {
-          if (value < 3600) {
-            return (value / 60).toFixed(0) + "m";
-          } else if (value < 86400) {
-            return (value / 3600).toFixed(0) + "h";
-          } else {
-            return (value / 86400).toFixed(0) + "d";
-          }
-        },
+        formatter: (value: number) =>
+          formatTime(value, {
+            day: true,
+            hour: true,
+            minute: true,
+            maxUnits: 1,
+          }) || __("0m"),
         margin: 20,
       },
       axisTick: { show: true },

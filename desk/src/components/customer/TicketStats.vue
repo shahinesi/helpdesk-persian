@@ -29,7 +29,8 @@
                 </span>
               </div>
               <span class="text-sm text-ink-gray-5">
-                {{ (chartData as any).total ?? 0 }} {{ __("reviews") }}
+                {{ formatLocalizedNumber((chartData as any).total ?? 0) }}
+                {{ __("reviews") }}
               </span>
             </div>
           </template>
@@ -85,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatLocalizedNumber } from "@/utils/number";
 import { createResource } from "frappe-ui";
 import BarChartCard from "../BarChartCard.vue";
 import LineChartCard from "../LineChartCard.vue";

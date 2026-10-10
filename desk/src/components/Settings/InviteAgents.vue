@@ -10,6 +10,7 @@
           :required="true"
           :label="__('Invite by email')"
           placeholder="user1@example.com, user2@example.com, ..."
+          dir="ltr"
           v-model="emails"
           :debounce="100"
           :description="__('Comma separated emails to invite.')"
@@ -48,7 +49,7 @@
             class="flex items-center justify-between px-3 py-1 rounded-6 bg-surface-gray-2"
           >
             <div class="text-base">
-              <span class="text-ink-gray-8">
+              <span dir="ltr" class="text-ink-gray-8">
                 {{ invite.email }}
               </span>
               <span class="text-ink-gray-5">
@@ -138,11 +139,11 @@ type RoleOption = {
 const roleToLabel = (role: Role) => {
   switch (role) {
     case "Agent":
-      return "Agent";
+      return __("Agent");
     case "Agent Manager":
-      return "Manager";
+      return __("Manager");
     case "System Manager":
-      return "Admin";
+      return __("Admin");
     default:
       const x: never = role;
       throw new Error(`Invalid role: ${x}`);

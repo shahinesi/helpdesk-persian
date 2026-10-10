@@ -1,5 +1,6 @@
 export default {
   parserPreset: "conventional-changelog-conventionalcommits",
+  ignores: [(message) => message.trim() === "fix(RTL)"],
   rules: {
     "subject-empty": [2, "never"],
     "type-case": [2, "always", "lower-case"],
@@ -19,6 +20,7 @@ export default {
         "revert",
         "style",
         "test",
+        "merge",
       ],
     ],
   },

@@ -2,13 +2,18 @@ import { router } from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import type { DropdownOption } from "@/types";
 import { useClipboard } from "@vueuse/core";
-import { call, dayjsLocal, toast, useFileUpload } from "frappe-ui";
+import { call, dayjs, dayjsLocal, toast, useFileUpload } from "frappe-ui";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { toJalaali } from "jalaali-js";
+import type { Dayjs } from "dayjs/esm";
 import { h, ref } from "vue";
 import zod from "zod";
 import LucideBrushCleaning from "~icons/lucide/brush-cleaning";
 import { Icon } from "frappe-ui/experimental";
 import { getMeta } from "./stores/meta";
 import { __ } from "./translation";
+import { formatLocalizedNumber } from "./utils/number";
+export { formatLocalizedNumber } from "./utils/number";
 
 /**
  * Wrapper to create toasts, supplied with default options.
@@ -64,11 +69,122 @@ export function getTimeFormat(): string {
   return (window as any).time_format || "HH:mm:ss";
 }
 
-export function dateFormat(date, format?: string) {
+export function dateFormat(
+  date: string | number | Date | Dayjs | null | undefined,
+  format?: string
+) {
   const _format = format || `${getDateFormat()} ${getTimeFormat()}`;
   if (!date) return "";
-  const tzDate = dayjsLocal(date);
-  return tzDate.format(_format);
+  return formatLocalizedDate(date, _format);
+}
+
+/** Format Gregorian API dates in the active display calendar. */
+export function formatLocalizedDate(
+  date: string | number | Date | Dayjs | null | undefined,
+  format = getDateFormat()
+) {
+  const value =
+    date instanceof Date
+      ? dayjs(date)
+      : date && typeof date === "object" && "$isDayjsObject" in date
+      ? (date as Dayjs)
+      : typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)
+      ? dayjs(date)
+      : dayjsLocal(date as string);
+  if (!value.isValid()) return "";
+  if (dayjs.locale().split("-")[0] !== "fa") return value.format(format);
+
+  const { jy, jm, jd } = toJalaali(
+    value.year(),
+    value.month() + 1,
+    value.date()
+  );
+  const intlDate = new Date(
+    Date.UTC(value.year(), value.month(), value.date(), 12)
+  );
+  const locale = "fa-u-ca-persian-nu-arabext";
+  const month = new Intl.DateTimeFormat(locale, {
+    month: "long",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const shortMonth = new Intl.DateTimeFormat(locale, {
+    month: "short",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const weekday = new Intl.DateTimeFormat(locale, {
+    weekday: "long",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const shortWeekday = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const narrowWeekday = new Intl.DateTimeFormat(locale, {
+    weekday: "narrow",
+    timeZone: "UTC",
+  }).format(intlDate);
+  const dayPeriod = new Intl.DateTimeFormat(locale, {
+    hour: "numeric",
+    hour12: true,
+    timeZone: "UTC",
+  })
+    .formatToParts(new Date(Date.UTC(2000, 0, 1, value.hour())))
+    .find((part) => part.type === "dayPeriod")?.value;
+  const values: Record<string, string> = {
+    YYYY: String(jy),
+    YY: String(jy).slice(-2),
+    MMMM: month,
+    MMM: shortMonth,
+    MM: String(jm).padStart(2, "0"),
+    M: String(jm),
+    DD: String(jd).padStart(2, "0"),
+    D: String(jd),
+    dddd: weekday,
+    ddd: shortWeekday,
+    dd: narrowWeekday,
+    d: String(value.day()),
+    A: dayPeriod || "",
+    a: dayPeriod || "",
+  };
+  const localizedFormat = format.replace(
+    /\[[^\]]+\]|YYYY|MMMM|dddd|MMM|ddd|YY|MM|DD|M|D|dd|d|A|a/g,
+    (token) => (token.startsWith("[") ? token : `[${values[token]}]`)
+  );
+  return digitsEnToFa(value.format(localizedFormat));
+}
+
+export function formatLocalizedDateRange(
+  from: string | Date | Dayjs,
+  to: string | Date | Dayjs,
+  format = getDateFormat()
+) {
+  if (dayjs.locale().split("-")[0] !== "fa") {
+    return `${formatLocalizedDate(from, format)} to ${formatLocalizedDate(
+      to,
+      format
+    )}`;
+  }
+
+  const toIntlDate = (date: string | Date | Dayjs) => {
+    const value =
+      date instanceof Date
+        ? dayjs(date)
+        : typeof date === "object" && "$isDayjsObject" in date
+        ? (date as Dayjs)
+        : /^\d{4}-\d{2}-\d{2}$/.test(date)
+        ? dayjs(date)
+        : dayjsLocal(date);
+    if (!value.isValid()) return new Date(NaN);
+    return new Date(Date.UTC(value.year(), value.month(), value.date(), 12));
+  };
+
+  return new Intl.DateTimeFormat("fa-u-ca-persian-nu-arabext", {
+    calendar: "persian",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).formatRange(toIntlDate(from), toIntlDate(to));
 }
 
 export function timeAgo(date) {
@@ -101,32 +217,34 @@ export function prettyDate(date, mini = false) {
       if (absDiff < 60) return __("Now");
       if (absDiff < 3600) {
         const minutes = Math.floor(absDiff / 60);
-        return diff >= 0 ? __("{0} m", [minutes]) : __("in {0} m", [minutes]);
+        const value = formatLocalizedNumber(minutes);
+        return diff >= 0 ? __("{0} m", [value]) : __("in {0} m", [value]);
       }
       const hours = Math.floor(absDiff / 3600);
-      return diff >= 0 ? __("{0} h", [hours]) : __("in {0} h", [hours]);
+      const value = formatLocalizedNumber(hours);
+      return diff >= 0 ? __("{0} h", [value]) : __("in {0} h", [value]);
     } else if (diff < 0) {
       const ahead = -dayDiff;
       if (ahead === 1) {
         return __("Tomorrow");
       } else if (ahead < 7) {
-        return __("in {0} d", [ahead]);
+        return __("in {0} d", [formatLocalizedNumber(ahead)]);
       } else if (ahead < 31) {
-        return __("in {0} w", [Math.floor(ahead / 7)]);
+        return __("in {0} w", [formatLocalizedNumber(Math.floor(ahead / 7))]);
       } else if (ahead < 365) {
-        return __("in {0} M", [Math.floor(ahead / 30)]);
+        return __("in {0} M", [formatLocalizedNumber(Math.floor(ahead / 30))]);
       } else {
-        return __("in {0} y", [Math.floor(ahead / 365)]);
+        return __("in {0} y", [formatLocalizedNumber(Math.floor(ahead / 365))]);
       }
     } else {
       if (dayDiff < 7) {
-        return __("{0} d", [dayDiff]);
+        return __("{0} d", [formatLocalizedNumber(dayDiff)]);
       } else if (dayDiff < 31) {
-        return __("{0} w", [Math.floor(dayDiff / 7)]);
+        return __("{0} w", [formatLocalizedNumber(Math.floor(dayDiff / 7))]);
       } else if (dayDiff < 365) {
-        return __("{0} M", [Math.floor(dayDiff / 30)]);
+        return __("{0} M", [formatLocalizedNumber(Math.floor(dayDiff / 30))]);
       } else {
-        return __("{0} y", [Math.floor(dayDiff / 365)]);
+        return __("{0} y", [formatLocalizedNumber(Math.floor(dayDiff / 365))]);
       }
     }
   } else {
@@ -137,47 +255,67 @@ export function prettyDate(date, mini = false) {
       if (diff >= 0) {
         if (absDiff < 120) return __("1 minute ago");
         if (absDiff < 3600)
-          return __("{0} minutes ago", [Math.floor(absDiff / 60)]);
+          return __("{0} minutes ago", [
+            formatLocalizedNumber(Math.floor(absDiff / 60)),
+          ]);
         if (absDiff < 7200) return __("1 hour ago");
-        return __("{0} hours ago", [Math.floor(absDiff / 3600)]);
+        return __("{0} hours ago", [
+          formatLocalizedNumber(Math.floor(absDiff / 3600)),
+        ]);
       }
       if (absDiff < 120) return __("In 1 minute");
       if (absDiff < 3600)
-        return __("In {0} minutes", [Math.floor(absDiff / 60)]);
+        return __("In {0} minutes", [
+          formatLocalizedNumber(Math.floor(absDiff / 60)),
+        ]);
       if (absDiff < 7200) return __("In 1 hour");
-      return __("In {0} hours", [Math.floor(absDiff / 3600)]);
+      return __("In {0} hours", [
+        formatLocalizedNumber(Math.floor(absDiff / 3600)),
+      ]);
     } else if (diff < 0) {
       const ahead = -dayDiff;
       if (ahead === 1) {
         return __("Tomorrow");
       } else if (ahead < 7) {
-        return __("In {0} days", [ahead]);
+        return __("In {0} days", [formatLocalizedNumber(ahead)]);
       } else if (ahead < 31) {
-        return __("In {0} weeks", [Math.floor(ahead / 7)]);
+        return __("In {0} weeks", [
+          formatLocalizedNumber(Math.floor(ahead / 7)),
+        ]);
       } else if (ahead < 365) {
-        return __("In {0} months", [Math.floor(ahead / 30)]);
+        return __("In {0} months", [
+          formatLocalizedNumber(Math.floor(ahead / 30)),
+        ]);
       } else if (ahead < 730) {
         return __("In 1 year");
       } else {
-        return __("In {0} years", [Math.floor(ahead / 365)]);
+        return __("In {0} years", [
+          formatLocalizedNumber(Math.floor(ahead / 365)),
+        ]);
       }
     } else {
       if (dayDiff === 1) {
         return __("Yesterday");
       } else if (dayDiff < 7) {
-        return __("{0} days ago", [dayDiff]);
+        return __("{0} days ago", [formatLocalizedNumber(dayDiff)]);
       } else if (dayDiff < 14) {
         return __("1 week ago");
       } else if (dayDiff < 31) {
-        return __("{0} weeks ago", [Math.floor(dayDiff / 7)]);
+        return __("{0} weeks ago", [
+          formatLocalizedNumber(Math.floor(dayDiff / 7)),
+        ]);
       } else if (dayDiff < 62) {
         return __("1 month ago");
       } else if (dayDiff < 365) {
-        return __("{0} months ago", [Math.floor(dayDiff / 30)]);
+        return __("{0} months ago", [
+          formatLocalizedNumber(Math.floor(dayDiff / 30)),
+        ]);
       } else if (dayDiff < 730) {
         return __("1 year ago");
       } else {
-        return __("{0} years ago", [Math.floor(dayDiff / 365)]);
+        return __("{0} years ago", [
+          formatLocalizedNumber(Math.floor(dayDiff / 365)),
+        ]);
       }
     }
   }
@@ -212,26 +350,25 @@ export function formatTime(
   const parts: string[] = [];
 
   if (config.day && days > 0) {
-    parts.push(`${days}d`);
+    parts.push(__("{0}d", [formatLocalizedNumber(days)]));
   }
 
   if (config.hour && (hours > 0 || days > 0)) {
-    parts.push(`${hours}h`);
+    parts.push(__("{0}h", [formatLocalizedNumber(hours)]));
   }
 
   if (config.minute && (minutes > 0 || hours > 0 || days > 0)) {
-    parts.push(`${minutes}m`);
+    parts.push(__("{0}m", [formatLocalizedNumber(minutes)]));
   }
 
   if (config.second) {
     parts.push(
-      `${
-        remainingSeconds >= 10
-          ? remainingSeconds
-          : remainingSeconds > 1
-          ? "0" + remainingSeconds
-          : "0"
-      }s`
+      __("{0}s", [
+        formatLocalizedNumber(remainingSeconds, {
+          minimumIntegerDigits: 2,
+          useGrouping: false,
+        }),
+      ])
     );
   }
 
@@ -296,7 +433,7 @@ export function copyActivityLink(
 }
 
 export const ClearFormattingUtility = {
-  label: "Clear formatting",
+  label: __("Clear formatting"),
   icon: LucideBrushCleaning,
   action: (editor) => {
     editor.chain().focus().unsetAllMarks().clearNodes().cleanStyles().run();
@@ -421,8 +558,8 @@ function hasArabicContent(content: string) {
 
 export function getFontFamily(content: string) {
   const langMap = {
-    default: "!font-[Inter]",
-    arabic: "!font-[system-ui]",
+    default: "!font-[Vazirmatn]",
+    arabic: "!font-[Vazirmatn]",
   };
   let lang = "";
   if (hasArabicContent(content)) {
@@ -466,7 +603,14 @@ export function getFormattedDate(date) {
   const dateObj = dayjsLocal(date);
   if (!dateObj.isValid()) return "";
 
-  return dateObj.format(getDateFormat());
+  return formatLocalizedDate(dateObj, getDateFormat());
+}
+
+/** Stable Gregorian key for date comparisons and API-facing calendar state. */
+export function getDateKey(date) {
+  if (!date) return "";
+  const value = dayjs(date);
+  return value.isValid() ? value.format("YYYY-MM-DD") : "";
 }
 
 export function TemplateOption({ active, option, variant, icon, onClick }) {
@@ -718,8 +862,8 @@ function getParentChildField(name: string) {
 export function getFieldDependencyLabel(name: string) {
   const { getField } = getMeta("HD Ticket");
   let [parent, child] = getParentChildField(name);
-  parent = getField(parent)?.label || parent;
-  child = getField(child)?.label || child;
+  parent = __(getField(parent)?.label || parent);
+  child = __(getField(child)?.label || child);
   return `${parent} → ${child}`;
 }
 
@@ -732,7 +876,7 @@ export function getFieldDependencyLabel(name: string) {
 export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
   return [
     {
-      label: "Delete",
+      label: __("Delete"),
       icon: "lucide-trash-2",
       // preventDefault keeps the menu open so the confirm row can replace this one
       onClick: (event) => {
@@ -742,7 +886,7 @@ export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
       condition: () => !isConfirmingDelete.value,
     },
     {
-      label: "Confirm Delete",
+      label: __("Confirm Delete"),
       icon: "lucide-trash-2",
       theme: "red",
       onClick: () => {
@@ -868,30 +1012,31 @@ const YEAR = 365 * DAY;
 
 /**
  * Compact relative duration between `target` and now, ignoring direction.
- * Examples: `1y`, `4 days 4h`, `2h 20m`, `5m`.
+ * Examples: `1y 0mo`, `4d 4h`, `2h 20m`, `5m`.
  */
 export function shortDuration(target: string): string {
   const seconds = Math.abs(dayjsLocal(target).diff(dayjsLocal(), "second"));
   if (seconds >= YEAR) {
     const years = Math.floor(seconds / YEAR);
-    return `${years} ${years === 1 ? "year" : "years"}`;
+    const months = Math.floor((seconds % YEAR) / MONTH);
+    return __("{0}y {1}mo", [years, months]);
   }
   if (seconds >= MONTH) {
     const months = Math.floor(seconds / MONTH);
-    return `${months} ${months === 1 ? "month" : "months"}`;
+    const days = Math.floor((seconds % MONTH) / DAY);
+    return __("{0}mo {1}d", [months, days]);
   }
   if (seconds >= DAY) {
     const days = Math.floor(seconds / DAY);
     const hours = Math.floor((seconds % DAY) / HOUR);
-    const dayLabel = `${days} ${days === 1 ? "day" : "days"}`;
-    return hours ? `${dayLabel} ${hours}h` : dayLabel;
+    return __("{0}d {1}h", [days, hours]);
   }
   if (seconds >= HOUR) {
     const hours = Math.floor(seconds / HOUR);
     const minutes = Math.floor((seconds % HOUR) / MINUTE);
-    return minutes ? `${hours}h ${minutes}m` : `${hours}h`;
+    return __("{0}h {1}m", [hours, minutes]);
   }
-  return `${Math.floor(seconds / MINUTE)}m`;
+  return __("{0}m", [Math.floor(seconds / MINUTE)]);
 }
 
 export function buildPercentageChange(
@@ -899,7 +1044,10 @@ export function buildPercentageChange(
   negativeIsBetter: boolean = true
 ) {
   // No change (or no comparison): stay neutral — never green/red, no up/down arrow.
-  if (value === null || value === undefined || value === 0) {
+  if (value === null || value === undefined) {
+    return { icon: "", value: "—", color: "text-ink-gray-5" };
+  }
+  if (value === 0) {
     return { icon: "", value: "0", color: "text-ink-gray-5" };
   }
   const isPositive = value > 0;
@@ -943,19 +1091,19 @@ export function handleInviteUserSuccess(
 ) {
   let emailsStr = emailsToStr(data.invited_emails);
   if (emailsStr.trim() !== "") {
-    toast.success(`${emailsStr} invited successfully`);
+    toast.success(__("{0} invited successfully", [emailsStr]));
   }
   emailsStr = emailsToStr(data.disabled_user_emails);
   if (emailsStr.trim() !== "") {
-    toast.info(`${emailsStr} already present and disabled`);
+    toast.info(__("{0} already present and disabled", [emailsStr]));
   }
   emailsStr = emailsToStr(data.pending_invite_emails);
   if (emailsStr.trim() !== "") {
-    toast.info(`${emailsStr} already invited`);
+    toast.info(__("{0} already invited", [emailsStr]));
   }
   emailsStr = emailsToStr(data.accepted_invite_emails);
   if (emailsStr.trim() !== "") {
-    toast.info(`${emailsStr} already present`);
+    toast.info(__("{0} already present", [emailsStr]));
   }
 }
 

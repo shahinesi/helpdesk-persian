@@ -1,10 +1,14 @@
-import { createResource } from "frappe-ui";
+import { frappeRequest } from "frappe-ui";
 import type { App } from "vue";
+import { reactive } from "vue";
+
+const translatedMessages = reactive<Record<string, string>>({});
+let translationsPromise: Promise<void> | undefined;
+type TranslationPayload =
+  | Record<string, string>
+  | { language: string; messages: Record<string, string> };
 
 function getTranslatedMessage(message: string): string {
-  const translatedMessages = (("translatedMessages" in window
-    ? window["translatedMessages"]
-    : null) ?? {}) as Record<string, string>;
   return translatedMessages[message] || message;
 }
 
@@ -30,25 +34,33 @@ function translate(
 
 export const __ = translate;
 
-function fetchTranslations() {
-  createResource({
-    url: "helpdesk.api.general.get_translations",
-    method: "GET",
-    cache: "translations",
-    auto: true,
-    transform(data: Record<string, string>) {
-      (window as any).translatedMessages = data;
-    },
-  });
+export function loadTranslations(): Promise<void> {
+  if (!translationsPromise) {
+    translationsPromise = frappeRequest({
+      url: "helpdesk.api.general.get_translations",
+      method: "GET",
+    })
+      .then((payload: TranslationPayload) => {
+        if ("messages" in payload && typeof payload.messages === "object") {
+          (window as any).lang = payload.language;
+          document.documentElement.lang = payload.language;
+          Object.assign(translatedMessages, payload.messages);
+        } else {
+          Object.assign(translatedMessages, payload);
+        }
+        (window as any).translatedMessages = translatedMessages;
+      })
+      .catch((error) => {
+        translationsPromise = undefined;
+        throw error;
+      });
+  }
+  return translationsPromise;
 }
 
 export function translationPlugin(app: App<Element>) {
   app.config.globalProperties.__ = translate;
-  const windowObj = window as any;
-  windowObj.__ = translate;
-  if (!windowObj.translatedMessages) {
-    fetchTranslations();
-  }
+  (window as any).__ = translate;
 }
 
 declare module "@vue/runtime-core" {

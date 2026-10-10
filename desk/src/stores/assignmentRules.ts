@@ -1,4 +1,5 @@
 import { validateConditions } from "@/utils";
+import { __ } from "@/translation";
 import { ref } from "vue";
 
 const defaultAssignmentDays = [
@@ -80,8 +81,9 @@ export const validateAssignmentRule = (
             : "Assign condition is required";
 
         if (!validateConditions(assignmentRuleData.value.assignConditionJson)) {
-          assignmentRulesErrors.value.assignConditionError =
-            "Assign conditions are invalid";
+          assignmentRulesErrors.value.assignConditionError = __(
+            "Assign conditions are invalid"
+          );
         } else {
           assignmentRulesErrors.value.assignConditionError = "";
         }
@@ -95,8 +97,9 @@ export const validateAssignmentRule = (
           assignmentRuleData.value.unassignConditionJson?.length > 0 &&
           !validateConditions(assignmentRuleData.value.unassignConditionJson)
         ) {
-          assignmentRulesErrors.value.unassignConditionError =
-            "Unassign conditions are invalid";
+          assignmentRulesErrors.value.unassignConditionError = __(
+            "Unassign conditions are invalid"
+          );
         } else {
           assignmentRulesErrors.value.unassignConditionError = "";
         }

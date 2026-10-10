@@ -4,7 +4,7 @@
   >
     <LayoutHeader>
       <template #left-header>
-        <Breadcrumbs :items="breadcrumbs" class="-ml-[2px]" />
+        <Breadcrumbs :items="breadcrumbs" class="-ms-[2px]" />
       </template>
     </LayoutHeader>
     <div
@@ -60,7 +60,7 @@
                 theme="gray"
                 size="sm"
               >
-                {{ tab.count }}
+                {{ formatLocalizedNumber(tab.count) }}
               </Badge>
             </span>
           </template>
@@ -132,15 +132,8 @@ import {
 } from "@/composables/contact";
 import { useScreenSize } from "@/composables/screen";
 import { __ } from "@/translation";
-import { hasPermission } from "@/utils";
-import {
-  Breadcrumbs,
-  Button,
-  Dropdown,
-  Tabs,
-  dayjs,
-  usePageMeta,
-} from "frappe-ui";
+import { formatLocalizedNumber, hasPermission, prettyDate } from "@/utils";
+import { Breadcrumbs, Button, Dropdown, Tabs, usePageMeta } from "frappe-ui";
 import { computed, h, markRaw, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import LucideMail from "~icons/lucide/mail";
@@ -220,7 +213,7 @@ const contactInfo = computed(() => {
     {
       icon: markRaw(ModifiedIcon),
       value: __("Last seen {0}", [
-        dayjs(contactInfoResource.data?.last_seen).fromNow(),
+        prettyDate(contactInfoResource.data?.last_seen),
       ]),
       condition: !!contactInfoResource.data?.last_seen,
     },
@@ -343,7 +336,7 @@ onMounted(() => {
 
 usePageMeta(() => {
   return {
-    title: `Contact: ${props.id}`,
+    title: __("Contact: {0}", [props.id]),
   };
 });
 </script>

@@ -1,8 +1,26 @@
 @import "frappe-ui/style.css";
 
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("./assets/fonts/vazirmatn/Vazirmatn-wght.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  font-family: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif !important;
+}
+
+html[lang="fa"],
+html[lang="fa"] * {
+  font-feature-settings: "ss01";
+}
 
 @layer components {
   .prose-f {
@@ -22,10 +40,80 @@
   }
 }
 
+/* frappe-ui's sidebar row hardcodes LTR direction, physical padding, and
+   text-left. Keep the correction scoped to Helpdesk's composed sidebar. */
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-item"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-item"] > :is(button, a) {
+  direction: rtl;
+  padding-left: 0;
+  padding-inline-start: 0.5rem;
+  text-align: start;
+}
+
+html[dir="rtl"]
+  .helpdesk-sidebar
+  [data-slot="sidebar-item"]
+  > :is(button, a)
+  > span.flex-1 {
+  margin-left: 0;
+  margin-inline-start: 0.5rem;
+}
+
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-label"] {
+  direction: rtl;
+  padding-left: 0;
+  padding-inline-start: 0.5rem;
+  text-align: start;
+}
+
+@media (max-width: 639px) {
+  .helpdesk-editor-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .helpdesk-editor-toolbar [data-slot="fixed-menu"] {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
 /* The caption field, hidden by its stable data attribute - the placeholder
    text it used to be keyed on has changed twice. */
 .tiptap [data-media-text-field] {
   display: none !important;
+}
+
+/* frappe-ui's sidebar row hardcodes LTR direction, physical padding, and
+   text-left. Keep the correction scoped to Helpdesk's composed sidebar. */
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-item"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-item"] > :is(button, a) {
+  direction: rtl;
+  padding-left: 0;
+  padding-inline-start: 0.5rem;
+  text-align: start;
+}
+
+html[dir="rtl"]
+  .helpdesk-sidebar
+  [data-slot="sidebar-item"]
+  > :is(button, a)
+  > span.flex-1 {
+  margin-left: 0;
+  margin-inline-start: 0.5rem;
+}
+
+html[dir="rtl"] .helpdesk-sidebar [data-slot="sidebar-label"] {
+  direction: rtl;
+  padding-left: 0;
+  padding-inline-start: 0.5rem;
+  text-align: start;
 }
 
 html,
@@ -115,20 +203,19 @@ body {
   background: transparent;
 }
 
-
 /* replied content css */
 .replied-content .collapse {
-    margin: 10px 0 10px 0;
-    visibility: visible;
-    cursor: pointer;
-    display: flex;
-    font-weight: 700;
-    height: 12px;
-    line-height: 0.3;
-    background: #e8eaed;
-    width: 23px;
-    justify-content: center;
-    border-radius: 5px;
+  margin: 10px 0 10px 0;
+  visibility: visible;
+  cursor: pointer;
+  display: flex;
+  font-weight: 700;
+  height: 12px;
+  line-height: 0.3;
+  background: #e8eaed;
+  width: 23px;
+  justify-content: center;
+  border-radius: 5px;
 }
 .replied-content .collapse:hover {
   background: #dadce0;
@@ -149,7 +236,6 @@ body {
 .replied-content .collapse + input:checked + div {
   display: block;
 }
-
 
 /* transition fade css */
 .fade-enter-active,

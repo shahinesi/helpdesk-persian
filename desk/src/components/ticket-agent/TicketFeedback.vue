@@ -2,19 +2,22 @@
   <Section :label="__('Feedback')" v-model:opened="opened">
     <!-- Comment reads as a quote, the preset splits into pills on commas -->
     <div class="flex flex-col items-start gap-3 pb-4 pt-0.5">
-      <StarRating :rating="rating" :aria-label="`${rating * 5} out of 5`" />
+      <StarRating
+        :rating="rating"
+        :aria-label="__('{0} out of 5', [rating * 5])"
+      />
       <div v-if="comment">
         <p
           ref="commentRef"
-          class="relative whitespace-pre-line pl-[0.4em] text-p-base text-ink-gray-7"
+          class="relative whitespace-pre-line ps-[0.4em] text-p-base text-ink-gray-7"
           :class="!showFullComment && 'line-clamp-3'"
         >
-          <span class="absolute left-0 text-ink-gray-4">&ldquo;</span
+          <span class="absolute start-0 text-ink-gray-4">&ldquo;</span
           >{{ comment }}<span class="text-ink-gray-4">&rdquo;</span>
         </p>
         <button
           v-if="isCommentClamped || showFullComment"
-          class="mt-0.5 pl-[0.4em] text-base text-ink-gray-5 hover:text-ink-gray-7"
+          class="mt-0.5 ps-[0.4em] text-base text-ink-gray-5 hover:text-ink-gray-7"
           @click="showFullComment = !showFullComment"
         >
           {{ showFullComment ? __("Show less") : __("Show more") }}

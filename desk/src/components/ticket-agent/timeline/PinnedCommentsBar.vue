@@ -10,8 +10,10 @@
     <button
       v-if="comments.length"
       type="button"
-      class="flex items-center gap-2.5 bg-surface-gray-1 px-5 py-2.5 text-left after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-3 after:bg-gradient-to-b after:from-surface-base"
-      :aria-label="__('Go to pinned comment {0}', [current + 1])"
+      class="flex items-center gap-2.5 bg-surface-gray-1 px-5 py-2.5 text-start after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-3 after:bg-gradient-to-b after:from-surface-base"
+      :aria-label="
+        __('Go to pinned comment {0}', [formatLocalizedNumber(current + 1)])
+      "
       @click="select"
     >
       <!-- one full-height line split evenly per pin; past two pins -my-0.5
@@ -50,7 +52,7 @@
               class="truncate text-p-base text-ink-gray-5 [grid-area:1/1]"
             >
               <span class="font-medium tabular-nums text-ink-gray-7"
-                >{{ current + 1 }}:</span
+                >{{ formatLocalizedNumber(current + 1) }}:</span
               >
               {{ preview }}
             </p>
@@ -65,6 +67,7 @@
 import { PinIcon } from "@/components/icons";
 import type { PinnedComment } from "@/composables/useTicket";
 import { htmlToText } from "@/utils";
+import { formatLocalizedNumber } from "@/utils/number";
 import { computed, ref, watch } from "vue";
 
 /** Telegram-style pinned bar, one pin at a time, newest first. A click waits

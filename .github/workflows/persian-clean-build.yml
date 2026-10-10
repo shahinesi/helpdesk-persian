@@ -1,0 +1,60 @@
+name: Persian clean frontend build
+
+on:
+  pull_request:
+    branches: [develop, custom/develop-fa, custom/main-fa]
+    paths:
+      - "desk/**"
+      - ".github/workflows/persian-clean-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clean-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Helpdesk
+        uses: actions/checkout@v4
+        with:
+          path: bench/apps/helpdesk
+
+      - name: Checkout pinned Frappe source
+        uses: actions/checkout@v4
+        with:
+          repository: frappe/frappe
+          ref: c4472b622192e0b1cbdbaa9792a38f4e5006e9f6
+          path: bench/apps/frappe
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.20.0
+
+      - name: Pin Yarn Classic
+        run: npm install --global yarn@1.22.18
+
+      - name: Verify Frappe UI source pin
+        working-directory: bench/apps/helpdesk
+        run: |
+          expected="$(tr -d '[:space:]' < desk/patches/frappe-ui-source.ref)"
+          actual="$(git -C ../frappe rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Install locked dependencies from an empty cache
+        working-directory: bench/apps/helpdesk/desk
+        run: yarn install --frozen-lockfile --non-interactive --cache-folder "$RUNNER_TEMP/yarn-cache"
+
+      - name: Prepare isolated Bench build config
+        run: |
+          mkdir -p bench/sites
+          printf '{"socketio_port":9000}' > bench/sites/common_site_config.json
+
+      - name: Verify patches are idempotent and build frontend
+        working-directory: bench/apps/helpdesk/desk
+        run: |
+          yarn apply:ui-patches
+          yarn apply:ui-patches
+          yarn build

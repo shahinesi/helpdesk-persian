@@ -132,7 +132,7 @@
                   :is="getScopeIcon(savedReply.scope)"
                   class="size-4"
                 />
-                {{ savedReply.scope }}
+                {{ getScopeLabel(savedReply.scope) }}
               </div>
               <!-- the confirm state is shared, so each menu clears it on open -->
               <Dropdown
@@ -338,20 +338,23 @@ const applyFilter = (scope: string) => {
 const getScopeIcon = (scope: string) => {
   const icons = [
     {
-      label: __("Personal"),
+      label: "Personal",
       icon: UserIcon,
     },
     {
-      label: __("Team"),
+      label: "Team",
       icon: UsersIcon,
     },
     {
-      label: __("Global"),
+      label: "Global",
       icon: GlobeIcon,
     },
   ];
   return icons.find((x) => x.label === scope)?.icon;
 };
+
+const getScopeLabel = (scope: string) =>
+  ["Personal", "Team", "Global"].includes(scope) ? __(scope) : scope;
 
 watch(
   () => savedRepliesSearchQuery?.value,

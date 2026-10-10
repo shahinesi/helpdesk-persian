@@ -2,14 +2,15 @@
   <Dialog
     v-model:open="dialog.show"
     size="sm"
-    :title="dialog.editing ? 'Edit Holiday' : 'Add Holiday'"
+    :title="dialog.editing ? __('Edit Holiday') : __('Add Holiday')"
     @after-leave="resetForm"
   >
     <template #default>
       <div class="flex flex-col gap-4 mt-4">
         <div class="flex flex-col gap-1.5">
-          <FormLabel label="Date" required />
+          <FormLabel :label="__(`Date`)" required />
           <DatePicker
+            :today-label="__('Today')"
             :model-value="dayjs(dialog.holiday_date).format('YYYY-MM-DD')"
             @update:model-value="
               (value) => {
@@ -19,7 +20,7 @@
             "
             :format="getDateFormat()"
             variant="subtle"
-            placeholder="Date"
+            :placeholder="__(`Date`)"
             class="w-full"
             id="holiday_date"
             required
@@ -31,8 +32,8 @@
             :type="'textarea'"
             size="sm"
             variant="subtle"
-            placeholder="National holiday, etc."
-            label="Description"
+            :placeholder="__(`National holiday, etc.`)"
+            :label="__(`Description`)"
             v-model="dialog.description"
             required
             @change="errors.description = ''"
@@ -46,13 +47,13 @@
         <Button
           variant="subtle"
           theme="gray"
-          label="Cancel"
+          :label="__(`Cancel`)"
           @click="dialog.show = false"
         />
         <Button
           variant="solid"
           icon-left="lucide-plus"
-          label="Add Holiday"
+          :label="__(`Add Holiday`)"
           @click="onSave"
         />
       </div>
@@ -61,7 +62,8 @@
 </template>
 
 <script setup lang="ts">
-import { getDateFormat, getFormattedDate } from "@/utils";
+import { __ } from "@/translation";
+import { getDateFormat, getDateKey, getFormattedDate } from "@/utils";
 import {
   Dialog,
   FormControl,
@@ -100,25 +102,30 @@ const resetForm = () => {
 
 const onSave = () => {
   if (dialog.value.description?.trim() === "") {
-    errors.value.description = "Please enter a description";
+    errors.value.description = __("Please enter a description");
   }
   if (!dialog.value.holiday_date) {
-    errors.value.holiday_date = "Please enter a valid date";
+    errors.value.holiday_date = __("Please enter a valid date");
   }
 
   if (errors.value.holiday_date || errors.value.description) {
     return;
   }
 
-  const holidayDate = dayjs(dialog.value.holiday_date).startOf("day");
+  const holidayDateValue = dayjs(dialog.value.holiday_date).format(
+    "YYYY-MM-DD"
+  );
+  const holidayDate = dayjs(holidayDateValue).startOf("day");
   const fromDate = dayjs(holidayData.value.from_date).startOf("day");
   const toDate = dayjs(holidayData.value.to_date).startOf("day");
 
   if (holidayDate.isBefore(fromDate) || holidayDate.isAfter(toDate)) {
     toast.error(
-      `Holiday date must be between ${getFormattedDate(
-        holidayData.value.from_date
-      )} and ${getFormattedDate(holidayData.value.to_date)}`
+      __(
+        "Holiday date must be between {0} and {1}",
+        getFormattedDate(holidayData.value.from_date),
+        getFormattedDate(holidayData.value.to_date)
+      )
     );
     return;
   }
@@ -126,17 +133,16 @@ const onSave = () => {
   if (dialog.value.editing) {
     const holidayExists = holidayData.value.holidays.find(
       (h) =>
-        getFormattedDate(h.holiday_date) ===
-        getFormattedDate(dialog.value.holiday_date)
+        getDateKey(h.holiday_date) === getDateKey(dialog.value.holiday_date)
     );
 
     // If the holiday exists and user is trying to add a new holiday on the same date, show error
     if (
       holidayExists &&
-      getFormattedDate(holidayExists.holiday_date) !==
-        getFormattedDate(dialog.value.editing.holiday_date)
+      getDateKey(holidayExists.holiday_date) !==
+        getDateKey(dialog.value.editing.holiday_date)
     ) {
-      toast.error("Holiday already exists");
+      toast.error(__("Holiday already exists"));
       return;
     }
     const holidayIndex = holidayData.value.holidays.indexOf(
@@ -144,20 +150,21 @@ const onSave = () => {
     );
     holidayData.value.holidays.splice(holidayIndex, 1, {
       ...dialog.value,
+      holiday_date: holidayDateValue,
       weekly_off: 0,
     });
   } else {
     const index = holidayData.value.holidays.findIndex(
       (h) =>
-        getFormattedDate(h.holiday_date) ===
-        getFormattedDate(dialog.value.holiday_date)
+        getDateKey(h.holiday_date) === getDateKey(dialog.value.holiday_date)
     );
     if (index !== -1) {
-      toast.error("Holiday already exists");
+      toast.error(__("Holiday already exists"));
       return;
     }
     holidayData.value.holidays.push({
       ...dialog.value,
+      holiday_date: holidayDateValue,
       weekly_off: 0,
     });
   }

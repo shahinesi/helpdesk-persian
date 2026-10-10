@@ -74,16 +74,8 @@ import { globalStore } from "@/stores/globalStore";
 import { __ } from "@/translation";
 import { CustomerContact, CustomerResourceSymbol } from "@/types";
 import { HDCustomerMember } from "@/types/doctypes";
-import { getErrorMessage, hasPermission } from "@/utils";
-import {
-  Avatar,
-  Badge,
-  Button,
-  Dropdown,
-  Tooltip,
-  dayjs,
-  toast,
-} from "frappe-ui";
+import { getErrorMessage, hasPermission, prettyDate } from "@/utils";
+import { Avatar, Badge, Button, Dropdown, Tooltip, toast } from "frappe-ui";
 import { computed, inject, markRaw } from "vue";
 import { useRouter } from "vue-router";
 import LucideMail from "~icons/lucide/mail";
@@ -125,7 +117,7 @@ const contactDetails = computed(() => [
     icon: markRaw(ModifiedIcon),
     value: `${__("Last seen")} ${
       props.contact.last_active
-        ? dayjs(props.contact.last_active).fromNow()
+        ? prettyDate(props.contact.last_active)
         : __("Never")
     }`,
   },

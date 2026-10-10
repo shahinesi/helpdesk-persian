@@ -1,217 +1,164 @@
-<div align="center" markdown="1">
+<div align="center" markdown="1" dir="rtl">
 
-<img src=".github/hd-logo.svg" alt="Frappe Helpdesk logo" width="80"/>
-<h1>Frappe Helpdesk</h1>
+<img src=".github/hd-logo.svg" alt="نشان هلپ‌دسک فرپی" width="80"/>
 
-**Customer Service, Made Simple and Effective**
+# هلپ‌دسک فارسی
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/helpdesk)
-[![codecov](https://codecov.io/github/frappe/helpdesk/branch/develop/graph/badge.svg?token=8ZXHCY4G9U)](https://codecov.io/github/frappe/helpdesk)
+**سامانهٔ پشتیبانی مشتری بر پایهٔ Frappe Helpdesk**
 
-<a href="https://trendshift.io/repositories/12764" target="_blank"><img src="https://trendshift.io/api/badge/repositories/12764" alt="teableio%2Fteable | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+این مخزن، فورک فارسی پروژهٔ متن‌باز [Frappe Helpdesk](https://github.com/frappe/helpdesk) است. مالکیت و اعتبار پروژهٔ اصلی متعلق به تیم Frappe است؛ این فورک برای تجربهٔ فارسی و راست‌چین نگهداری می‌شود.
+
+[وب‌سایت Frappe](https://frappe.io/helpdesk) · [مستندات اصلی](https://docs.frappe.io/helpdesk) · [راهنمای نصب این فورک](docs/self-hosted-docker-fa.md)
+
 </div>
-
-</div>
-
 
 <div align="center">
-	<img src="./.github/Hero2.png" alt="Hero Image" width="100%" />
-</div>
-<br />
-<div align="center">
-	<a href="https://frappe.io/helpdesk">Website</a>
-	-
-	<a href="https://docs.frappe.io/helpdesk">Documentation</a>
+  <img src="./.github/Hero2.png" alt="نمایی از هلپ‌دسک" width="100%" />
 </div>
 
-## Frappe Helpdesk
-Frappe Helpdesk is an 100% open-source Ticket Management tool which helps you  streamline your company's support, offers an easy setup, clean user interface, and automation tools to resolve customer queries efficiently.
+## معرفی
 
+هلپ‌دسک ابزاری متن‌باز برای مدیریت تیکت‌ها و درخواست‌های پشتیبانی است. این فورک، کد اصلی Frappe Helpdesk را با تمرکز بر زبان فارسی، چیدمان راست‌چین و پیش‌فرض‌های مناسب کاربران ایرانی دنبال می‌کند.
 
+### ویژگی‌ها
 
-### Motivation
-Managing issues from our customers was a big challenge for us. We were using the ERPNext support module which was not very good in UI and the UX was also not good. We wanted to have a tool that can be easily integrated with our existing system and can be customized as per our needs. So we decided to build Frappe Helpdesk.
+- درگاه کارشناسان و مشتریان برای ثبت و پیگیری درخواست‌ها
+- مدیریت تیکت، اولویت، وضعیت، تخصیص و تیم‌ها
+- تعریف SLA و پایش زمان پاسخ‌گویی و حل درخواست
+- پایگاه دانش برای انتشار راهنما و مقاله
+- پاسخ‌های آماده برای پیام‌های پرتکرار
+- اتصال به Frappe Framework و ERPNext
+- رابط کاربری راست‌چین و فونت محلی Vazirmatn
 
-### Key Features
+### فارسی‌سازی این فورک
 
-- **Agent and Customer Portal Views**: Dual portals for agents and customers to simplify issue submission and management.
+ترجمه‌ها در کاتالوگ استاندارد gettext پروژه نگهداری می‌شوند. تغییرات مربوط به فارسی‌سازی، فونت و راست‌چین در همین مخزن اعمال می‌شوند و فایل‌های Frappe Core را تغییر نمی‌دهند. گزارش پوشش ترجمه و وضعیت قابلیت‌ها را در Pull Requestها دنبال کنید؛ تا تکمیل ترجمهٔ همهٔ رشته‌ها، پوشش کامل ادعا نمی‌شود.
 
-- **Customizable SLAs**: Discover how you can set and track SLAs for better response times.
+فونت پیش‌فرض رابط کاربری این نسخه **Vazirmatn نسخهٔ v33.003** است. فایل WOFF2 و مجوز OFL آن در مخزن نگهداری می‌شوند؛ برنامه برای نمایش فونت به CDN نیاز ندارد. پروژهٔ رسمی: [Vazirmatn](https://github.com/rastikerdar/vazirmatn).
 
-- **Assignment Rules**: Custom auto-assignment of tickets based on priority, issue type, or workload.
+## نصب Production و Self-host
 
-- **Knowledge Base**: Learn how to create and manage help articles to empower users and reduce tickets.
+راهنمای اجرایی نصب Docker در کنار Traefik موجود، ساخت image، تنظیم HTTPS و بررسی سرویس در [راهنمای نصب Self-host](docs/self-hosted-docker-fa.md) آمده است. پیش از اجرا، مقادیر دامنه، شبکه، پورت و certificate resolver را با سرور خود تطبیق دهید.
 
-- **Saved Replies**: Pre-written replies for common queries to ensure quick and consistent communication.
-
-<details open>
-<summary >View Screenshots</summary>
-<h3></h3>
-
-<div align="center">
-	<sub>
-		Agent List View
-	</sub>
-</div>
-
-![Agent List View](.github/AgentListView.png)
-
-
-<div align="center">
-	<sub>
-		Upload articles and let your customer solve their queries through the Knowledge Base.
-	</sub>
-</div>
-
-![Knowledge Base](.github/KB.png)
-
-<div align="center">
-	<sub>
-		With advanced search, your customers will be recommended relevant articles regarding their issue.
-	</sub>
-</div>
-
-
-![Article Search](.github/Search2.png)
-
-
-
-</details>
-<br>
-
-
-### Under the Hood
-
-- [**Frappe Framework**](https://github.com/frappe/frappe): A full-stack web application framework written in Python and Javascript.
-
-- [**Frappe UI**](https://github.com/frappe/frappe-ui): A Vue-based UI library, to provide a modern user interface. 
-
-
-## Production Setup
-
-### Managed Hosting
-
-You can try [Frappe Cloud](https://frappecloud.com), a simple, user-friendly and sophisticated [open-source](https://github.com/frappe/press) platform to host Frappe applications with peace of mind.
-
-It takes care of installation, setup, upgrades, monitoring, maintenance and support of your Frappe deployments. It is a fully featured developer platform with an ability to manage and control multiple Frappe deployments.
-
-<div>
-	<a href="https://frappecloud.com/helpdesk/signup" target="_blank">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/try-on-fc-white.png">
-			<img src="https://frappe.io/files/try-on-fc-black.png" alt="Try on Frappe Cloud" height="28" />
-		</picture>
-	</a>
-</div>
-
-### Self Hosting
-
-Follow these steps to set up Frappe Helpdesk in production:
-
-**Step 1**: Download the easy install script
+برای نصب روی زیرساخت Frappe موجود، ابتدا Telephony را دریافت و سپس Helpdesk را از این فورک نصب کنید:
 
 ```bash
-wget https://frappe.io/easy-install.py
+bench get-app --branch develop https://github.com/frappe/telephony.git
+bench get-app --branch develop https://github.com/shahinesi/helpdesk-persian.git
+bench --site helpdesk.example.com install-app telephony
+bench --site helpdesk.example.com install-app helpdesk
+bench build --app helpdesk
 ```
 
-**Step 2**: Run the deployment command
+برای نصب کنار ERPNext، برنامه‌ها را روی همان Frappe site نصب کنید و سازگاری نسخهٔ ERPNext، Frappe، Telephony و Helpdesk را پیش از Production بررسی کنید. راهنمای عمومی استقرار Frappe در [مستندات رسمی](https://frappeframework.com/docs/user/en/installation) قرار دارد.
+
+## نصب Development
+
+### اجرای Docker
+
+Docker و Docker Compose را نصب کنید، سپس فایل‌های compose و اسکریپت راه‌اندازی را از شاخهٔ `develop` دریافت کنید:
 
 ```bash
-python3 ./easy-install.py deploy \
-    --project=helpdesk_prod_setup \
-    --email=your_email.example.com \
-    --image=ghcr.io/frappe/helpdesk \
-    --version=stable \
-    --app=helpdesk \
-    --sitename subdomain.domain.tld
+mkdir helpdesk-persian-dev
+cd helpdesk-persian-dev
+wget -O docker-compose.yml https://raw.githubusercontent.com/shahinesi/helpdesk-persian/develop/docker/docker-compose.yml
+wget -O init.sh https://raw.githubusercontent.com/shahinesi/helpdesk-persian/develop/docker/init.sh
 ```
 
-Replace the following parameters with your values:
-- `your_email.example.com`: Your email address
-- `subdomain.domain.tld`: Your domain name where Helpdesk will be hosted
+سپس سرویس‌ها را اجرا کنید:
 
-The script will set up a production-ready instance of Frappe Helpdesk with all the necessary configurations in about 5 minutes.
+```bash
+docker compose up -d
+```
 
-## Development Setup
+در صورت موفقیت، محیط توسعه طبق تنظیمات compose در نشانی محلی تعریف‌شده در فایل در دسترس خواهد بود. رمز پیش‌فرض را فقط در محیط محلی و آزمایشی استفاده کنید.
 
-### Docker
+### نصب محلی روی Frappe Bench
 
-You need Docker, docker-compose and git setup on your machine. Refer [Docker documentation](https://docs.docker.com/). After that, follow below steps:
+یک Frappe Bench سازگار با شاخهٔ `develop` آماده کنید، Redis و MariaDB را اجرا کنید و site بسازید:
 
-**Step 1**: Setup folder and download the required files
+```bash
+bench start
+bench new-site helpdesk.test
+bench --site helpdesk.test add-to-hosts
+bench get-app --branch develop https://github.com/frappe/telephony.git
+bench get-app --branch develop https://github.com/shahinesi/helpdesk-persian.git
+bench --site helpdesk.test install-app telephony
+bench --site helpdesk.test install-app helpdesk
+bench build --app helpdesk
+```
 
-    mkdir frappe-helpdesk
-    cd frappe-helpdesk
+برای دسترسی به صفحهٔ Helpdesk، مسیر `/helpdesk` را روی دامنهٔ محلی site باز کنید.
 
-    # Download the docker-compose file
-    wget -O docker-compose.yml https://raw.githubusercontent.com/frappe/helpdesk/develop/docker/docker-compose.yml
+### توسعهٔ فرانت‌اند
 
-    # Download the setup script
-    wget -O init.sh https://raw.githubusercontent.com/frappe/helpdesk/develop/docker/init.sh
+در پوشهٔ برنامه، وابستگی‌ها را مطابق lockfile نصب و Vite را اجرا کنید:
 
-**Step 2**: Run the container and daemonize it
+```bash
+cd frappe-bench/apps/helpdesk/desk
+yarn install --frozen-lockfile
+yarn dev
+```
 
-    docker compose up -d
+برای دسترسی از دستگاه یا دامنهٔ محلی دیگر، گزینهٔ `--host` را مطابق نیاز محیط توسعه به فرمان Vite اضافه کنید. ساخت Production با فرمان زیر انجام می‌شود:
 
-**Step 3**: The site [http://helpdesk.localhost:8000/helpdesk](http://helpdesk.localhost:8000/helpdesk) should now be available. The default credentials are:
-- Username: Administrator
-- Password: admin
+```bash
+yarn build
+```
 
-### Local
+## پیش‌فرض‌های نصب تازه
 
-To setup the repository locally follow the steps mentioned below:
+در Setup Wizard نصب تازه، زبان فارسی و مقادیر منطقه‌ای ایران هدف این فورک هستند:
 
-1. Install bench and setup a `frappe-bench` directory by following the [Installation Steps](https://frappeframework.com/docs/user/en/installation)
-1. Start the server by running `bench start`
-1. In a separate terminal window, create a new site by running `bench new-site helpdesk.test`
-1. Map your site to localhost with the command `bench --site helpdesk.test add-to-hosts`
-1. Get the Telephony app. Run `bench get-app https://github.com/frappe/telephony`
-1. Get the Helpdesk app. Run `bench get-app https://github.com/frappe/helpdesk`
-1. Run `bench --site helpdesk.test install-app helpdesk`.
-1. Run `bench build --app helpdesk`
-1. Now open the URL `http://helpdesk.test:8000/helpdesk` in your browser, you should see the app running
+```text
+Language: fa (فارسی)
+Country: Iran
+Time zone: Asia/Tehran
+Currency: IRR
+```
 
+مقدار ذخیره‌شدهٔ ارز `IRR` است؛ متن نمایشی آن «IRR (ریال)» خواهد بود. مقادیر موجود در site پیکربندی‌شده نباید با این پیش‌فرض‌ها بازنویسی شوند.
 
-**For Frontend Development**
-1. Open a new terminal session and cd into `frappe-bench/apps/helpdesk/desk`, and run the following commands:
-    ```
-    yarn install
-    yarn dev or yarn dev --host helpdesk.test
-    ```
-1. Now, you can access the site on vite dev server at `http://helpdesk.test:8080`
+## به‌روزرسانی
 
-**Note:** You'll find all the code related to Helpdesk's frontend inside `frappe-bench/apps/helpdesk/desk`
+قبل از به‌روزرسانی، از پایگاه داده و فایل‌های site نسخهٔ پشتیبان بگیرید. سپس نسخه‌ها و تغییرات شاخه را بررسی کنید و از روش عملیاتی Bench یا Docker همان محیط استفاده کنید. نمونهٔ به‌روزرسانی Bench:
 
+```bash
+bench update --pull
+bench --site helpdesk.example.com migrate
+bench build --app helpdesk
+```
 
-## Compatibility matrix 
+برای Docker، image جدید را با نسخه‌های سازگار بسازید یا دریافت کنید، سپس سرویس‌ها را طبق راهنمای نصب و رویهٔ استقرار خود به‌روزرسانی کنید. فرمان‌ها و ترتیب دقیق می‌توانند با معماری سرور متفاوت باشند.
 
-| Helpdesk Branch | Compatible Frappe Framework Version |
-|-----------------|-------------------------------------|
-| main            | version-15                          |
-| main            | version-16                          |
-| develop         | develop branch                      |
+## ترجمه‌ها
 
+- کاتالوگ فارسی: `helpdesk/locale/fa.po`
+- قالب استخراج رشته‌ها: `helpdesk/locale/main.pot`
+- پیکربندی Crowdin: `crowdin.yml`
+- بررسی پوشش: `python scripts/check_fa_translation.py`
 
-## Learn and connect
+رشتهٔ جدید در رابط کاربری را با سازوکار ترجمهٔ Frappe علامت‌گذاری کنید، POT را با ابزار رسمی پروژه به‌روز کنید و ترجمهٔ فارسی را در همان تغییر اضافه کنید. بررسی پوشش در CI اجرا می‌شود و تا زمانی که رشته‌های فعال خالی باقی مانده باشند، باید شکست بخورد.
 
-- [Telegram Public Group](https://t.me/frappedesk)
-- [Discuss Forum](https://discuss.frappe.io/c/frappehelpdesk/69)
-- [Documentation](https://docs.frappe.io/helpdesk)
+## ساختار پروژه
 
-## Contributing
+- `desk/` — رابط کاربری Vue و TypeScript
+- `helpdesk/` — برنامهٔ Frappe، APIها، مدل‌ها و ترجمه‌ها
+- `docs/` — راهنماهای این فورک
+- `docker/` — فایل‌های اجرای Docker
+- `frappe-ui/` — وابستگی فرعی Frappe UI؛ مستندات و کد آن متعلق به پروژهٔ upstream است
 
-1. [Issue Guidelines](https://github.com/frappe/erpnext/wiki/Issue-Guidelines)
-1. [Report Security Vulnerabilities](https://frappe.io/security)
-1. [Pull Request Requirements](https://github.com/frappe/erpnext/wiki/Contribution-Guidelines)
-2. [Translations](https://crowdin.com/project/frappe)
+## مشارکت
 
-<br>
-<br>
-<div align="center">
-	<a href="https://frappe.io" target="_blank">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/Frappe-white.png">
-			<img src="https://frappe.io/files/Frappe-black.png" alt="Frappe Technologies" height="28"/>
-		</picture>
-	</a>
-</div>
+برای گزارش مشکل یا پیشنهاد تغییر، ابتدا issueهای باز و راهنمای مشارکت Frappe Helpdesk را بررسی کنید. تغییرهای مربوط به زبان فارسی، RTL، فونت و مستندات این فورک را در Pull Request همین مخزن ارسال کنید. رشته‌های تازهٔ رابط کاربری باید ترجمه و با check پوشش اعتبارسنجی شوند.
+
+- [Issueهای Frappe Helpdesk](https://github.com/frappe/helpdesk/issues)
+- [راهنمای مشارکت upstream](https://github.com/frappe/erpnext/wiki/Contribution-Guidelines)
+- [ترجمه‌های پروژهٔ اصلی](https://crowdin.com/project/frappe)
+- [جامعهٔ Frappe](https://discuss.frappe.io/c/frappehelpdesk/69)
+
+## پروژهٔ اصلی و مجوز
+
+این مخزن فورک فارسی [Frappe Helpdesk](https://github.com/frappe/helpdesk) است. Frappe Framework و Frappe UI نیز پروژه‌های جداگانه و متن‌باز هستند. اعتبار، علائم تجاری و حقوق پروژه‌های upstream متعلق به صاحبان همان پروژه‌ها باقی می‌ماند.
+
+متن قانونی اصلی در فایل [`LICENSE`](LICENSE) حفظ شده است و ترجمه نشده است. مجوز فونت Vazirmatn در [`desk/src/assets/fonts/vazirmatn/OFL.txt`](desk/src/assets/fonts/vazirmatn/OFL.txt) قرار دارد.

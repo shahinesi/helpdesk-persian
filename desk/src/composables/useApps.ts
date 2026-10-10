@@ -1,4 +1,5 @@
 import { createResource } from "frappe-ui";
+import { __ } from "@/translation";
 import { computed, h, markRaw, type Component, type ComputedRef } from "vue";
 import AppsIcon from "@/components/icons/AppsIcon.vue";
 import { isCustomerPortal } from "@/utils";
@@ -13,7 +14,7 @@ export interface App {
 const deskApp: App = {
   name: "frappe",
   logo: "/assets/helpdesk/desk/desk.png",
-  title: "Desk",
+  title: __("Desk"),
   route: "/desk/helpdesk",
 };
 
@@ -55,7 +56,7 @@ export function useApps() {
   const apps = computed<App[]>(() => resource.data ?? []);
 
   const appsMenuOption: ComputedRef<AppsMenuOption> = computed(() => ({
-    label: "Apps",
+    label: __("Apps"),
     icon: markRaw(AppsIcon),
     submenu: apps.value.map((app) => ({
       label: app.title,

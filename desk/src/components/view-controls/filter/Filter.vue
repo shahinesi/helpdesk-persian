@@ -43,13 +43,13 @@
                     <div
                       v-for="filter in activeFilters"
                       :key="filter.index"
-                      class="group flex h-8 w-full items-center gap-2 rounded-4 px-1.5 hover:bg-surface-gray-2 pl-0"
+                      class="group flex h-8 w-full items-center gap-2 rounded-4 px-1.5 hover:bg-surface-gray-2 ps-0"
                     >
                       <Button
                         variant="ghost"
                         :label="filterSummary(filter)"
                         :tooltip="filterSummary(filter)"
-                        class="!h-full min-w-0 flex-1 !justify-start !px-0 hover:!bg-transparent !pl-1.5"
+                        class="!h-full min-w-0 flex-1 !justify-start !px-0 hover:!bg-transparent !ps-1.5"
                         @click="editFilter(filter)"
                       >
                         <template #prefix>
@@ -88,7 +88,7 @@
                       class="!text-ink-gray-5"
                       :label="__('Add filter')"
                       @click="addNewFilter()"
-                      tooltip="Add Filter (A)"
+                      :tooltip="__('Add Filter (A)')"
                     >
                       <template #prefix>
                         <LucidePlus class="size-4" />

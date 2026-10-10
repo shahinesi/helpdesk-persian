@@ -100,9 +100,9 @@ import CalendarIcon from "@/components/icons/CalendarIcon.vue";
 import CheckCircleIcon from "@/components/icons/CheckCircleIcon.vue";
 import TicketIcon from "@/components/icons/TicketIcon.vue";
 import { Avatar, Tooltip, createResource, dayjs } from "frappe-ui";
+import { __ } from "@/translation";
 import { computed, h, nextTick, ref, watch } from "vue";
-import { formatDate } from "@vueuse/core";
-import { timeAgo } from "@/utils";
+import { formatLocalizedDate, timeAgo } from "@/utils";
 import { statusColorMap, statusLabelMap, statusTextColorMap } from "./utils";
 import { useAuthStore } from "@/stores/auth";
 
@@ -145,7 +145,9 @@ const detailFields = computed(() => {
         class: "h-3.5 w-3.5",
       }),
       name: "type",
-      value: data.type.label + " Call",
+      value: __(
+        data.type.label === "Incoming" ? "Incoming Call" : "Outgoing Call"
+      ),
     },
     {
       icon: ContactsIcon,
@@ -234,12 +236,12 @@ function getCallLogDetail(row, log, columns = []) {
     };
   } else if (row === "status") {
     return {
-      label: statusLabelMap[log.status],
+      label: __(statusLabelMap[log.status]),
       color: statusColorMap[log.status],
     };
   } else if (["modified", "creation"].includes(row)) {
     return {
-      label: dayjs(log[row]).format("ddd, MMM D, YYYY h:mm a"),
+      label: formatLocalizedDate(log[row], "ddd, MMM D, YYYY h:mm a"),
       timeAgo: timeAgo(log[row]),
     };
   }
@@ -247,7 +249,7 @@ function getCallLogDetail(row, log, columns = []) {
   let fieldType = columns?.find((col) => (col.key || col.value) == row)?.type;
 
   if (fieldType && ["Date", "Datetime"].includes(fieldType)) {
-    return formatDate(log[row], "");
+    return formatLocalizedDate(log[row], "DD MMM YYYY");
   }
 
   return log[row];
