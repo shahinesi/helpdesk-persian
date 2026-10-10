@@ -1,53 +1,45 @@
-# معماری وابستگی‌های Frontend و Patchها
+# معماری وابستگی‌ها و Build فارسی
 
-## دو منبع UI متفاوت
+## نسخه‌ها و منبع حقیقت
 
-`frappe/ui` بخشی از Source مخزن Frappe است و Helpdesk با وابستگی محلی `@framework/ui: link:../../frappe/ui` به آن وصل می‌شود. `frappe-ui` پکیج مستقلی از Yarn با نسخه `1.0.0-rc.1` است. این دو کد در مسیرهای جدا نصب می‌شوند و Patch یکسان یا Package واحد نیستند.
-
-## نسخه‌های مبنا
-
-| بخش | مقدار ثبت‌شده |
+| بخش | نسخه/مرجع |
 |---|---|
-| Helpdesk branch | `feat/persian-setup-wizard`؛ SHA انتشار در manifest هر استقرار ثبت می‌شود |
-| Frappe UI source | `frappe/frappe` SHA `c4472b622192e0b1cbdbaa9792a38f4e5006e9f6`، در `desk/patches/frappe-ui-source.ref` |
-| `frappe-ui` | `1.0.0-rc.1`، tarball integrity در `desk/yarn.lock` |
-| Vue / Vite / TypeScript | 3.5.31 / 5.4.21 / 5.9.3 |
-| Node / Yarn | 20.20.0 / 1.22.18، در `.nvmrc` و `packageManager` |
+| Helpdesk | شاخه `custom/develop-fa`؛ Build نامزد با SHA کامل Helpdesk |
+| Frappe 17 | `frappe/frappe` روی SHA ثبت‌شده در `desk/patches/frappe-ui-source.ref`؛ فعلاً `5b9f9e57232612b092b0dc0bf05dcec78bf4997d` |
+| Python | `>=3.14,<3.15` طبق `pyproject.toml` Frappe/Helpdesk |
+| Telephony | `frappe/telephony` روی SHA در `desk/patches/telephony-source.ref` |
+| ERPNext تست Backend | SHA در `desk/patches/erpnext-source.ref`؛ فقط برای تست‌هایی که این اپ را لازم دارند |
+| `frappe-ui` | `1.0.0-rc.1`، نسخه و integrity در `desk/yarn.lock` |
+| Node / Yarn | Node 20.20.0 برای Desk lockfile، Node 24.14.0 برای Bench، Yarn 1.22.18 |
 
-## راهبرد Patch
+`frappe/ui` بخشی از سورس مخزن Frappe است و با وابستگی محلی `@framework/ui: link:../../frappe/ui` استفاده می‌شود. `frappe-ui` پکیج مستقل Yarn است. Patchهای این دو مقصد جدا هستند و نباید با هم ادغام شوند.
 
-| هدف | فایل نسخه‌بندی‌شده | روش اعمال | پوشش |
+## Patch inventory
+
+| هدف | مسیر | روش | کنترل |
 |---|---|---|---|
-| Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` از ریشه مخزن Frappe؛ پین SHA در checkout دارای Git اعتبارسنجی می‌شود | Activity timeline، نمایش متن تغییرات، ارقام و تمام متن‌ها و برچسب‌های onboarding و Help Center |
-| پکیج `frappe-ui` | `desk/patches/frappe-ui+1.0.0-rc.1.patch` | `patch-package` در `postinstall` | ۳۷ فایل؛ Jalali picker، RTL، متن‌های انتخاب، فونت Vazirmatn، نمودارها، Editor و کنترل‌های مشترک |
+| Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` روی checkout Frappe | SHA منبع و reverse applicability بررسی می‌شوند؛ اعمال تکراری idempotent است |
+| `frappe-ui` | `desk/patches/frappe-ui+1.0.0-rc.1.patch` | `patch-package` در `postinstall` | نسخه package و اعمال patch در clean install بررسی می‌شوند |
+| اسکریپت‌های runtime | `docker/entrypoint.sh`, `docker/start.sh` | داخل Containerfile | کپی‌شده از `frappe/frappe_docker` روی SHA `docker/frappe-docker-source.ref` |
 
-Patchها پس از ممیزی در دو Artifact ادغام شدند. Patchهای قدیمی حذف‌شده در Git bundle بازیابی‌پذیرند؛ قابلیت‌هایشان در Patch ادغام‌شده یا خود upstream حضور دارد. Patch اعمال‌نشده با خطا Build را متوقف می‌کند. اسکریپت Build نسخه `frappe-ui` را بررسی می‌کند و Patchهای منبع Frappe را فقط یک‌بار اعمال می‌کند.
+## Clean Docker Build
 
-## Build تمیز
+`docker/HelpdeskPersian.Containerfile` دیگر به image محلی `helpdesk-persian:styled` وابسته نیست. Base و Builder رسمی Frappe 17 از GHCR با manifest digest ثابت دریافت می‌شوند. Containerfile نسخه‌های دقیق Frappe و Telephony را از ref fileها می‌خواند، Helpdesk را با SHA ورودی می‌گیرد، dependencyها را از lockfile نصب می‌کند، patchها را اعمال می‌کند و assetها را می‌سازد. `.github/workflows/persian-docker-build.yml` همین فرایند را در BuildKit روی runner تمیز اجرا می‌کند و image را Push یا Deploy نمی‌کند.
 
-از ریشه `frappe-bench/apps/helpdesk/desk` اجرا کن:
+اجرای این Workflow برای تغییرات فعلی هنوز انجام نشده است؛ بنابراین Clean Docker Build فعلاً **UNVERIFIED** است. اجرای محلی هم ممکن نیست چون Docker daemon روی میزبان در دسترس نیست. نتیجه نهایی فقط پس از اجرای موفق GitHub Actions قابل PASS است.
 
-```sh
-yarn install --frozen-lockfile --non-interactive
-yarn apply:ui-patches
-yarn apply:ui-patches
-yarn build
-```
+## Build فرانت‌اند مستقل
 
-مسیر نسبی `@framework/ui` به وجود sibling در `frappe-bench/apps/frappe/ui` وابسته است. Workflow `persian-clean-build.yml` روی commit `af3ed4a2de6f3698e21f2ccb909f4aca1be20236` و دوباره روی نامزد `57446ad5d4e78cae713b2b2edb48927b2a3b9828` با cache خالی، Frappe source pin ثابت، نصب `--frozen-lockfile`، دو بار اجرای Patch و `yarn build` موفق شد؛ اجرای دوم GitHub Actions شماره `37982460203` است. این مدرک، Clean Frontend Build را تأیید می‌کند؛ جایگزین Full Docker Build، تست کامل Backend یا Runtime پذیرش نیست.
-
-روی SHA `4547143bcb56898c84154e7c053d74832edddd6f` همهٔ CIها موفق شدند: Persian Clean Frontend Build (`37985969881`)، Lint (`37985969792`)، Server Tests (`37985969807`) و هر دو shard از Playwright (`37985969826`). شکست قبلی Settings selector قدیمی `GMail` بود که با عنوان رسمی `Gmail` همسان شد. شکست Opening Date از fixture مبتنی بر UTC بود، چون Backend سایت تست در timezone خودش روز بعد را محاسبه می‌کرد؛ fixture اکنون تاریخ جاری تولیدشده توسط Backend را نگه می‌دارد. هیچ منطق فیلتر محصول تغییر نکرد.
-
-### ساخت image با Docker
-
-`docker/HelpdeskPersian.Containerfile` پیش از Build، `frappe/ui` را به‌صورت sparse از همان SHA در `frappe-ui-source.ref` دریافت و SHA را اعتبارسنجی می‌کند. Node `20.20.0` و Yarn `1.22.18` از مرحلهٔ Node رسمی و نسخه‌بندی‌شده می‌آیند؛ Node 20 فقط برای نصب قفل‌شدهٔ وابستگی‌های Desk در prefix جدا استفاده می‌شود. پیش از نصب، کل `desk/node_modules` image پایه حذف می‌شود تا نصب از Lockfile به ماژول‌های باقی‌مانده وابسته نباشد. مرحلهٔ نهایی، Node `24.14.0` موجود در image پایه را برای `bench build` نگه می‌دارد، چون bundler این خط Node `>=24` می‌خواهد. اگر ref یا Patch ناسازگار باشد، Build متوقف می‌شود.
-
-ساخت image از archive commit `3d597d68e1b89b700884441e65d02ccc6f2a294a` موفق شد: نصب Yarn از Lockfile پس از حذف کامل `desk/node_modules` انجام شد، Patchها اعمال شدند و `bench build --apps frappe,helpdesk` پایان یافت. نسخه‌های داخل محیط Build برابر Node `24.14.0` برای Bench، Node `20.20.0` برای نصب وابستگی Desk، Yarn `1.22.18` و `frappe-ui 1.0.0-rc.1` بودند. Image `helpdesk-persian:runtime-3d597d68` با digest `sha256:3a9a9823e5bc18e1c695c7340a50aca4380f1ea54e17acc4f41db622f52aebad` روی شش سرویس برنامه اجرا شد؛ DB، Redis و Volumeها تغییر نکردند و Migration اجرا نشد. Home، Login، API ping و assetها HTTP 200 شدند. ورود به Settings زنده با profile مستقل و credential تست مجاز هنوز تأیید نشده است.
-
-این Build از image پایهٔ محلی `helpdesk-persian:styled` با شناسهٔ `sha256:b6e650366420113be29bd4f9a9e8038e4ad3bfdf5b4483f0cce139a1d10faa35` استفاده کرد. چون ساخت این پایه با فایل‌های سفارشی بیرون از مخزن انجام می‌شود و image در Registry قابل دریافت نیست، Clean dependency install و Build روی این میزبان تأیید شده اما Build مستقل از host/پایه هنوز بازتولیدپذیر نیست. پیش از اعلام Clean Build کامل، باید دستور ساخت پایه به مخزن منتقل و نسخه‌های Frappe، Telephony و builder پین شوند؛ imageهای موجود یا Volumeها برای دورزدن این وابستگی حذف نمی‌شوند.
+`.github/workflows/persian-clean-build.yml` یک checkout جدا برای Helpdesk و Frappe می‌سازد، ref دقیق Frappe را checkout می‌کند، `yarn install --frozen-lockfile` را با cache خالی اجرا می‌کند، idempotency patch را می‌سنجد و Vite را Build می‌کند. این تست معادل Build کامل Docker یا Runtime نیست.
 
 ## ارتقا و بازگشت
 
-برای تغییر Frappe یا `frappe-ui`، ابتدا نسخه و ref را در یک branch آزمایشی به‌روزرسانی کن؛ تمام Patchها را از نصب خالی اعمال کن و Build و تست‌های RTL/Jalali/English را اجرا کن. عدم تطبیق Patch باید به Failure منجر شود؛ حذف خودکار Patch، `|| true` یا استفاده از `node_modules` قبلی مجاز نیست.
+برای ارتقای Frappe، Telephony، `frappe-ui` یا imageهای Build:
 
-فعلاً Fork جدا برای `frappe-ui` نساختیم: نسخه پکیج دقیقاً pin است، Patch package واحد است و CI نصب تمیز و applicability را کنترل می‌کند. اگر آپدیت‌های بعدی مرتباً Conflict ایجاد کرد یا مصرف‌کننده‌های دیگری همین Patchها را خواستند، Fork اختصاصی گزینه مناسب‌تری خواهد بود.
+1. Ref/version را در شاخه نامزد تغییر بده.
+2. Clean frontend و Docker build را اجرا کن.
+3. تست ترجمه، RTL، Jalali، Backend و Playwright را بررسی کن.
+4. Patch ناسازگار را با حذف/نادیده‌گرفتن دور نزن؛ نامزد باید شکست بخورد تا Patch اصلاح شود.
+5. برای هر انتشار SHA برنامه و image digest را ثبت کن؛ قبلی را برای Rollback نگه دار.
+
+فعلاً Fork جدا از `frappe-ui` لازم نیست: یک patch versioned برای package و یک diff برای Frappe source استفاده می‌شود. اگر آپدیت‌های آتی به‌طور مکرر conflict ایجاد کنند، این تصمیم را با داده‌های واقعی بازبینی کن.

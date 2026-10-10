@@ -128,7 +128,7 @@
     "
   />
 </template>
-<script setup>
+<script setup lang="ts">
 import CompactEditor from "@/components/CompactEditor.vue";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import SettingsLayoutBase from "@/components/layouts/SettingsLayoutBase.vue";

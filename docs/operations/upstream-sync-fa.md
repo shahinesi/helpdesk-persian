@@ -1,16 +1,22 @@
 # همگام‌سازی Upstream
 
-## اجرای فعلی
+## سیاست
 
-Workflow در `.github/workflows/upstream-sync.yml` در شاخه فارسی فعلی برای اجرای روزانه و دستی تعریف شده است. ابتدا `main`، `main-hotfix`، `develop` و `legacy` را از `frappe/helpdesk` می‌گیرد و Mirrorهای `vendor/*` را فقط در صورت امکان Fast-forward به‌روزرسانی می‌کند. تاریخچه جلوتر یا واگرا باعث توقف و خطای روشن می‌شود؛ هیچ Force Push انجام نمی‌شود. در ۹ اکتبر ۲۰۲۶، این فایل روی Default Branch (`develop`) وجود نداشت؛ بنابراین Schedule خودکار و `workflow_dispatch` از Default Branch فعال نیستند.
+فقط `frappe/helpdesk:develop` وارد جریان روزانه می‌شود. مقصد آینه `vendor/develop` است و مقصد پیشنهاد تغییر `custom/develop-fa`. هیچ ادغام یا Deploy خودکاری به شاخه محصول وجود ندارد. شاخه `develop` پیش‌فرض فقط میزبان Workflow است و خود Workflow تنها با PR مستقل وارد آن می‌شود.
 
-اگر `vendor/develop` تغییر کند و `custom/develop-fa` هنوز آن را نداشته باشد، Workflow شاخهٔ ثابت `sync/upstream-develop-fa` را می‌سازد یا جلو می‌برد و Draft PR متناظر را ایجاد یا به‌روزرسانی می‌کند. برای خط پایدار نیز همین مسیر مستقل از `vendor/main` به `custom/main-fa` و شاخهٔ `sync/upstream-main-fa` آماده است؛ تا پیش از ایجاد `custom/main-fa` فقط با پیام روشن رد می‌شود. Merge Conflict باعث توقف پیش از Push می‌شود. هیچ Merge خودکار یا Deployment خودکاری فعال نیست. `main-hotfix` و `legacy` فقط Mirror می‌شوند.
+## اجرای روزانه و دستی
 
-در حال حاضر Proposal پایدار ساخته نمی‌شود، چون `custom/main-fa` هنوز وجود ندارد و سازگاری فارسی‌سازی با وابستگی‌های خط `main` اثبات نشده است. برای فعال‌شدن Schedule، Workflow باید پس از بازبینی روی Default Branch قرار بگیرد؛ پیش از آن، `workflow_dispatch` نیز به‌دلیل نبود Workflow در Default Branch در GitHub قابل اجرا نیست.
+`.github/workflows/upstream-sync.yml` برای اجرای روزانه و `workflow_dispatch` آماده است. Workflow SHA رسمی را از `frappe/helpdesk:develop` می‌گیرد و فقط اگر SHA موجود `vendor/develop` نیای `SHA رسمی` باشد، آن را Fast-forward می‌کند. اگر آینه جلوتر یا واگرا باشد، اجرا با خطا می‌ایستد و Branch را بازنویسی نمی‌کند.
 
-## کنترل سلامت
+پس از همگام‌سازی، Workflow با ادغام آزمایشی upstream در شاخه نامزد `sync/upstream-develop-fa` یک Draft PR به `custom/develop-fa` ایجاد یا به‌روزرسانی می‌کند. نامزد شامل SHA مبنا، SHA رسمی، SHA ادغام‌شده و وضعیت تست است. Conflict باعث توقف پیش از Push/PR می‌شود. PRهای باز تکراری ساخته نمی‌شوند.
 
-- Mirror باید یا برابر Upstream باشد یا Fast-forward شود.
-- Proposal باید به خط فارسی متناظر متصل باشد.
-- Patchها، تغییر وابستگی‌ها، Migrationها و تست‌های CI باید در PR دیده شوند.
-- شاخه upstream ناموجود یا تاریخچه واگرا باید Failure بدهد، نه اینکه شاخه موجود را بازنویسی کند.
+CI نامزد باید نصب وابستگی‌ها، پین Frappe/Telephony، اعمال Patchها، Build، ترجمه، RTL، Jalali، تست Backend و Playwright را اجرا کند. موفقیت Workflow به معنی تأیید Merge نیست. Merge و انتشار نیازمند بازبینی انسانی‌اند.
+
+زمان‌بندی GitHub Actions فقط وقتی فعال می‌شود که نسخه Workflow روی شاخه پیش‌فرض باشد. این نسخه ابتدا در PR کوچک مستقل ارائه می‌شود؛ Default Branch تغییر نمی‌کند و PR بدون تأیید مالک Merge نمی‌شود.
+
+## عیب‌یابی
+
+- `vendor/develop` واگرا یا جلوتر از Upstream: تاریخچه را بررسی کن؛ Force-push نکن.
+- Merge conflict در نامزد: فایل‌های متعارض، migrations، API/dependencies و patchهای RTL/Jalali را دستی بررسی کن؛ Conflict را با انتخاب کورکورانه حل نکن.
+- CI ناموفق: Draft PR برای Merge آماده نیست؛ SHA و لاگ مرحله شکست را ثبت کن.
+- SHA Frappe عوض شده: Patchهای `frappe/ui` باید روی ref جدید دوباره آزموده شوند؛ صرفاً به‌روزرسانی ref کافی نیست.

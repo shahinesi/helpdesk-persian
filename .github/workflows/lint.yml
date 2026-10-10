@@ -1,15 +1,28 @@
 name: Lint
 
 on:
+  push:
+    branches:
+      - custom/develop-fa
+    paths:
+      - 'desk/**'
+      - 'helpdesk/**'
+      - 'pyproject.toml'
+      - '**.po'
+      - 'scripts/check_fa_translation.py'
+      - '.github/workflows/lint.yml'
   pull_request:
     branches:
       - main
       - main-hotfix
       - develop
+      - custom/develop-fa
+  workflow_dispatch:
 
 jobs:
   commit-lint:
     name: Semantic Commits
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -27,8 +40,6 @@ jobs:
   linter:
     name: 'Frappe Linter'
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,8 +65,8 @@ jobs:
 
       - name: Run Pre-commit on changed files
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           mapfile -t changed_files < <(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA")
           if (( ${#changed_files[@]} )); then

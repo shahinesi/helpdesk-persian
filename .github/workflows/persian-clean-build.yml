@@ -1,10 +1,19 @@
 name: Persian clean frontend build
 
 on:
+  push:
+    branches: [custom/develop-fa]
+    paths:
+      - "desk/**"
+      - "pyproject.toml"
+      - ".github/helpers/**"
+      - ".github/workflows/persian-clean-build.yml"
   pull_request:
     branches: [develop, custom/develop-fa, custom/main-fa]
     paths:
       - "desk/**"
+      - "pyproject.toml"
+      - ".github/helpers/**"
       - ".github/workflows/persian-clean-build.yml"
   workflow_dispatch:
 
@@ -25,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: frappe/frappe
-          ref: c4472b622192e0b1cbdbaa9792a38f4e5006e9f6
+          ref: develop
           path: bench/apps/frappe
 
       - name: Set up Node
@@ -40,6 +49,8 @@ jobs:
         working-directory: bench/apps/helpdesk
         run: |
           expected="$(tr -d '[:space:]' < desk/patches/frappe-ui-source.ref)"
+          git -C ../frappe fetch --depth=1 origin "$expected"
+          git -C ../frappe checkout --detach "$expected"
           actual="$(git -C ../frappe rev-parse HEAD)"
           test "$actual" = "$expected"
 
@@ -57,4 +68,4 @@ jobs:
         run: |
           yarn apply:ui-patches
           yarn apply:ui-patches
-          yarn build
+          yarn vite build

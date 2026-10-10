@@ -1,15 +1,34 @@
 name: UI Tests
 
 on:
-  pull_request:
+  push:
     branches:
-      - develop
+      - custom/develop-fa
     paths:
       - "desk/**"
       - "e2e/**"
       - "playwright.config.ts"
       - "package.json"
       - "yarn.lock"
+      - "pyproject.toml"
+      - ".github/helpers/**"
+      - ".github/bench-version.ref"
+      - "desk/patches/*.ref"
+      - ".github/workflows/ui-tests.yml"
+  pull_request:
+    branches:
+      - develop
+      - custom/develop-fa
+    paths:
+      - "desk/**"
+      - "e2e/**"
+      - "playwright.config.ts"
+      - "package.json"
+      - "yarn.lock"
+      - "pyproject.toml"
+      - ".github/helpers/**"
+      - ".github/bench-version.ref"
+      - "desk/patches/*.ref"
       - ".github/workflows/ui-tests.yml"
   workflow_dispatch:
 
@@ -30,23 +49,22 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1, 2]
-
     services:
       redis-cache:
-        image: redis/redis-stack-server:latest
+        image: public.ecr.aws/docker/library/redis:8.4-alpine@sha256:0514fa59e3d84e2f3be66731c5401fc2a85b8ea71b49c0116c850f6a558076f4
         ports:
           - 13000:6379
       redis-queue:
-        image: redis:alpine
+        image: public.ecr.aws/docker/library/redis:8.4-alpine@sha256:0514fa59e3d84e2f3be66731c5401fc2a85b8ea71b49c0116c850f6a558076f4
         ports:
           - 11000:6379
       mariadb:
-        image: mariadb:10.6
+        image: public.ecr.aws/docker/library/mariadb:10.6@sha256:23616f0bd3aff922f4dea4130f1d0a09f3571d20b7b36c8f49840672dc309e8c
         env:
           MARIADB_ROOT_PASSWORD: root
         ports:
           - 3306:3306
-        options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        options: --health-cmd="mariadb-admin ping -h 127.0.0.1 -uroot -proot --silent" --health-interval=5s --health-timeout=2s --health-retries=12
 
     steps:
       - name: Clone
@@ -60,8 +78,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
-          check-latest: true
+          node-version: 24.14.0
 
       - name: Cache pip
         uses: actions/cache@v4
@@ -90,7 +107,8 @@ jobs:
 
       - name: Setup Bench
         run: |
-          pip install frappe-bench
+          bench_version="$(tr -d '[:space:]' < .github/bench-version.ref)"
+          pip install "frappe-bench==${bench_version}"
           bench init --skip-redis-config-generation --skip-assets --frappe-branch "$FRAPPE_BRANCH" --python "$(which python)" ~/frappe-bench
           frappe_ui_ref="$(tr -d '[:space:]' < desk/patches/frappe-ui-source.ref)"
           git -C ~/frappe-bench/apps/frappe fetch --depth 1 https://github.com/frappe/frappe.git "$frappe_ui_ref"
@@ -102,7 +120,7 @@ jobs:
       - name: Install Helpdesk
         working-directory: /home/runner/frappe-bench
         run: |
-          bench get-app telephony
+          bash "$GITHUB_WORKSPACE/.github/helpers/get-app-at-ref.sh" telephony https://github.com/frappe/telephony "$GITHUB_WORKSPACE/desk/patches/telephony-source.ref"
           bench get-app helpdesk $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin --install-app helpdesk $SITE
@@ -168,7 +186,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 24.14.0
 
       - name: Install Playwright
         run: yarn install --frozen-lockfile --ignore-scripts

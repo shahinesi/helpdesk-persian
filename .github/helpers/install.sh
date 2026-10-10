@@ -8,7 +8,8 @@ sudo apt update
 sudo apt remove mysql-server mysql-client
 sudo apt install libcups2-dev redis-server mariadb-client libmariadb-dev
 
-pip install frappe-bench
+bench_version="$(tr -d '[:space:]' < "${GITHUB_WORKSPACE}/.github/bench-version.ref")"
+pip install "frappe-bench==${bench_version}"
 git clone "https://github.com/frappe/frappe" --branch "develop" --depth 1 
 frappe_ui_ref="$(tr -d '[:space:]' < "${GITHUB_WORKSPACE}/desk/patches/frappe-ui-source.ref")"
 git -C ~/frappe fetch --depth 1 https://github.com/frappe/frappe.git "$frappe_ui_ref"
@@ -44,8 +45,8 @@ sed -i 's/schedule:/# schedule:/g' Procfile
 sed -i 's/socketio:/# socketio:/g' Procfile
 sed -i 's/redis_socketio:/# redis_socketio:/g' Procfile
 
-bench get-app erpnext --branch "develop"
-bench get-app telephony
+"${GITHUB_WORKSPACE}/.github/helpers/get-app-at-ref.sh" erpnext https://github.com/frappe/erpnext "${GITHUB_WORKSPACE}/desk/patches/erpnext-source.ref"
+"${GITHUB_WORKSPACE}/.github/helpers/get-app-at-ref.sh" telephony https://github.com/frappe/telephony "${GITHUB_WORKSPACE}/desk/patches/telephony-source.ref"
 bench get-app helpdesk "${GITHUB_WORKSPACE}"
 bench setup requirements --dev
 

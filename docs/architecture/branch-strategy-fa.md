@@ -1,41 +1,39 @@
 # راهبرد شاخه‌های Helpdesk فارسی
 
-تاریخ ممیزی: ۹ اکتبر ۲۰۲۶
+تاریخ بازبینی: ۱۰ اکتبر ۲۰۲۶
 
-## وضعیت فعلی
+## دامنه فعلی
 
-| شاخه | وضعیت مشاهده‌شده | کاربرد |
-|---|---|---|
-| `main` | هم‌تراز `upstream/main`، نسخه 1.30.1 | خط پایدار رسمی |
-| `main-hotfix` | هم‌تراز `upstream/main-hotfix` پس از Fast-forward در ۹ اکتبر | شاخه رسمی مستقل؛ تاریخچهٔ آن با `main` واگراست |
-| `develop` | ۵ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop` | شاخه پیش‌فرض Fork و Base مربوط به PR فعلی |
-| `legacy` | هم‌تراز `upstream/legacy` | نگهداری خط قدیمی |
-| `vendor/main` | هم‌تراز `upstream/main` | Mirror پایدار؛ بدون تغییر اختصاصی |
-| `vendor/main-hotfix` | هم‌تراز `upstream/main-hotfix` پس از Fast-forward در ۹ اکتبر | Mirror اصلاح‌های نسخه پایدار؛ فقط Fast-forward |
-| `vendor/develop` | هم‌تراز `upstream/develop` در Remote | Mirror توسعه |
-| `vendor/legacy` | هم‌تراز `upstream/legacy` | Mirror خط قدیمی |
-| `custom/develop-fa` | ۱۷۹ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop`، بر پایهٔ Merge Base=`794c7b0895eb4b1ac652f6817d69d3879faef844` | نسخه فارسی توسعه؛ به‌روزرسانی نیازمند Proposal و بازبینی است |
-| `custom/main-fa` | وجود ندارد | تا اثبات سازگاری ایجاد/اعلام نمی‌شود |
-| `feat/persian-setup-wizard` | PR شماره ۱؛ شاخه فعال فارسی‌سازی و تغییرات وابستگی | شاخه تغییرات فارسی فعلی |
+در این مرحله فقط خط توسعه مبتنی بر Frappe 17 نگهداری می‌شود. `custom/develop-fa` شاخه اصلی توسعه محصول فارسی است و `vendor/develop` فقط نسخه رسمی `frappe/helpdesk:develop` را نگه می‌دارد. شاخه‌های دیگر موجود می‌مانند؛ این راهبرد آن‌ها را حذف یا بازنویسی نمی‌کند.
 
-Default Branch روی `develop` باقی می‌ماند؛ تغییرش تا آماده‌شدن خط پایدار فارسی انجام نمی‌شود. `main` و `develop` دو خط مستقل‌اند: وابستگی Helpdesk در `main` به Frappe 15/16 و Python 3.10+ محدود است، در حالی که `develop` به Frappe 16/17 و Python 3.14 نیاز دارد.
+| شاخه | نقش |
+|---|---|
+| `custom/develop-fa` | توسعه Helpdesk فارسی؛ ادغام تغییرات رسمی فقط با PR بررسی‌شده |
+| `vendor/develop` | آینه رسمی Upstream؛ به‌روزرسانی فقط با Fast-forward |
+| `develop` | شاخه پیش‌فرض مخزن؛ تغییر سیاست یا محتوا فقط از مسیر PR و با تأیید مالک |
+| `feat/persian-setup-wizard` | شاخه موجود که PR شماره ۱ از آن قبلاً Merge شده؛ نگه داشته می‌شود |
+| `main`, `main-hotfix`, `legacy`, `vendor/*` دیگر | شاخه‌های تاریخی/موجود؛ در دامنه توسعه فعلی نیستند و حذف نمی‌شوند |
 
-در ممیزی ۹ اکتبر ۲۰۲۶، تاریخچه‌های `upstream/main` و `upstream/develop` از Merge Base `536d06681ffbb31ea5a770a5340294c12825c714` به‌ترتیب ۲۶۰۸ و ۳۵۴۲ Commit یکتا داشتند. `origin/custom/develop-fa` از Merge Base `794c7b0895eb4b1ac652f6817d69d3879faef844` مشتق شده است؛ این شاخه ۱۷۹ Commit جلوتر و ۱۰ Commit عقب‌تر از `upstream/develop` است. شاخه محلی `custom/develop-fa` نسبت به نسخه Remote خود ۶۰ Commit عقب است و نباید به‌جای شاخه Remote Push شود. `main-hotfix` و `vendor/main-hotfix` از SHA `26dbace988e0664ce0fbecedf91f1e63a80d46de` با Fast-forward عادی به SHA upstream یعنی `d978f39d2a0186d2d03aa21cf9a679a483bf2146` رسیدند؛ هیچ Commit اختصاصی حذف نشد. هیچ Merge بین `main` و `develop` انجام نشده است.
+در بازبینی فعلی، `custom/develop-fa` و `feat/persian-setup-wizard` روی SHA `5850f8a5dab1a860576de566632daced1c6f5f7c` بودند. `vendor/develop` روی `075edde1c072037f50fa73fed4141de0b05097cb` بود؛ این SHA با Upstream دیده‌شده هم‌تراز بود. این مقادیر Snapshot هستند و پیش از انتشار بعدی باید دوباره خوانده شوند.
 
-Workflow همگام‌سازی روزانه در شاخهٔ فعلی وجود دارد، اما هنوز در Default Branch (`develop`) نیست؛ فهرست GitHub Actions آن را فعال نشان نمی‌دهد. زمان‌بندی تا زمانی که Workflow از مسیر PR موجود و پس از تأیید وارد Default Branch نشود فعال نیست. هیچ شاخهٔ فارسی به‌صورت خودکار Merge یا Deploy نمی‌شود.
+Frappe توسعه‌ای متناظر با Helpdesk `develop` است. در مخزن فعلی سورس Frappe روی SHA `5b9f9e57232612b092b0dc0bf05dcec78bf4997d` پین شده است. `pyproject.toml` محدوده سازگاری را روی Frappe 17 و Python 3.14 محدود می‌کند؛ فایل ref، SHA دقیق سورسی را که patchهای Frappe UI بر آن اعتبارسنجی شده‌اند مشخص می‌کند.
 
-## جریان نگهداری
+## جریان آپدیت
 
 ```mermaid
 flowchart TD
-  U1[Upstream main] --> V1[vendor/main]
-  U2[Upstream develop] --> V2[vendor/develop]
-  V2 --> P2[پیشنهاد PR به custom/develop-fa]
-  P2 --> C2[CI و بازبینی انسانی]
-  C2 --> S2[Staging با SHA ثابت]
-  S2 --> A[تأیید انتشار]
-  A --> D[انتشار کنترل‌شده]
-  V1 --> P1[custom/main-fa پس از سازگارسازی مستقل]
+  U[frappe/helpdesk develop] -->|Fast-forward امن| V[vendor/develop]
+  V --> C[ساخت نامزد از custom/develop-fa و vendor/develop]
+  C --> P[Draft PR به custom/develop-fa]
+  P --> Q[CI: وابستگی، Build، تست، ترجمه، RTL و Jalali]
+  Q --> H[بازبینی و تصمیم انسانی]
+  H --> S[Staging با SHA ثابت]
+  S --> A[تأیید جداگانه انتشار]
+  A --> D[Deploy کنترل‌شده]
 ```
 
-Mirrorهای `vendor/*` فقط با Fast-forward به‌روزرسانی می‌شوند. شاخه‌های فارسی با Merge یا PR مستقل، بدون Force Push و بدون ادغام متقاطع `main` و `develop` نگهداری می‌شوند. CI و ساخت Proposal به‌تنهایی مجوز Merge یا Deploy نیستند.
+هیچ ادغام خودکار به `custom/develop-fa` و هیچ Deploy خودکاری وجود ندارد. Conflict یا شکست CI نامزد را متوقف می‌کند. درخواست تغییر شاخه پیش‌فرض یا Merge به `develop` نیازمند تأیید صریح است.
+
+## کار روزمره
+
+توسعه‌دهندگان محصول فارسی روی `custom/develop-fa` کار می‌کنند. تغییرات رسمی ابتدا فقط در `vendor/develop` منعکس می‌شوند و سپس در Draft PR جداگانه به `custom/develop-fa` پیشنهاد می‌شوند. Frappe/Helpdesk 16 و شاخه پایدار فارسی در دامنه فعلی نیستند.
