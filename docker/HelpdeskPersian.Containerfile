@@ -1,7 +1,7 @@
 ARG FRAPPE_BUILD_IMAGE=ghcr.io/frappe/build:develop@sha256:6bf9b9443a88e823cce8882d8ff18e5e5c1c4b7b1908036047be8ea55a4e0f43
 ARG FRAPPE_RUNTIME_IMAGE=ghcr.io/frappe/base:develop@sha256:c4df28afb5d53b793d0fb60aa58dab3bce3c920f9e85b426cf668f1b730ab191
 
-FROM public.ecr.aws/docker/library/node:20.20.0-bookworm-slim@sha256:d8a35d586fad3af7abb6fdb9ba972388395405f4d462da9e4a4ddcde67b5e0fb AS node-runtime
+FROM public.ecr.aws/docker/library/node:24.14.0-bookworm-slim@sha256:d8e448a56fc63242f70026718378bd4b00f8c82e78d20eefb199224a4d8e33d8 AS node-runtime
 RUN npm install --global --prefix /opt/yarn-v1.22.18 yarn@1.22.18
 
 FROM ${FRAPPE_BUILD_IMAGE} AS builder
@@ -9,7 +9,7 @@ ARG HELPDESK_REF
 USER frappe
 WORKDIR /home/frappe
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-COPY --from=node-runtime /usr/local/ /opt/node-v20/
+COPY --from=node-runtime /usr/local/ /opt/node-v24/
 COPY --from=node-runtime /opt/yarn-v1.22.18/ /opt/yarn-v1.22.18/
 COPY --chown=frappe:frappe desk/patches/frappe-ui-source.ref /tmp/frappe-source.ref
 COPY --chown=frappe:frappe desk/patches/telephony-source.ref /tmp/telephony-source.ref
@@ -33,8 +33,8 @@ RUN test -n "$HELPDESK_REF" \
 
 WORKDIR /home/frappe/frappe-bench
 RUN bench setup requirements --dev \
-    && export PATH="/opt/yarn-v1.22.18/bin:/opt/node-v20/bin:${PATH}" \
-    && test "$(node --version)" = "v20.20.0" \
+    && export PATH="/opt/yarn-v1.22.18/bin:/opt/node-v24/bin:${PATH}" \
+    && test "$(node --version)" = "v24.14.0" \
     && test "$(yarn --version)" = "1.22.18" \
     && cd apps/helpdesk/desk \
     && yarn install --frozen-lockfile --non-interactive \
