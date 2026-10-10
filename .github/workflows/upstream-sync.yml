@@ -143,8 +143,12 @@ jobs:
         if: steps.proposal.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ steps.proposal.outputs.base_sha }}
         run: |
           set -euo pipefail
-          for workflow in lint.yml server-tests.yml ui-tests.yml persian-clean-build.yml persian-docker-build.yml; do
+          gh workflow run lint.yml --ref develop \
+            --field source_ref=sync/upstream-develop-fa \
+            --field baseline_ref="$BASE_SHA"
+          for workflow in server-tests.yml ui-tests.yml persian-clean-build.yml persian-docker-build.yml; do
             gh workflow run "$workflow" --ref sync/upstream-develop-fa
           done

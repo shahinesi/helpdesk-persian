@@ -6,33 +6,45 @@ on:
       - main
       - main-hotfix
       - develop
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Branch to lint
+        required: false
+        type: string
+      baseline_ref:
+        description: Commit to use as the diff and Semgrep baseline
+        required: false
+        type: string
 
 jobs:
   commit-lint:
     name: Semantic Commits
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 200
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
           check-latest: true
       - name: Check commit titles
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           npm install @commitlint/cli @commitlint/config-conventional
-          npx commitlint --verbose --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+          npx commitlint --verbose --from "$BASE_SHA" --to "$HEAD_SHA"
 
   linter:
     name: 'Frappe Linter'
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ inputs.source_ref || github.sha }}
 
       - name: Check Persian translation coverage
         run: python scripts/check_fa_translation.py
@@ -45,7 +57,7 @@ jobs:
           python scripts/check_fa_translation.py --mo /tmp/helpdesk-fa.mo
 
       - name: Set up Python 3.14
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.14'
 
@@ -54,10 +66,10 @@ jobs:
 
       - name: Run Pre-commit on changed files
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.baseline_ref || github.sha }}
         run: |
-          mapfile -t changed_files < <(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA")
+          head_sha="$(git rev-parse HEAD)"
+          mapfile -t changed_files < <(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$head_sha")
           if (( ${#changed_files[@]} )); then
             pre-commit run --files "${changed_files[@]}"
           fi
@@ -69,4 +81,6 @@ jobs:
         run: pip install semgrep
 
       - name: Run Semgrep rules
+        env:
+          SEMGREP_BASELINE_REF: ${{ github.event.pull_request.base.sha || inputs.baseline_ref }}
         run: semgrep ci --config ./frappe-semgrep-rules/rules --config r/python.lang.correctness
