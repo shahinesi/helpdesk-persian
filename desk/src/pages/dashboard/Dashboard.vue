@@ -98,14 +98,11 @@
         v-if="!numberCards.loading"
       >
         <Tooltip
-          v-for="(config, index) in numberCards.data"
-          :text="config.tooltip"
+          v-for="({ tooltip, ...card }, index) in numberCards.data"
+          :key="index"
+          :text="tooltip"
         >
-          <NumberChart
-            :key="index"
-            class="border rounded-5 min-h-[114px]"
-            :config="config"
-          />
+          <NumberCard v-bind="card" />
         </Tooltip>
       </div>
       <div
@@ -119,9 +116,9 @@
         >
           <template v-for="(chart, index) in trendData.data" :key="index">
             <!-- has data -->
-            <div v-if="!isChartEmpty(chart)" class="border rounded-5 min-h-80">
+            <ChartCard v-if="!isChartEmpty(chart)" class="h-80">
               <component :is="getChartType(chart)" />
-            </div>
+            </ChartCard>
 
             <!-- chart with no data -->
             <SkeletonLoader
@@ -140,9 +137,9 @@
         >
           <template v-for="(chart, index) in masterData.data" :key="index">
             <!-- has data -->
-            <div v-if="!isChartEmpty(chart)" class="border rounded-5 min-h-80">
+            <ChartCard v-if="!isChartEmpty(chart)" class="h-80">
               <component :is="getChartType(chart)" />
-            </div>
+            </ChartCard>
 
             <!-- chart with no data -->
             <SkeletonLoader
@@ -162,9 +159,9 @@
         >
           <template v-for="(chart, index) in tagData.data" :key="index">
             <!-- has data -->
-            <div v-if="!isChartEmpty(chart)" class="border rounded-5 min-h-80">
+            <ChartCard v-if="!isChartEmpty(chart)" class="h-80">
               <component :is="getChartType(chart)" />
-            </div>
+            </ChartCard>
 
             <!-- chart with no data -->
             <SkeletonLoader
@@ -218,7 +215,7 @@ import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import { formatLocalizedDate, formatLocalizedDateRange } from "@/utils";
-import { formatLocalizedDigits } from "@/utils/number";
+import { formatLocalizedDigits, formatLocalizedNumber } from "@/utils/number";
 import { Link } from "@framework/ui";
 import { useStorage } from "@vueuse/core";
 import {
@@ -230,7 +227,7 @@ import {
   dayjs,
   usePageMeta,
 } from "frappe-ui";
-import { AxisChart, DonutChart, NumberChart } from "frappe-ui/experimental";
+import { BarChart, ChartCard, DonutChart, NumberCard } from "frappe-ui/charts";
 import { computed, h, onMounted, reactive, ref, watch } from "vue";
 import LucideBuilding2 from "~icons/lucide/building-2";
 import LucideUser from "~icons/lucide/user";
@@ -244,7 +241,7 @@ function translateDefaultTeam(label: string) {
 
 interface NumberCardData {
   title: string;
-  value: number;
+  value: number | null;
   delta: number | null;
   deltaSuffix: string;
   suffix?: string;
@@ -267,7 +264,7 @@ const filters = reactive<Filters>({
 interface ChartData {
   data: ChartValues[];
   title: string;
-  type: "axis" | "pie";
+  type: "bar" | "donut";
 }
 
 interface ChartValues {
@@ -282,18 +279,6 @@ const dashboardTitle = computed(() => {
   return viewMyStats.value ? __("My Dashboard") : __("Organization Dashboard");
 });
 
-const colors = [
-  "#318AD8",
-  "#F683AE",
-  "#48BB74",
-  "#F56B6B",
-  "#FACF7A",
-  "#44427B",
-  "#5FD8C4",
-  "#F8814F",
-  "#15CCEF",
-  "#A6B1B9",
-];
 interface ChartEmptyState {
   // header of the card, shown untranslated only when the chart itself is missing
   chartTitle: string;
@@ -412,7 +397,7 @@ const hasAppliedFilter = computed(() =>
 const isEmpty = computed(() => {
   if (!numberCards.data || !trendData.data || !masterData.data) return false;
   return (
-    (numberCards.data as NumberCardData[]).every((d) => d.value === 0) &&
+    (numberCards.data as NumberCardData[]).every((d) => !d.value) &&
     (trendData.data as ChartData[]).every((d) => !d.data?.length) &&
     (masterData.data as ChartData[]).every((d) => !d.data?.length)
   );
@@ -524,66 +509,63 @@ const loading = computed(() => {
   return numberCards.loading || masterData.loading || trendData.loading;
 });
 
-function getChartType(chart: any) {
-  const data =
-    chart.key === "tickets_by_type"
-      ? chart.data.map((row: any) => ({
-          ...row,
-          [chart.categoryColumn]: displayLinkOption(
-            "HD Ticket Type",
-            row[chart.categoryColumn] || "Unspecified"
-          ),
-        }))
-      : chart.key === "tickets_by_team"
-      ? chart.data.map((row: any) => ({
-          ...row,
-          [chart.categoryColumn]: translateDefaultTeam(
-            row[chart.categoryColumn]
-          ),
-        }))
-      : chart.data;
-  const xAxis =
-    chart.xAxis?.type === "time"
-      ? {
-          ...chart.xAxis,
-          echartOptions: {
-            ...chart.xAxis.echartOptions,
-            axisLabel: {
-              ...chart.xAxis.echartOptions?.axisLabel,
-              formatter: (value: string | number) =>
-                formatLocalizedDate(
-                  value,
-                  chart.xAxis.timeGrain === "month" ? "MMM YYYY" : "MMM D"
-                ),
-            },
-          },
-        }
-      : chart.xAxis;
-  const config = {
-    ...chart,
-    subtitle: formatLocalizedDigits(chart.subtitle || ""),
-    data,
-    xAxis,
-    colors,
-    fontFamily: '"Vazirmatn", sans-serif',
+function getChartType({ type, key, ...props }: any) {
+  const category = type === "donut" ? props.category : props.x;
+  const translateCategory = (value: string) => {
+    if (key === "tickets_by_type") {
+      return displayLinkOption("HD Ticket Type", value || "Unspecified");
+    }
+    return key === "tickets_by_team" ? translateDefaultTeam(value) : value;
   };
-  if (chart["type"] === "axis") {
-    return h(AxisChart, {
-      config,
-    });
-  }
-  if (chart["type"] === "pie") {
-    return h(DonutChart, {
-      config,
-    });
-  }
+  const data = props.data.map((row: any) => ({
+    ...row,
+    [category]: translateCategory(row[category]),
+  }));
+  const localized = {
+    ...props,
+    title: __(props.title),
+    subtitle: formatLocalizedDigits(props.subtitle || ""),
+    data,
+    ...(type === "donut"
+      ? { format: (value: number) => formatLocalizedNumber(value) }
+      : {
+          xAxis: {
+            ...props.xAxis,
+            format: (value: string | Date) =>
+              props.xAxis?.type === "time"
+                ? formatLocalizedDate(
+                    value,
+                    props.xAxis.timeGrain === "month" ? "MMM YYYY" : "MMM D"
+                  )
+                : translateCategory(String(value)),
+          },
+          yAxis: {
+            ...props.yAxis,
+            format: (value: number) => formatLocalizedNumber(value),
+          },
+          y2Axis: props.y2Axis && {
+            ...props.y2Axis,
+            format: (value: number) => formatLocalizedNumber(value),
+          },
+          seriesConfig: Object.fromEntries(
+            Object.entries(props.seriesConfig || {}).map(
+              ([name, config]: any) => [
+                name,
+                { ...config, label: config.label || __(name) },
+              ]
+            )
+          ),
+        }),
+  };
+  return h(type === "donut" ? DonutChart : BarChart, localized);
 }
 
+// include today, so last 7 days is today and the 6 days before
 function getLastXDays(range: number = 30): string {
   const today = new Date();
   const lastXDate = new Date(today);
 
-  lastXDate.setDate(today.getDate() - range);
+  lastXDate.setDate(today.getDate() - (range - 1));
   return `${dayjs(lastXDate).format("YYYY-MM-DD")},${dayjs(today).format(
     "YYYY-MM-DD"
   )}`;
@@ -622,7 +604,7 @@ const options = computed(() => [
         label: __("Today"),
         onClick: () => {
           preset.value = __("Today");
-          filters.period = getLastXDays(0);
+          filters.period = getLastXDays(1);
         },
       },
       {
