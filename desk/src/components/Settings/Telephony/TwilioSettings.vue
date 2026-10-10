@@ -69,6 +69,7 @@
               :label="__(`TwiML App Name`)"
               :model-value="twilio.doc.app_name"
               :options="twilioApps"
+              :placeholder="__('Select option')"
               @update:model-value="twilio.doc.app_name = $event"
             >
               <template #footer="{ setOpen }">

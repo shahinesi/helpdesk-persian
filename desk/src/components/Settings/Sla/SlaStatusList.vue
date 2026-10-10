@@ -4,6 +4,7 @@
       type="combobox"
       :label="__(`Default ticket status`)"
       :options="openStatuses"
+      :placeholder="__('Select option')"
       class="flex-1"
       v-model="slaData.default_ticket_status"
     />
@@ -11,6 +12,7 @@
       type="combobox"
       :label="__(`Ticket reopen status`)"
       :options="openStatuses"
+      :placeholder="__('Select option')"
       class="flex-1"
       v-model="slaData.reopen_ticket_status"
     />

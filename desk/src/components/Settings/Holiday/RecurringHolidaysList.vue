@@ -74,6 +74,7 @@
           <FormLabel :label="__(`Day`)" required />
           <Select
             :options="availableWorkDays"
+            :placeholder="__('Select option')"
             v-model="recurringHolidayData.day"
             :disabled="availableWorkDays.length === 0"
           />

@@ -58,6 +58,7 @@
               :label="__('Visibility')"
               v-model="savedReplyData.scope"
               :options="scopeDropdownOptions"
+              :placeholder="__('Select option')"
               required
               class="w-full"
             >

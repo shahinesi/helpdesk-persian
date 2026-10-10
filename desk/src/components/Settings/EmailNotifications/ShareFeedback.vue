@@ -19,6 +19,7 @@
         size="sm"
         :label="__('On ticket status')"
         :options="statusOptions"
+        :placeholder="__('Select option')"
         :required="true"
         :model-value="ticketStatus?.value ?? null"
         @update:model-value="
