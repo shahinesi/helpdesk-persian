@@ -61,6 +61,8 @@ jobs:
           base="refs/remotes/origin/custom/develop-fa"
           upstream="refs/remotes/origin/vendor/develop"
           proposal_branch="sync/upstream-develop-fa"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           if git merge-base --is-ancestor "$upstream" "$base"; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
