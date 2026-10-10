@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -69,22 +70,36 @@ jobs:
           if git ls-remote --exit-code --heads origin "$proposal_branch" >/dev/null 2>&1; then
             git fetch origin "refs/heads/$proposal_branch:refs/remotes/origin/$proposal_branch"
             git switch --create "$proposal_branch" --track "refs/remotes/origin/$proposal_branch"
-            git merge --no-edit --no-ff "$base"
+            if ! git merge --no-edit --no-ff "$base"; then
+              conflicts="$(git diff --name-only --diff-filter=U)"
+              if [[ -n "$conflicts" ]]; then
+                printf "### Conflict merging Persian base\n\n\`\`\`text\n%s\n\`\`\`\n" "$conflicts" >> "$GITHUB_STEP_SUMMARY"
+              fi
+              exit 1
+            fi
           else
             git switch --create "$proposal_branch" "$base"
           fi
 
-          git merge --no-edit --no-ff "$upstream"
+          if ! git merge --no-edit --no-ff "$upstream"; then
+            conflicts="$(git diff --name-only --diff-filter=U)"
+            if [[ -n "$conflicts" ]]; then
+              printf "### Conflict merging official develop\n\n\`\`\`text\n%s\n\`\`\`\n" "$conflicts" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            exit 1
+          fi
           git push --set-upstream origin "$proposal_branch"
 
           merge_base="$(git merge-base "$base" "$upstream")"
           git diff --name-only "$merge_base..$upstream" > "$RUNNER_TEMP/upstream-files.txt"
           git diff --stat "$merge_base..$upstream" > "$RUNNER_TEMP/upstream-stat.txt"
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-          echo "base_sha=$(git rev-parse "$base")" >> "$GITHUB_OUTPUT"
-          echo "upstream_sha=$(git rev-parse "$upstream")" >> "$GITHUB_OUTPUT"
-          echo "proposal_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "changed_files=$(wc -l < "$RUNNER_TEMP/upstream-files.txt" | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          {
+            echo "changed=true"
+            echo "base_sha=$(git rev-parse "$base")"
+            echo "upstream_sha=$(git rev-parse "$upstream")"
+            echo "proposal_sha=$(git rev-parse HEAD)"
+            echo "changed_files=$(wc -l < "$RUNNER_TEMP/upstream-files.txt" | tr -d ' ')"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create or update a draft proposal PR
         if: steps.proposal.outputs.changed == 'true'
@@ -96,18 +111,22 @@ jobs:
           CHANGED_FILES: ${{ steps.proposal.outputs.changed_files }}
         run: |
           set -euo pipefail
-          cat > "$RUNNER_TEMP/upstream-proposal.md" <<EOF
-          ## Upstream develop update proposal
-
-          - Persian base: `$BASE_SHA`
-          - Official develop: `$UPSTREAM_SHA`
-          - Candidate merge: `$PROPOSAL_SHA`
-          - Upstream files changed: $CHANGED_FILES
-          - Conflict policy: conflicts stop the workflow; no conflict is auto-resolved.
-          - Merge/deploy policy: manual review required; neither is automated.
-
-          Review dependency and migration changes, translated strings, RTL behavior, and Jalali behavior. CI must pass before this proposal is considered.
-          EOF
+          {
+            printf '%s\n\n' '## Upstream develop update proposal'
+            printf -- "- Persian base: \`%s\`\n" "$BASE_SHA"
+            printf -- "- Official develop: \`%s\`\n" "$UPSTREAM_SHA"
+            printf -- "- Candidate merge: \`%s\`\n" "$PROPOSAL_SHA"
+            printf -- '- Upstream files changed: %s\n' "$CHANGED_FILES"
+            printf '%s\n' '- Conflict policy: conflicts stop the workflow; no conflict is auto-resolved.'
+            printf '%s\n\n' '- Merge/deploy policy: manual review required; neither is automated.'
+            printf '%s\n\n' '### Upstream diff summary'
+            cat "$RUNNER_TEMP/upstream-stat.txt"
+            printf '%s\n\n' '### Changed upstream paths'
+            while IFS= read -r path; do
+              printf -- "- \`%s\`\n" "$path"
+            done < "$RUNNER_TEMP/upstream-files.txt"
+            printf '%s\n' 'Review dependency and migration changes, translated strings, RTL behavior, Jalali behavior, and pinned Frappe 17 compatibility. GitHub does not trigger pull_request workflows from a GITHUB_TOKEN-created PR; this workflow dispatches the validation workflows explicitly. No merge or deployment is automatic.'
+          } > "$RUNNER_TEMP/upstream-proposal.md"
 
           existing="$(gh pr list --state open --base custom/develop-fa --head "${GITHUB_REPOSITORY_OWNER}:sync/upstream-develop-fa" --json url --jq '.[0].url // empty')"
           if [[ -n "$existing" ]]; then
@@ -117,3 +136,13 @@ jobs:
               --title "chore(upstream): propose develop update" \
               --body-file "$RUNNER_TEMP/upstream-proposal.md"
           fi
+
+      - name: Dispatch validation workflows for the proposal
+        if: steps.proposal.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for workflow in lint.yml server-tests.yml ui-tests.yml persian-clean-build.yml persian-docker-build.yml; do
+            gh workflow run "$workflow" --ref sync/upstream-develop-fa
+          done
