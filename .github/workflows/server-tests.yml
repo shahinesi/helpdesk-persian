@@ -1,5 +1,7 @@
 name: Server
 
+run-name: Server tests (${{ github.event.pull_request.head.sha || github.sha }})
+
 on:
   pull_request:
     branches:
@@ -14,9 +16,14 @@ on:
       - '**.html'
       - '**.csv'
 
+  workflow_dispatch:
+
 concurrency:
-  group: develop-helpdesk-${{ github.event.number }}
+  group: develop-helpdesk-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   tests:
@@ -35,7 +42,18 @@ jobs:
 
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Record tested commit
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXPECTED_SHA"
+          printf 'Tested commit: %s\n' "$actual_sha" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -52,7 +70,7 @@ jobs:
           fi
 
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           check-latest: true
@@ -86,7 +104,7 @@ jobs:
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache@v4
         id: yarn-cache
@@ -97,11 +115,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
-        run: bash ${GITHUB_WORKSPACE}/.github/helpers/install.sh
+        run: bash "$GITHUB_WORKSPACE/.github/helpers/install.sh"
         env:
           TYPE: server
-          FRAPPE_USER: ${{ github.event.inputs.user }}
-          FRAPPE_BRANCH: ${{ github.event.inputs.branch }}
 
       - name: Run Tests
         run: 'cd ~/frappe-bench/ && bench --site test_site run-tests --app helpdesk --coverage'
@@ -112,7 +128,7 @@ jobs:
       - name: Upload coverage data
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.container }}
+          name: coverage
           path: /home/runner/frappe-bench/sites/coverage.xml
 
   coverage:
