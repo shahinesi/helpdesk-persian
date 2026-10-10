@@ -46,7 +46,7 @@ index 4c580fd..23c0ce3 100644
    },
    { deep: true },
 diff --git a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
-index e9acb37..2b4d42f 100644
+index e9acb37..9645282 100644
 --- a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
 +++ b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
 @@ -4,7 +4,7 @@
@@ -394,7 +394,7 @@ index da0ec5f..41da68c 100644
  /**
   * The CSS font a label of `fontSize` is drawn with. Measuring and rendering
 diff --git a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
-index 17c32d9..5b1f34b 100644
+index 17c32d9..626759c 100644
 --- a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
 +++ b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
 @@ -1,5 +1,6 @@
@@ -404,7 +404,7 @@ index 17c32d9..5b1f34b 100644
  import {
    ComboboxAnchor,
    ComboboxContent,
-@@ -71,11 +72,13 @@ const props = withDefaults(defineProps<ComboboxProps>(), {
+@@ -71,11 +72,19 @@ const props = withDefaults(defineProps<ComboboxProps>(), {
    align: 'start',
    offset: 4,
    loading: false,
@@ -416,10 +416,16 @@ index 17c32d9..5b1f34b 100644
  
 +const textDirection = useTextDirection({ observe: true })
 +
++const displayPlaceholder = computed(() =>
++  props.placeholder === 'Select option'
++    ? (window as any).__?.('Select option') ?? 'Select option'
++    : props.placeholder,
++)
++
  const portalTarget = usePortalTarget(() => props.portalTo)
  
  const emit = defineEmits<ComboboxEmits>()
-@@ -485,6 +488,7 @@ defineSlots<ComboboxSlots>()
+@@ -485,6 +494,7 @@ defineSlots<ComboboxSlots>()
        <ComboboxRoot
          ref="rootRef"
          class="contents"
@@ -427,7 +433,7 @@ index 17c32d9..5b1f34b 100644
          :model-value="internalModelValue"
          :open="open"
          :disabled="disabled"
-@@ -587,7 +591,7 @@ defineSlots<ComboboxSlots>()
+@@ -587,11 +597,11 @@ defineSlots<ComboboxSlots>()
  
                <span
                  :class="[
@@ -436,7 +442,21 @@ index 17c32d9..5b1f34b 100644
                    !selectedOption && 'text-ink-gray-4',
                  ]"
                >
-@@ -672,6 +676,7 @@ defineSlots<ComboboxSlots>()
+-                {{ selectedOption?.label ?? placeholder }}
++                {{ selectedOption?.label ?? displayPlaceholder }}
+               </span>
+ 
+               <slot name="suffix" v-bind="controlSlotProps">
+@@ -649,7 +659,7 @@ defineSlots<ComboboxSlots>()
+               :data-size="size"
+               :value="query"
+               :disabled="disabled"
+-              :placeholder="placeholder"
++              :placeholder="displayPlaceholder"
+               :class="resolvedInputClasses"
+               @input="handleInputChange"
+               @focus="emit('focus', $event)"
+@@ -672,6 +682,7 @@ defineSlots<ComboboxSlots>()
            <ComboboxContent
              data-slot="content"
              data-selection
@@ -444,6 +464,15 @@ index 17c32d9..5b1f34b 100644
              :data-variant="variant"
              :data-size="size"
              :data-loading="loading ? '' : undefined"
+@@ -733,7 +744,7 @@ defineSlots<ComboboxSlots>()
+                     data-slot="input"
+                     :value="query"
+                     :disabled="disabled"
+-                    :placeholder="placeholder"
++                    :placeholder="displayPlaceholder"
+                     class="min-w-0 flex-1 px-0 border-0 bg-transparent py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
+                     @input="handleInputChange"
+                     @focus="emit('focus', $event)"
 diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
 index 9c76a89..18bc095 100644
 --- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
@@ -3605,7 +3634,7 @@ index 61ccd67..9f1ef3f 100644
 +}
  </style>
 diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
-index 993d0ce..0b8cc77 100644
+index 993d0ce..3c4e20a 100644
 --- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
 +++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
 @@ -1,4 +1,5 @@
@@ -3614,7 +3643,7 @@ index 993d0ce..0b8cc77 100644
  import { computed, ref, useAttrs, useTemplateRef, watch } from 'vue'
  import {
    ComboboxAnchor,
-@@ -59,12 +60,14 @@ const props = withDefaults(defineProps<MultiSelectProps>(), {
+@@ -59,12 +60,20 @@ const props = withDefaults(defineProps<MultiSelectProps>(), {
    hideSearch: false,
    loading: false,
    filterable: true,
@@ -3627,10 +3656,34 @@ index 993d0ce..0b8cc77 100644
  
 +const textDirection = useTextDirection({ observe: true })
 +
++const displayPlaceholder = computed(() =>
++  props.placeholder === 'Select option'
++    ? (window as any).__?.('Select option') ?? 'Select option'
++    : props.placeholder,
++)
++
  const portalTarget = usePortalTarget(() => props.portalTo)
  
  const emit = defineEmits<MultiSelectEmits>()
-@@ -367,6 +370,7 @@ defineSlots<MultiSelectSlots>()
+@@ -166,7 +175,7 @@ const selectedOptions = computed(() =>
+ // in the trigger's prefix area — see template). For 2+ we collapse to
+ // "N selected" so the width doesn't balloon.
+ const triggerSummary = computed(() => {
+-  if (selectedOptions.value.length === 0) return props.placeholder
++  if (selectedOptions.value.length === 0) return displayPlaceholder.value
+   if (selectedOptions.value.length === 1) return selectedOptions.value[0].label
+   return `${selectedOptions.value.length} selected`
+ })
+@@ -184,7 +193,7 @@ const singleSelectedOption = computed(() =>
+ // sizer's minimum, not the label's length.
+ const triggerSizingText = computed(() => {
+   const maxCount = Math.max(allOptions.value.length, 1)
+-  return [props.placeholder, `${maxCount} selected`].join('\n')
++  return [displayPlaceholder.value, `${maxCount} selected`].join('\n')
+ })
+ 
+ const typedQuery = computed(() => (hasTypedSinceOpen.value ? query.value : ''))
+@@ -367,6 +376,7 @@ defineSlots<MultiSelectSlots>()
        </template>
      </InputLabel>
      <ComboboxRoot
@@ -3638,7 +3691,7 @@ index 993d0ce..0b8cc77 100644
        multiple
        :model-value="internalModel"
        :open="open"
-@@ -441,7 +445,7 @@ defineSlots<MultiSelectSlots>()
+@@ -441,7 +451,7 @@ defineSlots<MultiSelectSlots>()
              :icon="singleSelectedOption.icon"
            />
  
@@ -3647,7 +3700,7 @@ index 993d0ce..0b8cc77 100644
              <span
                :class="[
                  'col-start-1 row-start-1 max-w-full truncate',
-@@ -481,6 +485,7 @@ defineSlots<MultiSelectSlots>()
+@@ -481,6 +491,7 @@ defineSlots<MultiSelectSlots>()
          <ComboboxContent
            data-slot="content"
            data-selection
@@ -3655,7 +3708,7 @@ index 993d0ce..0b8cc77 100644
            :data-variant="variant"
            :data-size="size"
            :data-loading="loading ? '' : undefined"
-@@ -518,6 +523,7 @@ defineSlots<MultiSelectSlots>()
+@@ -518,10 +529,11 @@ defineSlots<MultiSelectSlots>()
                  <ComboboxInput
                    ref="searchInput"
                    :id="`${inputId}-search-input`"
@@ -3663,7 +3716,12 @@ index 993d0ce..0b8cc77 100644
                    data-slot="input"
                    :value="query"
                    :disabled="disabled"
-@@ -572,16 +578,16 @@ defineSlots<MultiSelectSlots>()
+-                  :placeholder="placeholder"
++                  :placeholder="displayPlaceholder"
+                   autocomplete="off"
+                   class="min-w-0 flex-1 border-0 bg-transparent px-0 py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
+                   @input="handleInputChange"
+@@ -572,16 +584,16 @@ defineSlots<MultiSelectSlots>()
                    size="sm"
                    @click="clear"
                  >
@@ -3725,7 +3783,7 @@ index 255096c..54a8fb4 100644
  const emit = defineEmits<PopoverEmits>()
  
 diff --git a/node_modules/frappe-ui/src/components/Select/Select.vue b/node_modules/frappe-ui/src/components/Select/Select.vue
-index 6b949d0..f616e80 100644
+index 6b949d0..6f96c21 100644
 --- a/node_modules/frappe-ui/src/components/Select/Select.vue
 +++ b/node_modules/frappe-ui/src/components/Select/Select.vue
 @@ -1,5 +1,6 @@
@@ -3747,16 +3805,42 @@ index 6b949d0..f616e80 100644
  const open = defineModel<boolean>('open', { default: false })
  
  const props = withDefaults(defineProps<SelectProps>(), {
-@@ -66,6 +72,8 @@ const props = withDefaults(defineProps<SelectProps>(), {
+@@ -66,6 +72,14 @@ const props = withDefaults(defineProps<SelectProps>(), {
    emptyText: 'No options',
  })
  
 +const textDirection = useTextDirection({ observe: true })
 +
++const displayPlaceholder = computed(() =>
++  props.placeholder === 'Select option'
++    ? (window as any).__?.('Select option') ?? 'Select option'
++    : props.placeholder,
++)
++
  const portalTarget = usePortalTarget(() => props.portalTo)
  
  const attrs = useAttrs()
-@@ -324,7 +332,12 @@ defineExpose(exposed)
+@@ -264,7 +278,7 @@ const showPlaceholderForSelected = computed(() => {
+ })
+ 
+ const displayValue = computed(() => {
+-  if (showPlaceholderForSelected.value) return props.placeholder
++  if (showPlaceholderForSelected.value) return displayPlaceholder.value
+   return selectedOption.value?.label || ''
+ })
+ 
+@@ -272,7 +286,9 @@ const displayValue = computed(() => {
+ // placeholder when unselected). The trigger hugs the selection, so the
+ // item-aligned dropdown — anchored over the trigger — expands outward to fit
+ // longer options (Linear-style). Trigger width shifts as the value changes.
+-const selectSizingText = computed(() => displayValue.value || props.placeholder)
++const selectSizingText = computed(
++  () => displayValue.value || displayPlaceholder.value,
++)
+ 
+ // Return type is annotated, not inferred: `SelectSlots` keys its dynamic
+ // entries as `` `item-${string}` ``, and a plain inferred `string` cannot
+@@ -324,7 +340,12 @@ defineExpose(exposed)
          <slot name="label" v-bind="slotProps" />
        </template>
      </InputLabel>
@@ -3770,16 +3854,44 @@ index 6b949d0..f616e80 100644
        <SelectTrigger
          :id="inputId"
          ref="trigger"
-@@ -397,7 +410,7 @@ defineExpose(exposed)
+@@ -361,14 +382,14 @@ defineExpose(exposed)
+             aria-hidden="true"
+           >
+             <SelectValue
+-              :placeholder="placeholder"
++              :placeholder="displayPlaceholder"
+               class="max-w-full truncate leading-tighter opacity-0"
+               :class="{ 'text-ink-gray-4': showPlaceholderForSelected }"
+             >
+               <template v-if="selectedOption">
+                 {{
+                   showPlaceholderForSelected
+-                    ? placeholder
++                    ? displayPlaceholder
+                     : selectedOption.label
+                 }}
+               </template>
+@@ -397,16 +418,16 @@ defineExpose(exposed)
            />
            <slot v-else name="prefix" v-bind="controlSlotProps" />
  
 -          <div class="grid min-w-0 text-left truncate">
 +          <div class="grid min-w-0 text-start truncate">
              <SelectValue
-               :placeholder="placeholder"
+-              :placeholder="placeholder"
++              :placeholder="displayPlaceholder"
                class="col-start-1 row-start-1 max-w-full truncate leading-tighter"
-@@ -421,7 +434,7 @@ defineExpose(exposed)
+               :class="{ 'text-ink-gray-4': showPlaceholderForSelected }"
+             >
+               <template v-if="selectedOption">
+                 {{
+                   showPlaceholderForSelected
+-                    ? placeholder
++                    ? displayPlaceholder
+                     : selectedOption.label
+                 }}
+               </template>
+@@ -421,7 +442,7 @@ defineExpose(exposed)
            <slot name="suffix" v-bind="controlSlotProps">
              <span
                data-slot="chevron"
@@ -3788,7 +3900,7 @@ index 6b949d0..f616e80 100644
              />
            </slot>
          </template>
-@@ -430,6 +443,7 @@ defineExpose(exposed)
+@@ -430,6 +451,7 @@ defineExpose(exposed)
        <SelectPortal :to="portalTarget">
          <SelectContent
            data-slot="content"
@@ -3796,7 +3908,7 @@ index 6b949d0..f616e80 100644
            class="z-[100] origin-[var(--reka-select-content-transform-origin)]"
            :class="
              usesPopperPosition ? 'min-w-[--reka-select-trigger-width]' : null
-@@ -452,7 +466,7 @@ defineExpose(exposed)
+@@ -452,7 +474,7 @@ defineExpose(exposed)
                  data-slot="empty"
                  class="px-2 py-1.5 text-base text-ink-gray-5"
                >
@@ -3805,7 +3917,7 @@ index 6b949d0..f616e80 100644
                </div>
  
                <template v-else>
-@@ -559,7 +573,7 @@ defineExpose(exposed)
+@@ -559,7 +581,7 @@ defineExpose(exposed)
                          v-bind="getItemSlotProps(internalOption.option)"
                        />
                        <SelectItemIndicator
