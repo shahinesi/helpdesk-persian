@@ -13,6 +13,6 @@ if [[ ! "$ref" =~ ^[0-9a-f]{40}$ ]]; then
 fi
 
 bench get-app --branch develop "$repository"
-git -C "apps/$app" fetch --depth=1 origin "$ref"
+git -C "apps/$app" fetch --depth=1 upstream "$ref"
 git -C "apps/$app" checkout --detach "$ref"
 test "$(git -C "apps/$app" rev-parse HEAD)" = "$ref"

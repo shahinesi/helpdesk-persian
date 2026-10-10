@@ -17,16 +17,16 @@ RUN test -n "$HELPDESK_REF" \
     && [[ "$HELPDESK_REF" =~ ^[0-9a-f]{40}$ ]] \
     && bench init --frappe-branch=develop --no-procfile --no-backups --skip-redis-config-generation --verbose /home/frappe/frappe-bench \
     && frappe_ref="$(tr -d '[:space:]' < /tmp/frappe-source.ref)" \
-    && git -C /home/frappe/frappe-bench/apps/frappe fetch --depth=1 origin "$frappe_ref" \
+    && git -C /home/frappe/frappe-bench/apps/frappe fetch --depth=1 upstream "$frappe_ref" \
     && git -C /home/frappe/frappe-bench/apps/frappe checkout --detach "$frappe_ref" \
     && test "$(git -C /home/frappe/frappe-bench/apps/frappe rev-parse HEAD)" = "$frappe_ref" \
     && bench get-app --branch=develop telephony https://github.com/frappe/telephony \
     && telephony_ref="$(tr -d '[:space:]' < /tmp/telephony-source.ref)" \
-    && git -C /home/frappe/frappe-bench/apps/telephony fetch --depth=1 origin "$telephony_ref" \
+    && git -C /home/frappe/frappe-bench/apps/telephony fetch --depth=1 upstream "$telephony_ref" \
     && git -C /home/frappe/frappe-bench/apps/telephony checkout --detach "$telephony_ref" \
     && test "$(git -C /home/frappe/frappe-bench/apps/telephony rev-parse HEAD)" = "$telephony_ref" \
     && bench get-app --branch=custom/develop-fa helpdesk https://github.com/shahinesi/helpdesk-persian \
-    && git -C /home/frappe/frappe-bench/apps/helpdesk fetch --depth=1 origin "$HELPDESK_REF" \
+    && git -C /home/frappe/frappe-bench/apps/helpdesk fetch --depth=1 upstream "$HELPDESK_REF" \
     && git -C /home/frappe/frappe-bench/apps/helpdesk checkout --detach "$HELPDESK_REF" \
     && test "$(git -C /home/frappe/frappe-bench/apps/helpdesk rev-parse HEAD)" = "$HELPDESK_REF"
 
