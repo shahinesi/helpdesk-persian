@@ -3,25 +3,13 @@ name: Persian clean Docker build
 run-name: Persian Docker build (${{ github.event.pull_request.head.sha || github.sha }})
 
 on:
-  pull_request:
-    branches: [develop]
-    paths:
-      - "desk/**"
-      - "helpdesk/**"
-      - "pyproject.toml"
-      - "docker/HelpdeskPersian.Containerfile"
-      - "docker/entrypoint.sh"
-      - "docker/start.sh"
-      - "docker/frappe-docker-source.ref"
-      - "desk/patches/*.ref"
-      - ".dockerignore"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: clean-docker-${{ github.event.pull_request.number || github.run_id }}
+  group: clean-docker-${{ github.run_id }}
   cancel-in-progress: true
 
 jobs:
