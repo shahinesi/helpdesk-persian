@@ -15,7 +15,6 @@ on:
       - "docker/frappe-docker-source.ref"
       - "desk/patches/*.ref"
       - ".dockerignore"
-      - ".github/workflows/persian-docker-build.yml"
   workflow_dispatch:
 
 permissions:
