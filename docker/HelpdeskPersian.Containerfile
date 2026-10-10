@@ -16,6 +16,7 @@ COPY --chown=frappe:frappe desk/patches/telephony-source.ref /tmp/telephony-sour
 RUN test -n "$HELPDESK_REF" \
     && [[ "$HELPDESK_REF" =~ ^[0-9a-f]{40}$ ]] \
     && bench init --frappe-branch=develop --no-procfile --no-backups --skip-redis-config-generation --verbose /home/frappe/frappe-bench \
+    && cd /home/frappe/frappe-bench \
     && frappe_ref="$(tr -d '[:space:]' < /tmp/frappe-source.ref)" \
     && git -C /home/frappe/frappe-bench/apps/frappe fetch --depth=1 upstream "$frappe_ref" \
     && git -C /home/frappe/frappe-bench/apps/frappe checkout --detach "$frappe_ref" \
