@@ -280,6 +280,7 @@ import {
   PropType,
   provide,
   ref,
+  watch,
   watchEffect,
 } from "vue";
 
@@ -573,6 +574,8 @@ onMounted(() => {
   // in place (mobile has no live socket refresh to keep the cache current).
   revalidateTicket(props.ticketId);
 });
+
+watch(ticket, (ticket) => ticket.markSeen.reload(), { immediate: true });
 
 onUnmounted(() => {
   document.title = __("Helpdesk");
