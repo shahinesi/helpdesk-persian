@@ -28,7 +28,6 @@ RUN --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0
     --no-backups \
     --skip-redis-config-generation \
     --skip-assets \
-    --verbose \
     /home/frappe/frappe-bench
 
 WORKDIR /home/frappe/frappe-bench

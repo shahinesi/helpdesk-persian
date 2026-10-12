@@ -1,8 +1,9 @@
 # Office Staging image
 
 This image builds apps sequentially in the immutable image builder and validates
-the manifest before assets are moved out of `sites/`. Do not run `bench build` in
-an application container that has the persistent `sites` volume mounted.
+the manifest before assets are moved out of `sites/`. Sequential builds limit
+peak memory on the Office host. Do not run `bench build` in an application
+container that has the persistent `sites` volume mounted.
 
 The image pins the Frappe build/base images by digest and checks the five app
 SHAs recorded by the staging release. Supply `docker/office-staging/apps.json`
