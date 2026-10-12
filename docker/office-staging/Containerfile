@@ -57,7 +57,11 @@ RUN test "$(node --version)" = "v24.21.0" \
     && yarn install --frozen-lockfile --non-interactive \
     && yarn apply:ui-patches \
     && cd /home/frappe/frappe-bench \
-    && bench build --apps frappe,erpnext,helpdesk,telephony,insights \
+    && bench build --apps frappe \
+    && bench build --apps erpnext \
+    && bench build --apps helpdesk \
+    && bench build --apps telephony \
+    && bench build --apps insights \
     && python /opt/frappe/validate-assets.py sites/assets
 
 RUN find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} + \
