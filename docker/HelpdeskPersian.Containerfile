@@ -27,6 +27,10 @@ RUN test -n "$HELPDESK_REF" \
     && git -C /home/frappe/frappe-bench/apps/telephony checkout --detach "$telephony_ref" \
     && test "$(git -C /home/frappe/frappe-bench/apps/telephony rev-parse HEAD)" = "$telephony_ref" \
     && bench get-app --branch=custom/develop-fa helpdesk https://github.com/shahinesi/helpdesk-persian \
+    && git -C /home/frappe/frappe-bench/apps/helpdesk diff --cached --quiet \
+    && git -C /home/frappe/frappe-bench/apps/helpdesk diff --quiet -- . ':(exclude)yarn.lock' ':(exclude)desk/yarn.lock' \
+    && git -C /home/frappe/frappe-bench/apps/helpdesk restore --worktree -- yarn.lock desk/yarn.lock \
+    && git -C /home/frappe/frappe-bench/apps/helpdesk diff --quiet \
     && git -C /home/frappe/frappe-bench/apps/helpdesk fetch --depth=1 upstream "$HELPDESK_REF" \
     && git -C /home/frappe/frappe-bench/apps/helpdesk checkout --detach "$HELPDESK_REF" \
     && test "$(git -C /home/frappe/frappe-bench/apps/helpdesk rev-parse HEAD)" = "$HELPDESK_REF"

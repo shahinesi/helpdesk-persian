@@ -394,7 +394,7 @@ index da0ec5f..41da68c 100644
  /**
   * The CSS font a label of `fontSize` is drawn with. Measuring and rendering
 diff --git a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
-index 17c32d9..626759c 100644
+index 979bdce..0f39f54 100644
 --- a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
 +++ b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
 @@ -1,5 +1,6 @@
@@ -404,7 +404,7 @@ index 17c32d9..626759c 100644
  import {
    ComboboxAnchor,
    ComboboxContent,
-@@ -71,11 +72,19 @@ const props = withDefaults(defineProps<ComboboxProps>(), {
+@@ -72,11 +73,19 @@ const props = withDefaults(defineProps<ComboboxProps>(), {
    align: 'start',
    offset: 4,
    loading: false,
@@ -425,7 +425,7 @@ index 17c32d9..626759c 100644
  const portalTarget = usePortalTarget(() => props.portalTo)
  
  const emit = defineEmits<ComboboxEmits>()
-@@ -485,6 +494,7 @@ defineSlots<ComboboxSlots>()
+@@ -508,6 +517,7 @@ defineSlots<ComboboxSlots>()
        <ComboboxRoot
          ref="rootRef"
          class="contents"
@@ -433,7 +433,7 @@ index 17c32d9..626759c 100644
          :model-value="internalModelValue"
          :open="open"
          :disabled="disabled"
-@@ -587,11 +597,11 @@ defineSlots<ComboboxSlots>()
+@@ -610,11 +620,11 @@ defineSlots<ComboboxSlots>()
  
                <span
                  :class="[
@@ -447,7 +447,7 @@ index 17c32d9..626759c 100644
                </span>
  
                <slot name="suffix" v-bind="controlSlotProps">
-@@ -649,7 +659,7 @@ defineSlots<ComboboxSlots>()
+@@ -672,7 +682,7 @@ defineSlots<ComboboxSlots>()
                :data-size="size"
                :value="query"
                :disabled="disabled"
@@ -456,7 +456,7 @@ index 17c32d9..626759c 100644
                :class="resolvedInputClasses"
                @input="handleInputChange"
                @focus="emit('focus', $event)"
-@@ -672,6 +682,7 @@ defineSlots<ComboboxSlots>()
+@@ -695,6 +705,7 @@ defineSlots<ComboboxSlots>()
            <ComboboxContent
              data-slot="content"
              data-selection
@@ -464,7 +464,7 @@ index 17c32d9..626759c 100644
              :data-variant="variant"
              :data-size="size"
              :data-loading="loading ? '' : undefined"
-@@ -733,7 +744,7 @@ defineSlots<ComboboxSlots>()
+@@ -756,7 +767,7 @@ defineSlots<ComboboxSlots>()
                      data-slot="input"
                      :value="query"
                      :disabled="disabled"
@@ -474,19 +474,19 @@ index 17c32d9..626759c 100644
                      @input="handleInputChange"
                      @focus="emit('focus', $event)"
 diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-index 9c76a89..18bc095 100644
+index f21cd60..cae714d 100644
 --- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
 +++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-@@ -113,7 +113,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
+@@ -115,7 +115,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
        class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
      >
-       <LoadingIndicator class="size-4" />
+       <Spinner class="size-4" />
 -      <span>Loading...</span>
 +      <span>{{ (window as any).__?.('Loading...') ?? 'Loading...' }}</span>
      </div>
  
      <template v-else>
-@@ -271,7 +271,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
+@@ -273,7 +273,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
  
                    <ComboboxItemIndicator
                      v-if="isSelectableOption(item)"
@@ -1033,7 +1033,7 @@ index 22b644f..a1b17b4 100644
 +}
 +</style>
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
-index 4c5c7d9..9b5671e 100644
+index d9aba76..91ec3ed 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
 +++ b/node_modules/frappe-ui/src/components/DatePicker/DatePicker.vue
 @@ -16,7 +16,7 @@
@@ -1183,9 +1183,9 @@ index 4c5c7d9..9b5671e 100644
  }
  
  // ADR-0012: a picker owns its trigger, so `open` and `close` earn a place on
-@@ -155,139 +168,138 @@ defineExpose<PickerExposed>({
-   open: () => shellRef.value?.open(),
-   close: () => shellRef.value?.close(),
+@@ -159,139 +172,138 @@ defineExpose<PickerExposed>({
+    * focusable element inside it.
+    */
    focus: (options?: FocusOptions) => shellRef.value?.focus(options),
 -})
 +});
@@ -1595,7 +1595,7 @@ index 77fb912..2fc3052 100644
 +defineExpose<DateRangeCalendarExposed>({ focus });
  </script>
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
-index bd682fa..2ef3058 100644
+index 9de216b..2695791 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
 +++ b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
 @@ -16,7 +16,7 @@
@@ -1750,9 +1750,9 @@ index bd682fa..2ef3058 100644
  }
  
  // ADR-0012: a picker owns its trigger, so `open` and `close` earn a place on
-@@ -163,174 +173,179 @@ defineExpose<PickerExposed>({
-   open: () => shellRef.value?.open(),
-   close: () => shellRef.value?.close(),
+@@ -167,174 +177,179 @@ defineExpose<PickerExposed>({
+    * focusable element inside it.
+    */
    focus: (options?: FocusOptions) => shellRef.value?.focus(options),
 -})
 +});
@@ -2019,7 +2019,7 @@ index bd682fa..2ef3058 100644
  }
  </script>
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
-index ca8ae34..9dd65e5 100644
+index aa57cfd..05b7231 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
 +++ b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
 @@ -16,7 +16,7 @@
@@ -2171,9 +2171,9 @@ index ca8ae34..9dd65e5 100644
    }
  }
  
-@@ -168,55 +178,55 @@ defineExpose<PickerExposed>({
-   open: () => shellRef.value?.open(),
-   close: () => shellRef.value?.close(),
+@@ -172,55 +182,55 @@ defineExpose<PickerExposed>({
+    * focusable element inside it.
+    */
    focus: (options?: FocusOptions) => shellRef.value?.focus(options),
 -})
 +});
@@ -2250,7 +2250,7 @@ index ca8ae34..9dd65e5 100644
  }
  
  // ── Value sync ───────────────────────────────────────────────────────────────
-@@ -224,170 +234,172 @@ function checkUnavailable(d: Dayjs): boolean {
+@@ -228,170 +238,172 @@ function checkUnavailable(d: Dayjs): boolean {
  function syncFromValue(val?: string): void {
    if (!val) {
      if (!props.clearable) {
@@ -3634,7 +3634,7 @@ index 61ccd67..9f1ef3f 100644
 +}
  </style>
 diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
-index 993d0ce..3c4e20a 100644
+index 08641f7..3769327 100644
 --- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
 +++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
 @@ -1,4 +1,5 @@
@@ -3683,7 +3683,7 @@ index 993d0ce..3c4e20a 100644
  })
  
  const typedQuery = computed(() => (hasTypedSinceOpen.value ? query.value : ''))
-@@ -367,6 +376,7 @@ defineSlots<MultiSelectSlots>()
+@@ -371,6 +380,7 @@ defineSlots<MultiSelectSlots>()
        </template>
      </InputLabel>
      <ComboboxRoot
@@ -3691,7 +3691,7 @@ index 993d0ce..3c4e20a 100644
        multiple
        :model-value="internalModel"
        :open="open"
-@@ -441,7 +451,7 @@ defineSlots<MultiSelectSlots>()
+@@ -445,7 +455,7 @@ defineSlots<MultiSelectSlots>()
              :icon="singleSelectedOption.icon"
            />
  
@@ -3700,7 +3700,7 @@ index 993d0ce..3c4e20a 100644
              <span
                :class="[
                  'col-start-1 row-start-1 max-w-full truncate',
-@@ -481,6 +491,7 @@ defineSlots<MultiSelectSlots>()
+@@ -485,6 +495,7 @@ defineSlots<MultiSelectSlots>()
          <ComboboxContent
            data-slot="content"
            data-selection
@@ -3708,7 +3708,7 @@ index 993d0ce..3c4e20a 100644
            :data-variant="variant"
            :data-size="size"
            :data-loading="loading ? '' : undefined"
-@@ -518,10 +529,11 @@ defineSlots<MultiSelectSlots>()
+@@ -522,10 +533,11 @@ defineSlots<MultiSelectSlots>()
                  <ComboboxInput
                    ref="searchInput"
                    :id="`${inputId}-search-input`"
@@ -3721,7 +3721,7 @@ index 993d0ce..3c4e20a 100644
                    autocomplete="off"
                    class="min-w-0 flex-1 border-0 bg-transparent px-0 py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
                    @input="handleInputChange"
-@@ -572,16 +584,16 @@ defineSlots<MultiSelectSlots>()
+@@ -576,16 +588,16 @@ defineSlots<MultiSelectSlots>()
                    size="sm"
                    @click="clear"
                  >
@@ -3742,20 +3742,20 @@ index 993d0ce..3c4e20a 100644
                </div>
              </div>
 diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
-index a3930bf..d7d47e2 100644
+index 4b5c646..7bd5f25 100644
 --- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
 +++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
 @@ -82,7 +82,7 @@ function getItemTextValue(item: NormalizedOption) {
        class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
      >
-       <LoadingIndicator class="size-4" />
+       <Spinner class="size-4" />
 -      <span>Loading...</span>
 +      <span>{{ (window as any).__?.('Loading...') ?? 'Loading...' }}</span>
      </div>
  
      <template v-else>
 diff --git a/node_modules/frappe-ui/src/components/Popover/Popover.vue b/node_modules/frappe-ui/src/components/Popover/Popover.vue
-index 255096c..54a8fb4 100644
+index e91fad8..1b64b04 100644
 --- a/node_modules/frappe-ui/src/components/Popover/Popover.vue
 +++ b/node_modules/frappe-ui/src/components/Popover/Popover.vue
 @@ -22,6 +22,7 @@
@@ -3783,7 +3783,7 @@ index 255096c..54a8fb4 100644
  const emit = defineEmits<PopoverEmits>()
  
 diff --git a/node_modules/frappe-ui/src/components/Select/Select.vue b/node_modules/frappe-ui/src/components/Select/Select.vue
-index 6b949d0..6f96c21 100644
+index 056fcd2..57c082a 100644
 --- a/node_modules/frappe-ui/src/components/Select/Select.vue
 +++ b/node_modules/frappe-ui/src/components/Select/Select.vue
 @@ -1,5 +1,6 @@
@@ -3840,7 +3840,7 @@ index 6b949d0..6f96c21 100644
  
  // Return type is annotated, not inferred: `SelectSlots` keys its dynamic
  // entries as `` `item-${string}` ``, and a plain inferred `string` cannot
-@@ -324,7 +340,12 @@ defineExpose(exposed)
+@@ -329,7 +345,12 @@ defineExpose(exposed)
          <slot name="label" v-bind="slotProps" />
        </template>
      </InputLabel>
@@ -3854,7 +3854,7 @@ index 6b949d0..6f96c21 100644
        <SelectTrigger
          :id="inputId"
          ref="trigger"
-@@ -361,14 +382,14 @@ defineExpose(exposed)
+@@ -366,14 +387,14 @@ defineExpose(exposed)
              aria-hidden="true"
            >
              <SelectValue
@@ -3871,7 +3871,7 @@ index 6b949d0..6f96c21 100644
                      : selectedOption.label
                  }}
                </template>
-@@ -397,16 +418,16 @@ defineExpose(exposed)
+@@ -402,16 +423,16 @@ defineExpose(exposed)
            />
            <slot v-else name="prefix" v-bind="controlSlotProps" />
  
@@ -3891,7 +3891,7 @@ index 6b949d0..6f96c21 100644
                      : selectedOption.label
                  }}
                </template>
-@@ -421,7 +442,7 @@ defineExpose(exposed)
+@@ -426,7 +447,7 @@ defineExpose(exposed)
            <slot name="suffix" v-bind="controlSlotProps">
              <span
                data-slot="chevron"
@@ -3900,7 +3900,7 @@ index 6b949d0..6f96c21 100644
              />
            </slot>
          </template>
-@@ -430,6 +451,7 @@ defineExpose(exposed)
+@@ -435,6 +456,7 @@ defineExpose(exposed)
        <SelectPortal :to="portalTarget">
          <SelectContent
            data-slot="content"
@@ -3908,7 +3908,7 @@ index 6b949d0..6f96c21 100644
            class="z-[100] origin-[var(--reka-select-content-transform-origin)]"
            :class="
              usesPopperPosition ? 'min-w-[--reka-select-trigger-width]' : null
-@@ -452,7 +474,7 @@ defineExpose(exposed)
+@@ -457,7 +479,7 @@ defineExpose(exposed)
                  data-slot="empty"
                  class="px-2 py-1.5 text-base text-ink-gray-5"
                >
@@ -3917,7 +3917,7 @@ index 6b949d0..6f96c21 100644
                </div>
  
                <template v-else>
-@@ -559,7 +581,7 @@ defineExpose(exposed)
+@@ -564,7 +586,7 @@ defineExpose(exposed)
                          v-bind="getItemSlotProps(internalOption.option)"
                        />
                        <SelectItemIndicator
@@ -3948,7 +3948,7 @@ index d4e2a29..d5633a8 100644
        <span
          class="lucide-panel-right-open size-4 text-ink-gray-6 transition-transform duration-300 ease-in-out"
 diff --git a/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue b/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
-index d486f57..5f15393 100644
+index d8723ee..54958a9 100644
 --- a/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
 +++ b/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
 @@ -14,7 +14,7 @@
