@@ -114,6 +114,9 @@ jobs:
           git -C ~/frappe-bench/apps/frappe fetch --depth 1 https://github.com/frappe/frappe.git "$frappe_ui_ref"
           git -C ~/frappe-bench/apps/frappe checkout --detach "$frappe_ui_ref"
           test "$(git -C ~/frappe-bench/apps/frappe rev-parse HEAD)" = "$frappe_ui_ref"
+          cd ~/frappe-bench
+          bench pip install --editable apps/frappe
+          env/bin/python -c "import pdfkit; print('pdfkit', pdfkit.__version__)"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
