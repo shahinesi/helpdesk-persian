@@ -1,5 +1,6 @@
 import { dayjs } from "frappe-ui";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { formatLocaleNumber } from "frappe-ui/localization";
 
 export function formatLocalizedDigits(value: string | number) {
   return dayjs.locale().split("-")[0] === "fa"
@@ -8,16 +9,15 @@ export function formatLocalizedDigits(value: string | number) {
 }
 
 export function formatLocalizedNumber(
-  value: number,
+  value: number | null | undefined,
   options: Intl.NumberFormatOptions = {}
 ) {
+  if (value === null || value === undefined || Number.isNaN(value)) return "";
+
   const locale = dayjs.locale().toLowerCase().replace("_", "-");
   const language = locale.split("-")[0];
   if (language === "en" && Object.keys(options).length === 0) {
     return String(value);
   }
-  return new Intl.NumberFormat(
-    language === "fa" ? "fa-IR" : language === "en" ? "en-US" : locale,
-    options
-  ).format(value);
+  return formatLocaleNumber(value, options);
 }

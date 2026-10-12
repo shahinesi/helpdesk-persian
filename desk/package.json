@@ -29,7 +29,7 @@
     "@vueuse/integrations": "^14.1.0",
     "dayjs": "^1.11.7",
     "echarts": "^6.1.0",
-    "frappe-ui": "1.0.0-rc.1",
+    "frappe-ui": "https://github.com/shahinesi/frappe-ui-persian.git#d47f98c32577134e9c980691937422e835440e99",
     "grid-layout-plus": "^1.1.0",
     "jalaali-js": "^2.0.1",
     "mime": "^3.0.0",
