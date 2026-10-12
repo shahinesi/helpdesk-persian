@@ -1,7 +1,9 @@
-import { expect, test, uid } from "../../helpers/fixtures";
+import { expect, test, uid, usePersona } from "../../helpers/fixtures";
 
 const HOLIDAYS = "HD Service Holiday List";
 const PERSIAN_ISO_DAY = "2027-01-01";
+
+usePersona("admin");
 
 test("the shared Jalali calendar keeps selected dates Gregorian in the form", async ({
   page,
