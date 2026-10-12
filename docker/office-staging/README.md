@@ -20,3 +20,27 @@ image-owned `assets/` directory even when the builder's `sites/assets` path is
 a symlink. Keep the previous image digest and database backup available for
 rollback; image rollback is appropriate only when the candidate has not applied
 a database migration.
+
+## Activate or roll back an image
+
+Recreate only the application services (`backend`, `frontend`, `queue-long`,
+`queue-short`, and `websocket`) with the selected image. Keep the existing
+`sites` volume and do not mount a separate volume at `sites/assets`; the image
+owns the asset files. Do not run migrations as part of an asset-only rollout.
+
+Frappe keeps the merged `assets.json` in the shared Redis cache. Replacing the
+image does not invalidate that entry, so old cached paths can still be emitted
+even when the new image contains a complete manifest. After recreating the app
+services, invalidate only that cache entry and restart the backend workers so
+their process-local cache is also refreshed:
+
+```sh
+docker compose exec -T backend bench --site office-staging.localhost execute \
+  "frappe.client_cache.delete_value('assets_json', shared=True)"
+docker compose restart backend
+```
+
+Before accepting the rollout, confirm the login page emits hashed `/assets/...`
+URLs and that every referenced bundle returns HTTP 200. Use the same cache
+invalidation after an image rollback. Do not clear Redis globally or remove any
+volume as an asset-repair step.
