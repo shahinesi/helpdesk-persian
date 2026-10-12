@@ -1,0 +1,94 @@
+# syntax=docker/dockerfile:1.7
+ARG FRAPPE_BUILD_IMAGE=frappe/build@sha256:3ddfaa6260d610a2a998e517f19ce835514d4a87e69de75f570d5fee959003ac
+ARG FRAPPE_BASE_IMAGE=frappe/base@sha256:704b6c8f7ce9f09633b4c83da3d0384de85a3f9069bf33adf615319c40bdd17d
+
+FROM ${FRAPPE_BUILD_IMAGE} AS builder
+ARG FRAPPE_BRANCH=codex/shared-persian-core
+ARG FRAPPE_PATH=https://github.com/shahinesi/frappe-persian
+ARG FRAPPE_EXPECTED_SHA=cdfea098081b0d49f5b026343e489ff0912de342
+ARG ERPNEXT_EXPECTED_SHA=d2072755c94adc101f9571e5263badc1e6493082
+ARG HELPDESK_EXPECTED_SHA
+ARG TELEPHONY_EXPECTED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
+ARG INSIGHTS_EXPECTED_SHA=110ca16d118081cfc4908accdb0bd3e88667f571
+ARG APP_MANIFEST_SHA
+ENV PATH="/home/frappe/.nvm/current/bin:${PATH}"
+ENV NODE_OPTIONS="--max-old-space-size=3072"
+ENV CI=Yes
+USER frappe
+
+COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
+
+RUN --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0 \
+    test "$(sha256sum /opt/frappe/apps.json | cut -d' ' -f1)" = "$APP_MANIFEST_SHA" \
+    && : "$FRAPPE_EXPECTED_SHA" "$ERPNEXT_EXPECTED_SHA" "$HELPDESK_EXPECTED_SHA" "$TELEPHONY_EXPECTED_SHA" "$INSIGHTS_EXPECTED_SHA" \
+    && bench init --apps_path=/opt/frappe/apps.json \
+    --frappe-branch=${FRAPPE_BRANCH} \
+    --frappe-path=${FRAPPE_PATH} \
+    --no-procfile \
+    --no-backups \
+    --skip-redis-config-generation \
+    --skip-assets \
+    /home/frappe/frappe-bench
+
+WORKDIR /home/frappe/frappe-bench
+RUN python - "$FRAPPE_EXPECTED_SHA" "$ERPNEXT_EXPECTED_SHA" "$HELPDESK_EXPECTED_SHA" "$TELEPHONY_EXPECTED_SHA" "$INSIGHTS_EXPECTED_SHA" <<'PY'
+import json
+import subprocess
+import sys
+
+names = ("frappe", "erpnext", "helpdesk", "telephony", "insights")
+expected = dict(zip(names, sys.argv[1:], strict=True))
+actual = {}
+for name in names:
+    repo = f"apps/{name}"
+    remotes = subprocess.check_output(["git", "-C", repo, "remote"], text=True).splitlines()
+    if "upstream" not in remotes:
+        raise SystemExit(f"Missing upstream Git remote for {name}: {remotes}")
+    subprocess.run(["git", "-C", repo, "fetch", "--depth=1", "upstream", expected[name]], check=True)
+    subprocess.run(["git", "-C", repo, "checkout", "--detach", expected[name]], check=True)
+    actual[name] = subprocess.check_output(["git", "-C", repo, "rev-parse", "HEAD"], text=True).strip()
+    if actual[name] != expected[name]:
+        raise SystemExit(f"Pinned app SHA mismatch for {name}: {actual[name]} != {expected[name]}")
+with open("PINNED_VERSIONS.json", "w", encoding="utf-8") as output:
+    json.dump(actual, output, indent=2)
+    output.write("\n")
+PY
+
+# Reconcile Python and JS dependencies after replacing moving branch checkouts with exact SHAs.
+RUN bench setup requirements --dev
+
+# Build assets in the image builder; never write them into a running sites volume.
+RUN test "$(node --version)" = "v24.21.0" \
+    && test "$(yarn --version)" = "1.22.22" \
+    && cd apps/helpdesk/desk \
+    && yarn install --frozen-lockfile --non-interactive \
+    && yarn apply:ui-patches \
+    && cd /home/frappe/frappe-bench \
+    && bench build --apps frappe \
+    && bench build --apps erpnext \
+    && bench build --apps helpdesk \
+    && bench build --apps telephony \
+    && bench build --apps insights \
+    && python /opt/frappe/validate-assets.py sites/assets
+
+RUN find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} + \
+    && rm -rf assets \
+    && if [ -L sites/assets ]; then cp -RL sites/assets assets; else cp -a sites/assets assets; fi \
+    && test -d assets \
+    && test ! -L assets \
+    && rm -rf sites/assets
+
+FROM ${FRAPPE_BASE_IMAGE} AS runtime
+USER frappe
+COPY --from=builder --chown=frappe:0 /home/frappe/frappe-bench /home/frappe/frappe-bench
+COPY --from=builder --chown=frappe:0 /home/frappe/.nvm/current/bin/node /usr/local/bin/node
+WORKDIR /home/frappe/frappe-bench
+RUN chmod -R g=u /home/frappe/frappe-bench
+VOLUME ["/home/frappe/frappe-bench/sites", "/home/frappe/frappe-bench/logs"]
+USER root
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/start.sh /usr/local/bin/start.sh
+RUN chmod 755 /usr/local/bin/entrypoint.sh /usr/local/bin/start.sh
+USER frappe
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["start.sh"]
