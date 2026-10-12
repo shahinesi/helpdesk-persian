@@ -10,7 +10,7 @@ test("the shared Jalali calendar keeps selected dates Gregorian in the form", as
   api,
 }) => {
   const administrator = await api.get("User", "Administrator");
-  const listName = `E2E Persian Calendar ${uid()}`;
+  const listName = `E2E Jalali ${uid()}`;
 
   await api.insert(HOLIDAYS, {
     holiday_list_name: listName,
