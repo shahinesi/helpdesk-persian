@@ -41,7 +41,10 @@ expected = dict(zip(names, sys.argv[1:], strict=True))
 actual = {}
 for name in names:
     repo = f"apps/{name}"
-    subprocess.run(["git", "-C", repo, "fetch", "--depth=1", "origin", expected[name]], check=True)
+    remotes = subprocess.check_output(["git", "-C", repo, "remote"], text=True).splitlines()
+    if "upstream" not in remotes:
+        raise SystemExit(f"Missing upstream Git remote for {name}: {remotes}")
+    subprocess.run(["git", "-C", repo, "fetch", "--depth=1", "upstream", expected[name]], check=True)
     subprocess.run(["git", "-C", repo, "checkout", "--detach", expected[name]], check=True)
     actual[name] = subprocess.check_output(["git", "-C", repo, "rev-parse", "HEAD"], text=True).strip()
     if actual[name] != expected[name]:
