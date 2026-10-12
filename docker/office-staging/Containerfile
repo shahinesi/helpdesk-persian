@@ -38,19 +38,21 @@ import sys
 
 names = ("frappe", "erpnext", "helpdesk", "telephony", "insights")
 expected = dict(zip(names, sys.argv[1:], strict=True))
-actual = {
-    name: subprocess.check_output(
-        ["git", "-C", f"apps/{name}", "rev-parse", "HEAD"], text=True
-    ).strip()
-    for name in names
-}
-mismatch = {name: (expected[name], actual[name]) for name in names if expected[name] != actual[name]}
-if mismatch:
-    raise SystemExit(f"Pinned app SHA mismatch: {mismatch}")
+actual = {}
+for name in names:
+    repo = f"apps/{name}"
+    subprocess.run(["git", "-C", repo, "fetch", "--depth=1", "origin", expected[name]], check=True)
+    subprocess.run(["git", "-C", repo, "checkout", "--detach", expected[name]], check=True)
+    actual[name] = subprocess.check_output(["git", "-C", repo, "rev-parse", "HEAD"], text=True).strip()
+    if actual[name] != expected[name]:
+        raise SystemExit(f"Pinned app SHA mismatch for {name}: {actual[name]} != {expected[name]}")
 with open("PINNED_VERSIONS.json", "w", encoding="utf-8") as output:
     json.dump(actual, output, indent=2)
     output.write("\n")
 PY
+
+# Reconcile Python and JS dependencies after replacing moving branch checkouts with exact SHAs.
+RUN bench setup requirements --dev
 
 # Build assets in the image builder; never write them into a running sites volume.
 RUN test "$(node --version)" = "v24.21.0" \
@@ -68,7 +70,9 @@ RUN test "$(node --version)" = "v24.21.0" \
 
 RUN find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} + \
     && rm -rf assets \
-    && cp -a sites/assets assets \
+    && if [ -L sites/assets ]; then cp -RL sites/assets assets; else cp -a sites/assets assets; fi \
+    && test -d assets \
+    && test ! -L assets \
     && rm -rf sites/assets
 
 FROM ${FRAPPE_BASE_IMAGE} AS runtime

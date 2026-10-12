@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-
 assets_root = Path(sys.argv[1]).resolve()
 manifest_path = assets_root / "assets.json"
 manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
