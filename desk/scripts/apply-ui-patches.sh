@@ -18,8 +18,8 @@ if [[ ! -d "$frappe_ui" ]]; then
 fi
 
 frappe_ui_version="$(node -p "require('$frappe_ui/package.json').version")"
-if [[ "$frappe_ui_version" != "1.0.0-rc.1" ]]; then
-	echo "Unsupported frappe-ui version: $frappe_ui_version (expected 1.0.0-rc.1)." >&2
+if [[ "$frappe_ui_version" != "1.0.0" ]]; then
+	echo "Unsupported frappe-ui version: $frappe_ui_version (expected 1.0.0)." >&2
 	exit 1
 fi
 
@@ -32,7 +32,7 @@ if git -C "$framework_ui" rev-parse --verify HEAD >/dev/null 2>&1; then
 	fi
 fi
 
-if ! git -C "$frappe_ui" apply --reverse --check -p3 "$patch_dir/frappe-ui+1.0.0-rc.1.patch" >/dev/null 2>&1; then
+if ! git -C "$frappe_ui" apply --reverse --check -p3 "$patch_dir/frappe-ui+1.0.0.patch" >/dev/null 2>&1; then
 	echo "frappe-ui patch is missing or has drifted; reinstall dependencies before building." >&2
 	exit 1
 fi
