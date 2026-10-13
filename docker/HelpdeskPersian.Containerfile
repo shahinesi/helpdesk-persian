@@ -17,19 +17,19 @@ RUN for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TE
     && git -C apps/frappe fetch --depth=1 https://github.com/shahinesi/frappe-persian.git "$FRAPPE_REF" \
     && git -C apps/frappe checkout --detach "$FRAPPE_REF" \
     && test "$(git -C apps/frappe rev-parse HEAD)" = "$FRAPPE_REF" \
-    && bench get-app --branch=custom/develop-fa erpnext https://github.com/shahinesi/erpnext-persian \
+    && bench get-app --skip-assets --branch=custom/develop-fa erpnext https://github.com/shahinesi/erpnext-persian \
     && git -C apps/erpnext fetch --depth=1 https://github.com/shahinesi/erpnext-persian.git "$ERPNEXT_REF" \
     && git -C apps/erpnext checkout --detach "$ERPNEXT_REF" \
     && test "$(git -C apps/erpnext rev-parse HEAD)" = "$ERPNEXT_REF" \
-    && bench get-app --branch=develop telephony https://github.com/frappe/telephony \
+    && bench get-app --skip-assets --branch=develop telephony https://github.com/frappe/telephony \
     && git -C apps/telephony fetch --depth=1 https://github.com/frappe/telephony.git "$TELEPHONY_REF" \
     && git -C apps/telephony checkout --detach "$TELEPHONY_REF" \
     && test "$(git -C apps/telephony rev-parse HEAD)" = "$TELEPHONY_REF" \
-    && bench get-app --branch=custom/develop-fa insights https://github.com/shahinesi/insights-persian \
+    && bench get-app --skip-assets --branch=custom/develop-fa insights https://github.com/shahinesi/insights-persian \
     && git -C apps/insights fetch --depth=1 https://github.com/shahinesi/insights-persian.git "$INSIGHTS_REF" \
     && git -C apps/insights checkout --detach "$INSIGHTS_REF" \
     && test "$(git -C apps/insights rev-parse HEAD)" = "$INSIGHTS_REF" \
-    && bench get-app --branch=custom/develop-fa helpdesk https://github.com/shahinesi/helpdesk-persian \
+    && bench get-app --skip-assets --branch=custom/develop-fa helpdesk https://github.com/shahinesi/helpdesk-persian \
     && git -C /home/frappe/frappe-bench/apps/helpdesk diff --cached --quiet \
     && git -C /home/frappe/frappe-bench/apps/helpdesk diff --quiet -- . ':(exclude)yarn.lock' ':(exclude)desk/yarn.lock' \
     && git -C /home/frappe/frappe-bench/apps/helpdesk restore --worktree -- yarn.lock desk/yarn.lock \
