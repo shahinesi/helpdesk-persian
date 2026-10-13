@@ -342,7 +342,7 @@ jobs:
             echo "Immutable candidate tag already exists; refusing to overwrite it." >&2
             exit 1
           fi
-          if ! grep -Eqi 'manifest unknown|manifest.*not found|404 Not Found' <<< "$inspect_output"; then
+          if ! grep -Eqi 'manifest unknown|manifest.*not found|404 Not Found|: not found$' <<< "$inspect_output"; then
             if grep -Eqi '401 Unauthorized|403 Forbidden|denied|unauthorized' <<< "$inspect_output"; then
               classification="registry authorization denied"
             elif grep -Eqi 'timeout|connection reset|network is unreachable' <<< "$inspect_output"; then
