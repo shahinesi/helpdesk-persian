@@ -67,10 +67,7 @@ test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", 
     await settings
       .getByRole("button", { name: /تنظیمات برگزیده|Preferences/ })
       .click();
-    const languageRow = settings
-      .getByText(/Change language of the application|تغییر زبان/)
-      .locator("xpath=ancestor::div[contains(@class, 'items-center')][1]");
-    await languageRow.getByRole("button").click();
+    await settings.getByRole("button", { name: "fa", exact: true }).click();
     await page.getByRole("option", { name: "English", exact: true }).click();
     await settings.getByRole("button", { name: /^Save$/ }).click();
 
