@@ -351,6 +351,7 @@ jobs:
               classification="unrecognized registry response"
             fi
             echo "Could not prove the immutable tag is absent ($classification); refusing to publish." >&2
+            printf '%s' "$inspect_output" | python3 -c 'import os,sys; value=sys.stdin.read(); token=os.environ.get("GHCR_TOKEN", ""); print(value.replace(token, "[REDACTED]")[:1000])' >&2
             exit 1
           fi
 
