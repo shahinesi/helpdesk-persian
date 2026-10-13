@@ -33,7 +33,7 @@ on:
         description: Frappe Persian PR #11 commit SHA
         required: true
         type: string
-        default: 4a23fe775bf70af36d933d04ced8d0d106b8c2c5
+        default: 57b937147c2bdef31f46ef6acb4a73c9fc335586
       erpnext_ref:
         description: ERPNext Persian PR #7 commit SHA
         required: true
@@ -47,7 +47,7 @@ on:
         description: Insights Persian PR #5 commit SHA
         required: true
         type: string
-        default: 3df442d0788f9a68dd53b20374e9efabec6f370c
+        default: 339a6078037e19cf29090c184cf8e2f810790e2c
       telephony_ref:
         description: Existing Telephony source commit SHA
         required: true
@@ -76,10 +76,10 @@ jobs:
       - name: Resolve and validate candidate refs
         id: candidate
         env:
-          FRAPPE_REF: ${{ inputs.frappe_ref || '4a23fe775bf70af36d933d04ced8d0d106b8c2c5' }}
+          FRAPPE_REF: ${{ inputs.frappe_ref || '57b937147c2bdef31f46ef6acb4a73c9fc335586' }}
           ERPNEXT_REF: ${{ inputs.erpnext_ref || 'e662c3ffec9b4cc260270920660f5bbd2407c25a' }}
           HELPDESK_REF: ${{ inputs.helpdesk_ref || github.event.pull_request.head.sha || github.sha }}
-          INSIGHTS_REF: ${{ inputs.insights_ref || '3df442d0788f9a68dd53b20374e9efabec6f370c' }}
+          INSIGHTS_REF: ${{ inputs.insights_ref || '339a6078037e19cf29090c184cf8e2f810790e2c' }}
           TELEPHONY_REF: ${{ inputs.telephony_ref || '039cf39f245d6818ead03cf94eea6ce7f9c1e1f7' }}
           FRAPPE_UI_REF: ${{ inputs.frappe_ui_ref || '4c517f643542d70949bfca02ad72e58c2b59ca88' }}
         run: |
