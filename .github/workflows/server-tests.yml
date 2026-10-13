@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 60
     services:
       mariadb:
-        image: public.ecr.aws/docker/library/mariadb:10.6@sha256:23616f0bd3aff922f4dea4130f1d0a09f3571d20b7b36c8f49840672dc309e8c
+        image: docker.io/library/mariadb:10.6@sha256:23616f0bd3aff922f4dea4130f1d0a09f3571d20b7b36c8f49840672dc309e8c
         env:
           MARIADB_ROOT_PASSWORD: root
         ports:
