@@ -43,7 +43,7 @@ test("the shared Jalali calendar keeps selected dates Gregorian in the form", as
       name: /افزودن تعطیلی|Add Holiday/,
     });
     await addHoliday
-      .getByPlaceholder(/تعطیلی ملی|National holiday/)
+      .getByPlaceholder(/تعطیلی رسمی|National holiday/)
       .fill("آزمون تقویم مشترک");
     await addHoliday
       .getByRole("button", { name: /افزودن تعطیلی|Add Holiday/ })
