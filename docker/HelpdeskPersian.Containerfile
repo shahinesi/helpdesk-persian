@@ -2,33 +2,46 @@ ARG FRAPPE_BUILD_IMAGE=ghcr.io/frappe/build:develop@sha256:6bf9b9443a88e823cce88
 ARG FRAPPE_RUNTIME_IMAGE=ghcr.io/frappe/base:develop@sha256:c4df28afb5d53b793d0fb60aa58dab3bce3c920f9e85b426cf668f1b730ab191
 
 FROM ${FRAPPE_BUILD_IMAGE} AS builder
+ARG FRAPPE_REF
+ARG ERPNEXT_REF
 ARG HELPDESK_REF
+ARG INSIGHTS_REF
+ARG TELEPHONY_REF
+ARG FRAPPE_UI_REF
 USER frappe
 WORKDIR /home/frappe
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-COPY --chown=frappe:frappe desk/patches/frappe-ui-source.ref /tmp/frappe-source.ref
-COPY --chown=frappe:frappe desk/patches/telephony-source.ref /tmp/telephony-source.ref
-RUN test -n "$HELPDESK_REF" \
-    && [[ "$HELPDESK_REF" =~ ^[0-9a-f]{40}$ ]] \
+RUN for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF"; do [[ "$ref" =~ ^[0-9a-f]{40}$ ]] || exit 1; done \
     && bench init --frappe-branch=develop --no-procfile --no-backups --skip-redis-config-generation --verbose /home/frappe/frappe-bench \
     && cd /home/frappe/frappe-bench \
-    && frappe_ref="$(tr -d '[:space:]' < /tmp/frappe-source.ref)" \
-    && git -C /home/frappe/frappe-bench/apps/frappe fetch --depth=1 upstream "$frappe_ref" \
-    && git -C /home/frappe/frappe-bench/apps/frappe checkout --detach "$frappe_ref" \
-    && test "$(git -C /home/frappe/frappe-bench/apps/frappe rev-parse HEAD)" = "$frappe_ref" \
+    && git -C apps/frappe fetch --depth=1 https://github.com/shahinesi/frappe-persian.git "$FRAPPE_REF" \
+    && git -C apps/frappe checkout --detach "$FRAPPE_REF" \
+    && test "$(git -C apps/frappe rev-parse HEAD)" = "$FRAPPE_REF" \
+    && bench get-app --branch=custom/develop-fa erpnext https://github.com/shahinesi/erpnext-persian \
+    && git -C apps/erpnext fetch --depth=1 https://github.com/shahinesi/erpnext-persian.git "$ERPNEXT_REF" \
+    && git -C apps/erpnext checkout --detach "$ERPNEXT_REF" \
+    && test "$(git -C apps/erpnext rev-parse HEAD)" = "$ERPNEXT_REF" \
     && bench get-app --branch=develop telephony https://github.com/frappe/telephony \
-    && telephony_ref="$(tr -d '[:space:]' < /tmp/telephony-source.ref)" \
-    && git -C /home/frappe/frappe-bench/apps/telephony fetch --depth=1 upstream "$telephony_ref" \
-    && git -C /home/frappe/frappe-bench/apps/telephony checkout --detach "$telephony_ref" \
-    && test "$(git -C /home/frappe/frappe-bench/apps/telephony rev-parse HEAD)" = "$telephony_ref" \
+    && git -C apps/telephony fetch --depth=1 https://github.com/frappe/telephony.git "$TELEPHONY_REF" \
+    && git -C apps/telephony checkout --detach "$TELEPHONY_REF" \
+    && test "$(git -C apps/telephony rev-parse HEAD)" = "$TELEPHONY_REF" \
+    && bench get-app --branch=custom/develop-fa insights https://github.com/shahinesi/insights-persian \
+    && git -C apps/insights fetch --depth=1 https://github.com/shahinesi/insights-persian.git "$INSIGHTS_REF" \
+    && git -C apps/insights checkout --detach "$INSIGHTS_REF" \
+    && test "$(git -C apps/insights rev-parse HEAD)" = "$INSIGHTS_REF" \
     && bench get-app --branch=custom/develop-fa helpdesk https://github.com/shahinesi/helpdesk-persian \
     && git -C /home/frappe/frappe-bench/apps/helpdesk diff --cached --quiet \
     && git -C /home/frappe/frappe-bench/apps/helpdesk diff --quiet -- . ':(exclude)yarn.lock' ':(exclude)desk/yarn.lock' \
     && git -C /home/frappe/frappe-bench/apps/helpdesk restore --worktree -- yarn.lock desk/yarn.lock \
     && git -C /home/frappe/frappe-bench/apps/helpdesk diff --quiet \
-    && git -C /home/frappe/frappe-bench/apps/helpdesk fetch --depth=1 upstream "$HELPDESK_REF" \
+    && git -C /home/frappe/frappe-bench/apps/helpdesk fetch --depth=1 https://github.com/shahinesi/helpdesk-persian.git "$HELPDESK_REF" \
     && git -C /home/frappe/frappe-bench/apps/helpdesk checkout --detach "$HELPDESK_REF" \
-    && test "$(git -C /home/frappe/frappe-bench/apps/helpdesk rev-parse HEAD)" = "$HELPDESK_REF"
+    && test "$(git -C /home/frappe/frappe-bench/apps/helpdesk rev-parse HEAD)" = "$HELPDESK_REF" \
+    && grep -Fq "github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF" apps/helpdesk/desk/package.json \
+    && grep -Fq "frappe-ui@https://github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF:" apps/helpdesk/desk/yarn.lock \
+    && grep -Fq "resolved \"https://github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF\"" apps/helpdesk/desk/yarn.lock \
+    && grep -Fq "shahinesi/frappe-ui-persian#$FRAPPE_UI_REF" apps/insights/frontend/package.json \
+    && grep -Fq "frappe-ui@github:shahinesi/frappe-ui-persian#$FRAPPE_UI_REF:" apps/insights/frontend/yarn.lock
 
 WORKDIR /home/frappe/frappe-bench
 RUN bench setup requirements --dev \
@@ -45,7 +58,9 @@ RUN bench setup requirements --dev \
     && printf '{}' > sites/common_site_config.json \
     && bench set-config -gp socketio_port 9000 \
     && bench compile-po-to-mo --app helpdesk --force \
-    && CI=Yes bench build --apps frappe,helpdesk,telephony \
+    && CI=Yes bench build --apps frappe,erpnext,helpdesk,insights,telephony \
+    && for app in frappe erpnext helpdesk insights; do test -d "sites/assets/$app" && find -L "sites/assets/$app" -type f -size +0c -print -quit | grep -q .; done \
+    && printf '{"frappe":"%s","erpnext":"%s","helpdesk":"%s","insights":"%s","telephony":"%s","frappe_ui":"%s"}\n' "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" > candidate-sha-manifest.json \
     && find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} +
 
 FROM ${FRAPPE_RUNTIME_IMAGE} AS runtime
