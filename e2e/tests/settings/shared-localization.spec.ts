@@ -81,9 +81,12 @@ test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", 
     const januaryEnglish = page
       .getByText("January, 2027", { exact: true })
       .locator("xpath=ancestor::div[contains(@class, 'w-max')][1]");
-    await januaryEnglish
-      .locator("div.cursor-pointer", { hasText: /^2$/ })
-      .click();
+    const januaryHoliday = januaryEnglish.locator(
+      "div.cursor-pointer.bg-surface-yellow-2",
+      { hasText: /^2$/ }
+    );
+    await expect(januaryHoliday).toHaveCount(1);
+    await januaryHoliday.click();
     const editHoliday = page.getByRole("dialog", { name: "Edit Holiday" });
     await expect(editHoliday.locator("#holiday_date")).not.toHaveValue(/۱۴۰۵/);
     await expect(editHoliday.locator("#holiday_date")).toHaveValue(/2027/);
