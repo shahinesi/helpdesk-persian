@@ -1,4 +1,5 @@
 import { expect, test, uid, usePersona } from "../../helpers/fixtures";
+import { openSettings } from "../../helpers/settings";
 
 const HOLIDAYS = "HD Service Holiday List";
 
@@ -46,16 +47,6 @@ test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", 
     await dateInput.dblclick();
     await page.locator('[data-value="2027-01-02"]').click();
     await expect(dateInput).toHaveValue("۱۴۰۵/۱۰/۱۲");
-    await page.evaluate(() => {
-      document.documentElement.lang = "en-US";
-      document.documentElement.dir = "ltr";
-    });
-    await expect(dateInput).not.toHaveValue(/۱۴۰۵/);
-    await page.evaluate(() => {
-      document.documentElement.lang = "fa-IR";
-      document.documentElement.dir = "rtl";
-    });
-    await expect(dateInput).toHaveValue("۱۴۰۵/۱۰/۱۲");
     await addHoliday
       .getByPlaceholder(/تعطیلی رسمی|National holiday/)
       .fill("آزمون تقویم مشترک");
@@ -72,6 +63,29 @@ test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", 
         );
       })
       .toContain("2027-01-02");
+
+    await settings.getByRole("button", { name: /ترجیحات|Preferences/ }).click();
+    const languageRow = settings
+      .getByText(/Change language of the application|تغییر زبان/)
+      .locator("xpath=ancestor::div[contains(@class, 'items-center')][1]");
+    await languageRow.getByRole("button").click();
+    await page.getByRole("option", { name: "English", exact: true }).click();
+    await settings.getByRole("button", { name: /^Save$/ }).click();
+
+    await page.waitForLoadState("domcontentloaded");
+    await expect(page.locator("html")).toHaveAttribute("lang", /en/);
+    const englishSettings = await openSettings(page, /Business Holidays/);
+    await englishSettings.getByText(listName, { exact: true }).click();
+    await englishSettings.getByRole("radio", { name: /Calendar/ }).click();
+    const januaryEnglish = page
+      .getByText("January, 2027", { exact: true })
+      .locator("xpath=ancestor::div[contains(@class, 'w-max')][1]");
+    await januaryEnglish
+      .locator("div.cursor-pointer", { hasText: /^2$/ })
+      .click();
+    const editHoliday = page.getByRole("dialog", { name: "Edit Holiday" });
+    await expect(editHoliday.locator("#holiday_date")).not.toHaveValue(/۱۴۰۵/);
+    await expect(editHoliday.locator("#holiday_date")).toHaveValue(/2027/);
   } finally {
     await api.update("User", "Administrator", {
       language: administrator.language || "en",
