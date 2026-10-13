@@ -157,7 +157,6 @@
                 :placeholder="__('Select range')"
                 @update:model-value="onCustomRangeSelected"
                 @update:open="onPickerToggle"
-                :format="'MMM D'"
                 side="top"
                 align="start"
                 class="!w-48"

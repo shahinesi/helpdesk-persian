@@ -40,7 +40,6 @@
           v-model="periodRange"
           variant="outline"
           :placeholder="__('Period')"
-          :format="'MMM D'"
           @update:open="onPickerToggle"
         >
           <template #prefix>
