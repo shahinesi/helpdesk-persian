@@ -55,8 +55,16 @@ jobs:
           test "$actual" = "$expected"
 
       - name: Install locked dependencies from an empty cache
+        id: install-dependencies
         working-directory: bench/apps/helpdesk/desk
         run: yarn install --frozen-lockfile --non-interactive --cache-folder "$RUNNER_TEMP/yarn-cache"
+
+      - name: Print patch-package diagnostics after install failure
+        if: failure() && steps.install-dependencies.outcome == 'failure'
+        working-directory: bench/apps/helpdesk/desk
+        run: |
+          yarn install --frozen-lockfile --ignore-scripts --non-interactive --cache-folder "$RUNNER_TEMP/yarn-cache"
+          ./node_modules/.bin/patch-package
 
       - name: Prepare isolated Bench build config
         run: |
