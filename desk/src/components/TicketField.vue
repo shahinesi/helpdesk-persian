@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import FieldLabel from "@/components/FieldLabel.vue";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import { formatLocalizedNumber } from "@/utils/number";
@@ -59,6 +60,7 @@ interface E {
 
 const props = defineProps<P>();
 const emit = defineEmits<E>();
+const { calendar, dateFormat } = useCalendarPresentation();
 
 const apiOptions = createResource({
   url: props.field.url_method,
@@ -214,7 +216,9 @@ const component = computed(() => {
   } else if (props.field.fieldtype === "Date") {
     return h(DatePicker, {
       id: props.field.fieldname,
-      format: window.date_format.toUpperCase(),
+      calendar: calendar.value,
+      format: dateFormat.value,
+      todayLabel: __("Today"),
     });
   }
   // else if (props.field.fieldtype === "Duration") {
