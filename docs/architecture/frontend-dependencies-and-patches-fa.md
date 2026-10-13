@@ -18,7 +18,7 @@
 
 | هدف | مسیر | روش | کنترل |
 |---|---|---|---|
-| Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` روی checkout Frappe | SHA منبع و reverse applicability بررسی می‌شوند؛ اعمال تکراری idempotent است |
+| Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` روی checkout Frappe | CIهای عادی SHA مبنا را Pin می‌کنند؛ برای Candidateهای Frappe دیگر، فقط سازگاری کامل Patch با forward/reverse check پذیرفته می‌شود و منبع ناسازگار Fail می‌شود |
 | `frappe-ui` | `desk/patches/frappe-ui+1.0.0.patch` | `patch-package` در `postinstall` | نسخه package و اعمال patch در clean install بررسی می‌شوند |
 | اسکریپت‌های runtime | `docker/entrypoint.sh`, `docker/start.sh` | داخل Containerfile | کپی‌شده از `frappe/frappe_docker` روی SHA `docker/frappe-docker-source.ref` |
 

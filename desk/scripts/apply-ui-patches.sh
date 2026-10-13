@@ -17,19 +17,13 @@ if [[ ! -d "$frappe_ui" ]]; then
 	exit 1
 fi
 
+framework_patch="$patch_dir/frappe-ui-framework.diff"
+framework_root="$(cd "$framework_ui/.." && pwd)"
+
 frappe_ui_version="$(node -p "require('$frappe_ui/package.json').version")"
 if [[ "$frappe_ui_version" != "1.0.0" ]]; then
 	echo "Unsupported frappe-ui version: $frappe_ui_version (expected 1.0.0)." >&2
 	exit 1
-fi
-
-if git -C "$framework_ui" rev-parse --verify HEAD >/dev/null 2>&1; then
-	expected_ref="$(tr -d '[:space:]' < "$patch_dir/frappe-ui-source.ref")"
-	actual_ref="$(git -C "$framework_ui" rev-parse HEAD)"
-	if [[ "$actual_ref" != "$expected_ref" ]]; then
-		echo "Unsupported frappe/ui source: $actual_ref (expected $expected_ref)." >&2
-		exit 1
-	fi
 fi
 
 if ! git -C "$frappe_ui" apply --reverse --check -p3 "$patch_dir/frappe-ui+1.0.0.patch" >/dev/null 2>&1; then
@@ -37,11 +31,21 @@ if ! git -C "$frappe_ui" apply --reverse --check -p3 "$patch_dir/frappe-ui+1.0.0
 	exit 1
 fi
 
-framework_patch="$patch_dir/frappe-ui-framework.diff"
-framework_root="$(cd "$framework_ui/.." && pwd)"
+expected_ref="$(tr -d '[:space:]' < "$patch_dir/frappe-ui-source.ref")"
+actual_ref="unknown (checkout has no git metadata)"
+if git -C "$framework_ui" rev-parse --verify HEAD >/dev/null 2>&1; then
+	actual_ref="$(git -C "$framework_ui" rev-parse HEAD)"
+	if [[ "$actual_ref" != "$expected_ref" ]]; then
+		echo "Checking Frappe UI patch compatibility for non-baseline source $actual_ref."
+	fi
+fi
+
 if git -C "$framework_root" apply --reverse --check --directory=ui -p1 "$framework_patch" >/dev/null 2>&1; then
 	echo "Frappe UI Persian patch is already applied."
-else
+elif git -C "$framework_root" apply --check --directory=ui -p1 "$framework_patch" >/dev/null 2>&1; then
 	echo "Applying Frappe UI Persian patch."
 	git -C "$framework_root" apply --directory=ui -p1 "$framework_patch"
+else
+	echo "Unsupported frappe/ui source: $actual_ref (patch is incompatible; pinned baseline is $expected_ref)." >&2
+	exit 1
 fi
