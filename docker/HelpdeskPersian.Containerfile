@@ -53,6 +53,9 @@ RUN bench setup requirements --dev \
     && yarn install --frozen-lockfile --non-interactive \
     && yarn apply:ui-patches \
     && yarn apply:ui-patches \
+    && cd /home/frappe/frappe-bench/apps/insights/frontend \
+    && yarn install --frozen-lockfile --non-interactive \
+    && node -e 'const fs = require("fs"); const pkg = JSON.parse(fs.readFileSync("node_modules/frappe-ui/package.json", "utf8")); const exp = pkg.exports && pkg.exports["./localization/style.css"]; if (!exp || !fs.existsSync("node_modules/frappe-ui/" + exp.import)) process.exit(1); console.log("Insights frappe-ui localization stylesheet export verified");' \
     && cd /home/frappe/frappe-bench \
     && mkdir -p sites \
     && printf '{}' > sites/common_site_config.json \
