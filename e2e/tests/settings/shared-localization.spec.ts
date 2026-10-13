@@ -30,7 +30,7 @@ test("the shared Jalali calendar keeps selected dates Gregorian in the form", as
       .getByRole("button", { name: /تعطیلات کاری|Business Holidays/ })
       .click();
     await settings.getByText(listName, { exact: true }).click();
-    await settings.getByRole("button", { name: /تقویم|Calendar/ }).click();
+    await settings.getByRole("radio", { name: /تقویم|Calendar/ }).click();
 
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     const january = page.getByText("دی ۱۴۰۵", { exact: true }).locator(
