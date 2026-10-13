@@ -1471,7 +1471,7 @@ diff --git a/node_modules/frappe-ui/src/components/DatePicker/utils.ts b/node_mo
 index 1060017..a8ce3b1 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/utils.ts
 +++ b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
-@@ -1,67 +1,71 @@
+@@ -1,66 +1,87 @@
 -import { dayjs, dayjsLocal } from '../../utils/dayjs'
 -import type { Dayjs } from 'dayjs/esm'
 -import type { DatePickerDateObj as DateObj, DateRangeValue } from './types'
@@ -1503,7 +1503,23 @@ index 1060017..a8ce3b1 100644
 +  startOfCalendarWeek,
 +  toCalendarDate,
 +} from "./jalali";
- 
++
++// Constant list of month labels used by the shared calendar panel.
++export const months: string[] = [
++  'Jan',
++  'Feb',
++  'Mar',
++  'Apr',
++  'May',
++  'Jun',
++  'Jul',
++  'Aug',
++  'Sep',
++  'Oct',
++  'Nov',
++  'Dec',
++]
++
  // Start of given month (0-indexed month)
  export function monthStart(year: number, monthIndex: number): Dayjs {
 -  return dayjs(`${year}-${monthIndex + 1}-01`)
@@ -1585,7 +1601,7 @@ index 1060017..a8ce3b1 100644
  }
  
  /**
-@@ -70,32 +74,32 @@ export function getDateValue(date: Date | string) {
+@@ -70,32 +91,32 @@ export function getDateValue(date: Date | string) {
   * preview render as in-range, not as selected.
   */
  export function generateRangeWeeks(options: {
@@ -1637,7 +1653,7 @@ index 1060017..a8ce3b1 100644
        }
        return {
          ...d,
-@@ -104,20 +108,20 @@ export function generateRangeWeeks(options: {
+@@ -104,20 +125,20 @@ export function generateRangeWeeks(options: {
          isRangeStart,
          isRangeEnd,
          inRange,
@@ -1664,7 +1680,7 @@ index 1060017..a8ce3b1 100644
  }
  
  /**
-@@ -126,10 +130,10 @@ export function rangeKey(range: DateRangeValue | [string, string]): string {
+@@ -126,10 +147,10 @@ export function rangeKey(range: DateRangeValue | [string, string]): string {
   */
  export function stepRange(
    range: [string, string],
