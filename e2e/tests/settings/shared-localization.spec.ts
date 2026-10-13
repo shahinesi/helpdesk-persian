@@ -68,8 +68,10 @@ test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", 
       .getByRole("button", { name: /تنظیمات برگزیده|Preferences/ })
       .click();
     await settings.getByRole("button", { name: "fa", exact: true }).click();
+    const languageSearch = page.getByRole("combobox", { name: /انتخاب زبان/ });
+    await languageSearch.fill("English");
     await page.getByRole("option", { name: "English", exact: true }).click();
-    await settings.getByRole("button", { name: /^Save$/ }).click();
+    await settings.getByRole("button", { name: /ذخیره|Save/ }).click();
 
     await page.waitForLoadState("domcontentloaded");
     await expect(page.locator("html")).toHaveAttribute("lang", /en/);
