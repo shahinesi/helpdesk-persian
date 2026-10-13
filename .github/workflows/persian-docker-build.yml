@@ -343,7 +343,14 @@ jobs:
             exit 1
           fi
           if ! grep -Eqi 'manifest unknown|manifest.*not found|404 Not Found' <<< "$inspect_output"; then
-            echo "Could not prove the immutable tag is absent; refusing to publish." >&2
+            if grep -Eqi '401 Unauthorized|403 Forbidden|denied|unauthorized' <<< "$inspect_output"; then
+              classification="registry authorization denied"
+            elif grep -Eqi 'timeout|connection reset|network is unreachable' <<< "$inspect_output"; then
+              classification="registry network failure"
+            else
+              classification="unrecognized registry response"
+            fi
+            echo "Could not prove the immutable tag is absent ($classification); refusing to publish." >&2
             exit 1
           fi
 
