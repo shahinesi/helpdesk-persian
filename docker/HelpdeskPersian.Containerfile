@@ -38,10 +38,10 @@ RUN for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TE
     && git -C /home/frappe/frappe-bench/apps/helpdesk checkout --detach "$HELPDESK_REF" \
     && test "$(git -C /home/frappe/frappe-bench/apps/helpdesk rev-parse HEAD)" = "$HELPDESK_REF" \
     && grep -Fq "github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF" apps/helpdesk/desk/package.json \
-    && grep -Fq "frappe-ui@https://github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF:" apps/helpdesk/desk/yarn.lock \
+    && grep -Fq "frappe-ui@https://github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF\":" apps/helpdesk/desk/yarn.lock \
     && grep -Fq "resolved \"https://github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF\"" apps/helpdesk/desk/yarn.lock \
     && grep -Fq "shahinesi/frappe-ui-persian#$FRAPPE_UI_REF" apps/insights/frontend/package.json \
-    && grep -Fq "frappe-ui@github:shahinesi/frappe-ui-persian#$FRAPPE_UI_REF:" apps/insights/frontend/yarn.lock
+    && grep -Fq "frappe-ui@github:shahinesi/frappe-ui-persian#$FRAPPE_UI_REF\":" apps/insights/frontend/yarn.lock
 
 WORKDIR /home/frappe/frappe-bench
 RUN bench setup requirements --dev \
