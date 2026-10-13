@@ -182,13 +182,12 @@
               <DatePicker
                 :calendar="calendar"
                 :today-label="__('Today')"
-                :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
+                :format="dateFormat"
                 v-model="slaData.start_date"
                 variant="subtle"
                 class="w-full"
                 id="from_date"
                 @update:model-value="validateSlaData('start_date')"
-                :format="getDateFormat()"
               >
                 <template #prefix>
                   <LucideCalendar class="size-4" />
@@ -201,13 +200,12 @@
               <DatePicker
                 :calendar="calendar"
                 :today-label="__('Today')"
-                :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
+                :format="dateFormat"
                 v-model="slaData.end_date"
                 variant="subtle"
                 class="w-full"
                 id="to_date"
                 @update:model-value="validateSlaData('end_date')"
-                :format="getDateFormat()"
               >
                 <template #prefix>
                   <LucideCalendar class="size-4" />
@@ -307,7 +305,7 @@ import {
   slaDataErrors,
   validateSlaData,
 } from "@/stores/sla";
-import { convertToConditions, getDateFormat } from "@/utils";
+import { convertToConditions } from "@/utils";
 import {
   Badge,
   Button,
@@ -336,7 +334,7 @@ import { HDServiceLevelAgreement } from "@/types/doctypes";
 import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
 const { updateOnboardingStep } = useOnboarding("helpdesk") ?? {};
-const { calendar } = useCalendarPresentation();
+const { calendar, dateFormat } = useCalendarPresentation();
 
 const showConfirmDialog = ref({
   show: false,

@@ -130,7 +130,7 @@ import CFConditions from "./CFConditions.vue";
 import { filterableFields } from "./filterableFields";
 import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
-const { calendar, rangeFormat } = useCalendarPresentation();
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 
 const show = ref(false);
 const emit = defineEmits([
@@ -288,14 +288,13 @@ function getValueControl() {
     return h(DateRangePicker, {
       todayLabel: __("Today"),
       calendar: fieldtype === "Date" ? calendar.value : "gregorian",
-      format:
-        fieldtype === "Date" ? rangeFormat.value : undefined,
+      format: fieldtype === "Date" ? rangeFormat.value : undefined,
     });
   } else if (typeDate.includes(fieldtype)) {
     if (fieldtype === "Date") {
       return h(DatePicker, {
         calendar: calendar.value,
-        format: calendar.value === "persian" ? "YYYY/MM/DD" : undefined,
+        format: dateFormat.value,
       });
     }
     return h(DateTimePicker);

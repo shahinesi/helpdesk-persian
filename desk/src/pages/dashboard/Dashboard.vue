@@ -238,7 +238,7 @@ import LucideBuilding2 from "~icons/lucide/building-2";
 import LucideUser from "~icons/lucide/user";
 import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
-const { calendar, rangeFormat } = useCalendarPresentation();
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 const { isMobileView } = useScreenSize();
 
 function translateDefaultTeam(label: string) {

@@ -12,7 +12,7 @@
           <DatePicker
             :calendar="calendar"
             :today-label="__('Today')"
-            :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
+            :format="dateFormat"
             :model-value="dayjs(dialog.holiday_date).format('YYYY-MM-DD')"
             @update:model-value="
               (value) => {
@@ -20,7 +20,6 @@
                 errors.holiday_date = '';
               }
             "
-            :format="getDateFormat()"
             variant="subtle"
             :placeholder="__(`Date`)"
             class="w-full"
@@ -65,7 +64,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
-import { getDateFormat, getDateKey, getFormattedDate } from "@/utils";
+import { getDateKey, getFormattedDate } from "@/utils";
 import {
   Dialog,
   FormControl,
@@ -88,7 +87,7 @@ interface ModelType {
 }
 
 const dialog = defineModel<ModelType>();
-const { calendar } = useCalendarPresentation();
+const { calendar, dateFormat } = useCalendarPresentation();
 
 const errors = ref({
   holiday_date: "",

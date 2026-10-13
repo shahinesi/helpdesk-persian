@@ -151,7 +151,7 @@ import { __ } from "@/translation";
 import EmptyState from "@/components/EmptyState.vue";
 import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
-const { calendar, rangeFormat } = useCalendarPresentation();
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 
 type MetricsData = {
   averages: {

@@ -320,7 +320,7 @@ import { View } from "@/types";
 import EmptyState from "@/components/EmptyState.vue";
 import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
-const { calendar, rangeFormat } = useCalendarPresentation();
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 
 const router = useRouter();
 const chartTabs = [

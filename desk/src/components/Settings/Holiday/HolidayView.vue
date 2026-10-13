@@ -79,12 +79,11 @@
               <DatePicker
                 :calendar="calendar"
                 :today-label="__('Today')"
-                :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
+                :format="dateFormat"
                 v-model="holidayData.from_date"
                 variant="subtle"
                 class="w-full"
                 id="from_date"
-                :format="getDateFormat()"
                 @update:model-value="updateDuration('from_date')"
               >
                 <template #prefix>
@@ -102,12 +101,11 @@
               <DatePicker
                 :calendar="calendar"
                 :today-label="__('Today')"
-                :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
+                :format="dateFormat"
                 v-model="holidayData.to_date"
                 variant="subtle"
                 class="w-full"
                 id="to_date"
-                :format="getDateFormat()"
                 @update:model-value="updateDuration('to_date')"
               >
                 <template #prefix>
@@ -232,7 +230,7 @@ import RecurringHolidaysList from "./RecurringHolidaysList.vue";
 
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import { slaActiveScreen } from "@/stores/sla";
-import { getDateFormat, htmlToText } from "@/utils";
+import { htmlToText } from "@/utils";
 import { dayjs, FormLabel } from "frappe-ui";
 import {
   disableSettingModalOutsideClick,
@@ -256,7 +254,7 @@ const dialog = ref({
 const isDirty = ref(false);
 const initialData = ref(null);
 const holidayListView = ref("calendar");
-const { calendar } = useCalendarPresentation();
+const { calendar, dateFormat } = useCalendarPresentation();
 
 const showConfirmDialog = ref(false);
 

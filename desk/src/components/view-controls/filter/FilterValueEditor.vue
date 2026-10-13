@@ -125,7 +125,7 @@
       <DatePicker
         v-else-if="isDate && field.fieldtype === 'Date'"
         :calendar="calendar"
-        :format="calendar === 'persian' ? 'YYYY/MM/DD' : undefined"
+        :format="dateFormat"
         :today-label="__('Today')"
         :model-value="value"
         icon-left=""
@@ -193,7 +193,7 @@ interface E {
 
 const props = withDefaults(defineProps<P>(), { filter: null });
 const emit = defineEmits<E>();
-const { calendar, rangeFormat } = useCalendarPresentation();
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 
 const { getOperators, getDefaultOperator, getSelectOptions, timespanOptions } =
   useFilter();
