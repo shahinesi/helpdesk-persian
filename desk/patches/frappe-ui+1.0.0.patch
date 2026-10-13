@@ -1519,7 +1519,7 @@ index 1060017..a8ce3b1 100644
 +  'Nov',
 +  'Dec',
 +]
-+
+ 
  // Start of given month (0-indexed month)
  export function monthStart(year: number, monthIndex: number): Dayjs {
 -  return dayjs(`${year}-${monthIndex + 1}-01`)
