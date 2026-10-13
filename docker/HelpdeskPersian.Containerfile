@@ -55,7 +55,8 @@ RUN bench setup requirements --dev \
     && yarn apply:ui-patches \
     && cd /home/frappe/frappe-bench/apps/insights/frontend \
     && yarn install --frozen-lockfile --non-interactive \
-    && node --input-type=module -e 'import { existsSync } from "node:fs"; import { fileURLToPath } from "node:url"; const resolved = import.meta.resolve("frappe-ui/localization/style.css"); const path = fileURLToPath(resolved); if (!existsSync(path)) throw new Error(`Missing resolved localization stylesheet: ${path}`); console.log(`Insights frappe-ui localization stylesheet verified: ${path}`);' \
+    && grep -A8 -F "frappe-ui@github:shahinesi/frappe-ui-persian#$FRAPPE_UI_REF:" yarn.lock \
+    && node --conditions=import --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const packagePath = path.resolve("node_modules/frappe-ui"); const packageRealPath = fs.realpathSync(packagePath); const manifestPath = path.join(packageRealPath, "package.json"); const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8")); console.log("Insights installed frappe-ui metadata:", JSON.stringify({ packagePath, packageRealPath, manifestPath, name: manifest.name, version: manifest.version, exports: manifest.exports }, null, 2)); let resolved; try { resolved = import.meta.resolve("frappe-ui/localization/style.css"); console.log("Insights ESM stylesheet resolution:", resolved); } catch (error) { console.error("Insights ESM stylesheet resolution failed:", error); process.exitCode = 1; }' \
     && cd /home/frappe/frappe-bench \
     && mkdir -p sites \
     && printf '{}' > sites/common_site_config.json \
