@@ -180,7 +180,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('From date')" for="from_date" />
               <DatePicker
+                :calendar="calendar"
                 :today-label="__('Today')"
+                :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
                 v-model="slaData.start_date"
                 variant="subtle"
                 class="w-full"
@@ -197,7 +199,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('To date')" for="to_date" />
               <DatePicker
+                :calendar="calendar"
                 :today-label="__('Today')"
+                :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
                 v-model="slaData.end_date"
                 variant="subtle"
                 class="w-full"
@@ -329,8 +333,10 @@ import { displayLinkOption } from "@/utils/displayLinkOption";
 import SettingsLayoutBase from "@/components/layouts/SettingsLayoutBase.vue";
 import { SlaPolicyListResourceSymbol } from "@/types";
 import { HDServiceLevelAgreement } from "@/types/doctypes";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
 const { updateOnboardingStep } = useOnboarding("helpdesk") ?? {};
+const { calendar } = useCalendarPresentation();
 
 const showConfirmDialog = ref({
   show: false,

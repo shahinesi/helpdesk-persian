@@ -114,15 +114,25 @@
         <Rating v-model="ratingStars" size="md" />
       </div>
       <DateRangePicker
+        :calendar="field.fieldtype === 'Date' ? calendar : 'gregorian'"
+        :format="field.fieldtype === 'Date' ? rangeFormat : 'MMM D'"
         :today-label="__('Today')"
         v-else-if="isDate && operator === 'between'"
         :model-value="dateRangeValue"
         icon-left=""
         @change="handleDateRange"
       />
-      <component
+      <DatePicker
+        v-else-if="isDate && field.fieldtype === 'Date'"
+        :calendar="calendar"
+        :format="calendar === 'persian' ? 'YYYY/MM/DD' : undefined"
+        :today-label="__('Today')"
+        :model-value="value"
+        icon-left=""
+        @change="(date) => commitAndClose(date)"
+      />
+      <DateTimePicker
         v-else-if="isDate"
-        :is="field.fieldtype === 'Date' ? DatePicker : DateTimePicker"
         :today-label="__('Today')"
         :model-value="value"
         icon-left=""
@@ -164,6 +174,7 @@ import {
   useFilter,
   useLinkSearch,
 } from "./filter";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
 interface P {
   field: FilterField;
@@ -182,6 +193,7 @@ interface E {
 
 const props = withDefaults(defineProps<P>(), { filter: null });
 const emit = defineEmits<E>();
+const { calendar, rangeFormat } = useCalendarPresentation();
 
 const { getOperators, getDefaultOperator, getSelectOptions, timespanOptions } =
   useFilter();

@@ -1,11 +1,10 @@
 import { expect, test, uid, usePersona } from "../../helpers/fixtures";
 
 const HOLIDAYS = "HD Service Holiday List";
-const PERSIAN_ISO_DAY = "2027-01-01";
 
 usePersona("admin");
 
-test("the shared Jalali calendar keeps selected dates Gregorian in the form", async ({
+test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", async ({
   page,
   api,
 }) => {
@@ -42,6 +41,21 @@ test("the shared Jalali calendar keeps selected dates Gregorian in the form", as
     const addHoliday = page.getByRole("dialog", {
       name: /افزودن تعطیلی|Add Holiday/,
     });
+    const dateInput = addHoliday.locator("#holiday_date");
+    await expect(dateInput).toHaveValue("۱۴۰۵/۱۰/۱۱");
+    await dateInput.dblclick();
+    await page.locator('[data-value="2027-01-02"]').click();
+    await expect(dateInput).toHaveValue("۱۴۰۵/۱۰/۱۲");
+    await page.evaluate(() => {
+      document.documentElement.lang = "en-US";
+      document.documentElement.dir = "ltr";
+    });
+    await expect(dateInput).not.toHaveValue(/۱۴۰۵/);
+    await page.evaluate(() => {
+      document.documentElement.lang = "fa-IR";
+      document.documentElement.dir = "rtl";
+    });
+    await expect(dateInput).toHaveValue("۱۴۰۵/۱۰/۱۲");
     await addHoliday
       .getByPlaceholder(/تعطیلی رسمی|National holiday/)
       .fill("آزمون تقویم مشترک");
@@ -57,7 +71,7 @@ test("the shared Jalali calendar keeps selected dates Gregorian in the form", as
           (holiday: { holiday_date: string }) => holiday.holiday_date
         );
       })
-      .toContain(PERSIAN_ISO_DAY);
+      .toContain("2027-01-02");
   } finally {
     await api.update("User", "Administrator", {
       language: administrator.language || "en",

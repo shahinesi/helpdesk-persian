@@ -31,6 +31,8 @@
           </template>
         </Dropdown>
         <DateRangePicker
+          :calendar="calendar"
+          :format="rangeFormat"
           v-else
           class="!w-48"
           :today-label="__('Today')"
@@ -234,6 +236,9 @@ import { AxisChart, DonutChart, NumberChart } from "frappe-ui/experimental";
 import { computed, h, onMounted, reactive, ref, watch } from "vue";
 import LucideBuilding2 from "~icons/lucide/building-2";
 import LucideUser from "~icons/lucide/user";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
+
+const { calendar, rangeFormat } = useCalendarPresentation();
 const { isMobileView } = useScreenSize();
 
 function translateDefaultTeam(label: string) {

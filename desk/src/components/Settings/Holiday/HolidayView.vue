@@ -77,7 +77,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('From date')" for="from_date" required />
               <DatePicker
+                :calendar="calendar"
                 :today-label="__('Today')"
+                :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
                 v-model="holidayData.from_date"
                 variant="subtle"
                 class="w-full"
@@ -98,7 +100,9 @@
             <div class="w-full space-y-1.5">
               <FormLabel :label="__('To date')" for="to_date" required />
               <DatePicker
+                :calendar="calendar"
                 :today-label="__('Today')"
+                :format="calendar === 'persian' ? 'YYYY/MM/DD' : getDateFormat()"
                 v-model="holidayData.to_date"
                 variant="subtle"
                 class="w-full"
@@ -240,6 +244,7 @@ import { __ } from "@/translation";
 import SettingsLayoutBase from "@/components/layouts/SettingsLayoutBase.vue";
 import { HolidayListResourceSymbol } from "@/types";
 import { HDServiceHolidayList } from "@/types/doctypes";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
 const dialog = ref({
   show: false,
@@ -251,6 +256,7 @@ const dialog = ref({
 const isDirty = ref(false);
 const initialData = ref(null);
 const holidayListView = ref("calendar");
+const { calendar } = useCalendarPresentation();
 
 const showConfirmDialog = ref(false);
 
