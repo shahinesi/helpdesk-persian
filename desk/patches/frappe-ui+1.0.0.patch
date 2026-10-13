@@ -1471,7 +1471,7 @@ diff --git a/node_modules/frappe-ui/src/components/DatePicker/utils.ts b/node_mo
 index 1060017..a8ce3b1 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/utils.ts
 +++ b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
-@@ -1,66 +1,87 @@
+@@ -1,67 +1,87 @@
 -import { dayjs, dayjsLocal } from '../../utils/dayjs'
 -import type { Dayjs } from 'dayjs/esm'
 -import type { DatePickerDateObj as DateObj, DateRangeValue } from './types'
