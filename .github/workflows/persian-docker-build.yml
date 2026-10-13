@@ -63,8 +63,8 @@ on:
         description: Confirm publication of the approved private Office Staging candidate
         required: true
         type: choice
-        options: [no, yes]
-        default: no
+        options: ["no", "yes"]
+        default: "no"
 
 permissions:
   contents: read
