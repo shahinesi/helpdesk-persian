@@ -64,7 +64,7 @@ jobs:
         working-directory: bench/apps/helpdesk/desk
         run: |
           yarn install --frozen-lockfile --ignore-scripts --non-interactive --cache-folder "$RUNNER_TEMP/yarn-cache"
-          yarn run postinstall
+          ./node_modules/.bin/patch-package
 
       - name: Prepare isolated Bench build config
         run: |
