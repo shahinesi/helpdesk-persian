@@ -64,7 +64,9 @@ test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", 
       })
       .toContain("2027-01-02");
 
-    await settings.getByRole("button", { name: /ترجیحات|Preferences/ }).click();
+    await settings
+      .getByRole("button", { name: /تنظیمات برگزیده|Preferences/ })
+      .click();
     const languageRow = settings
       .getByText(/Change language of the application|تغییر زبان/)
       .locator("xpath=ancestor::div[contains(@class, 'items-center')][1]");
