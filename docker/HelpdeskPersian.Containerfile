@@ -44,7 +44,9 @@ RUN for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TE
     && grep -Fq "frappe-ui@github:shahinesi/frappe-ui-persian#$FRAPPE_UI_REF\":" apps/insights/frontend/yarn.lock
 
 WORKDIR /home/frappe/frappe-bench
-RUN bench setup requirements --dev \
+RUN bench setup requirements --python \
+    && bench setup requirements --dev \
+    && PYTHONPATH=apps/frappe:apps/helpdesk env/bin/python -c 'from helpdesk.helpdesk.doctype.hd_ticket.hd_ticket import HDTicket; print(HDTicket.__name__)' \
     && npm install --global --prefix /home/frappe/.local yarn@1.22.18 \
     && export PATH="/home/frappe/.local/bin:/home/frappe/.nvm/versions/node/v24.21.0/bin:${PATH}" \
     && test "$(node --version)" = "v24.21.0" \
