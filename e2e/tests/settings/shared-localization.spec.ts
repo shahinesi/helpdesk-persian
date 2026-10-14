@@ -5,6 +5,24 @@ const HOLIDAYS = "HD Service Holiday List";
 
 usePersona("admin");
 
+test("the onboarding banner does not call a missing localized number export", async ({
+  page,
+}) => {
+  const runtimeErrors: string[] = [];
+  page.on("pageerror", (error) => runtimeErrors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error" && message.text().includes("formatLocalizedNumber")) {
+      runtimeErrors.push(message.text());
+    }
+  });
+  await page.addInitScript(() =>
+    localStorage.removeItem("isOnboardingStepsCompletedhelpdeskAdministrator")
+  );
+  await page.goto("/helpdesk/tickets");
+  await expect(page.getByText(/شروع کار|Getting started/).first()).toBeVisible();
+  await expect.poll(() => runtimeErrors).toEqual([]);
+});
+
 test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", async ({
   page,
   api,

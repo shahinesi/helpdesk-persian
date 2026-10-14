@@ -209,6 +209,11 @@ index a148456..79a7bd2 100644
  		@click="openOnboarding"
  	>
  		<StepsIcon class="h-4 my-0.5 shrink-0" />
+@@ -62,3 +62,3 @@
+ import { StepsIcon } from "frappe-ui/icons";
+-import { useOnboarding } from "./onboarding";
++import { formatLocalizedNumber, useOnboarding } from "./onboarding";
+ import { showHelpCenter } from "./helpCenter";
 --- a/src/components/Onboarding/OnboardingSteps.vue
 +++ b/src/components/Onboarding/OnboardingSteps.vue
 @@ -2,16 +2,16 @@
