@@ -143,7 +143,9 @@ test("the shared Jalali DatePicker keeps ISO dates and locale switching runtime-
     });
     await expect(persianOption).toBeVisible();
     await persianOption.click();
-    await englishPreferences.getByRole("button", { name: /Save/ }).click();
+    await englishPreferences
+      .getByRole("button", { name: "Save", exact: true })
+      .click();
 
     await page.waitForLoadState("domcontentloaded");
     await expect(page.locator("html")).toHaveAttribute("lang", /fa/);
