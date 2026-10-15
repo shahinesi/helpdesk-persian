@@ -88,7 +88,7 @@ jobs:
           HELPDESK_REF: ${{ inputs.helpdesk_ref || github.event.pull_request.head.sha || github.sha }}
           INSIGHTS_REF: ${{ inputs.insights_ref || '339a6078037e19cf29090c184cf8e2f810790e2c' }}
           TELEPHONY_REF: ${{ inputs.telephony_ref || '039cf39f245d6818ead03cf94eea6ce7f9c1e1f7' }}
-          FRAPPE_UI_REF: ${{ inputs.frappe_ui_ref || '9332facc9d22b99fcb4f10485ac1f7353fbfc211' }}
+          FRAPPE_UI_REF: ${{ inputs.frappe_ui_ref || 'b4e5e95dc6600e8c6b378a156ffd8b36d4456714' }}
           INSIGHTS_FRAPPE_UI_REF: ${{ inputs.insights_frappe_ui_ref || '4c517f643542d70949bfca02ad72e58c2b59ca88' }}
         run: |
           set -euo pipefail
