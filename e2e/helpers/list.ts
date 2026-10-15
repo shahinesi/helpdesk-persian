@@ -7,7 +7,11 @@ export class TicketList {
 
   async goto() {
     await this.page.goto("/helpdesk/tickets");
-    await expect(this.page.getByRole("button", { name: "Filter", exact: true })).toBeVisible();
+    await expect(this.filterButton()).toBeVisible();
+  }
+
+  filterButton() {
+    return this.page.getByRole("button", { name: /^(Filter|فیلتر)$/ });
   }
 
   rows() {
@@ -69,8 +73,8 @@ export class TicketList {
 
   /** Clear every filter from the Filter popover, the way an agent resets the list. */
   async clearFilters() {
-    await this.page.getByRole("button", { name: "Filter", exact: true }).click();
-    await this.page.getByRole("dialog", { name: "Filter" }).getByRole("button", { name: "Clear all" }).click();
+    await this.filterButton().click();
+    await this.filterPopover().getByRole("button", { name: /^(Clear all|پاک‌کردن همه)$/ }).click();
     await this.page.keyboard.press("Escape");
   }
 
@@ -80,12 +84,12 @@ export class TicketList {
   }
 
   filterPopover() {
-    return this.page.getByRole("dialog", { name: "Filter" });
+    return this.page.getByRole("dialog", { name: /^(Filter|فیلتر)$/ });
   }
 
   /** Open the Filter popover and pick a field, leaving its value editor open. */
   async chooseFilterField(field: string) {
-    await this.page.getByRole("button", { name: "Filter", exact: true }).click();
+    await this.filterButton().click();
     const popover = this.filterPopover();
     await expect(popover).toBeVisible();
     const addFilter = popover.getByRole("button", { name: "Add filter" });

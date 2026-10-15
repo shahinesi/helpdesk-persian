@@ -88,8 +88,8 @@ test("date filter summaries use the active locale while requests keep ISO dates"
     await list.goto();
     await expect(page.locator("html")).toHaveAttribute("lang", "fa");
 
-    await list.chooseFilterField("Opening Date");
-    await list.chooseFilterOperator("Between");
+    await list.chooseFilterField("تاریخ افتتاحیه");
+    await list.chooseFilterOperator("بین");
     const dateRange = list.filterPopover().getByRole("textbox").first();
     await dateRange.fill("2026-10-01 to 2026-10-02");
 
