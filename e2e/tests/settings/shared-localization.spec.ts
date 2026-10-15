@@ -1,4 +1,5 @@
 import { expect, test, uid, usePersona } from "../../helpers/fixtures";
+import { emailOf } from "../../helpers/personas";
 import { openSettings } from "../../helpers/settings";
 
 const HOLIDAYS = "HD Service Holiday List";
@@ -6,8 +7,11 @@ const HOLIDAYS = "HD Service Holiday List";
 usePersona("admin");
 
 test("the onboarding banner does not call a missing localized number export", async ({
-  page,
+  pageAs,
 }) => {
+  // The banner is intentionally shown only to managers; Administrator is not
+  // an agent manager in the seeded E2E site.
+  const page = await pageAs("manager");
   const runtimeErrors: string[] = [];
   page.on("pageerror", (error) => runtimeErrors.push(error.message));
   page.on("console", (message) => {
@@ -16,7 +20,9 @@ test("the onboarding banner does not call a missing localized number export", as
     }
   });
   await page.addInitScript(() =>
-    localStorage.removeItem("isOnboardingStepsCompletedhelpdeskAdministrator")
+    localStorage.removeItem(
+      `isOnboardingStepsCompletedhelpdesk${emailOf("manager")}`
+    )
   );
   await page.goto("/helpdesk/tickets");
   await expect(page.getByText(/شروع کار|Getting started/).first()).toBeVisible();
@@ -120,8 +126,9 @@ test("the shared Jalali DatePicker keeps ISO dates and locale switching runtime-
     const editHoliday = page.getByRole("dialog", { name: "Edit Holiday" });
     await expect(editHoliday.locator("#holiday_date")).not.toHaveValue(/۱۴۰۵/);
     await expect(editHoliday.locator("#holiday_date")).toHaveValue(/2027/);
+    await editHoliday.getByRole("button", { name: "Cancel" }).click();
 
-    const englishPreferences = await openSettings(page, /Business Holidays/);
+    const englishPreferences = englishSettings;
     await englishPreferences
       .getByRole("button", { name: /Preferences/ })
       .click();
