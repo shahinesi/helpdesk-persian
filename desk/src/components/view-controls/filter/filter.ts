@@ -1,4 +1,5 @@
 import { __ } from "@/translation";
+import { dateFormat, formatLocalizedDate } from "@/utils";
 import { useDebounceFn } from "@vueuse/core";
 import { createResource } from "frappe-ui";
 import { computed, inject, Component, ComputedRef } from "vue";
@@ -325,6 +326,17 @@ export function filterSummary(filter: ActiveFilter): string {
 
 function displayValue(filter: ActiveFilter): string {
   const value = filter.value;
+  if (typeDate.includes(filter.field.fieldtype)) {
+    const formatDate = (date: any) =>
+      date == null || date === ""
+        ? ""
+        : filter.field.fieldtype === "Datetime"
+        ? dateFormat(date)
+        : formatLocalizedDate(date);
+    return Array.isArray(value)
+      ? value.map(formatDate).join(", ")
+      : formatDate(value);
+  }
   if ([...typeSelect, ...typeCheck].includes(filter.field.fieldtype)) {
     const translateOption = (option: any) => __(String(option));
     return Array.isArray(value)

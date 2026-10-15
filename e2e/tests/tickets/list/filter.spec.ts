@@ -1,7 +1,7 @@
 import { raiseTicket } from "../../../helpers/factories";
 import { expect, test, uid, usePersona } from "../../../helpers/fixtures";
 import { TicketList, resetDefaultTicketView } from "../../../helpers/list";
-import { personas } from "../../../helpers/personas";
+import { PASSWORD, personas } from "../../../helpers/personas";
 
 usePersona("manager");
 
@@ -68,4 +68,45 @@ test("the clear all X empties the filters and closes the popover", async ({
 
   await page.keyboard.press("f");
   await expect(popover).toBeVisible();
+});
+
+test("date filter summaries use the active locale while requests keep ISO dates", async ({
+  page,
+  api,
+}) => {
+  const user = await api.get("User", personas.manager.email);
+  const originalLanguage = user.language;
+
+  try {
+    await api.update("User", personas.manager.email, { language: "fa" });
+    await page.context().clearCookies();
+    await page.request.post("/api/method/login", {
+      form: { usr: personas.manager.email, pwd: PASSWORD },
+    });
+
+    const list = new TicketList(page);
+    await list.goto();
+    await expect(page.locator("html")).toHaveAttribute("lang", "fa");
+
+    await list.chooseFilterField("Opening Date");
+    await list.chooseFilterOperator("Between");
+    const dateRange = list.filterPopover().getByRole("textbox").first();
+    await dateRange.fill("2026-10-01 to 2026-10-02");
+
+    const filtered = page.waitForRequest((request) =>
+      request.url().includes("get_list_data")
+    );
+    await dateRange.press("Enter");
+    const request = await filtered;
+    const requestBody = request.postData() ?? "";
+
+    await expect(list.filterPopover()).toContainText("۱۴۰۵");
+    await expect(list.filterPopover()).not.toContainText("2026-10-01");
+    expect(requestBody).toContain("2026-10-01");
+    expect(requestBody).toContain("2026-10-02");
+  } finally {
+    await api.update("User", personas.manager.email, {
+      language: originalLanguage || "en",
+    });
+  }
 });
