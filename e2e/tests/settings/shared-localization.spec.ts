@@ -23,10 +23,21 @@ test("the onboarding banner does not call a missing localized number export", as
   await expect.poll(() => runtimeErrors).toEqual([]);
 });
 
-test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", async ({
+test("the shared Jalali DatePicker keeps ISO dates and locale switching runtime-clean", async ({
   page,
   api,
 }) => {
+  const runtimeErrors: string[] = [];
+  page.on("pageerror", (error) => runtimeErrors.push(error.message));
+  page.on("console", (message) => {
+    if (
+      message.type() === "error" &&
+      /Cannot read properties of undefined \(reading ['"]__['"]\)/.test(message.text())
+    ) {
+      runtimeErrors.push(message.text());
+    }
+  });
+
   const administrator = await api.get("User", "Administrator");
   const listName = `E2E Jalali ${uid()}`;
 
@@ -93,6 +104,7 @@ test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", 
 
     await page.waitForLoadState("domcontentloaded");
     await expect(page.locator("html")).toHaveAttribute("lang", /en/);
+    expect(runtimeErrors).toEqual([]);
     const englishSettings = await openSettings(page, /Business Holidays/);
     await englishSettings.getByText(listName, { exact: true }).click();
     await englishSettings.getByRole("radio", { name: /Calendar/ }).click();
@@ -108,6 +120,23 @@ test("the shared Jalali DatePicker keeps selected dates Gregorian in the form", 
     const editHoliday = page.getByRole("dialog", { name: "Edit Holiday" });
     await expect(editHoliday.locator("#holiday_date")).not.toHaveValue(/۱۴۰۵/);
     await expect(editHoliday.locator("#holiday_date")).toHaveValue(/2027/);
+
+    const englishPreferences = await openSettings(page, /Business Holidays/);
+    await englishPreferences
+      .getByRole("button", { name: /Preferences/ })
+      .click();
+    await englishPreferences.getByRole("button", { name: "en", exact: true }).click();
+    const englishLanguageSearch = page.getByRole("combobox", {
+      name: /Select language/,
+    });
+    await englishLanguageSearch.fill("Persian");
+    await page.getByRole("option", { name: /Persian|فارسی/, exact: true }).click();
+    await englishPreferences.getByRole("button", { name: /Save/ }).click();
+
+    await page.waitForLoadState("domcontentloaded");
+    await expect(page.locator("html")).toHaveAttribute("lang", /fa/);
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    expect(runtimeErrors).toEqual([]);
   } finally {
     await api.update("User", "Administrator", {
       language: administrator.language || "en",

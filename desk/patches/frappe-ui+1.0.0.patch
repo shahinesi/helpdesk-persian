@@ -349,37 +349,6 @@ index 4611ee8..16dd8d7 100644
            </div>
          </div>
        </slot>
-diff --git a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
-index ebc1f6a..d824ec2 100644
---- a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
-+++ b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
-@@ -80,7 +80,7 @@
-       >
-         <!-- Announced by the container, so an app's own placeholder does not
-              have to carry the announcement with it. -->
--        <span class="sr-only" role="status">Loading chart</span>
-+        <span class="sr-only" role="status">{{ (window as any).__?.('Loading chart') ?? 'Loading chart' }}</span>
-         <slot name="loading">
-           <!-- A block the size of the plot, not a spinner in the middle of it.
-                A dashboard fills in a card at a time, and a placeholder holding
-@@ -98,7 +98,7 @@
-         <template v-if="state === 'error'">
-           <slot name="error" :error="error">
-             <span class="text-sm-medium text-ink-red-7">
--              Could not render this chart
-+              {{ (window as any).__?.('Could not render this chart') ?? 'Could not render this chart' }}
-             </span>
-             <span v-if="error" class="max-w-sm text-p-sm text-ink-gray-5">
-               {{ error }}
-@@ -108,7 +108,7 @@
- 
-         <template v-else>
-           <slot name="empty">
--            <span class="text-p-sm text-ink-gray-5">No data to show</span>
-+            <span class="text-p-sm text-ink-gray-5">{{ (window as any).__?.('No data to show') ?? 'No data to show' }}</span>
-           </slot>
-         </template>
-       </div>
 diff --git a/node_modules/frappe-ui/src/charts/measureText.ts b/node_modules/frappe-ui/src/charts/measureText.ts
 index da0ec5f..41da68c 100644
 --- a/node_modules/frappe-ui/src/charts/measureText.ts
@@ -477,15 +446,6 @@ diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue 
 index f21cd60..cae714d 100644
 --- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
 +++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-@@ -115,7 +115,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
-       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
-     >
-       <Spinner class="size-4" />
--      <span>Loading...</span>
-+      <span>{{ (window as any).__?.('Loading...') ?? 'Loading...' }}</span>
-     </div>
- 
-     <template v-else>
 @@ -273,7 +273,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
  
                    <ComboboxItemIndicator
@@ -494,7 +454,7 @@ index f21cd60..cae714d 100644
 +                    class="ms-1 inline-flex items-center justify-center"
                    >
                      <span class="lucide-check size-4 text-ink-gray-6" />
-                   </ComboboxItemIndicator>
+                  </ComboboxItemIndicator>
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
 index aa57cfd..05b7231 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
@@ -1696,28 +1656,6 @@ index 1060017..a8ce3b1 100644
 +  if (!from || to) return [value, ""];
 +  return orderRange([from, value]);
  }
-diff --git a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
-index f034a73..c9af75c 100644
---- a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
-+++ b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
-@@ -87,7 +87,7 @@
-                         </DialogTitle>
-                       </div>
-                       <DialogClose v-if="props.showCloseButton" as-child>
--                        <Button variant="ghost" label="Close">
-+                        <Button variant="ghost" :label="(window as any).__?.('Close') ?? 'Close'">
-                           <template #icon>
-                             <span class="lucide-x size-4 text-ink-gray-9" />
-                           </template>
-@@ -142,7 +142,7 @@
-               <Button
-                 class="absolute right-4 top-4 z-10"
-                 variant="ghost"
--                label="Close"
-+                :label="(window as any).__?.('Close') ?? 'Close'"
-               >
-                 <template #icon>
-                   <span class="lucide-x size-4 text-ink-gray-9" />
 diff --git a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue b/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
 index 57eabce..be57785 100644
 --- a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
@@ -1883,8 +1821,7 @@ index 08641f7..3769327 100644
                    size="sm"
                    @click="clear"
                  >
--                  Clear All
-+                  {{ (window as any).__?.('Clear All') ?? 'Clear All' }}
+                   Clear All
                  </Button>
                  <Button
                    v-if="!allSelected"
@@ -1894,24 +1831,10 @@ index 08641f7..3769327 100644
 +                  class="ms-auto"
                    @click="selectAll"
                  >
--                  Select All
-+                  {{ (window as any).__?.('Select All') ?? 'Select All' }}
+                   Select All
                  </Button>
                </div>
              </div>
-diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
-index 4b5c646..7bd5f25 100644
---- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
-+++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
-@@ -82,7 +82,7 @@ function getItemTextValue(item: NormalizedOption) {
-       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
-     >
-       <Spinner class="size-4" />
--      <span>Loading...</span>
-+      <span>{{ (window as any).__?.('Loading...') ?? 'Loading...' }}</span>
-     </div>
- 
-     <template v-else>
 diff --git a/node_modules/frappe-ui/src/components/Popover/Popover.vue b/node_modules/frappe-ui/src/components/Popover/Popover.vue
 index e91fad8..1b64b04 100644
 --- a/node_modules/frappe-ui/src/components/Popover/Popover.vue
