@@ -442,19 +442,6 @@ index 979bdce..0f39f54 100644
                      class="min-w-0 flex-1 px-0 border-0 bg-transparent py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
                      @input="handleInputChange"
                      @focus="emit('focus', $event)"
-diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-index f21cd60..cae714d 100644
---- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-+++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-@@ -273,7 +273,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
- 
-                   <ComboboxItemIndicator
-                     v-if="isSelectableOption(item)"
--                    class="ml-1 inline-flex items-center justify-center"
-+                    class="ms-1 inline-flex items-center justify-center"
-                   >
-                     <span class="lucide-check size-4 text-ink-gray-6" />
-                  </ComboboxItemIndicator>
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
 index aa57cfd..05b7231 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
@@ -1729,112 +1716,6 @@ index 61ccd67..9f1ef3f 100644
 +  transform: rotate(180deg);
 +}
  </style>
-diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
-index 08641f7..3769327 100644
---- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
-+++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
-@@ -1,4 +1,5 @@
- <script setup lang="ts">
-+import { useTextDirection } from '@vueuse/core'
- import { computed, ref, useAttrs, useTemplateRef, watch } from 'vue'
- import {
-   ComboboxAnchor,
-@@ -59,12 +60,20 @@ const props = withDefaults(defineProps<MultiSelectProps>(), {
-   hideSearch: false,
-   loading: false,
-   filterable: true,
--  emptyText: 'No results',
-+  emptyText: (window as any).__?.('No results') ?? 'No results',
-   side: 'bottom',
-   align: 'start',
-   offset: 4,
- })
- 
-+const textDirection = useTextDirection({ observe: true })
-+
-+const displayPlaceholder = computed(() =>
-+  props.placeholder === 'Select option'
-+    ? (window as any).__?.('Select option') ?? 'Select option'
-+    : props.placeholder,
-+)
-+
- const portalTarget = usePortalTarget(() => props.portalTo)
- 
- const emit = defineEmits<MultiSelectEmits>()
-@@ -166,7 +175,7 @@ const selectedOptions = computed(() =>
- // in the trigger's prefix area — see template). For 2+ we collapse to
- // "N selected" so the width doesn't balloon.
- const triggerSummary = computed(() => {
--  if (selectedOptions.value.length === 0) return props.placeholder
-+  if (selectedOptions.value.length === 0) return displayPlaceholder.value
-   if (selectedOptions.value.length === 1) return selectedOptions.value[0].label
-   return `${selectedOptions.value.length} selected`
- })
-@@ -184,7 +193,7 @@ const singleSelectedOption = computed(() =>
- // sizer's minimum, not the label's length.
- const triggerSizingText = computed(() => {
-   const maxCount = Math.max(allOptions.value.length, 1)
--  return [props.placeholder, `${maxCount} selected`].join('\n')
-+  return [displayPlaceholder.value, `${maxCount} selected`].join('\n')
- })
- 
- const typedQuery = computed(() => (hasTypedSinceOpen.value ? query.value : ''))
-@@ -371,6 +380,7 @@ defineSlots<MultiSelectSlots>()
-       </template>
-     </InputLabel>
-     <ComboboxRoot
-+      :dir="textDirection"
-       multiple
-       :model-value="internalModel"
-       :open="open"
-@@ -445,7 +455,7 @@ defineSlots<MultiSelectSlots>()
-             :icon="singleSelectedOption.icon"
-           />
- 
--          <span class="grid min-w-0 flex-1 text-left font-normal">
-+          <span class="grid min-w-0 flex-1 text-start font-normal">
-             <span
-               :class="[
-                 'col-start-1 row-start-1 max-w-full truncate',
-@@ -485,6 +495,7 @@ defineSlots<MultiSelectSlots>()
-         <ComboboxContent
-           data-slot="content"
-           data-selection
-+          :dir="textDirection"
-           :data-variant="variant"
-           :data-size="size"
-           :data-loading="loading ? '' : undefined"
-@@ -522,10 +533,11 @@ defineSlots<MultiSelectSlots>()
-                 <ComboboxInput
-                   ref="searchInput"
-                   :id="`${inputId}-search-input`"
-+                  :dir="textDirection"
-                   data-slot="input"
-                   :value="query"
-                   :disabled="disabled"
--                  :placeholder="placeholder"
-+                  :placeholder="displayPlaceholder"
-                   autocomplete="off"
-                   class="min-w-0 flex-1 border-0 bg-transparent px-0 py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
-                   @input="handleInputChange"
-@@ -576,16 +588,16 @@ defineSlots<MultiSelectSlots>()
-                   size="sm"
-                   @click="clear"
-                 >
-                   Clear All
-                 </Button>
-                 <Button
-                   v-if="!allSelected"
-                   variant="ghost"
-                   size="sm"
--                  class="ml-auto"
-+                  class="ms-auto"
-                   @click="selectAll"
-                 >
-                   Select All
-                 </Button>
-               </div>
-             </div>
 diff --git a/node_modules/frappe-ui/src/components/Popover/Popover.vue b/node_modules/frappe-ui/src/components/Popover/Popover.vue
 index e91fad8..1b64b04 100644
 --- a/node_modules/frappe-ui/src/components/Popover/Popover.vue
@@ -2205,3 +2086,242 @@ index cc3f745..e51412c 100644
    color: var(--ink-gray-4);
    pointer-events: none;
    height: 0;
+diff --git a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
+index ebc1f6a..77344d3 100644
+--- a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
++++ b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
+@@ -80,7 +80,7 @@
+       >
+         <!-- Announced by the container, so an app's own placeholder does not
+              have to carry the announcement with it. -->
+-        <span class="sr-only" role="status">Loading chart</span>
++        <span class="sr-only" role="status">{{ translate('Loading chart') }}</span>
+         <slot name="loading">
+           <!-- A block the size of the plot, not a spinner in the middle of it.
+                A dashboard fills in a card at a time, and a placeholder holding
+@@ -98,7 +98,7 @@
+         <template v-if="state === 'error'">
+           <slot name="error" :error="error">
+             <span class="text-sm-medium text-ink-red-7">
+-              Could not render this chart
++              {{ translate('Could not render this chart') }}
+             </span>
+             <span v-if="error" class="max-w-sm text-p-sm text-ink-gray-5">
+               {{ error }}
+@@ -108,7 +108,7 @@
+ 
+         <template v-else>
+           <slot name="empty">
+-            <span class="text-p-sm text-ink-gray-5">No data to show</span>
++            <span class="text-p-sm text-ink-gray-5">{{ translate('No data to show') }}</span>
+           </slot>
+         </template>
+       </div>
+@@ -161,4 +161,6 @@ const topAxisTitle = computed(
+ const bottomAxisTitle = computed(
+   () => showAxisTitle.value && props.axisTitlePlacement === 'bottom',
+ )
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
+index f21cd60..1a2ffe5 100644
+--- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
++++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
+@@ -105,6 +105,8 @@ function handleSelect(item: NormalizedItem, event: Event) {
+   if (isCustomOption(item)) emit('selectCustom', item, event)
+   else emit('selectOption', item, event)
+ }
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <template>
+@@ -115,7 +117,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
+       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
+     >
+       <Spinner class="size-4" />
+-      <span>Loading...</span>
++      <span>{{ translate('Loading...') }}</span>
+     </div>
+ 
+     <template v-else>
+@@ -273,7 +275,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
+ 
+                   <ComboboxItemIndicator
+                     v-if="isSelectableOption(item)"
+-                    class="ml-1 inline-flex items-center justify-center"
++                    class="ms-1 inline-flex items-center justify-center"
+                   >
+                     <span class="lucide-check size-4 text-ink-gray-6" />
+                   </ComboboxItemIndicator>
+diff --git a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
+index f034a73..f25a6b1 100644
+--- a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
++++ b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
+@@ -87,7 +87,7 @@
+                         </DialogTitle>
+                       </div>
+                       <DialogClose v-if="props.showCloseButton" as-child>
+-                        <Button variant="ghost" label="Close">
++                        <Button variant="ghost" :label="translate('Close')">
+                           <template #icon>
+                             <span class="lucide-x size-4 text-ink-gray-9" />
+                           </template>
+@@ -142,7 +142,7 @@
+               <Button
+                 class="absolute right-4 top-4 z-10"
+                 variant="ghost"
+-                label="Close"
++                :label="translate('Close')"
+               >
+                 <template #icon>
+                   <span class="lucide-x size-4 text-ink-gray-9" />
+@@ -396,6 +396,8 @@ function handleOpenAutoFocus(event: Event) {
+     event.preventDefault()
+   }
+ }
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <style scoped>
+diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+index 08641f7..031d774 100644
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+@@ -1,4 +1,5 @@
+ <script setup lang="ts">
++import { useTextDirection } from '@vueuse/core'
+ import { computed, ref, useAttrs, useTemplateRef, watch } from 'vue'
+ import {
+   ComboboxAnchor,
+@@ -59,12 +60,20 @@ const props = withDefaults(defineProps<MultiSelectProps>(), {
+   hideSearch: false,
+   loading: false,
+   filterable: true,
+-  emptyText: 'No results',
++  emptyText: (window as any).__?.('No results') ?? 'No results',
+   side: 'bottom',
+   align: 'start',
+   offset: 4,
+ })
+ 
++const textDirection = useTextDirection({ observe: true })
++
++const displayPlaceholder = computed(() =>
++  props.placeholder === 'Select option'
++    ? (window as any).__?.('Select option') ?? 'Select option'
++    : props.placeholder,
++)
++
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const emit = defineEmits<MultiSelectEmits>()
+@@ -166,7 +175,7 @@ const selectedOptions = computed(() =>
+ // in the trigger's prefix area — see template). For 2+ we collapse to
+ // "N selected" so the width doesn't balloon.
+ const triggerSummary = computed(() => {
+-  if (selectedOptions.value.length === 0) return props.placeholder
++  if (selectedOptions.value.length === 0) return displayPlaceholder.value
+   if (selectedOptions.value.length === 1) return selectedOptions.value[0].label
+   return `${selectedOptions.value.length} selected`
+ })
+@@ -184,7 +193,7 @@ const singleSelectedOption = computed(() =>
+ // sizer's minimum, not the label's length.
+ const triggerSizingText = computed(() => {
+   const maxCount = Math.max(allOptions.value.length, 1)
+-  return [props.placeholder, `${maxCount} selected`].join('\n')
++  return [displayPlaceholder.value, `${maxCount} selected`].join('\n')
+ })
+ 
+ const typedQuery = computed(() => (hasTypedSinceOpen.value ? query.value : ''))
+@@ -351,6 +360,8 @@ defineExpose<SelectionExposed>({
+   focus,
+ })
+ defineSlots<MultiSelectSlots>()
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <template>
+@@ -371,6 +382,7 @@ defineSlots<MultiSelectSlots>()
+       </template>
+     </InputLabel>
+     <ComboboxRoot
++      :dir="textDirection"
+       multiple
+       :model-value="internalModel"
+       :open="open"
+@@ -445,7 +457,7 @@ defineSlots<MultiSelectSlots>()
+             :icon="singleSelectedOption.icon"
+           />
+ 
+-          <span class="grid min-w-0 flex-1 text-left font-normal">
++          <span class="grid min-w-0 flex-1 text-start font-normal">
+             <span
+               :class="[
+                 'col-start-1 row-start-1 max-w-full truncate',
+@@ -485,6 +497,7 @@ defineSlots<MultiSelectSlots>()
+         <ComboboxContent
+           data-slot="content"
+           data-selection
++          :dir="textDirection"
+           :data-variant="variant"
+           :data-size="size"
+           :data-loading="loading ? '' : undefined"
+@@ -522,10 +535,11 @@ defineSlots<MultiSelectSlots>()
+                 <ComboboxInput
+                   ref="searchInput"
+                   :id="`${inputId}-search-input`"
++                  :dir="textDirection"
+                   data-slot="input"
+                   :value="query"
+                   :disabled="disabled"
+-                  :placeholder="placeholder"
++                  :placeholder="displayPlaceholder"
+                   autocomplete="off"
+                   class="min-w-0 flex-1 border-0 bg-transparent px-0 py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
+                   @input="handleInputChange"
+@@ -576,16 +590,16 @@ defineSlots<MultiSelectSlots>()
+                   size="sm"
+                   @click="clear"
+                 >
+-                  Clear All
++                  {{ translate('Clear All') }}
+                 </Button>
+                 <Button
+                   v-if="!allSelected"
+                   variant="ghost"
+                   size="sm"
+-                  class="ml-auto"
++                  class="ms-auto"
+                   @click="selectAll"
+                 >
+-                  Select All
++                  {{ translate('Select All') }}
+                 </Button>
+               </div>
+             </div>
+diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
+index 4b5c646..6e9794e 100644
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
+@@ -72,6 +72,8 @@ const { toInternal: getInternalValue } = useEmptyValueMapping(
+ function getItemTextValue(item: NormalizedOption) {
+   return `${item.label} ${item.value}`.trim()
+ }
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <template>
+@@ -82,7 +84,7 @@ function getItemTextValue(item: NormalizedOption) {
+       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
+     >
+       <Spinner class="size-4" />
+-      <span>Loading...</span>
++      <span>{{ translate('Loading...') }}</span>
+     </div>
+ 
+     <template v-else>
