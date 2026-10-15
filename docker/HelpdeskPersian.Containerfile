@@ -8,10 +8,11 @@ ARG HELPDESK_REF
 ARG INSIGHTS_REF
 ARG TELEPHONY_REF
 ARG FRAPPE_UI_REF
+ARG INSIGHTS_FRAPPE_UI_REF=4c517f643542d70949bfca02ad72e58c2b59ca88
 USER frappe
 WORKDIR /home/frappe
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF"; do [[ "$ref" =~ ^[0-9a-f]{40}$ ]] || exit 1; done \
+RUN for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" "$INSIGHTS_FRAPPE_UI_REF"; do [[ "$ref" =~ ^[0-9a-f]{40}$ ]] || exit 1; done \
     && bench init --frappe-branch=develop --no-procfile --no-backups --skip-redis-config-generation --verbose /home/frappe/frappe-bench \
     && cd /home/frappe/frappe-bench \
     && git -C apps/frappe fetch --depth=1 https://github.com/shahinesi/frappe-persian.git "$FRAPPE_REF" \
@@ -40,8 +41,8 @@ RUN for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TE
     && grep -Fq "github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF" apps/helpdesk/desk/package.json \
     && grep -Fq "frappe-ui@https://github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF\":" apps/helpdesk/desk/yarn.lock \
     && grep -Fq "resolved \"https://github.com/shahinesi/frappe-ui-persian.git#$FRAPPE_UI_REF\"" apps/helpdesk/desk/yarn.lock \
-    && grep -Fq "shahinesi/frappe-ui-persian#$FRAPPE_UI_REF" apps/insights/frontend/package.json \
-    && grep -Fq "frappe-ui@github:shahinesi/frappe-ui-persian#$FRAPPE_UI_REF\":" apps/insights/frontend/yarn.lock
+    && grep -Fq "shahinesi/frappe-ui-persian#$INSIGHTS_FRAPPE_UI_REF" apps/insights/frontend/package.json \
+    && grep -Fq "frappe-ui@github:shahinesi/frappe-ui-persian#$INSIGHTS_FRAPPE_UI_REF\":" apps/insights/frontend/yarn.lock
 
 WORKDIR /home/frappe/frappe-bench
 RUN bench setup requirements --python \
@@ -57,7 +58,7 @@ RUN bench setup requirements --python \
     && yarn apply:ui-patches \
     && cd /home/frappe/frappe-bench/apps/insights/frontend \
     && yarn install --frozen-lockfile --non-interactive \
-    && grep -A8 -F "frappe-ui@github:shahinesi/frappe-ui-persian#$FRAPPE_UI_REF\":" yarn.lock \
+    && grep -A8 -F "frappe-ui@github:shahinesi/frappe-ui-persian#$INSIGHTS_FRAPPE_UI_REF\":" yarn.lock \
     && node --conditions=import --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; import { fileURLToPath } from "node:url"; const packagePath = path.resolve("node_modules/frappe-ui"); const packageRealPath = fs.realpathSync(packagePath); const manifestPath = path.join(packageRealPath, "package.json"); const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8")); console.log("Insights installed frappe-ui metadata:", JSON.stringify({ packagePath, packageRealPath, manifestPath, name: manifest.name, version: manifest.version, exports: { localization: manifest.exports?.["./localization"], localizationStyle: manifest.exports?.["./localization/style.css"] } }, null, 2)); const api = import.meta.resolve("frappe-ui/localization"); const style = import.meta.resolve("frappe-ui/localization/style.css"); for (const [name, url] of [["localization", api], ["localization style", style]]) { if (url.startsWith("file:")) { const resolvedPath = fileURLToPath(url); if (!fs.existsSync(resolvedPath)) throw new Error(`${name} export target is missing: ${resolvedPath}`); } } console.log("Insights ESM public exports resolve:", JSON.stringify({ localization: api, localizationStyle: style }));' \
     && cd /home/frappe/frappe-bench \
     && mkdir -p sites \
@@ -66,7 +67,7 @@ RUN bench setup requirements --python \
     && bench compile-po-to-mo --app helpdesk --force \
     && CI=Yes bench build --apps frappe,erpnext,helpdesk,insights,telephony \
     && for app in frappe erpnext helpdesk insights; do test -d "sites/assets/$app" && find -L "sites/assets/$app" -type f -size +0c -print -quit | grep -q .; done \
-    && printf '{"frappe":"%s","erpnext":"%s","helpdesk":"%s","insights":"%s","telephony":"%s","frappe_ui":"%s"}\n' "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" > candidate-sha-manifest.json \
+    && printf '{"frappe":"%s","erpnext":"%s","helpdesk":"%s","insights":"%s","telephony":"%s","frappe_ui":"%s","insights_frappe_ui":"%s"}\n' "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" "$INSIGHTS_FRAPPE_UI_REF" > candidate-sha-manifest.json \
     && find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} +
 
 FROM ${FRAPPE_RUNTIME_IMAGE} AS runtime

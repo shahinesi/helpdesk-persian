@@ -58,6 +58,11 @@ on:
         description: Frappe UI Persian PR #6 commit SHA
         required: true
         type: string
+        default: 9332facc9d22b99fcb4f10485ac1f7353fbfc211
+      insights_frappe_ui_ref:
+        description: Frappe UI Persian commit SHA pinned by Insights
+        required: true
+        type: string
         default: 4c517f643542d70949bfca02ad72e58c2b59ca88
 
 permissions:
@@ -84,12 +89,13 @@ jobs:
           INSIGHTS_REF: ${{ inputs.insights_ref || '339a6078037e19cf29090c184cf8e2f810790e2c' }}
           TELEPHONY_REF: ${{ inputs.telephony_ref || '039cf39f245d6818ead03cf94eea6ce7f9c1e1f7' }}
           FRAPPE_UI_REF: ${{ inputs.frappe_ui_ref || '9332facc9d22b99fcb4f10485ac1f7353fbfc211' }}
+          INSIGHTS_FRAPPE_UI_REF: ${{ inputs.insights_frappe_ui_ref || '4c517f643542d70949bfca02ad72e58c2b59ca88' }}
         run: |
           set -euo pipefail
-          for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF"; do
+          for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" "$INSIGHTS_FRAPPE_UI_REF"; do
             [[ "$ref" =~ ^[0-9a-f]{40}$ ]] || { echo "Invalid commit SHA: $ref" >&2; exit 1; }
           done
-          key="$(printf '%s\n' "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" | sha256sum | cut -c1-16)"
+          key="$(printf '%s\n' "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" "$INSIGHTS_FRAPPE_UI_REF" | sha256sum | cut -c1-16)"
           {
             echo "image_tag=office-staging:integrated-$key"
             echo "frappe_ref=$FRAPPE_REF"
@@ -98,6 +104,7 @@ jobs:
             echo "insights_ref=$INSIGHTS_REF"
             echo "telephony_ref=$TELEPHONY_REF"
             echo "frappe_ui_ref=$FRAPPE_UI_REF"
+            echo "insights_frappe_ui_ref=$INSIGHTS_FRAPPE_UI_REF"
           } >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-buildx-action@v3
@@ -116,6 +123,7 @@ jobs:
             INSIGHTS_REF=${{ steps.candidate.outputs.insights_ref }}
             TELEPHONY_REF=${{ steps.candidate.outputs.telephony_ref }}
             FRAPPE_UI_REF=${{ steps.candidate.outputs.frappe_ui_ref }}
+            INSIGHTS_FRAPPE_UI_REF=${{ steps.candidate.outputs.insights_frappe_ui_ref }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
