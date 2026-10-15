@@ -19,10 +19,10 @@ test("the onboarding banner does not call a missing localized number export", as
       runtimeErrors.push(message.text());
     }
   });
-  await page.addInitScript(() =>
-    localStorage.removeItem(
-      `isOnboardingStepsCompletedhelpdesk${emailOf("manager")}`
-    )
+  const managerEmail = emailOf("manager");
+  await page.addInitScript((user) =>
+    localStorage.removeItem(`isOnboardingStepsCompletedhelpdesk${user}`),
+    managerEmail
   );
   await page.goto("/helpdesk/tickets");
   await expect(page.getByText(/شروع کار|Getting started/).first()).toBeVisible();
@@ -136,8 +136,10 @@ test("the shared Jalali DatePicker keeps ISO dates and locale switching runtime-
     const englishLanguageSearch = page.getByRole("combobox", {
       name: /Select language/,
     });
-    await englishLanguageSearch.fill("Persian");
-    await page.getByRole("option", { name: /Persian|فارسی/, exact: true }).click();
+    await englishLanguageSearch.fill("fa");
+    const persianOptions = page.getByRole("option");
+    await expect(persianOptions).toHaveCount(1);
+    await persianOptions.first().click();
     await englishPreferences.getByRole("button", { name: /Save/ }).click();
 
     await page.waitForLoadState("domcontentloaded");
