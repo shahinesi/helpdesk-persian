@@ -160,3 +160,44 @@ test("the shared Jalali DatePicker keeps ISO dates and locale switching runtime-
     }
   }
 });
+
+test("dashboard date ranges use shared Persian and Gregorian formatting", async ({
+  page,
+  api,
+}) => {
+  const administrator = await api.get("User", "Administrator");
+  await page.clock.install({ time: new Date("2026-10-15T12:00:00Z") });
+
+  try {
+    for (const locale of ["fa", "en"] as const) {
+      await api.update("User", "Administrator", { language: locale });
+      await page.goto("/helpdesk/dashboard");
+
+      await page.getByText(locale === "fa" ? "۳۰ روز گذشته" : "Last 30 Days").click();
+      await page
+        .getByRole("menuitem", {
+          name: locale === "fa" ? "محدوده سفارشی" : "Custom Range",
+        })
+        .click();
+
+      const calendar = page.getByRole("grid", { name: "Calendar dates" });
+      await expect(calendar).toBeVisible();
+      await calendar.locator('[data-value="2026-10-01"]').click();
+      await calendar.locator('[data-value="2026-10-02"]').click();
+
+      await expect(
+        page.getByText(locale === "fa" ? "۹ تا ۱۰ مهر ۱۴۰۵" : "Oct 1 to Oct 2", {
+          exact: true,
+        })
+      ).toBeVisible();
+      await expect(page.locator("html")).toHaveAttribute(
+        "dir",
+        locale === "fa" ? "rtl" : "ltr"
+      );
+    }
+  } finally {
+    await api.update("User", "Administrator", {
+      language: administrator.language || "en",
+    });
+  }
+});

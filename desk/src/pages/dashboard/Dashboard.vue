@@ -218,8 +218,9 @@ import { useScreenSize } from "@/composables/screen";
 import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
-import { formatLocalizedDate, formatLocalizedDateRange } from "@/utils";
+import { formatLocalizedDate } from "@/utils";
 import { formatLocalizedDigits } from "@/utils/number";
+import { formatLocaleDateRange, resolveCalendar } from "frappe-ui/localization";
 import { Link } from "@framework/ui";
 import { useStorage } from "@vueuse/core";
 import {
@@ -682,7 +683,22 @@ function formatter(range: string) {
   const sameYear =
     formatLocalizedDate(from, "YYYY") ===
     formatLocalizedDate(new Date(), "YYYY");
-  return formatLocalizedDateRange(from, to, sameYear ? "MMM D" : "MMM D, YYYY");
+  const calendar = resolveCalendar("auto");
+  if (calendar === "persian") {
+    return formatLocaleDateRange(from, to, {
+      calendar,
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+  return formatLocaleDateRange(from, to, {
+    calendar: "gregory",
+    day: "numeric",
+    month: "short",
+    ...(sameYear ? {} : { year: "numeric" }),
+    rangeSeparator: " to ",
+  });
 }
 
 watch(
