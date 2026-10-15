@@ -84,7 +84,7 @@ export class TicketList {
   }
 
   filterPopover() {
-    return this.page.getByRole("dialog", { name: /^(Filter|فیلتر)$/ });
+    return this.page.getByRole("dialog", { name: /^(Filter|فیلتر)(?:\s|$)/ });
   }
 
   /** Open the Filter popover and pick a field, leaving its value editor open. */
