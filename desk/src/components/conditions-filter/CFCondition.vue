@@ -38,6 +38,7 @@
             :options="filterableFields.data || []"
             :model-value="props.condition[0]"
             :placeholder="__('Field')"
+            :translator="__"
             @update:selected-option="updateField"
           />
         </div>

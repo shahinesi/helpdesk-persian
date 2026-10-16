@@ -148,6 +148,7 @@ function combobox(options: Option[]) {
       ...ghostControl,
       trigger: "button",
       options: withSavedValue(options),
+      translator: __,
     },
     {
       prefix: () =>

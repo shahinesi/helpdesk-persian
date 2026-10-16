@@ -10,6 +10,7 @@
     :size="size"
     :variant="variant"
     :placeholder="placeholder"
+    :translator="__"
     :disabled="disabled"
     :label="label"
     :description="description"
