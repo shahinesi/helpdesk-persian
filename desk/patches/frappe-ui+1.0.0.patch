@@ -313,11 +313,12 @@ index 59dd5d7..4314b07 100644
            </div>
          `
 diff --git a/node_modules/frappe-ui/experimental/Charts/helpers.ts b/node_modules/frappe-ui/experimental/Charts/helpers.ts
-index c576b80..9a11c79 100644
+index 4e3030a..40c7837 100644
 --- a/node_modules/frappe-ui/experimental/Charts/helpers.ts
 +++ b/node_modules/frappe-ui/experimental/Charts/helpers.ts
-@@ -1,5 +1,31 @@
- import { dayjs } from '#utils/dayjs'
+@@ -7,6 +7,32 @@ import {
+ } from '../../src/localization/persianCalendar'
+ import { readDocumentLocale } from '../../src/utils/readDocumentLocale'
  
 +export function getChartLocale() {
 +  if (typeof document === 'undefined') return 'en-US'
@@ -348,7 +349,7 @@ index c576b80..9a11c79 100644
  export function formatLabel(name: string) {
    return name
      .split('_')
-@@ -10,7 +36,7 @@ export function formatLabel(name: string) {
+@@ -17,7 +43,7 @@ export function formatLabel(name: string) {
  export function formatValue(value: number, precision = 0, shorten = false) {
    if (isNaN(value)) return value.toString()
  
@@ -357,32 +358,6 @@ index c576b80..9a11c79 100644
  
    if (shorten) {
      let formatted = new Intl.NumberFormat(locale, {
-@@ -52,6 +78,25 @@ export type TimeGrain =
- export function formatDate(date: string, format?: string, grain: TimeGrain = 'day') {
-   if (!date) return ''
- 
-+  const locale = getChartLocale()
-+  if (locale.startsWith('fa')) {
-+    const value = dayjs(date)
-+    if (!value.isValid()) return ''
-+    const intlDate = new Date(Date.UTC(value.year(), value.month(), value.date(), 12))
-+    const options: Intl.DateTimeFormatOptions = {
-+      timeZone: 'UTC',
-+      ...(grain === 'month'
-+        ? { month: 'long', year: 'numeric' }
-+        : grain === 'year'
-+          ? { year: 'numeric' }
-+          : { day: 'numeric', month: grain === 'week' ? 'short' : 'long', year: 'numeric' }),
-+      ...(grain === 'hour' || grain === 'minute' || grain === 'second'
-+        ? { hour: '2-digit', minute: '2-digit', ...(grain === 'second' ? { second: '2-digit' } : {}) }
-+        : {}),
-+    }
-+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian-nu-arabext', options).format(intlDate)
-+  }
-+
-   if (grain) {
-     const grainToFormat: Record<TimeGrain, string> = {
-       second: 'MMMM D, YYYY h:mm:ss A',
 diff --git a/node_modules/frappe-ui/experimental/Charts/types.ts b/node_modules/frappe-ui/experimental/Charts/types.ts
 index 718e760..2d7f86a 100644
 --- a/node_modules/frappe-ui/experimental/Charts/types.ts
