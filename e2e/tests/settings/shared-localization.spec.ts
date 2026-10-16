@@ -233,6 +233,44 @@ test("shared chart percentages follow the active locale and keep null distinct f
   }
 });
 
+test("shared chart duration labels follow the active document locale", async ({
+  pageAs,
+  api,
+}) => {
+  const managerEmail = emailOf("manager");
+  const manager = await api.get("User", managerEmail);
+  const page = await pageAs("manager");
+
+  try {
+    for (const locale of ["fa", "en"] as const) {
+      await api.update("User", managerEmail, { language: locale });
+      await page.goto("/helpdesk/home");
+      await expect(page.locator("html")).toHaveAttribute(
+        "lang",
+        locale === "fa" ? /fa/ : /en/
+      );
+
+      const title = locale === "fa" ? "تیکت‌های من" : "My Tickets";
+      const duration = locale === "fa" ? "ماه گذشته" : "Last month";
+      const chartCard = page
+        .getByText(title, { exact: true })
+        .locator("xpath=..");
+      const currentDuration = chartCard.getByText(duration, { exact: true });
+      await expect(currentDuration).toBeVisible();
+      await currentDuration.click();
+
+      await expect(
+        page.getByRole("menuitem", {
+          name: locale === "fa" ? "هفتهٔ گذشته" : "Last week",
+          exact: true,
+        })
+      ).toBeVisible();
+    }
+  } finally {
+    await api.update("User", managerEmail, { language: manager.language });
+  }
+});
+
 test("shared chart tooltips localize time-axis dates by the active locale", async ({
   pageAs,
   api,
