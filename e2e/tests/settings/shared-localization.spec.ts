@@ -329,8 +329,17 @@ test("shared chart tooltips localize time-axis dates by the active locale", asyn
         bounds!.y + bounds!.height / 2
       );
 
-      const tooltipDate = locale === "fa" ? "مهر ۹, ۱۴۰۵" : "October 1, 2026";
-      await expect(page.getByText(tooltipDate, { exact: true })).toBeVisible();
+      const tooltipDate = page.getByText(
+        locale === "fa" ? "مهر ۹, ۱۴۰۵" : "October 1, 2026",
+        { exact: true }
+      );
+      await expect(tooltipDate).toBeVisible();
+
+      const tooltip = tooltipDate.locator("xpath=../..");
+      await expect(tooltip.getByText("Tickets:", { exact: true })).toBeVisible();
+      await expect(tooltip.locator(".font-bold")).toHaveText(
+        locale === "fa" ? "۲" : "2"
+      );
     }
   } finally {
     await api.update("User", managerEmail, { language: manager.language });
