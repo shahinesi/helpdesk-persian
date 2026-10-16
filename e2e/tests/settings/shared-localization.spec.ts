@@ -316,10 +316,11 @@ test("shared chart tooltips localize time-axis dates by the active locale", asyn
         locale === "fa" ? /fa/ : /en/
       );
 
-      const chartCard = page
-        .getByText("Shared chart date regression", { exact: true })
-        .locator("xpath=..");
-      const chart = chartCard.locator("svg").first();
+      const charts = page
+        .locator("svg")
+        .filter({ hasText: "Shared chart date regression" });
+      await expect(charts).toHaveCount(1);
+      const chart = charts.first();
       await expect(chart).toBeVisible();
       const bounds = await chart.boundingBox();
       expect(bounds).not.toBeNull();
