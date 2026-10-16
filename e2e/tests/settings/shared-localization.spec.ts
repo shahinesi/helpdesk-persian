@@ -233,6 +233,72 @@ test("shared chart percentages follow the active locale and keep null distinct f
   }
 });
 
+test("shared chart tooltips localize time-axis dates by the active locale", async ({
+  pageAs,
+  api,
+}) => {
+  const managerEmail = emailOf("manager");
+  const manager = await api.get("User", managerEmail);
+  const page = await pageAs("manager");
+
+  await page.route(
+    "**/api/method/helpdesk.api.dashboard.get_dashboard_data",
+    async (route) => {
+      const body = route.request().postDataJSON();
+      if (body.dashboard_type !== "master") {
+        await route.continue();
+        return;
+      }
+
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          message: [
+            {
+              key: "shared_chart_date_regression",
+              type: "axis",
+              title: "Shared chart date regression",
+              data: [{ date: "2026-10-01", Tickets: 2 }],
+              xAxis: { key: "date", type: "time", timeGrain: "day" },
+              yAxis: { title: "Tickets" },
+              series: [{ name: "Tickets", type: "line", showDataPoints: true }],
+            },
+          ],
+        }),
+      });
+    }
+  );
+
+  try {
+    for (const locale of ["fa", "en"] as const) {
+      await api.update("User", managerEmail, { language: locale });
+      await page.goto("/helpdesk/dashboard");
+      await expect(page.locator("html")).toHaveAttribute(
+        "lang",
+        locale === "fa" ? /fa/ : /en/
+      );
+
+      const chart = page.locator("canvas").first();
+      await expect(chart).toBeVisible();
+      const bounds = await chart.boundingBox();
+      expect(bounds).not.toBeNull();
+      await page.mouse.move(
+        bounds!.x + bounds!.width / 2,
+        bounds!.y + bounds!.height / 2
+      );
+
+      const tooltip = page.locator(".echarts-tooltip");
+      await expect(tooltip).toBeVisible();
+      await expect(tooltip).toContainText(
+        locale === "fa" ? "مهر ۹, ۱۴۰۵" : "October 1, 2026"
+      );
+      await expect(tooltip).toContainText(locale === "fa" ? "۲" : "2");
+    }
+  } finally {
+    await api.update("User", managerEmail, { language: manager.language });
+  }
+});
+
 test("dashboard date ranges use shared Persian and Gregorian formatting", async ({
   page,
   api,
