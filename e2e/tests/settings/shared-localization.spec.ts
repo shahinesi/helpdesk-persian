@@ -251,7 +251,7 @@ test("shared chart duration labels follow the active document locale", async ({
       );
 
       const title = locale === "fa" ? "تیکت‌های من" : "My Tickets";
-      const duration = locale === "fa" ? "ماه گذشته" : "Last month";
+      const duration = locale === "fa" ? "ماه گذشته" : "last month";
       const chartCard = page
         .getByText(title, { exact: true })
         .locator("xpath=..");
@@ -316,9 +316,9 @@ test("shared chart tooltips localize time-axis dates by the active locale", asyn
         locale === "fa" ? /fa/ : /en/
       );
 
-      const charts = page.getByRole("img", {
-        name: /Shared chart date regression/,
-      });
+      const charts = page
+        .getByRole("img")
+        .filter({ hasText: /Shared chart date regression/ });
       await expect(charts).toHaveCount(1);
       const chart = charts.first();
       await expect(chart).toBeVisible();
