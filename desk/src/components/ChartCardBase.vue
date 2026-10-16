@@ -127,7 +127,7 @@ import LucideChevronDown from "~icons/lucide/chevron-down";
 import { __ } from "@/translation";
 import { EChartsOption } from "echarts";
 import { Dropdown } from "frappe-ui";
-import { useLocalizedText } from "frappe-ui/localization";
+import { useDocumentLocale } from "frappe-ui/localization";
 import { ECharts } from "frappe-ui/experimental";
 import { computed, type PropType } from "vue";
 import { dayjs } from "frappe-ui";
@@ -172,19 +172,23 @@ const emit = defineEmits(["changeDuration"]);
 // the emitted value is the untranslated key: it travels to the API as the
 // period, so only the label goes through __()
 const DURATIONS = ["Last week", "Last month", "Last 3 months"];
-const localizedVs = useLocalizedText("vs", __);
-const localizedCurrentDuration = useLocalizedText(
-  () => currentDuration.value,
-  __
-);
-const localizedDurations = DURATIONS.map((duration) => ({
-  value: duration,
-  label: useLocalizedText(duration, __),
-}));
+const { locale } = useDocumentLocale();
+const localizedVs = computed(() => {
+  locale.value;
+  return __("vs");
+});
+const localizedCurrentDuration = computed(() => {
+  locale.value;
+  return __(currentDuration.value);
+});
+const localizedDurations = computed(() => {
+  locale.value;
+  return DURATIONS.map((value) => ({ value, label: __(value) }));
+});
 
 const durationOptions = computed(() =>
-  localizedDurations.map(({ value, label }) => ({
-    label: label.value,
+  localizedDurations.value.map(({ value, label }) => ({
+    label,
     onClick: () => {
       if (currentDuration.value !== value) emit("changeDuration", value);
     },
