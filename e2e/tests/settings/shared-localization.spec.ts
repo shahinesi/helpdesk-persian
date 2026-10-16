@@ -316,9 +316,9 @@ test("shared chart tooltips localize time-axis dates by the active locale", asyn
         locale === "fa" ? /fa/ : /en/
       );
 
-      const charts = page
-        .locator("svg")
-        .filter({ hasText: "Shared chart date regression" });
+      const charts = page.getByRole("img", {
+        name: /Shared chart date regression/,
+      });
       await expect(charts).toHaveCount(1);
       const chart = charts.first();
       await expect(chart).toBeVisible();
