@@ -58,7 +58,7 @@ on:
         description: Frappe UI Persian PR #6 commit SHA
         required: true
         type: string
-        default: 9332facc9d22b99fcb4f10485ac1f7353fbfc211
+        default: 58dec793b0227614d396ba293395c6bcc60e1425
       insights_frappe_ui_ref:
         description: Frappe UI Persian commit SHA pinned by Insights
         required: true
@@ -88,7 +88,7 @@ jobs:
           HELPDESK_REF: ${{ inputs.helpdesk_ref || github.event.pull_request.head.sha || github.sha }}
           INSIGHTS_REF: ${{ inputs.insights_ref || '339a6078037e19cf29090c184cf8e2f810790e2c' }}
           TELEPHONY_REF: ${{ inputs.telephony_ref || '039cf39f245d6818ead03cf94eea6ce7f9c1e1f7' }}
-          FRAPPE_UI_REF: ${{ inputs.frappe_ui_ref || 'bff6843661dd5eca79f47d2c56f093dba49d8508' }}
+          FRAPPE_UI_REF: ${{ inputs.frappe_ui_ref || '58dec793b0227614d396ba293395c6bcc60e1425' }}
           INSIGHTS_FRAPPE_UI_REF: ${{ inputs.insights_frappe_ui_ref || '4c517f643542d70949bfca02ad72e58c2b59ca88' }}
         run: |
           set -euo pipefail
