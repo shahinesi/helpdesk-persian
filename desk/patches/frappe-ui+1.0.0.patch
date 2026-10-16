@@ -939,6 +939,205 @@ index 553986b..438efd8 100644
 -  return { focusedDate, markOwnCommit, focus }
 +  return { focusedDate, markOwnCommit, focus };
  }
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/jalali.ts b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+new file mode 100644
+index 0000000..056cb09
+--- /dev/null
++++ b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+@@ -0,0 +1,193 @@
++import {
++  digitsEnToFa,
++  digitsFaToEn,
++  digitsArToFa,
++} from "@persian-tools/persian-tools";
++import {
++  isValidJalaaliDate,
++  jalaaliMonthLength,
++  jalaaliWeek,
++  toGregorian,
++  toJalaali,
++} from "jalaali-js";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs } from "../../utils/dayjs";
++
++const intlLocale = "fa-IR-u-ca-persian-nu-arabext";
++
++export function isPersianCalendar(): boolean {
++  return dayjs.locale().split("-")[0] === "fa";
++}
++
++export function toCalendarDate(date: Dayjs) {
++  return isPersianCalendar()
++    ? toJalaali(date.year(), date.month() + 1, date.date())
++    : { jy: date.year(), jm: date.month() + 1, jd: date.date() };
++}
++
++export function fromCalendarDate(
++  year: number,
++  monthIndex: number,
++  day: number
++): Dayjs {
++  if (isPersianCalendar()) {
++    const date = toGregorian(year, monthIndex + 1, day);
++    return dayjs(
++      `${date.gy}-${String(date.gm).padStart(2, "0")}-${String(date.gd).padStart(2, "0")}`
++    );
++  }
++  return dayjs(
++    `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(
++      2,
++      "0"
++    )}`
++  );
++}
++
++export function shiftCalendarMonth(
++  year: number,
++  monthIndex: number,
++  amount: number
++) {
++  if (isPersianCalendar()) {
++    const month = monthIndex + amount;
++    return {
++      year: year + Math.floor(month / 12),
++      month: ((month % 12) + 12) % 12,
++    };
++  }
++  const date = dayjs(
++    `${year}-${String(monthIndex + 1).padStart(2, "0")}-01`
++  ).add(amount, "month");
++  return { year: date.year(), month: date.month() };
++}
++
++export function shiftCalendarDate(
++  date: Dayjs,
++  years: number,
++  months: number
++): Dayjs {
++  if (!isPersianCalendar()) return date.add(years, "year").add(months, "month");
++  const current = toJalaali(date.year(), date.month() + 1, date.date());
++  let year = current.jy + years;
++  let month = current.jm - 1 + months;
++  year += Math.floor(month / 12);
++  month = ((month % 12) + 12) % 12;
++  const day = Math.min(current.jd, jalaaliMonthLength(year, month + 1));
++  return fromCalendarDate(year, month, day);
++}
++
++export function calendarMonths(year: number): string[] {
++  return Array.from({ length: 12 }, (_, monthIndex) => {
++    const date = fromCalendarDate(year, monthIndex, 1);
++    if (!isPersianCalendar()) return date.format("MMM");
++    return new Intl.DateTimeFormat(intlLocale, {
++      month: "long",
++      timeZone: "UTC",
++    }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++  });
++}
++
++export function calendarYear(year: number): string {
++  return isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
++}
++
++export function calendarMonthYear(year: number, monthIndex: number): string {
++  const date = fromCalendarDate(year, monthIndex, 1);
++  if (!isPersianCalendar()) return date.format("MMM YYYY");
++  return new Intl.DateTimeFormat(intlLocale, {
++    month: "long",
++    year: "numeric",
++    timeZone: "UTC",
++  }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++}
++
++export function calendarWeekdays(): string[] {
++  if (!isPersianCalendar()) return ["S", "M", "T", "W", "T", "F", "S"];
++  const now = dayjs();
++  const today = toJalaali(now.year(), now.month() + 1, now.date());
++  const saturday = jalaaliWeek(today.jy, today.jm, today.jd).saturday;
++  const gregorian = toGregorian(saturday.jy, saturday.jm, saturday.jd);
++  const start = new Date(
++    Date.UTC(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12)
++  );
++  const weekday = new Intl.DateTimeFormat(intlLocale, {
++    weekday: "narrow",
++    timeZone: "UTC",
++  });
++  return Array.from({ length: 7 }, (_, index) => {
++    const date = new Date(start);
++    date.setUTCDate(date.getUTCDate() + index);
++    return weekday.format(date);
++  });
++}
++
++export function calendarDay(date: Dayjs): string {
++  const { jd } = toCalendarDate(date);
++  return isPersianCalendar() ? digitsEnToFa(String(jd)) : String(jd);
++}
++
++export function calendarWeekdayIndex(date: Dayjs): number {
++  if (!isPersianCalendar()) return date.day();
++  const { jy, jm, jd } = toCalendarDate(date);
++  const saturday = jalaaliWeek(jy, jm, jd).saturday;
++  return date.startOf("day").diff(
++    fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd),
++    "day"
++  );
++}
++
++export function startOfCalendarWeek(date: Dayjs): Dayjs {
++  if (!isPersianCalendar()) return date.startOf("week");
++  const { jy, jm, jd } = toCalendarDate(date);
++  const saturday = jalaaliWeek(jy, jm, jd).saturday;
++  return fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd);
++}
++
++export function formatCalendarRange(from: Dayjs, to: Dayjs): string {
++  if (!isPersianCalendar())
++    return `${from.format("YYYY-MM-DD")} to ${to.format("YYYY-MM-DD")}`;
++  return new Intl.DateTimeFormat(dayjs.locale(), {
++    calendar: "persian",
++    day: "numeric",
++    month: "long",
++    year: "numeric",
++  }).formatRange(from.toDate(), to.toDate());
++}
++
++export function formatCalendarDate(date: Dayjs): string {
++  if (!isPersianCalendar()) return date.format("YYYY-MM-DD");
++  const { jy, jm, jd } = toJalaali(date.year(), date.month() + 1, date.date());
++  return digitsEnToFa(
++    `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`
++  );
++}
++
++export function formatCalendarDateTime(date: Dayjs): string {
++  if (!isPersianCalendar()) return date.format("YYYY-MM-DD HH:mm");
++  return digitsEnToFa(`${formatCalendarDate(date)} - ${date.format("HH:mm")}`);
++}
++
++export function parseCalendarDateTime(value: string): Dayjs | null {
++  if (!isPersianCalendar()) return null;
++  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
++  const match = normalized.match(
++    /^(\d{4}[/-]\d{1,2}[/-]\d{1,2})\s*(?:-|,)?\s*(\d{1,2}:\d{2}(?::\d{2})?)$/
++  );
++  if (!match) return null;
++  const date = parseCalendarDate(match[1]);
++  return date ? dayjs(`${date.format("YYYY-MM-DD")} ${match[2]}`) : null;
++}
++
++export function parseCalendarDate(value: string): Dayjs | null {
++  if (!isPersianCalendar()) return null;
++  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
++  const match = normalized.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
++  if (!match) return null;
++  const [, year, month, day] = match.map(Number);
++  if (!isValidJalaaliDate(year, month, day)) return null;
++  const gregorian = toGregorian(year, month, day);
++  return dayjs(
++    `${gregorian.gy}-${String(gregorian.gm).padStart(2, "0")}-${String(gregorian.gd).padStart(2, "0")}`
++  );
++}
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/utils.ts b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
 index 1060017..2981a32 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/utils.ts
