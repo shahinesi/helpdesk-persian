@@ -161,6 +161,78 @@ test("the shared Jalali DatePicker keeps ISO dates and locale switching runtime-
   }
 });
 
+test("shared chart percentages follow the active locale and keep null distinct from zero", async ({
+  pageAs,
+  api,
+}) => {
+  const managerEmail = emailOf("manager");
+  const manager = await api.get("User", managerEmail);
+  const page = await pageAs("manager");
+
+  await page.route(
+    "**/api/method/helpdesk.api.dashboard.get_dashboard_data",
+    async (route) => {
+      const body = route.request().postDataJSON();
+      if (body.dashboard_type !== "master") {
+        await route.continue();
+        return;
+      }
+
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          message: [
+            {
+              key: "locale_percent_regression",
+              type: "pie",
+              title: "Locale percent regression",
+              subtitle: "Chart formatter contract",
+              data: [
+                { category: "Full", count: 1 },
+                { category: "Zero", count: 0 },
+                { category: "Missing", count: null },
+              ],
+              categoryColumn: "category",
+              valueColumn: "count",
+              showInlineLabels: true,
+            },
+          ],
+        }),
+      });
+    }
+  );
+
+  try {
+    for (const locale of ["fa", "en"] as const) {
+      await api.update("User", managerEmail, { language: locale });
+      await page.goto("/helpdesk/dashboard");
+      await expect(page.locator("html")).toHaveAttribute(
+        "lang",
+        locale === "fa" ? /fa/ : /en/
+      );
+
+      const expected = locale === "fa" ? "Full (۱۰۰٪)" : "Full (100%)";
+      await expect
+        .poll(async () =>
+          (await page.locator("svg text").allTextContents()).join(" ")
+        )
+        .toContain(expected);
+
+      const chartText = (await page.locator("svg text").allTextContents()).join(
+        " "
+      );
+      expect(chartText).toContain(locale === "fa" ? "Zero (۰٪)" : "Zero (0%)");
+      expect(chartText).not.toContain(
+        locale === "fa" ? "Missing (۰٪)" : "Missing (0%)"
+      );
+    }
+  } finally {
+    await api.update("User", managerEmail, {
+      language: manager.language,
+    });
+  }
+});
+
 test("dashboard date ranges use shared Persian and Gregorian formatting", async ({
   page,
   api,

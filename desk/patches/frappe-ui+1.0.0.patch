@@ -100,17 +100,29 @@ index e9acb37..9645282 100644
 +}
 +</style>
 diff --git a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
-index 0335128..1f35d7e 100644
+index 0335128..e7dc427 100644
 --- a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
 +++ b/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
-@@ -1,5 +1,5 @@
+@@ -1,5 +1,6 @@
  import { getTitleOptions } from './eChartOptions'
 -import { formatValue } from './helpers'
-+import { formatPercentage, formatValue, getChartFontFamily } from './helpers'
++import { formatLocalePercent } from '../../src/localization'
++import { formatValue, getChartFontFamily } from './helpers'
  import { DonutChartConfig } from './types'
  
  export default function useDonutChartOptions(config: DonutChartConfig) {
-@@ -44,7 +44,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+@@ -18,7 +19,9 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+   const labels = data.map((row) => row[config.categoryColumn])
+   const values = data.map((row) => row[config.valueColumn])
+   const total = values.reduce((acc, value) => {
+-    return isNaN(value) ? acc : acc + value
++    return typeof value === 'number' && !Number.isNaN(value)
++      ? acc + value
++      : acc
+   }, 0)
+ 
+   let radius = ['40%', '70%']
+@@ -44,7 +47,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
      animation: true,
      animationDuration: 700,
      color: config.colors,
@@ -119,33 +131,77 @@ index 0335128..1f35d7e 100644
      title: getTitleOptions(config.title, config.subtitle, isRTL),
      dataset: {
        source: [
-@@ -71,7 +71,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+@@ -70,8 +73,17 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+         label: {
            show: config.showInlineLabels,
            formatter: ({ value, name }: any) => {
-             const percentage = total > 0 ? (value[1] / total) * 100 : 0
+-            const percentage = total > 0 ? (value[1] / total) * 100 : 0
 -            return `${name} (${percentage.toFixed(0)}%)`
-+            return `${name} (${formatPercentage(percentage)})`
++            const rawValue = value[1]
++            const percentage =
++              rawValue === null || rawValue === undefined
++                ? null
++                : total > 0
++                  ? (rawValue / total) * 100
++                  : 0
++            const formattedPercentage = formatLocalePercent(percentage, {
++              maximumFractionDigits: 0,
++            })
++            return `${name} (${formattedPercentage})`
            },
          },
          emphasis: { scaleSize: 5 },
-@@ -91,7 +91,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+@@ -89,9 +101,17 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+           itemGap: 12,
+           formatter: function (name: string) {
              const labelIndex = labels.indexOf(name)
++            const rawValue = values[labelIndex]
              const percentage =
-               total > 0 ? (values[labelIndex] / total) * 100 : 0
+-              total > 0 ? (values[labelIndex] / total) * 100 : 0
 -            return `${name} (${percentage.toFixed(0)}%)`
-+            return `${name} (${formatPercentage(percentage)})`
++              rawValue === null || rawValue === undefined
++                ? null
++                : total > 0
++                  ? (rawValue / total) * 100
++                  : 0
++            const formattedPercentage = formatLocalePercent(percentage, {
++              maximumFractionDigits: 0,
++            })
++            return `${name} (${formattedPercentage})`
            },
            textStyle: {
              padding: [0, 0, 0, -5],
-@@ -123,7 +123,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+@@ -121,14 +141,26 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+         const dirAttr = isRTL ? ' dir="rtl"' : ''
+         const p = params as any
          const value = p.value[1]
-         const percentage = total > 0 ? (value / total) * 100 : 0
-         const formatted = isNaN(value) ? value : formatValue(value, 1, true)
+-        const percentage = total > 0 ? (value / total) * 100 : 0
+-        const formatted = isNaN(value) ? value : formatValue(value, 1, true)
 -        const formattedPercentage = percentage.toFixed(0)
-+        const formattedPercentage = formatPercentage(percentage)
++        const percentage =
++          value === null || value === undefined
++            ? null
++            : total > 0
++              ? (value / total) * 100
++              : 0
++        const formatted =
++          value === null || value === undefined
++            ? ''
++            : isNaN(value)
++              ? value
++              : formatValue(value, 1, true)
++        const formattedPercentage = formatLocalePercent(percentage, {
++          maximumFractionDigits: 0,
++        })
          return `
            <div${dirAttr} class="flex items-center justify-between gap-5">
              <div>${p.name}</div>
+             <div class="font-bold">
+-              ${formatted} (${formattedPercentage}%)
++              ${formatted} (${formattedPercentage})
+             </div>
+           </div>
+         `
 diff --git a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
 index b8be33b..34449d0 100644
 --- a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
@@ -183,19 +239,20 @@ index b8be33b..34449d0 100644
      color: config.colors,
      grid: {
 diff --git a/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
-index 59dd5d7..bb48c39 100644
+index 59dd5d7..4314b07 100644
 --- a/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
 +++ b/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
-@@ -5,7 +5,7 @@ import {
+@@ -5,7 +5,8 @@ import {
    TITLE_BOTTOM,
    TITLE_HEIGHT,
  } from './eChartOptions'
 -import { formatValue } from './helpers'
-+import { formatPercentage, formatValue, getChartFontFamily } from './helpers'
++import { formatLocalePercent } from '../../src/localization'
++import { formatValue, getChartFontFamily } from './helpers'
  import { FunnelChartConfig } from './types'
  
  export default function getFunnelChartOptions(config: FunnelChartConfig) {
-@@ -37,7 +37,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+@@ -37,7 +38,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
      animation: true,
      animationDuration: 700,
      color: colors,
@@ -204,29 +261,62 @@ index 59dd5d7..bb48c39 100644
      title: getTitleOptions(config.title, config.subtitle, isRTL),
      series: [
        {
-@@ -66,7 +66,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+@@ -66,8 +67,17 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
              if (!config.showPercentages) {
                return value
              }
 -            const percentage = Number((values[index] / total) * 100).toFixed(0)
-+            const percentage = formatPercentage((values[index] / total) * 100)
-             return `${value} (${percentage}%)`
+-            return `${value} (${percentage}%)`
++            const rawValue = values[index]
++            const percentage =
++              rawValue === null || rawValue === undefined
++                ? null
++                : total > 0
++                  ? (rawValue / total) * 100
++                  : 0
++            const formattedPercentage = formatLocalePercent(percentage, {
++              maximumFractionDigits: 0,
++            })
++            return `${value} (${formattedPercentage})`
            },
          },
-@@ -104,7 +104,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+         labelLine: { show: false },
+@@ -102,14 +112,26 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+         const dirAttr = isRTL ? ' dir="rtl"' : ''
+         const p = params as any
          const value = p.value
-         const percentage = total > 0 ? (value / total) * 100 : 0
-         const formatted = isNaN(value) ? value : formatValue(value, 1, true)
+-        const percentage = total > 0 ? (value / total) * 100 : 0
+-        const formatted = isNaN(value) ? value : formatValue(value, 1, true)
 -        const formattedPercentage = percentage.toFixed(0)
-+        const formattedPercentage = formatPercentage(percentage)
++        const percentage =
++          value === null || value === undefined
++            ? null
++            : total > 0
++              ? (value / total) * 100
++              : 0
++        const formatted =
++          value === null || value === undefined
++            ? ''
++            : isNaN(value)
++              ? value
++              : formatValue(value, 1, true)
++        const formattedPercentage = formatLocalePercent(percentage, {
++          maximumFractionDigits: 0,
++        })
          return `
            <div${dirAttr} class="flex items-center justify-between gap-5">
              <div>${p.name}</div>
+             <div class="font-bold">
+-              ${formatted} (${formattedPercentage}%)
++              ${formatted} (${formattedPercentage})
+             </div>
+           </div>
+         `
 diff --git a/node_modules/frappe-ui/experimental/Charts/helpers.ts b/node_modules/frappe-ui/experimental/Charts/helpers.ts
-index c576b80..ad2ac98 100644
+index c576b80..9a11c79 100644
 --- a/node_modules/frappe-ui/experimental/Charts/helpers.ts
 +++ b/node_modules/frappe-ui/experimental/Charts/helpers.ts
-@@ -1,5 +1,38 @@
+@@ -1,5 +1,31 @@
  import { dayjs } from '#utils/dayjs'
  
 +export function getChartLocale() {
@@ -247,13 +337,6 @@ index c576b80..ad2ac98 100644
 +  return getComputedStyle(document.documentElement).fontFamily || 'sans-serif'
 +}
 +
-+export function formatPercentage(value: number) {
-+  return new Intl.NumberFormat(getChartLocale(), {
-+    style: 'percent',
-+    maximumFractionDigits: 0,
-+  }).format(value / 100)
-+}
-+
 +export function formatSuffix(suffix?: string) {
 +  if (!suffix) return ''
 +  const locale = getChartLocale()
@@ -265,7 +348,7 @@ index c576b80..ad2ac98 100644
  export function formatLabel(name: string) {
    return name
      .split('_')
-@@ -10,7 +43,7 @@ export function formatLabel(name: string) {
+@@ -10,7 +36,7 @@ export function formatLabel(name: string) {
  export function formatValue(value: number, precision = 0, shorten = false) {
    if (isNaN(value)) return value.toString()
  
@@ -274,7 +357,7 @@ index c576b80..ad2ac98 100644
  
    if (shorten) {
      let formatted = new Intl.NumberFormat(locale, {
-@@ -52,6 +85,25 @@ export type TimeGrain =
+@@ -52,6 +78,25 @@ export type TimeGrain =
  export function formatDate(date: string, format?: string, grain: TimeGrain = 'day') {
    if (!date) return ''
  
@@ -349,6 +432,44 @@ index 4611ee8..16dd8d7 100644
            </div>
          </div>
        </slot>
+diff --git a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
+index ebc1f6a..77344d3 100644
+--- a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
++++ b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
+@@ -80,7 +80,7 @@
+       >
+         <!-- Announced by the container, so an app's own placeholder does not
+              have to carry the announcement with it. -->
+-        <span class="sr-only" role="status">Loading chart</span>
++        <span class="sr-only" role="status">{{ translate('Loading chart') }}</span>
+         <slot name="loading">
+           <!-- A block the size of the plot, not a spinner in the middle of it.
+                A dashboard fills in a card at a time, and a placeholder holding
+@@ -98,7 +98,7 @@
+         <template v-if="state === 'error'">
+           <slot name="error" :error="error">
+             <span class="text-sm-medium text-ink-red-7">
+-              Could not render this chart
++              {{ translate('Could not render this chart') }}
+             </span>
+             <span v-if="error" class="max-w-sm text-p-sm text-ink-gray-5">
+               {{ error }}
+@@ -108,7 +108,7 @@
+ 
+         <template v-else>
+           <slot name="empty">
+-            <span class="text-p-sm text-ink-gray-5">No data to show</span>
++            <span class="text-p-sm text-ink-gray-5">{{ translate('No data to show') }}</span>
+           </slot>
+         </template>
+       </div>
+@@ -161,4 +161,6 @@ const topAxisTitle = computed(
+ const bottomAxisTitle = computed(
+   () => showAxisTitle.value && props.axisTitlePlacement === 'bottom',
+ )
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
 diff --git a/node_modules/frappe-ui/src/charts/measureText.ts b/node_modules/frappe-ui/src/charts/measureText.ts
 index da0ec5f..41da68c 100644
 --- a/node_modules/frappe-ui/src/charts/measureText.ts
@@ -442,8 +563,39 @@ index 979bdce..0f39f54 100644
                      class="min-w-0 flex-1 px-0 border-0 bg-transparent py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
                      @input="handleInputChange"
                      @focus="emit('focus', $event)"
+diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
+index f21cd60..1a2ffe5 100644
+--- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
++++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
+@@ -105,6 +105,8 @@ function handleSelect(item: NormalizedItem, event: Event) {
+   if (isCustomOption(item)) emit('selectCustom', item, event)
+   else emit('selectOption', item, event)
+ }
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <template>
+@@ -115,7 +117,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
+       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
+     >
+       <Spinner class="size-4" />
+-      <span>Loading...</span>
++      <span>{{ translate('Loading...') }}</span>
+     </div>
+ 
+     <template v-else>
+@@ -273,7 +275,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
+ 
+                   <ComboboxItemIndicator
+                     v-if="isSelectableOption(item)"
+-                    class="ml-1 inline-flex items-center justify-center"
++                    class="ms-1 inline-flex items-center justify-center"
+                   >
+                     <span class="lucide-check size-4 text-ink-gray-6" />
+                   </ComboboxItemIndicator>
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
-index aa57cfd..05b7231 100644
+index 9abcdee..38f5ae1 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
 +++ b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
 @@ -16,7 +16,7 @@
@@ -464,8 +616,7 @@ index aa57cfd..05b7231 100644
            class="flex flex-col p-2 gap-0.5"
          >
            <slot
-@@ -67,8 +67,8 @@
-           <DateCalendar
+@@ -68,7 +68,7 @@
              ref="calendarRef"
              :model-value="selectedDate"
              :calendar="props.calendar"
@@ -474,7 +625,7 @@ index aa57cfd..05b7231 100644
              :min="resolvedMin"
              :max="resolvedMax"
              :is-date-unavailable="props.isDateUnavailable"
-@@ -81,7 +81,7 @@
+@@ -82,7 +82,7 @@
                :typeable="props.typeable"
                side="bottom"
                align="start"
@@ -483,466 +634,37 @@ index aa57cfd..05b7231 100644
                :min="computedMinTime"
                :max="computedMaxTime"
                @change="onTimeChange"
-@@ -94,72 +94,82 @@
+@@ -95,7 +95,7 @@
  </template>
  
  <script setup lang="ts">
 -import { ref, computed, nextTick, watch } from 'vue'
--import TimePicker from '../TimePicker/TimePicker.vue'
--import { dayjs, dayjsLocal, dayjsSystem } from '../../utils/dayjs'
--import DateCalendar from './DateCalendar.vue'
--import PickerShell from '../shared/picker/PickerShell.vue'
-+import { ref, computed, getCurrentInstance, nextTick, watch } from "vue";
-+import TimePicker from "../TimePicker/TimePicker.vue";
-+import { dayjs, dayjsLocal, dayjsSystem } from "../../utils/dayjs";
-+import DateCalendar from "./DateCalendar.vue";
-+import PickerShell from "../shared/picker/PickerShell.vue";
- import {
-   usePopoverPositioning,
-   useKeepOpen,
-   useTypeable,
-   useDateCoercion,
--} from './composables'
--import type { Dayjs } from 'dayjs/esm'
-+} from "./composables";
-+import type { Dayjs } from "dayjs/esm";
- import type {
-   DateTimePickerProps,
-   DateTimePickerEmits,
-   DateTimePickerSlots,
--} from './types'
--import type { DateCalendarExposed } from './calendarTypes'
--import type {
--  PickerExposed,
--  PickerShellExposed,
--} from '../shared/picker/types'
-+} from "./types";
-+import type { DateCalendarExposed } from "./calendarTypes";
-+import {
-+  formatCalendarDateTime,
-+  isPersianCalendar,
-+  parseCalendarDateTime,
-+} from "./jalali";
-+import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
- 
++import { ref, computed, getCurrentInstance, nextTick, watch } from 'vue'
+ import TimePicker from '../TimePicker/TimePicker.vue'
+ import { dayjs, dayjsLocal, dayjsSystem } from '../../utils/dayjs'
+ import { resolveCalendar } from '../../localization/calendar'
+@@ -127,7 +127,6 @@ import type {
  const props = withDefaults(defineProps<DateTimePickerProps>(), {
--  modelValue: '',
--  variant: 'subtle',
+   modelValue: '',
+   variant: 'subtle',
 -  placeholder: 'Select date & time',
-+  modelValue: "",
-+  variant: "subtle",
    typeable: true,
    disabled: false,
    clearable: true,
-   openOnFocus: false,
-   openOnClick: true,
+@@ -136,6 +135,13 @@ const props = withDefaults(defineProps<DateTimePickerProps>(), {
    calendar: 'auto',
--})
--const emit = defineEmits<DateTimePickerEmits>()
--
--defineSlots<DateTimePickerSlots>()
-+});
-+const emit = defineEmits<DateTimePickerEmits>();
-+const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
-+const translateLabel = (message: string) => translate?.(message) ?? message;
+ })
+ const emit = defineEmits<DateTimePickerEmits>()
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__
++const translateLabel = (message: string) => translate?.(message) ?? message
 +const resolvedPlaceholder = computed(() =>
-+  props.placeholder ?? translateLabel("Select date & time")
-+);
-+const resolvedTimePlaceholder = computed(() => translateLabel("Select time"));
-+const resolvedTodayLabel = computed(() =>
-+  props.todayLabel ?? translateLabel("Now")
-+);
-+
-+defineSlots<DateTimePickerSlots>();
++  props.placeholder ?? translateLabel('Select date & time'),
++)
++const resolvedTimePlaceholder = computed(() => translateLabel('Select time'))
++const resolvedTodayLabel = computed(() => props.todayLabel ?? translateLabel('Now'))
  
- // ── Popover open state ───────────────────────────────────────────────────────
+ defineSlots<DateTimePickerSlots>()
  
--const shellRef = ref<PickerShellExposed | null>(null)
-+const shellRef = ref<PickerShellExposed | null>(null);
- // Seeded from the prop, so a parent that mounts the picker with `open` already
- // true gets an open panel. The watch below only sees later changes.
--const isOpen = ref(props.open === true)
-+const isOpen = ref(props.open === true);
- 
- watch(
-   () => props.open,
-   (val) => {
--    if (typeof val === 'boolean' && val !== isOpen.value) {
--      isOpen.value = val
-+    if (typeof val === "boolean" && val !== isOpen.value) {
-+      isOpen.value = val;
-     }
--  },
--)
-+  }
-+);
- 
- watch(isOpen, (val) => {
--  emit('update:open', val)
--})
-+  emit("update:open", val);
-+});
- 
- function onShellOpen() {
--  initFromValue()
-+  initFromValue();
- }
- 
- function onShellClose() {
-   if (isTyping.value) {
--    commitInput()
--    isTyping.value = false
-+    commitInput();
-+    isTyping.value = false;
-   }
- }
- 
-@@ -172,55 +182,55 @@ defineExpose<PickerExposed>({
-    * focusable element inside it.
-    */
-   focus: (options?: FocusOptions) => shellRef.value?.focus(options),
--})
-+});
- 
--const calendarRef = ref<DateCalendarExposed | null>(null)
--const timePickerRef = ref<{ focus: () => void } | null>(null)
-+const calendarRef = ref<DateCalendarExposed | null>(null);
-+const timePickerRef = ref<{ focus: () => void } | null>(null);
- 
- function onShellRequestFocus() {
-   // The calendar only mounts with the popover, so wait a tick for it.
--  nextTick(() => calendarRef.value?.focus())
-+  nextTick(() => calendarRef.value?.focus());
- }
- 
- // ── Positioning / keepOpen ────────────────────────────────────────────────────
- 
- const { resolvedSide, resolvedAlign, resolvedOffset } =
--  usePopoverPositioning(props)
--const shouldKeepOpen = useKeepOpen(props)
--const inputReadonly = useTypeable(props)
-+  usePopoverPositioning(props);
-+const shouldKeepOpen = useKeepOpen(props);
-+const inputReadonly = useTypeable(props);
- 
- // ── Calendar state ───────────────────────────────────────────────────────────
- 
--const DATE_FORMAT = 'YYYY-MM-DD'
--const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
-+const DATE_FORMAT = "YYYY-MM-DD";
-+const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
- 
--const selectedDate = ref<string>('')
--const timeValue = ref<string>('')
-+const selectedDate = ref<string>("");
-+const timeValue = ref<string>("");
- 
--const initialValue = ref(props.modelValue || '')
-+const initialValue = ref(props.modelValue || "");
- 
--const coerceToDayjs = useDateCoercion(() => props.format)
-+const coerceToDayjs = useDateCoercion(() => props.format);
- 
- // ── Constraints ──────────────────────────────────────────────────────────────
- 
- // `min`/`max` accept either a date (`YYYY-MM-DD`) or a date-time
- // (`YYYY-MM-DD HH:mm:ss`); date-only values parse as midnight, which gives
- // day-level semantics for free under the second-level check below.
--const resolvedMin = computed<string | undefined>(() => props.min)
--const resolvedMax = computed<string | undefined>(() => props.max)
-+const resolvedMin = computed<string | undefined>(() => props.min);
-+const resolvedMax = computed<string | undefined>(() => props.max);
- 
- const minDT = computed<Dayjs | null>(() =>
--  resolvedMin.value ? coerceToDayjs(resolvedMin.value) : null,
--)
-+  resolvedMin.value ? coerceToDayjs(resolvedMin.value) : null
-+);
- const maxDT = computed<Dayjs | null>(() =>
--  resolvedMax.value ? coerceToDayjs(resolvedMax.value) : null,
--)
-+  resolvedMax.value ? coerceToDayjs(resolvedMax.value) : null
-+);
- 
- function checkUnavailable(d: Dayjs): boolean {
--  if (props.isDateUnavailable?.(d)) return true
--  if (minDT.value && d.endOf('day').isBefore(minDT.value)) return true
--  if (maxDT.value && d.startOf('day').isAfter(maxDT.value)) return true
--  return false
-+  if (props.isDateUnavailable?.(d)) return true;
-+  if (minDT.value && d.endOf("day").isBefore(minDT.value)) return true;
-+  if (maxDT.value && d.startOf("day").isAfter(maxDT.value)) return true;
-+  return false;
- }
- 
- // ── Value sync ───────────────────────────────────────────────────────────────
-@@ -228,170 +238,172 @@ function checkUnavailable(d: Dayjs): boolean {
- function syncFromValue(val?: string): void {
-   if (!val) {
-     if (!props.clearable) {
--      const now = dayjsLocal()
--      selectedDate.value = now.format(DATE_FORMAT)
--      timeValue.value = now.format('HH:mm:ss')
-+      const now = dayjsLocal();
-+      selectedDate.value = now.format(DATE_FORMAT);
-+      timeValue.value = now.format("HH:mm:ss");
-     } else {
--      selectedDate.value = ''
--      timeValue.value = ''
-+      selectedDate.value = "";
-+      timeValue.value = "";
-     }
--    return
-+    return;
-   }
--  const d = coerceToDayjs(val)
-+  const d = coerceToDayjs(val);
-   if (!d) {
--    selectedDate.value = ''
--    timeValue.value = ''
--    return
-+    selectedDate.value = "";
-+    timeValue.value = "";
-+    return;
-   }
--  selectedDate.value = d.format(DATE_FORMAT)
--  timeValue.value = d.format('HH:mm:ss')
-+  selectedDate.value = d.format(DATE_FORMAT);
-+  timeValue.value = d.format("HH:mm:ss");
- }
- 
--syncFromValue(initialValue.value)
-+syncFromValue(initialValue.value);
- 
- function initFromValue(): void {
--  syncFromValue(props.modelValue)
-+  syncFromValue(props.modelValue);
- }
- 
- watch(
-   () => props.modelValue,
-   (m) => {
--    syncFromValue(m)
--  },
--)
-+    syncFromValue(m);
-+  }
-+);
- 
- // ── Display ──────────────────────────────────────────────────────────────────
- 
- const combinedValue = computed<string>(() => {
--  if (!selectedDate.value) return ''
--  const base = `${selectedDate.value} ${timeValue.value || '00:00:00'}`
--  const local = dayjs(base)
--  if (!local.isValid()) return ''
--  return local.format(DATE_TIME_FORMAT)
--})
-+  if (!selectedDate.value) return "";
-+  const base = `${selectedDate.value} ${timeValue.value || "00:00:00"}`;
-+  const local = dayjs(base);
-+  if (!local.isValid()) return "";
-+  return local.format(DATE_TIME_FORMAT);
-+});
- 
- const displayLabel = computed<string>(() => {
--  if (!combinedValue.value) return ''
--  if (props.format) return dayjs(combinedValue.value).format(props.format)
--  return combinedValue.value
--})
--
--const inputValue = ref<string>(displayLabel.value)
--const isTyping = ref(false)
-+  if (!combinedValue.value) return "";
-+  if (isPersianCalendar())
-+    return formatCalendarDateTime(dayjs(combinedValue.value));
-+  if (props.format) return dayjs(combinedValue.value).format(props.format);
-+  return combinedValue.value;
-+});
-+
-+const inputValue = ref<string>(displayLabel.value);
-+const isTyping = ref(false);
- watch(displayLabel, (val) => {
--  if (!isTyping.value) inputValue.value = val
--})
-+  if (!isTyping.value) inputValue.value = val;
-+});
- 
- const computedMinTime = computed<string>(() => {
--  if (!minDT.value || !selectedDate.value) return ''
--  if (dayjs(selectedDate.value).isSame(minDT.value, 'day'))
--    return minDT.value.format('HH:mm:ss')
--  return ''
--})
-+  if (!minDT.value || !selectedDate.value) return "";
-+  if (dayjs(selectedDate.value).isSame(minDT.value, "day"))
-+    return minDT.value.format("HH:mm:ss");
-+  return "";
-+});
- const computedMaxTime = computed<string>(() => {
--  if (!maxDT.value || !selectedDate.value) return ''
--  if (dayjs(selectedDate.value).isSame(maxDT.value, 'day'))
--    return maxDT.value.format('HH:mm:ss')
--  return ''
--})
-+  if (!maxDT.value || !selectedDate.value) return "";
-+  if (dayjs(selectedDate.value).isSame(maxDT.value, "day"))
-+    return maxDT.value.format("HH:mm:ss");
-+  return "";
-+});
- 
- watch([computedMinTime, computedMaxTime, timeValue, selectedDate], () => {
--  if (!selectedDate.value || !timeValue.value) return
--  const cur = dayjs(`${selectedDate.value} ${timeValue.value}`)
-+  if (!selectedDate.value || !timeValue.value) return;
-+  const cur = dayjs(`${selectedDate.value} ${timeValue.value}`);
-   if (minDT.value && cur.isBefore(minDT.value))
--    timeValue.value = computedMinTime.value || timeValue.value
-+    timeValue.value = computedMinTime.value || timeValue.value;
-   if (maxDT.value && cur.isAfter(maxDT.value))
--    timeValue.value = computedMaxTime.value || timeValue.value
--})
-+    timeValue.value = computedMaxTime.value || timeValue.value;
-+});
- 
- // ── Input commit / selection ─────────────────────────────────────────────────
- 
- function commitInput(close = false): void {
--  const raw = inputValue.value.trim()
-+  const raw = inputValue.value.trim();
-   if (!raw) {
-     if (!props.clearable) {
--      const now = dayjsLocal()
--      selectDate(now)
--      timeValue.value = now.format('HH:mm:ss')
--      emitChange()
-+      const now = dayjsLocal();
-+      selectDate(now);
-+      timeValue.value = now.format("HH:mm:ss");
-+      emitChange();
-     } else {
--      clearSelection()
-+      clearSelection();
-     }
--    if (close && !shouldKeepOpen.value) isOpen.value = false
--    return
-+    if (close && !shouldKeepOpen.value) isOpen.value = false;
-+    return;
-   }
--  const parsed = coerceToDayjs(raw)
-+  const parsed = parseCalendarDateTime(raw) ?? coerceToDayjs(raw);
-   if (parsed && !checkUnavailable(parsed)) {
--    selectDate(parsed)
--    timeValue.value = parsed.format('HH:mm:ss')
--    emitChange()
--    if (close && !shouldKeepOpen.value) isOpen.value = false
-+    selectDate(parsed);
-+    timeValue.value = parsed.format("HH:mm:ss");
-+    emitChange();
-+    if (close && !shouldKeepOpen.value) isOpen.value = false;
-   } else {
--    inputValue.value = displayLabel.value
-+    inputValue.value = displayLabel.value;
-   }
- }
- 
- function selectDate(date: string | Date | Dayjs): void {
--  const d = dayjs(date as any)
--  if (!d.isValid() || checkUnavailable(d)) return
--  selectedDate.value = d.format(DATE_FORMAT)
-+  const d = dayjs(date as any);
-+  if (!d.isValid() || checkUnavailable(d)) return;
-+  selectedDate.value = d.format(DATE_FORMAT);
- }
- 
- function handleDateCellClick(date: string | Date | Dayjs) {
--  selectDate(date)
--  emitChange()
--  isTyping.value = false
-+  selectDate(date);
-+  emitChange();
-+  isTyping.value = false;
-   // A date alone is half a selection. Keep the popover open and move focus to
-   // the TimePicker.
--  nextTick(() => timePickerRef.value?.focus?.())
-+  nextTick(() => timePickerRef.value?.focus?.());
- }
- 
- function onTimeChange(val: string) {
--  timeValue.value = val
--  isTyping.value = false
--  if (selectedDate.value) emitChange()
-+  timeValue.value = val;
-+  isTyping.value = false;
-+  if (selectedDate.value) emitChange();
- }
- 
- function emitChange() {
-   if (!selectedDate.value) {
--    clearSelection()
--    return
-+    clearSelection();
-+    return;
-   }
- 
--  const localDateTime = combinedValue.value
--  const systemDateTime = dayjsSystem(localDateTime).format(DATE_TIME_FORMAT)
-+  const localDateTime = combinedValue.value;
-+  const systemDateTime = dayjsSystem(localDateTime).format(DATE_TIME_FORMAT);
- 
-   if (systemDateTime !== initialValue.value) {
--    emit('update:modelValue', systemDateTime)
--    emit('change', systemDateTime)
--    initialValue.value = systemDateTime
-+    emit("update:modelValue", systemDateTime);
-+    emit("change", systemDateTime);
-+    initialValue.value = systemDateTime;
-   }
- 
--  if (!isTyping.value) inputValue.value = displayLabel.value
-+  if (!isTyping.value) inputValue.value = displayLabel.value;
- }
- 
- function clearSelection() {
--  if (!selectedDate.value && !timeValue.value) return
--  selectedDate.value = ''
--  timeValue.value = ''
--  emit('update:modelValue', '')
--  emit('change', '')
--  initialValue.value = ''
--  inputValue.value = ''
-+  if (!selectedDate.value && !timeValue.value) return;
-+  selectedDate.value = "";
-+  timeValue.value = "";
-+  emit("update:modelValue", "");
-+  emit("change", "");
-+  initialValue.value = "";
-+  inputValue.value = "";
- }
- 
- // Now commits date and time together, in one emit.
- function handleNowClick(date: string) {
--  selectDate(date)
--  timeValue.value = dayjsLocal().format('HH:mm:ss')
--  emitChange()
--  isTyping.value = false
--  if (!shouldKeepOpen.value) isOpen.value = false
-+  selectDate(date);
-+  timeValue.value = dayjsLocal().format("HH:mm:ss");
-+  emitChange();
-+  isTyping.value = false;
-+  if (!shouldKeepOpen.value) isOpen.value = false;
- }
- 
- function handleClearClick() {
--  clearSelection()
--  if (!shouldKeepOpen.value) isOpen.value = false
--  isTyping.value = false
-+  clearSelection();
-+  if (!shouldKeepOpen.value) isOpen.value = false;
-+  isTyping.value = false;
- }
- </script>
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/composables.ts b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
 index 553986b..438efd8 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/composables.ts
@@ -1217,230 +939,15 @@ index 553986b..438efd8 100644
 -  return { focusedDate, markOwnCommit, focus }
 +  return { focusedDate, markOwnCommit, focus };
  }
-diff --git a/node_modules/frappe-ui/src/components/DatePicker/jalali.ts b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
-new file mode 100644
-index 0000000..056cb09
---- /dev/null
-+++ b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
-@@ -0,0 +1,193 @@
-+import {
-+  digitsEnToFa,
-+  digitsFaToEn,
-+  digitsArToFa,
-+} from "@persian-tools/persian-tools";
-+import {
-+  isValidJalaaliDate,
-+  jalaaliMonthLength,
-+  jalaaliWeek,
-+  toGregorian,
-+  toJalaali,
-+} from "jalaali-js";
-+import type { Dayjs } from "dayjs/esm";
-+import { dayjs } from "../../utils/dayjs";
-+
-+const intlLocale = "fa-IR-u-ca-persian-nu-arabext";
-+
-+export function isPersianCalendar(): boolean {
-+  return dayjs.locale().split("-")[0] === "fa";
-+}
-+
-+export function toCalendarDate(date: Dayjs) {
-+  return isPersianCalendar()
-+    ? toJalaali(date.year(), date.month() + 1, date.date())
-+    : { jy: date.year(), jm: date.month() + 1, jd: date.date() };
-+}
-+
-+export function fromCalendarDate(
-+  year: number,
-+  monthIndex: number,
-+  day: number
-+): Dayjs {
-+  if (isPersianCalendar()) {
-+    const date = toGregorian(year, monthIndex + 1, day);
-+    return dayjs(
-+      `${date.gy}-${String(date.gm).padStart(2, "0")}-${String(date.gd).padStart(2, "0")}`
-+    );
-+  }
-+  return dayjs(
-+    `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(
-+      2,
-+      "0"
-+    )}`
-+  );
-+}
-+
-+export function shiftCalendarMonth(
-+  year: number,
-+  monthIndex: number,
-+  amount: number
-+) {
-+  if (isPersianCalendar()) {
-+    const month = monthIndex + amount;
-+    return {
-+      year: year + Math.floor(month / 12),
-+      month: ((month % 12) + 12) % 12,
-+    };
-+  }
-+  const date = dayjs(
-+    `${year}-${String(monthIndex + 1).padStart(2, "0")}-01`
-+  ).add(amount, "month");
-+  return { year: date.year(), month: date.month() };
-+}
-+
-+export function shiftCalendarDate(
-+  date: Dayjs,
-+  years: number,
-+  months: number
-+): Dayjs {
-+  if (!isPersianCalendar()) return date.add(years, "year").add(months, "month");
-+  const current = toJalaali(date.year(), date.month() + 1, date.date());
-+  let year = current.jy + years;
-+  let month = current.jm - 1 + months;
-+  year += Math.floor(month / 12);
-+  month = ((month % 12) + 12) % 12;
-+  const day = Math.min(current.jd, jalaaliMonthLength(year, month + 1));
-+  return fromCalendarDate(year, month, day);
-+}
-+
-+export function calendarMonths(year: number): string[] {
-+  return Array.from({ length: 12 }, (_, monthIndex) => {
-+    const date = fromCalendarDate(year, monthIndex, 1);
-+    if (!isPersianCalendar()) return date.format("MMM");
-+    return new Intl.DateTimeFormat(intlLocale, {
-+      month: "long",
-+      timeZone: "UTC",
-+    }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
-+  });
-+}
-+
-+export function calendarYear(year: number): string {
-+  return isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
-+}
-+
-+export function calendarMonthYear(year: number, monthIndex: number): string {
-+  const date = fromCalendarDate(year, monthIndex, 1);
-+  if (!isPersianCalendar()) return date.format("MMM YYYY");
-+  return new Intl.DateTimeFormat(intlLocale, {
-+    month: "long",
-+    year: "numeric",
-+    timeZone: "UTC",
-+  }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
-+}
-+
-+export function calendarWeekdays(): string[] {
-+  if (!isPersianCalendar()) return ["S", "M", "T", "W", "T", "F", "S"];
-+  const now = dayjs();
-+  const today = toJalaali(now.year(), now.month() + 1, now.date());
-+  const saturday = jalaaliWeek(today.jy, today.jm, today.jd).saturday;
-+  const gregorian = toGregorian(saturday.jy, saturday.jm, saturday.jd);
-+  const start = new Date(
-+    Date.UTC(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12)
-+  );
-+  const weekday = new Intl.DateTimeFormat(intlLocale, {
-+    weekday: "narrow",
-+    timeZone: "UTC",
-+  });
-+  return Array.from({ length: 7 }, (_, index) => {
-+    const date = new Date(start);
-+    date.setUTCDate(date.getUTCDate() + index);
-+    return weekday.format(date);
-+  });
-+}
-+
-+export function calendarDay(date: Dayjs): string {
-+  const { jd } = toCalendarDate(date);
-+  return isPersianCalendar() ? digitsEnToFa(String(jd)) : String(jd);
-+}
-+
-+export function calendarWeekdayIndex(date: Dayjs): number {
-+  if (!isPersianCalendar()) return date.day();
-+  const { jy, jm, jd } = toCalendarDate(date);
-+  const saturday = jalaaliWeek(jy, jm, jd).saturday;
-+  return date.startOf("day").diff(
-+    fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd),
-+    "day"
-+  );
-+}
-+
-+export function startOfCalendarWeek(date: Dayjs): Dayjs {
-+  if (!isPersianCalendar()) return date.startOf("week");
-+  const { jy, jm, jd } = toCalendarDate(date);
-+  const saturday = jalaaliWeek(jy, jm, jd).saturday;
-+  return fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd);
-+}
-+
-+export function formatCalendarRange(from: Dayjs, to: Dayjs): string {
-+  if (!isPersianCalendar())
-+    return `${from.format("YYYY-MM-DD")} to ${to.format("YYYY-MM-DD")}`;
-+  return new Intl.DateTimeFormat(dayjs.locale(), {
-+    calendar: "persian",
-+    day: "numeric",
-+    month: "long",
-+    year: "numeric",
-+  }).formatRange(from.toDate(), to.toDate());
-+}
-+
-+export function formatCalendarDate(date: Dayjs): string {
-+  if (!isPersianCalendar()) return date.format("YYYY-MM-DD");
-+  const { jy, jm, jd } = toJalaali(date.year(), date.month() + 1, date.date());
-+  return digitsEnToFa(
-+    `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`
-+  );
-+}
-+
-+export function formatCalendarDateTime(date: Dayjs): string {
-+  if (!isPersianCalendar()) return date.format("YYYY-MM-DD HH:mm");
-+  return digitsEnToFa(`${formatCalendarDate(date)} - ${date.format("HH:mm")}`);
-+}
-+
-+export function parseCalendarDateTime(value: string): Dayjs | null {
-+  if (!isPersianCalendar()) return null;
-+  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
-+  const match = normalized.match(
-+    /^(\d{4}[/-]\d{1,2}[/-]\d{1,2})\s*(?:-|,)?\s*(\d{1,2}:\d{2}(?::\d{2})?)$/
-+  );
-+  if (!match) return null;
-+  const date = parseCalendarDate(match[1]);
-+  return date ? dayjs(`${date.format("YYYY-MM-DD")} ${match[2]}`) : null;
-+}
-+
-+export function parseCalendarDate(value: string): Dayjs | null {
-+  if (!isPersianCalendar()) return null;
-+  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
-+  const match = normalized.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
-+  if (!match) return null;
-+  const [, year, month, day] = match.map(Number);
-+  if (!isValidJalaaliDate(year, month, day)) return null;
-+  const gregorian = toGregorian(year, month, day);
-+  return dayjs(
-+    `${gregorian.gy}-${String(gregorian.gm).padStart(2, "0")}-${String(gregorian.gd).padStart(2, "0")}`
-+  );
-+}
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/utils.ts b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
-index 1060017..a8ce3b1 100644
+index 1060017..2981a32 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/utils.ts
 +++ b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
-@@ -1,67 +1,87 @@
+@@ -1,9 +1,16 @@
 -import { dayjs, dayjsLocal } from '../../utils/dayjs'
 -import type { Dayjs } from 'dayjs/esm'
 -import type { DatePickerDateObj as DateObj, DateRangeValue } from './types'
 -import type { CalendarPanelCell } from './calendarTypes'
--
--// Constant list of month labels
--export const months: string[] = [
--  'Jan',
--  'Feb',
--  'Mar',
--  'Apr',
--  'May',
--  'Jun',
--  'Jul',
--  'Aug',
--  'Sep',
--  'Oct',
--  'Nov',
--  'Dec',
--]
 +import { dayjs, dayjsLocal } from "../../utils/dayjs";
 +import type { Dayjs } from "dayjs/esm";
 +import type { DatePickerDateObj as DateObj, DateRangeValue } from "./types";
@@ -1452,22 +959,13 @@ index 1060017..a8ce3b1 100644
 +  startOfCalendarWeek,
 +  toCalendarDate,
 +} from "./jalali";
-+
+ 
+-// Constant list of month labels
 +// Constant list of month labels used by the shared calendar panel.
-+export const months: string[] = [
-+  'Jan',
-+  'Feb',
-+  'Mar',
-+  'Apr',
-+  'May',
-+  'Jun',
-+  'Jul',
-+  'Aug',
-+  'Sep',
-+  'Oct',
-+  'Nov',
-+  'Dec',
-+]
+ export const months: string[] = [
+   'Jan',
+   'Feb',
+@@ -21,47 +28,60 @@ export const months: string[] = [
  
  // Start of given month (0-indexed month)
  export function monthStart(year: number, monthIndex: number): Dayjs {
@@ -1550,7 +1048,7 @@ index 1060017..a8ce3b1 100644
  }
  
  /**
-@@ -70,32 +91,32 @@ export function getDateValue(date: Date | string) {
+@@ -70,32 +90,32 @@ export function getDateValue(date: Date | string) {
   * preview render as in-range, not as selected.
   */
  export function generateRangeWeeks(options: {
@@ -1602,7 +1100,7 @@ index 1060017..a8ce3b1 100644
        }
        return {
          ...d,
-@@ -104,20 +125,20 @@ export function generateRangeWeeks(options: {
+@@ -104,20 +124,20 @@ export function generateRangeWeeks(options: {
          isRangeStart,
          isRangeEnd,
          inRange,
@@ -1629,7 +1127,7 @@ index 1060017..a8ce3b1 100644
  }
  
  /**
-@@ -126,10 +147,10 @@ export function rangeKey(range: DateRangeValue | [string, string]): string {
+@@ -126,10 +146,10 @@ export function rangeKey(range: DateRangeValue | [string, string]): string {
   */
  export function stepRange(
    range: [string, string],
@@ -1645,6 +1143,37 @@ index 1060017..a8ce3b1 100644
 +  if (!from || to) return [value, ""];
 +  return orderRange([from, value]);
  }
+diff --git a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
+index f034a73..f25a6b1 100644
+--- a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
++++ b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
+@@ -87,7 +87,7 @@
+                         </DialogTitle>
+                       </div>
+                       <DialogClose v-if="props.showCloseButton" as-child>
+-                        <Button variant="ghost" label="Close">
++                        <Button variant="ghost" :label="translate('Close')">
+                           <template #icon>
+                             <span class="lucide-x size-4 text-ink-gray-9" />
+                           </template>
+@@ -142,7 +142,7 @@
+               <Button
+                 class="absolute right-4 top-4 z-10"
+                 variant="ghost"
+-                label="Close"
++                :label="translate('Close')"
+               >
+                 <template #icon>
+                   <span class="lucide-x size-4 text-ink-gray-9" />
+@@ -396,6 +396,8 @@ function handleOpenAutoFocus(event: Event) {
+     event.preventDefault()
+   }
+ }
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <style scoped>
 diff --git a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue b/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
 index 57eabce..be57785 100644
 --- a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
@@ -1718,6 +1247,145 @@ index 61ccd67..9f1ef3f 100644
 +  transform: rotate(180deg);
 +}
  </style>
+diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+index 08641f7..031d774 100644
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+@@ -1,4 +1,5 @@
+ <script setup lang="ts">
++import { useTextDirection } from '@vueuse/core'
+ import { computed, ref, useAttrs, useTemplateRef, watch } from 'vue'
+ import {
+   ComboboxAnchor,
+@@ -59,12 +60,20 @@ const props = withDefaults(defineProps<MultiSelectProps>(), {
+   hideSearch: false,
+   loading: false,
+   filterable: true,
+-  emptyText: 'No results',
++  emptyText: (window as any).__?.('No results') ?? 'No results',
+   side: 'bottom',
+   align: 'start',
+   offset: 4,
+ })
+ 
++const textDirection = useTextDirection({ observe: true })
++
++const displayPlaceholder = computed(() =>
++  props.placeholder === 'Select option'
++    ? (window as any).__?.('Select option') ?? 'Select option'
++    : props.placeholder,
++)
++
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const emit = defineEmits<MultiSelectEmits>()
+@@ -166,7 +175,7 @@ const selectedOptions = computed(() =>
+ // in the trigger's prefix area — see template). For 2+ we collapse to
+ // "N selected" so the width doesn't balloon.
+ const triggerSummary = computed(() => {
+-  if (selectedOptions.value.length === 0) return props.placeholder
++  if (selectedOptions.value.length === 0) return displayPlaceholder.value
+   if (selectedOptions.value.length === 1) return selectedOptions.value[0].label
+   return `${selectedOptions.value.length} selected`
+ })
+@@ -184,7 +193,7 @@ const singleSelectedOption = computed(() =>
+ // sizer's minimum, not the label's length.
+ const triggerSizingText = computed(() => {
+   const maxCount = Math.max(allOptions.value.length, 1)
+-  return [props.placeholder, `${maxCount} selected`].join('\n')
++  return [displayPlaceholder.value, `${maxCount} selected`].join('\n')
+ })
+ 
+ const typedQuery = computed(() => (hasTypedSinceOpen.value ? query.value : ''))
+@@ -351,6 +360,8 @@ defineExpose<SelectionExposed>({
+   focus,
+ })
+ defineSlots<MultiSelectSlots>()
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <template>
+@@ -371,6 +382,7 @@ defineSlots<MultiSelectSlots>()
+       </template>
+     </InputLabel>
+     <ComboboxRoot
++      :dir="textDirection"
+       multiple
+       :model-value="internalModel"
+       :open="open"
+@@ -445,7 +457,7 @@ defineSlots<MultiSelectSlots>()
+             :icon="singleSelectedOption.icon"
+           />
+ 
+-          <span class="grid min-w-0 flex-1 text-left font-normal">
++          <span class="grid min-w-0 flex-1 text-start font-normal">
+             <span
+               :class="[
+                 'col-start-1 row-start-1 max-w-full truncate',
+@@ -485,6 +497,7 @@ defineSlots<MultiSelectSlots>()
+         <ComboboxContent
+           data-slot="content"
+           data-selection
++          :dir="textDirection"
+           :data-variant="variant"
+           :data-size="size"
+           :data-loading="loading ? '' : undefined"
+@@ -522,10 +535,11 @@ defineSlots<MultiSelectSlots>()
+                 <ComboboxInput
+                   ref="searchInput"
+                   :id="`${inputId}-search-input`"
++                  :dir="textDirection"
+                   data-slot="input"
+                   :value="query"
+                   :disabled="disabled"
+-                  :placeholder="placeholder"
++                  :placeholder="displayPlaceholder"
+                   autocomplete="off"
+                   class="min-w-0 flex-1 border-0 bg-transparent px-0 py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
+                   @input="handleInputChange"
+@@ -576,16 +590,16 @@ defineSlots<MultiSelectSlots>()
+                   size="sm"
+                   @click="clear"
+                 >
+-                  Clear All
++                  {{ translate('Clear All') }}
+                 </Button>
+                 <Button
+                   v-if="!allSelected"
+                   variant="ghost"
+                   size="sm"
+-                  class="ml-auto"
++                  class="ms-auto"
+                   @click="selectAll"
+                 >
+-                  Select All
++                  {{ translate('Select All') }}
+                 </Button>
+               </div>
+             </div>
+diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
+index 4b5c646..6e9794e 100644
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
+@@ -72,6 +72,8 @@ const { toInternal: getInternalValue } = useEmptyValueMapping(
+ function getItemTextValue(item: NormalizedOption) {
+   return `${item.label} ${item.value}`.trim()
+ }
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <template>
+@@ -82,7 +84,7 @@ function getItemTextValue(item: NormalizedOption) {
+       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
+     >
+       <Spinner class="size-4" />
+-      <span>Loading...</span>
++      <span>{{ translate('Loading...') }}</span>
+     </div>
+ 
+     <template v-else>
 diff --git a/node_modules/frappe-ui/src/components/Popover/Popover.vue b/node_modules/frappe-ui/src/components/Popover/Popover.vue
 index e91fad8..1b64b04 100644
 --- a/node_modules/frappe-ui/src/components/Popover/Popover.vue
@@ -2088,242 +1756,3 @@ index cc3f745..e51412c 100644
    color: var(--ink-gray-4);
    pointer-events: none;
    height: 0;
-diff --git a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
-index ebc1f6a..77344d3 100644
---- a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
-+++ b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
-@@ -80,7 +80,7 @@
-       >
-         <!-- Announced by the container, so an app's own placeholder does not
-              have to carry the announcement with it. -->
--        <span class="sr-only" role="status">Loading chart</span>
-+        <span class="sr-only" role="status">{{ translate('Loading chart') }}</span>
-         <slot name="loading">
-           <!-- A block the size of the plot, not a spinner in the middle of it.
-                A dashboard fills in a card at a time, and a placeholder holding
-@@ -98,7 +98,7 @@
-         <template v-if="state === 'error'">
-           <slot name="error" :error="error">
-             <span class="text-sm-medium text-ink-red-7">
--              Could not render this chart
-+              {{ translate('Could not render this chart') }}
-             </span>
-             <span v-if="error" class="max-w-sm text-p-sm text-ink-gray-5">
-               {{ error }}
-@@ -108,7 +108,7 @@
- 
-         <template v-else>
-           <slot name="empty">
--            <span class="text-p-sm text-ink-gray-5">No data to show</span>
-+            <span class="text-p-sm text-ink-gray-5">{{ translate('No data to show') }}</span>
-           </slot>
-         </template>
-       </div>
-@@ -161,4 +161,6 @@ const topAxisTitle = computed(
- const bottomAxisTitle = computed(
-   () => showAxisTitle.value && props.axisTitlePlacement === 'bottom',
- )
-+
-+const translate = (text: string) => (window as any).__?.(text) ?? text
- </script>
-diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-index f21cd60..1a2ffe5 100644
---- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-+++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-@@ -105,6 +105,8 @@ function handleSelect(item: NormalizedItem, event: Event) {
-   if (isCustomOption(item)) emit('selectCustom', item, event)
-   else emit('selectOption', item, event)
- }
-+
-+const translate = (text: string) => (window as any).__?.(text) ?? text
- </script>
- 
- <template>
-@@ -115,7 +117,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
-       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
-     >
-       <Spinner class="size-4" />
--      <span>Loading...</span>
-+      <span>{{ translate('Loading...') }}</span>
-     </div>
- 
-     <template v-else>
-@@ -273,7 +275,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
- 
-                   <ComboboxItemIndicator
-                     v-if="isSelectableOption(item)"
--                    class="ml-1 inline-flex items-center justify-center"
-+                    class="ms-1 inline-flex items-center justify-center"
-                   >
-                     <span class="lucide-check size-4 text-ink-gray-6" />
-                   </ComboboxItemIndicator>
-diff --git a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
-index f034a73..f25a6b1 100644
---- a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
-+++ b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
-@@ -87,7 +87,7 @@
-                         </DialogTitle>
-                       </div>
-                       <DialogClose v-if="props.showCloseButton" as-child>
--                        <Button variant="ghost" label="Close">
-+                        <Button variant="ghost" :label="translate('Close')">
-                           <template #icon>
-                             <span class="lucide-x size-4 text-ink-gray-9" />
-                           </template>
-@@ -142,7 +142,7 @@
-               <Button
-                 class="absolute right-4 top-4 z-10"
-                 variant="ghost"
--                label="Close"
-+                :label="translate('Close')"
-               >
-                 <template #icon>
-                   <span class="lucide-x size-4 text-ink-gray-9" />
-@@ -396,6 +396,8 @@ function handleOpenAutoFocus(event: Event) {
-     event.preventDefault()
-   }
- }
-+
-+const translate = (text: string) => (window as any).__?.(text) ?? text
- </script>
- 
- <style scoped>
-diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
-index 08641f7..031d774 100644
---- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
-+++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
-@@ -1,4 +1,5 @@
- <script setup lang="ts">
-+import { useTextDirection } from '@vueuse/core'
- import { computed, ref, useAttrs, useTemplateRef, watch } from 'vue'
- import {
-   ComboboxAnchor,
-@@ -59,12 +60,20 @@ const props = withDefaults(defineProps<MultiSelectProps>(), {
-   hideSearch: false,
-   loading: false,
-   filterable: true,
--  emptyText: 'No results',
-+  emptyText: (window as any).__?.('No results') ?? 'No results',
-   side: 'bottom',
-   align: 'start',
-   offset: 4,
- })
- 
-+const textDirection = useTextDirection({ observe: true })
-+
-+const displayPlaceholder = computed(() =>
-+  props.placeholder === 'Select option'
-+    ? (window as any).__?.('Select option') ?? 'Select option'
-+    : props.placeholder,
-+)
-+
- const portalTarget = usePortalTarget(() => props.portalTo)
- 
- const emit = defineEmits<MultiSelectEmits>()
-@@ -166,7 +175,7 @@ const selectedOptions = computed(() =>
- // in the trigger's prefix area — see template). For 2+ we collapse to
- // "N selected" so the width doesn't balloon.
- const triggerSummary = computed(() => {
--  if (selectedOptions.value.length === 0) return props.placeholder
-+  if (selectedOptions.value.length === 0) return displayPlaceholder.value
-   if (selectedOptions.value.length === 1) return selectedOptions.value[0].label
-   return `${selectedOptions.value.length} selected`
- })
-@@ -184,7 +193,7 @@ const singleSelectedOption = computed(() =>
- // sizer's minimum, not the label's length.
- const triggerSizingText = computed(() => {
-   const maxCount = Math.max(allOptions.value.length, 1)
--  return [props.placeholder, `${maxCount} selected`].join('\n')
-+  return [displayPlaceholder.value, `${maxCount} selected`].join('\n')
- })
- 
- const typedQuery = computed(() => (hasTypedSinceOpen.value ? query.value : ''))
-@@ -351,6 +360,8 @@ defineExpose<SelectionExposed>({
-   focus,
- })
- defineSlots<MultiSelectSlots>()
-+
-+const translate = (text: string) => (window as any).__?.(text) ?? text
- </script>
- 
- <template>
-@@ -371,6 +382,7 @@ defineSlots<MultiSelectSlots>()
-       </template>
-     </InputLabel>
-     <ComboboxRoot
-+      :dir="textDirection"
-       multiple
-       :model-value="internalModel"
-       :open="open"
-@@ -445,7 +457,7 @@ defineSlots<MultiSelectSlots>()
-             :icon="singleSelectedOption.icon"
-           />
- 
--          <span class="grid min-w-0 flex-1 text-left font-normal">
-+          <span class="grid min-w-0 flex-1 text-start font-normal">
-             <span
-               :class="[
-                 'col-start-1 row-start-1 max-w-full truncate',
-@@ -485,6 +497,7 @@ defineSlots<MultiSelectSlots>()
-         <ComboboxContent
-           data-slot="content"
-           data-selection
-+          :dir="textDirection"
-           :data-variant="variant"
-           :data-size="size"
-           :data-loading="loading ? '' : undefined"
-@@ -522,10 +535,11 @@ defineSlots<MultiSelectSlots>()
-                 <ComboboxInput
-                   ref="searchInput"
-                   :id="`${inputId}-search-input`"
-+                  :dir="textDirection"
-                   data-slot="input"
-                   :value="query"
-                   :disabled="disabled"
--                  :placeholder="placeholder"
-+                  :placeholder="displayPlaceholder"
-                   autocomplete="off"
-                   class="min-w-0 flex-1 border-0 bg-transparent px-0 py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
-                   @input="handleInputChange"
-@@ -576,16 +590,16 @@ defineSlots<MultiSelectSlots>()
-                   size="sm"
-                   @click="clear"
-                 >
--                  Clear All
-+                  {{ translate('Clear All') }}
-                 </Button>
-                 <Button
-                   v-if="!allSelected"
-                   variant="ghost"
-                   size="sm"
--                  class="ml-auto"
-+                  class="ms-auto"
-                   @click="selectAll"
-                 >
--                  Select All
-+                  {{ translate('Select All') }}
-                 </Button>
-               </div>
-             </div>
-diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
-index 4b5c646..6e9794e 100644
---- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
-+++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
-@@ -72,6 +72,8 @@ const { toInternal: getInternalValue } = useEmptyValueMapping(
- function getItemTextValue(item: NormalizedOption) {
-   return `${item.label} ${item.value}`.trim()
- }
-+
-+const translate = (text: string) => (window as any).__?.(text) ?? text
- </script>
- 
- <template>
-@@ -82,7 +84,7 @@ function getItemTextValue(item: NormalizedOption) {
-       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
-     >
-       <Spinner class="size-4" />
--      <span>Loading...</span>
-+      <span>{{ translate('Loading...') }}</span>
-     </div>
- 
-     <template v-else>
