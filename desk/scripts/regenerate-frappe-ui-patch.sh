@@ -62,7 +62,7 @@ PY
 
 git -C "$fui_repo" worktree add --detach "$base_tree" "$fui_ref" >/dev/null
 git -C "$base_tree" apply --3way -p3 "$tmp_dir/source.patch"
-git -C "$base_tree" diff --cached --binary \
+git -C "$base_tree" -c core.abbrev=7 diff --cached --binary \
 	--src-prefix=a/node_modules/frappe-ui/ \
 	--dst-prefix=b/node_modules/frappe-ui/ > "$tmp_dir/generated.patch"
 
