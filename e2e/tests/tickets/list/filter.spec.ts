@@ -21,7 +21,8 @@ test("pasting ticket IDs into an In filter selects them all and narrows the list
   const id = uid();
   const customer = await apiAs("customer");
   const tickets = [];
-  for (const n of [1, 2, 3, 4, 5]) tickets.push(await raiseTicket(customer, `${id} ${n}`));
+  for (const n of [1, 2, 3, 4, 5])
+    tickets.push(await raiseTicket(customer, `${id} ${n}`));
   const picked = tickets.slice(0, 4).map((ticket) => String(ticket.name));
 
   const list = new TicketList(page);
@@ -34,12 +35,17 @@ test("pasting ticket IDs into an In filter selects them all and narrows the list
   const popover = list.filterPopover();
 
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.evaluate((text) => navigator.clipboard.writeText(text), picked.join(", "));
+  await page.evaluate(
+    (text) => navigator.clipboard.writeText(text),
+    picked.join(", ")
+  );
   await popover.getByPlaceholder("Search...").press("ControlOrMeta+V");
 
   await expect(list.rows()).toHaveCount(4);
   await expect(list.row(`${id} 5`)).toHaveCount(0);
-  await expect(popover.locator("[role=option][aria-selected=true]")).toHaveCount(4);
+  await expect(
+    popover.locator("[role=option][aria-selected=true]")
+  ).toHaveCount(4);
 
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Filter", exact: true }).click();
@@ -106,6 +112,22 @@ test("date filter summaries use the active locale while requests keep ISO dates"
     await expect(list.filterPopover()).not.toContainText("2026-10-01");
     expect(requestBody).toContain("2026-10-01");
     expect(requestBody).toContain("2026-10-02");
+
+    await page.keyboard.press("Escape");
+    await list.clearFilters();
+    await list.chooseFilterField("تاریخ افتتاحیه");
+    await list.chooseFilterOperator("بازهٔ زمانی");
+    const monthOption = page.getByRole("option", {
+      name: "این ماه",
+      exact: true,
+    });
+    const timespanRequest = page.waitForRequest((request) =>
+      request.url().includes("get_list_data")
+    );
+    await monthOption.click();
+    const timespanBody = (await timespanRequest).postData() ?? "";
+    expect(timespanBody).toContain("this month");
+    await expect(list.filterPopover()).toContainText("این ماه");
   } finally {
     await api.update("User", personas.manager.email, {
       language: originalLanguage || "en",

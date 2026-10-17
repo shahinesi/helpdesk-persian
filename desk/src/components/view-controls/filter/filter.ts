@@ -327,6 +327,12 @@ export function filterSummary(filter: ActiveFilter): string {
 function displayValue(filter: ActiveFilter): string {
   const value = filter.value;
   if (typeDate.includes(filter.field.fieldtype)) {
+    if (filter.operator === "timespan") {
+      return (
+        timespanOptions.find((option) => option.value === value)?.label ??
+        String(value ?? "")
+      );
+    }
     const formatDate = (date: any) =>
       date == null || date === ""
         ? ""
