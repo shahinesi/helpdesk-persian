@@ -46,18 +46,9 @@ index 4c580fd..23c0ce3 100644
    },
    { deep: true },
 diff --git a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
-index e9acb37..9645282 100644
+index 1813085..2be72c0 100644
 --- a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
 +++ b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
-@@ -4,7 +4,7 @@
-     :class="config.delta ? 'pb-6' : 'pb-3'"
-   >
-     <slot name="body">
--      <div class="flex w-full flex-col">
-+      <div class="number-chart-content flex w-full flex-col">
-         <slot name="title">
-           <span class="truncate text-sm-medium text-ink-gray-5">
-             {{ config.title }}
 @@ -19,7 +19,7 @@
                v-html="config.prefix"
                class="size-4 table"
@@ -76,7 +67,7 @@ index e9acb37..9645282 100644
              </span>
            </div>
          </slot>
-@@ -51,8 +51,21 @@
+@@ -51,7 +51,7 @@
  </template>
  
  <script setup lang="ts">
@@ -85,20 +76,6 @@ index e9acb37..9645282 100644
  import { NumberChartConfig } from './types'
  
  defineProps<{ config: NumberChartConfig }>()
- </script>
-+
-+<style>
-+[dir="rtl"] .number-chart-content > :first-child {
-+  align-self: flex-start;
-+  text-align: start;
-+}
-+
-+[dir="rtl"] .number-chart-content > :nth-child(2),
-+[dir="rtl"] .number-chart-content > :nth-child(3) {
-+  align-self: flex-end;
-+  text-align: end;
-+}
-+</style>
 diff --git a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
 index 0335128..e7dc427 100644
 --- a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
@@ -458,117 +435,6 @@ index da0ec5f..41da68c 100644
  
  /**
   * The CSS font a label of `fontSize` is drawn with. Measuring and rendering
-diff --git a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
-index 979bdce..0f39f54 100644
---- a/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
-+++ b/node_modules/frappe-ui/src/components/Combobox/Combobox.vue
-@@ -1,5 +1,6 @@
- <script setup lang="ts">
- import { computed, nextTick, ref, useAttrs, useTemplateRef, watch } from 'vue'
-+import { useTextDirection } from '@vueuse/core'
- import {
-   ComboboxAnchor,
-   ComboboxContent,
-@@ -72,11 +73,19 @@ const props = withDefaults(defineProps<ComboboxProps>(), {
-   align: 'start',
-   offset: 4,
-   loading: false,
--  emptyText: 'No results',
-+  emptyText: () => (window as any).__?.('No results') ?? 'No results',
-   hideSearch: false,
-   filterable: true,
- })
- 
-+const textDirection = useTextDirection({ observe: true })
-+
-+const displayPlaceholder = computed(() =>
-+  props.placeholder === 'Select option'
-+    ? (window as any).__?.('Select option') ?? 'Select option'
-+    : props.placeholder,
-+)
-+
- const portalTarget = usePortalTarget(() => props.portalTo)
- 
- const emit = defineEmits<ComboboxEmits>()
-@@ -508,6 +517,7 @@ defineSlots<ComboboxSlots>()
-       <ComboboxRoot
-         ref="rootRef"
-         class="contents"
-+        :dir="textDirection"
-         :model-value="internalModelValue"
-         :open="open"
-         :disabled="disabled"
-@@ -610,11 +620,11 @@ defineSlots<ComboboxSlots>()
- 
-               <span
-                 :class="[
--                  'min-w-0 flex-1 truncate text-left font-normal leading-tighter',
-+                  'min-w-0 flex-1 truncate text-start font-normal leading-tighter',
-                   !selectedOption && 'text-ink-gray-4',
-                 ]"
-               >
--                {{ selectedOption?.label ?? placeholder }}
-+                {{ selectedOption?.label ?? displayPlaceholder }}
-               </span>
- 
-               <slot name="suffix" v-bind="controlSlotProps">
-@@ -672,7 +682,7 @@ defineSlots<ComboboxSlots>()
-               :data-size="size"
-               :value="query"
-               :disabled="disabled"
--              :placeholder="placeholder"
-+              :placeholder="displayPlaceholder"
-               :class="resolvedInputClasses"
-               @input="handleInputChange"
-               @focus="emit('focus', $event)"
-@@ -695,6 +705,7 @@ defineSlots<ComboboxSlots>()
-           <ComboboxContent
-             data-slot="content"
-             data-selection
-+            :dir="textDirection"
-             :data-variant="variant"
-             :data-size="size"
-             :data-loading="loading ? '' : undefined"
-@@ -756,7 +767,7 @@ defineSlots<ComboboxSlots>()
-                     data-slot="input"
-                     :value="query"
-                     :disabled="disabled"
--                    :placeholder="placeholder"
-+                    :placeholder="displayPlaceholder"
-                     class="min-w-0 flex-1 px-0 border-0 bg-transparent py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
-                     @input="handleInputChange"
-                     @focus="emit('focus', $event)"
-diff --git a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-index f21cd60..1a2ffe5 100644
---- a/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-+++ b/node_modules/frappe-ui/src/components/Combobox/ComboboxResults.vue
-@@ -105,6 +105,8 @@ function handleSelect(item: NormalizedItem, event: Event) {
-   if (isCustomOption(item)) emit('selectCustom', item, event)
-   else emit('selectOption', item, event)
- }
-+
-+const translate = (text: string) => (window as any).__?.(text) ?? text
- </script>
- 
- <template>
-@@ -115,7 +117,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
-       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
-     >
-       <Spinner class="size-4" />
--      <span>Loading...</span>
-+      <span>{{ translate('Loading...') }}</span>
-     </div>
- 
-     <template v-else>
-@@ -273,7 +275,7 @@ function handleSelect(item: NormalizedItem, event: Event) {
- 
-                   <ComboboxItemIndicator
-                     v-if="isSelectableOption(item)"
--                    class="ml-1 inline-flex items-center justify-center"
-+                    class="ms-1 inline-flex items-center justify-center"
-                   >
-                     <span class="lucide-check size-4 text-ink-gray-6" />
-                   </ComboboxItemIndicator>
 diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
 index 9abcdee..38f5ae1 100644
 --- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
@@ -1348,45 +1214,6 @@ index f034a73..f25a6b1 100644
  </script>
  
  <style scoped>
-diff --git a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue b/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
-index 57eabce..be57785 100644
---- a/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
-+++ b/node_modules/frappe-ui/src/components/Dropdown/Dropdown.vue
-@@ -1,5 +1,9 @@
- <template>
--  <DropdownMenuRoot v-model:open="openModel" v-slot="{ open }">
-+  <DropdownMenuRoot
-+    v-model:open="openModel"
-+    :dir="textDirection"
-+    v-slot="{ open }"
-+  >
-     <DropdownMenuTrigger
-       as-child
-       data-slot="trigger"
-@@ -28,6 +32,7 @@
-       <DropdownMenuContent
-         data-slot="content"
-         data-motion="instant"
-+        :dir="textDirection"
-         :class="menuClasses.content"
-         :side="side"
-         :align="align"
-@@ -52,6 +57,7 @@
- 
- <script setup lang="ts">
- import { computed, onScopeDispose, useAttrs } from 'vue'
-+import { useTextDirection } from '@vueuse/core'
- import {
-   DropdownMenuContent,
-   DropdownMenuItem,
-@@ -85,6 +91,7 @@ const props = withDefaults(defineProps<DropdownProps>(), {
-   offset: 4,
- })
- 
-+const textDirection = useTextDirection({ observe: true })
- const portalTarget = usePortalTarget(() => props.portalTo)
- 
- function close() {
 diff --git a/node_modules/frappe-ui/src/components/Menu/Menu.vue b/node_modules/frappe-ui/src/components/Menu/Menu.vue
 index c2ab540..9d1462b 100644
 --- a/node_modules/frappe-ui/src/components/Menu/Menu.vue
@@ -1754,7 +1581,7 @@ index d4e2a29..d5633a8 100644
        <span
          class="lucide-panel-right-open size-4 text-ink-gray-6 transition-transform duration-300 ease-in-out"
 diff --git a/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue b/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
-index d8723ee..54958a9 100644
+index 88b0f12..b5ba49a 100644
 --- a/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
 +++ b/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
 @@ -14,7 +14,7 @@
@@ -1775,7 +1602,7 @@ index d8723ee..54958a9 100644
  import {
    PopoverAnchor,
    PopoverContent,
-@@ -130,7 +130,6 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
+@@ -131,7 +131,6 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
    modelValue: '',
    interval: 15,
    options: () => [],
@@ -1783,7 +1610,7 @@ index d8723ee..54958a9 100644
    variant: 'subtle' as Variant,
    disabled: false,
    typeable: true,
-@@ -139,6 +138,10 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
+@@ -140,6 +139,10 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
  })
  
  const emit = defineEmits<TimePickerEmits>()
