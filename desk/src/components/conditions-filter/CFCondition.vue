@@ -38,6 +38,7 @@
             :options="filterableFields.data || []"
             :model-value="props.condition[0]"
             :placeholder="__('Field')"
+            :translator="__"
             @update:selected-option="updateField"
           />
         </div>
@@ -128,6 +129,9 @@ import GroupIcon from "~icons/lucide/group";
 import UnGroupIcon from "~icons/lucide/ungroup";
 import CFConditions from "./CFConditions.vue";
 import { filterableFields } from "./filterableFields";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
+
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 
 const show = ref(false);
 const emit = defineEmits([
@@ -282,9 +286,19 @@ function getValueControl() {
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: "number" });
   } else if (typeDate.includes(fieldtype) && operator == "between") {
-    return h(DateRangePicker, { todayLabel: __("Today") });
+    return h(DateRangePicker, {
+      todayLabel: __("Today"),
+      calendar: fieldtype === "Date" ? calendar.value : "gregorian",
+      format: fieldtype === "Date" ? rangeFormat.value : undefined,
+    });
   } else if (typeDate.includes(fieldtype)) {
-    return h(fieldtype == "Date" ? DatePicker : DateTimePicker);
+    if (fieldtype === "Date") {
+      return h(DatePicker, {
+        calendar: calendar.value,
+        format: dateFormat.value,
+      });
+    }
+    return h(DateTimePicker);
   } else if (typeRating.includes(fieldtype)) {
     return h(StarRating, {
       rating: props.condition[2] || 0,

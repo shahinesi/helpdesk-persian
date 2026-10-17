@@ -10,7 +10,9 @@
         <div class="flex flex-col gap-1.5">
           <FormLabel :label="__(`Date`)" required />
           <DatePicker
+            :calendar="calendar"
             :today-label="__('Today')"
+            :format="dateFormat"
             :model-value="dayjs(dialog.holiday_date).format('YYYY-MM-DD')"
             @update:model-value="
               (value) => {
@@ -18,7 +20,6 @@
                 errors.holiday_date = '';
               }
             "
-            :format="getDateFormat()"
             variant="subtle"
             :placeholder="__(`Date`)"
             class="w-full"
@@ -63,7 +64,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
-import { getDateFormat, getDateKey, getFormattedDate } from "@/utils";
+import { getDateKey, getFormattedDate } from "@/utils";
 import {
   Dialog,
   FormControl,
@@ -76,6 +77,7 @@ import {
 } from "frappe-ui";
 import { ref } from "vue";
 import { holidayData } from "@/stores/holidayList";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 
 interface ModelType {
   show: boolean;
@@ -85,6 +87,7 @@ interface ModelType {
 }
 
 const dialog = defineModel<ModelType>();
+const { calendar, dateFormat } = useCalendarPresentation();
 
 const errors = ref({
   holiday_date: "",

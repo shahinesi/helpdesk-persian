@@ -30,6 +30,8 @@
           </template>
         </Dropdown>
         <DateRangePicker
+          :calendar="calendar"
+          :format="rangeFormat"
           :today-label="__('Today')"
           v-else
           ref="datePickerRef"
@@ -37,7 +39,6 @@
           :placeholder="__('Select range')"
           @update:model-value="onCustomRangeSelected"
           @update:open="onPickerToggle"
-          :format="'MMM D'"
           side="bottom"
           align="end"
           class="!w-48"
@@ -147,6 +148,9 @@ import { ECharts } from "frappe-ui/experimental";
 import { dataTheme, formatLocalizedDate, formatTime } from "@/utils";
 import { __ } from "@/translation";
 import EmptyState from "@/components/EmptyState.vue";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
+
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 
 type MetricsData = {
   averages: {

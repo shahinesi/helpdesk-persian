@@ -148,6 +148,8 @@
                 </template>
               </Dropdown>
               <DateRangePicker
+                :calendar="calendar"
+                :format="rangeFormat"
                 :today-label="__('Today')"
                 v-if="showDatePicker || currentPeriod === 'custom_range'"
                 ref="datePickerRef"
@@ -155,7 +157,6 @@
                 :placeholder="__('Select range')"
                 @update:model-value="onCustomRangeSelected"
                 @update:open="onPickerToggle"
-                :format="'MMM D'"
                 side="top"
                 align="start"
                 class="!w-48"
@@ -316,6 +317,9 @@ import type { EChartsOption } from "echarts";
 import { useView } from "@/composables/useView";
 import { View } from "@/types";
 import EmptyState from "@/components/EmptyState.vue";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
+
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 
 const router = useRouter();
 const chartTabs = [

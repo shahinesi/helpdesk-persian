@@ -1,0 +1,1759 @@
+diff --git a/node_modules/frappe-ui/experimental/Charts/ECharts.vue b/node_modules/frappe-ui/experimental/Charts/ECharts.vue
+index 4c580fd..23c0ce3 100644
+--- a/node_modules/frappe-ui/experimental/Charts/ECharts.vue
++++ b/node_modules/frappe-ui/experimental/Charts/ECharts.vue
+@@ -2,6 +2,7 @@
+ import { EChartsOption, init, type ECharts } from 'echarts'
+ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+ import debounce from '#utils/debounce'
++import { getChartFontFamily } from './helpers'
+ 
+ const props = defineProps<{
+   options: EChartsOption
+@@ -15,6 +16,16 @@ const props = defineProps<{
+ let chart: ECharts
+ const chartDiv = ref<HTMLDivElement>()
+ 
++function withAppFont(options: EChartsOption): EChartsOption {
++  return {
++    ...options,
++    textStyle: {
++      ...options.textStyle,
++      fontFamily: options.textStyle?.fontFamily || getChartFontFamily(),
++    },
++  }
++}
++
+ const chartClass = computed(() => {
+   const defaults =
+     'h-full w-full min-w-[300px] md:min-w-[400px] min-h-[300px] px-4 py-2'
+@@ -25,7 +36,7 @@ onMounted(() => {
+   if (!chartDiv.value) return
+ 
+   chart = init(chartDiv.value, 'light', { renderer: 'svg' })
+-  chart.setOption({ ...props.options }, true)
++  chart.setOption(withAppFont(props.options), true)
+ 
+   if (props.events?.click) {
+     chart.on('click', props.events.click)
+@@ -48,7 +59,7 @@ watch(
+   () => props.options,
+   (newOptions) => {
+     if (chart) {
+-      chart.setOption(newOptions, true)
++      chart.setOption(withAppFont(newOptions), true)
+     }
+   },
+   { deep: true },
+diff --git a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
+index 1813085..2be72c0 100644
+--- a/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
++++ b/node_modules/frappe-ui/experimental/Charts/NumberChart.vue
+@@ -19,7 +19,7 @@
+               v-html="config.prefix"
+               class="size-4 table"
+             />
+-            {{ formatValue(config.value, 1, true) }}{{ config.suffix }}
++            {{ formatValue(config.value, 1, true) }}{{ formatSuffix(config.suffix) }}
+           </div>
+         </slot>
+         <slot name="delta" v-bind="{ formatValue }">
+@@ -41,7 +41,7 @@
+             </span>
+             <span>
+               {{ config.deltaPrefix }}{{ formatValue(config.delta, 1, true)
+-              }}{{ config.deltaSuffix }}
++              }}{{ formatSuffix(config.deltaSuffix) }}
+             </span>
+           </div>
+         </slot>
+@@ -51,7 +51,7 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { formatValue } from './helpers'
++import { formatSuffix, formatValue } from './helpers'
+ import { NumberChartConfig } from './types'
+ 
+ defineProps<{ config: NumberChartConfig }>()
+diff --git a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
+index 0335128..e7dc427 100644
+--- a/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/donutChartOptions.ts
+@@ -1,5 +1,6 @@
+ import { getTitleOptions } from './eChartOptions'
+-import { formatValue } from './helpers'
++import { formatLocalePercent } from '../../src/localization'
++import { formatValue, getChartFontFamily } from './helpers'
+ import { DonutChartConfig } from './types'
+ 
+ export default function useDonutChartOptions(config: DonutChartConfig) {
+@@ -18,7 +19,9 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+   const labels = data.map((row) => row[config.categoryColumn])
+   const values = data.map((row) => row[config.valueColumn])
+   const total = values.reduce((acc, value) => {
+-    return isNaN(value) ? acc : acc + value
++    return typeof value === 'number' && !Number.isNaN(value)
++      ? acc + value
++      : acc
+   }, 0)
+ 
+   let radius = ['40%', '70%']
+@@ -44,7 +47,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+     animation: true,
+     animationDuration: 700,
+     color: config.colors,
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+     title: getTitleOptions(config.title, config.subtitle, isRTL),
+     dataset: {
+       source: [
+@@ -70,8 +73,17 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+         label: {
+           show: config.showInlineLabels,
+           formatter: ({ value, name }: any) => {
+-            const percentage = total > 0 ? (value[1] / total) * 100 : 0
+-            return `${name} (${percentage.toFixed(0)}%)`
++            const rawValue = value[1]
++            const percentage =
++              rawValue === null || rawValue === undefined
++                ? null
++                : total > 0
++                  ? (rawValue / total) * 100
++                  : 0
++            const formattedPercentage = formatLocalePercent(percentage, {
++              maximumFractionDigits: 0,
++            })
++            return `${name} (${formattedPercentage})`
+           },
+         },
+         emphasis: { scaleSize: 5 },
+@@ -89,9 +101,17 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+           itemGap: 12,
+           formatter: function (name: string) {
+             const labelIndex = labels.indexOf(name)
++            const rawValue = values[labelIndex]
+             const percentage =
+-              total > 0 ? (values[labelIndex] / total) * 100 : 0
+-            return `${name} (${percentage.toFixed(0)}%)`
++              rawValue === null || rawValue === undefined
++                ? null
++                : total > 0
++                  ? (rawValue / total) * 100
++                  : 0
++            const formattedPercentage = formatLocalePercent(percentage, {
++              maximumFractionDigits: 0,
++            })
++            return `${name} (${formattedPercentage})`
+           },
+           textStyle: {
+             padding: [0, 0, 0, -5],
+@@ -121,14 +141,26 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+         const dirAttr = isRTL ? ' dir="rtl"' : ''
+         const p = params as any
+         const value = p.value[1]
+-        const percentage = total > 0 ? (value / total) * 100 : 0
+-        const formatted = isNaN(value) ? value : formatValue(value, 1, true)
+-        const formattedPercentage = percentage.toFixed(0)
++        const percentage =
++          value === null || value === undefined
++            ? null
++            : total > 0
++              ? (value / total) * 100
++              : 0
++        const formatted =
++          value === null || value === undefined
++            ? ''
++            : isNaN(value)
++              ? value
++              : formatValue(value, 1, true)
++        const formattedPercentage = formatLocalePercent(percentage, {
++          maximumFractionDigits: 0,
++        })
+         return `
+           <div${dirAttr} class="flex items-center justify-between gap-5">
+             <div>${p.name}</div>
+             <div class="font-bold">
+-              ${formatted} (${formattedPercentage}%)
++              ${formatted} (${formattedPercentage})
+             </div>
+           </div>
+         `
+diff --git a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
+index b8be33b..34449d0 100644
+--- a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
+@@ -1,5 +1,12 @@
+ import type { EChartsOption } from 'echarts'
+-import { formatDate, formatLabel, formatValue, mergeDeep } from './helpers'
++import {
++  formatDate,
++  formatDigits,
++  formatLabel,
++  formatValue,
++  getChartFontFamily,
++  mergeDeep,
++} from './helpers'
+ import { AxisChartConfig } from './types'
+ 
+ export const PADDING_TOP = 0
+@@ -14,7 +21,7 @@ export const TITLE_BOTTOM = 24
+ export default function useEchartsOptions(config: AxisChartConfig) {
+   const isRTL = config.dir === 'rtl'
+   const title = config.title
+-  const subtitle = config.subtitle
++  const subtitle = config.subtitle ? formatDigits(config.subtitle) : config.subtitle
+   const hasTitle = title ? 1 : 0
+   const hasSubtitle = subtitle ? 1 : 0
+   const hasXAxisTitle = config.xAxis.title ? 1 : 0
+@@ -28,7 +35,7 @@ export default function useEchartsOptions(config: AxisChartConfig) {
+   return {
+     animation: true,
+     animationDuration: 700,
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+     title: getTitleOptions(title, subtitle, isRTL),
+     color: config.colors,
+     grid: {
+diff --git a/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
+index 59dd5d7..4314b07 100644
+--- a/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
++++ b/node_modules/frappe-ui/experimental/Charts/funnelChartOptions.ts
+@@ -5,7 +5,8 @@ import {
+   TITLE_BOTTOM,
+   TITLE_HEIGHT,
+ } from './eChartOptions'
+-import { formatValue } from './helpers'
++import { formatLocalePercent } from '../../src/localization'
++import { formatValue, getChartFontFamily } from './helpers'
+ import { FunnelChartConfig } from './types'
+ 
+ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+@@ -37,7 +38,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+     animation: true,
+     animationDuration: 700,
+     color: colors,
+-    textStyle: { fontFamily: ['InterVar', 'sans-serif'] },
++    textStyle: { fontFamily: config.fontFamily || getChartFontFamily() },
+     title: getTitleOptions(config.title, config.subtitle, isRTL),
+     series: [
+       {
+@@ -66,8 +67,17 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+             if (!config.showPercentages) {
+               return value
+             }
+-            const percentage = Number((values[index] / total) * 100).toFixed(0)
+-            return `${value} (${percentage}%)`
++            const rawValue = values[index]
++            const percentage =
++              rawValue === null || rawValue === undefined
++                ? null
++                : total > 0
++                  ? (rawValue / total) * 100
++                  : 0
++            const formattedPercentage = formatLocalePercent(percentage, {
++              maximumFractionDigits: 0,
++            })
++            return `${value} (${formattedPercentage})`
+           },
+         },
+         labelLine: { show: false },
+@@ -102,14 +112,26 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+         const dirAttr = isRTL ? ' dir="rtl"' : ''
+         const p = params as any
+         const value = p.value
+-        const percentage = total > 0 ? (value / total) * 100 : 0
+-        const formatted = isNaN(value) ? value : formatValue(value, 1, true)
+-        const formattedPercentage = percentage.toFixed(0)
++        const percentage =
++          value === null || value === undefined
++            ? null
++            : total > 0
++              ? (value / total) * 100
++              : 0
++        const formatted =
++          value === null || value === undefined
++            ? ''
++            : isNaN(value)
++              ? value
++              : formatValue(value, 1, true)
++        const formattedPercentage = formatLocalePercent(percentage, {
++          maximumFractionDigits: 0,
++        })
+         return `
+           <div${dirAttr} class="flex items-center justify-between gap-5">
+             <div>${p.name}</div>
+             <div class="font-bold">
+-              ${formatted} (${formattedPercentage}%)
++              ${formatted} (${formattedPercentage})
+             </div>
+           </div>
+         `
+diff --git a/node_modules/frappe-ui/experimental/Charts/helpers.ts b/node_modules/frappe-ui/experimental/Charts/helpers.ts
+index 4e3030a..40c7837 100644
+--- a/node_modules/frappe-ui/experimental/Charts/helpers.ts
++++ b/node_modules/frappe-ui/experimental/Charts/helpers.ts
+@@ -7,6 +7,32 @@ import {
+ } from '../../src/localization/persianCalendar'
+ import { readDocumentLocale } from '../../src/utils/readDocumentLocale'
+ 
++export function getChartLocale() {
++  if (typeof document === 'undefined') return 'en-US'
++  const language = document.documentElement.lang.toLowerCase().replace('_', '-')
++  return language.startsWith('fa') ? 'fa-IR' : language || 'en-US'
++}
++
++export function formatDigits(value: string | number) {
++  const locale = getChartLocale()
++  return locale.startsWith('fa')
++    ? String(value).replace(/\d/g, (digit) => new Intl.NumberFormat(locale).format(Number(digit)))
++    : String(value)
++}
++
++export function getChartFontFamily() {
++  if (typeof document === 'undefined') return 'InterVar, sans-serif'
++  return getComputedStyle(document.documentElement).fontFamily || 'sans-serif'
++}
++
++export function formatSuffix(suffix?: string) {
++  if (!suffix) return ''
++  const locale = getChartLocale()
++  if (!locale.startsWith('fa')) return suffix
++  if (suffix === '%') return '٪'
++  return formatDigits(suffix)
++}
++
+ export function formatLabel(name: string) {
+   return name
+     .split('_')
+@@ -17,7 +43,7 @@ export function formatLabel(name: string) {
+ export function formatValue(value: number, precision = 0, shorten = false) {
+   if (isNaN(value)) return value.toString()
+ 
+-  let locale = 'en-US'
++  const locale = getChartLocale()
+ 
+   if (shorten) {
+     let formatted = new Intl.NumberFormat(locale, {
+diff --git a/node_modules/frappe-ui/experimental/Charts/types.ts b/node_modules/frappe-ui/experimental/Charts/types.ts
+index 718e760..2d7f86a 100644
+--- a/node_modules/frappe-ui/experimental/Charts/types.ts
++++ b/node_modules/frappe-ui/experimental/Charts/types.ts
+@@ -5,6 +5,7 @@ export type AxisChartConfig = {
+   title: string
+   subtitle?: string
+   colors?: string[]
++  fontFamily?: string
+   /** Forces layout direction; defaults to document.documentElement.dir */
+   dir?: 'rtl' | 'ltr'
+   xAxis: {
+@@ -74,6 +75,7 @@ export type DonutChartConfig = {
+   title: string
+   subtitle?: string
+   colors?: string[]
++  fontFamily?: string
+   /** Forces layout direction; defaults to document.documentElement.dir */
+   dir?: 'rtl' | 'ltr'
+   categoryColumn: string
+@@ -90,6 +92,7 @@ export type FunnelChartConfig = {
+   title: string
+   subtitle?: string
+   colors?: string[]
++  fontFamily?: string
+   /** Forces layout direction; defaults to document.documentElement.dir */
+   dir?: 'rtl' | 'ltr'
+   categoryColumn: string
+diff --git a/node_modules/frappe-ui/experimental/ListView/ListFooter.vue b/node_modules/frappe-ui/experimental/ListView/ListFooter.vue
+index 4611ee8..16dd8d7 100644
+--- a/node_modules/frappe-ui/experimental/ListView/ListFooter.vue
++++ b/node_modules/frappe-ui/experimental/ListView/ListFooter.vue
+@@ -13,14 +13,12 @@
+         <div class="flex items-center">
+           <Button
+             v-if="showLoadMore"
+-            label="Load More"
++            :label="__('Load More')"
+             @click="emit('loadMore')"
+           />
+           <div v-if="showLoadMore" class="mx-3 h-[80%] border-l" />
+           <div class="flex items-center gap-1 text-base text-ink-gray-5">
+-            <div>{{ options.rowCount || '0' }}</div>
+-            <div>of</div>
+-            <div>{{ options.totalCount || '0' }}</div>
++            <div>{{ __('{0} of {1}', [options.rowCount || '0', options.totalCount || '0']) }}</div>
+           </div>
+         </div>
+       </slot>
+diff --git a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
+index ebc1f6a..77344d3 100644
+--- a/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
++++ b/node_modules/frappe-ui/src/charts/components/ChartContainer.vue
+@@ -80,7 +80,7 @@
+       >
+         <!-- Announced by the container, so an app's own placeholder does not
+              have to carry the announcement with it. -->
+-        <span class="sr-only" role="status">Loading chart</span>
++        <span class="sr-only" role="status">{{ translate('Loading chart') }}</span>
+         <slot name="loading">
+           <!-- A block the size of the plot, not a spinner in the middle of it.
+                A dashboard fills in a card at a time, and a placeholder holding
+@@ -98,7 +98,7 @@
+         <template v-if="state === 'error'">
+           <slot name="error" :error="error">
+             <span class="text-sm-medium text-ink-red-7">
+-              Could not render this chart
++              {{ translate('Could not render this chart') }}
+             </span>
+             <span v-if="error" class="max-w-sm text-p-sm text-ink-gray-5">
+               {{ error }}
+@@ -108,7 +108,7 @@
+ 
+         <template v-else>
+           <slot name="empty">
+-            <span class="text-p-sm text-ink-gray-5">No data to show</span>
++            <span class="text-p-sm text-ink-gray-5">{{ translate('No data to show') }}</span>
+           </slot>
+         </template>
+       </div>
+@@ -161,4 +161,6 @@ const topAxisTitle = computed(
+ const bottomAxisTitle = computed(
+   () => showAxisTitle.value && props.axisTitlePlacement === 'bottom',
+ )
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+diff --git a/node_modules/frappe-ui/src/charts/measureText.ts b/node_modules/frappe-ui/src/charts/measureText.ts
+index da0ec5f..41da68c 100644
+--- a/node_modules/frappe-ui/src/charts/measureText.ts
++++ b/node_modules/frappe-ui/src/charts/measureText.ts
+@@ -16,7 +16,7 @@
+ const DEFAULT_FONT = '12px sans-serif'
+ 
+ /** What the charts set as `textStyle.fontFamily`; every label inherits it. */
+-export const CHART_FONT_FAMILY = 'InterVar, Inter, sans-serif'
++export const CHART_FONT_FAMILY = 'Vazirmatn, InterVar, Inter, sans-serif'
+ 
+ /**
+  * The CSS font a label of `fontSize` is drawn with. Measuring and rendering
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
+index 9abcdee..38f5ae1 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
+@@ -16,7 +16,7 @@
+     :required="props.required"
+     :size="props.size"
+     :variant="props.variant"
+-    :placeholder="props.placeholder"
++    :placeholder="resolvedPlaceholder"
+     :disabled="props.disabled"
+     :readonly="inputReadonly"
+     :display-label="displayLabel"
+@@ -46,7 +46,7 @@
+         <aside
+           v-if="$slots.actions"
+           data-slot="actions"
+-          aria-label="Shortcuts"
++          :aria-label="translateLabel('Shortcuts')"
+           class="flex flex-col p-2 gap-0.5"
+         >
+           <slot
+@@ -68,7 +68,7 @@
+             ref="calendarRef"
+             :model-value="selectedDate"
+             :calendar="props.calendar"
+-            today-label="Now"
++            :today-label="resolvedTodayLabel"
+             :min="resolvedMin"
+             :max="resolvedMax"
+             :is-date-unavailable="props.isDateUnavailable"
+@@ -82,7 +82,7 @@
+               :typeable="props.typeable"
+               side="bottom"
+               align="start"
+-              placeholder="Select time"
++              :placeholder="resolvedTimePlaceholder"
+               :min="computedMinTime"
+               :max="computedMaxTime"
+               @change="onTimeChange"
+@@ -95,7 +95,7 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { ref, computed, nextTick, watch } from 'vue'
++import { ref, computed, getCurrentInstance, nextTick, watch } from 'vue'
+ import TimePicker from '../TimePicker/TimePicker.vue'
+ import { dayjs, dayjsLocal, dayjsSystem } from '../../utils/dayjs'
+ import { resolveCalendar } from '../../localization/calendar'
+@@ -127,7 +127,6 @@ import type {
+ const props = withDefaults(defineProps<DateTimePickerProps>(), {
+   modelValue: '',
+   variant: 'subtle',
+-  placeholder: 'Select date & time',
+   typeable: true,
+   disabled: false,
+   clearable: true,
+@@ -136,6 +135,13 @@ const props = withDefaults(defineProps<DateTimePickerProps>(), {
+   calendar: 'auto',
+ })
+ const emit = defineEmits<DateTimePickerEmits>()
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__
++const translateLabel = (message: string) => translate?.(message) ?? message
++const resolvedPlaceholder = computed(() =>
++  props.placeholder ?? translateLabel('Select date & time'),
++)
++const resolvedTimePlaceholder = computed(() => translateLabel('Select time'))
++const resolvedTodayLabel = computed(() => props.todayLabel ?? translateLabel('Now'))
+ 
+ defineSlots<DateTimePickerSlots>()
+ 
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/composables.ts b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
+index 553986b..438efd8 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/composables.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
+@@ -1,61 +1,62 @@
+-import { ref, computed, watch } from 'vue'
+-import type { Dayjs } from 'dayjs/esm'
+-import { dayjs } from '../../utils/dayjs'
+-import { generateWeeks, monthStart, getDateValue } from './utils'
+-import type { CalendarPanelExposed } from './calendarTypes'
++import { ref, computed, watch } from "vue";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs } from "../../utils/dayjs";
++import { generateWeeks, monthStart, getDateValue } from "./utils";
++import type { CalendarPanelExposed } from "./calendarTypes";
++import { shiftCalendarMonth, toCalendarDate } from "./jalali";
+ import type {
+   CommonDatePickerProps,
+   PopoverAlign,
+   PopoverSide,
+   DatePickerViewMode as ViewMode,
+-} from './types'
++} from "./types";
+ 
+ // View + month/year navigation state shared by all three pickers.
+ export function useCalendarView() {
+-  const view = ref<ViewMode>('date')
+-  const currentYear = ref<number>(dayjs().year())
+-  const currentMonth = ref<number>(dayjs().month())
++  const view = ref<ViewMode>("date");
++  const today = dayjs();
++  const initial = toCalendarDate(today);
++  const currentYear = ref<number>(initial.jy);
++  const currentMonth = ref<number>(initial.jm - 1);
+ 
+   // Prev/next only navigate months in the day grid. The month-year split view
+   // scrolls instead of paging, so it has no prev/next controls.
+   function prev(): void {
+-    const m = monthStart(currentYear.value, currentMonth.value).subtract(
+-      1,
+-      'month',
+-    )
+-    currentYear.value = m.year()
+-    currentMonth.value = m.month()
++    const value = shiftCalendarMonth(currentYear.value, currentMonth.value, -1);
++    currentYear.value = value.year;
++    currentMonth.value = value.month;
+   }
+ 
+   function next(): void {
+-    const m = monthStart(currentYear.value, currentMonth.value).add(1, 'month')
+-    currentYear.value = m.year()
+-    currentMonth.value = m.month()
++    const value = shiftCalendarMonth(currentYear.value, currentMonth.value, 1);
++    currentYear.value = value.year;
++    currentMonth.value = value.month;
+   }
+ 
+   // Toggle between the day grid and the month-year split view.
+   function cycleView(): void {
+-    view.value = view.value === 'date' ? 'monthYear' : 'date'
++    view.value = view.value === "date" ? "monthYear" : "date";
+   }
+ 
+   // Picking a month commits the choice and returns to the day grid.
+   function selectMonth(i: number): void {
+-    currentMonth.value = i
+-    view.value = 'date'
++    currentMonth.value = i;
++    view.value = "date";
+   }
+ 
+   // Picking a year stays in the split view so the user can then pick a month.
+   function selectYear(y: number): void {
+-    currentYear.value = y
++    currentYear.value = y;
+   }
+ 
+   function focusOn(d: Dayjs): void {
+-    currentYear.value = d.year()
+-    currentMonth.value = d.month()
++    const value = toCalendarDate(d);
++    currentYear.value = value.jy;
++    currentMonth.value = value.jm - 1;
+   }
+ 
+   function resetView(): void {
+-    view.value = 'date'
++    view.value = "date";
+   }
+ 
+   return {
+@@ -69,15 +70,15 @@ export function useCalendarView() {
+     selectYear,
+     focusOn,
+     resetView,
+-  }
++  };
+ }
+ 
+ // Positioning resolution: `side`/`align`/`offset`.
+ export function usePopoverPositioning(props: CommonDatePickerProps) {
+-  const resolvedSide = computed<PopoverSide>(() => props.side ?? 'bottom')
+-  const resolvedAlign = computed<PopoverAlign>(() => props.align ?? 'start')
+-  const resolvedOffset = computed(() => props.offset ?? 4)
+-  return { resolvedSide, resolvedAlign, resolvedOffset }
++  const resolvedSide = computed<PopoverSide>(() => props.side ?? "bottom");
++  const resolvedAlign = computed<PopoverAlign>(() => props.align ?? "start");
++  const resolvedOffset = computed(() => props.offset ?? 4);
++  return { resolvedSide, resolvedAlign, resolvedOffset };
+ }
+ 
+ // Returns the readonly state to apply to the underlying TextInput (the
+@@ -85,85 +86,85 @@ export function usePopoverPositioning(props: CommonDatePickerProps) {
+ // the trigger element — `typeable` is the picker-level vocabulary that wraps
+ // it.
+ export function useTypeable(props: { typeable?: boolean }) {
+-  return computed<boolean>(() => props.typeable === false)
++  return computed<boolean>(() => props.typeable === false);
+ }
+ 
+ // `keepOpen` resolution.
+ export function useKeepOpen(props: CommonDatePickerProps) {
+-  return computed(() => props.keepOpen === true)
++  return computed(() => props.keepOpen === true);
+ }
+ 
+ // Coerce arbitrary string input to a Dayjs, respecting an optional explicit format.
+ export function useDateCoercion(getFormat: () => string | undefined) {
+   return function coerceToDayjs(val?: string | null): Dayjs | null {
+-    if (!val) return null
+-    const raw = String(val).trim()
+-    if (!raw) return null
+-    const format = getFormat()
++    if (!val) return null;
++    const raw = String(val).trim();
++    if (!raw) return null;
++    const format = getFormat();
+     if (format) {
+-      const dStrict = dayjs(raw, format, true)
+-      if (dStrict.isValid()) return dStrict
++      const dStrict = dayjs(raw, format, true);
++      if (dStrict.isValid()) return dStrict;
+     }
+-    const dLoose = dayjs(raw)
+-    if (dLoose.isValid()) return dLoose
+-    const normalized = getDateValue(raw)
++    const dLoose = dayjs(raw);
++    if (dLoose.isValid()) return dLoose;
++    const normalized = getDateValue(raw);
+     if (normalized) {
+-      const dNorm = dayjs(normalized)
+-      if (dNorm.isValid()) return dNorm
++      const dNorm = dayjs(normalized);
++      if (dNorm.isValid()) return dNorm;
+     }
+-    return null
+-  }
++    return null;
++  };
+ }
+ 
+ // Build an `isDateUnavailable` checker from min/max/isDateUnavailable props.
+ export function makeUnavailableCheck(
+   getMin: () => string | undefined,
+   getMax: () => string | undefined,
+-  getIsUnavailable: () => ((d: Dayjs) => boolean) | undefined,
++  getIsUnavailable: () => ((d: Dayjs) => boolean) | undefined
+ ) {
+   return function checkUnavailable(d: Dayjs): boolean {
+-    const min = getMin()
+-    const max = getMax()
+-    const isUnavailable = getIsUnavailable()
+-    if (min && d.isBefore(dayjs(min), 'day')) return true
+-    if (max && d.isAfter(dayjs(max), 'day')) return true
+-    if (isUnavailable?.(d)) return true
+-    return false
+-  }
++    const min = getMin();
++    const max = getMax();
++    const isUnavailable = getIsUnavailable();
++    if (min && d.isBefore(dayjs(min), "day")) return true;
++    if (max && d.isAfter(dayjs(max), "day")) return true;
++    if (isUnavailable?.(d)) return true;
++    return false;
++  };
+ }
+ 
+ export interface UseFocusedDateOptions {
+   /** Identity of the current value. The watch fires when it changes. */
+-  key: () => string
++  key: () => string;
+   /** The date the view and the roving tabindex follow. */
+-  anchor: () => Dayjs | null
++  anchor: () => Dayjs | null;
+   /** The months on screen, so the seed can scan every pane. */
+-  months: () => Array<{ year: number; month: number }>
+-  isUnavailable: (date: Dayjs) => boolean
+-  focusOn: (date: Dayjs) => void
+-  resetView: () => void
+-  panels: () => Array<CalendarPanelExposed | null | undefined>
++  months: () => Array<{ year: number; month: number }>;
++  isUnavailable: (date: Dayjs) => boolean;
++  focusOn: (date: Dayjs) => void;
++  resetView: () => void;
++  panels: () => Array<CalendarPanelExposed | null | undefined>;
+ }
+ 
+ // The panels' roving tabindex is controlled, so the focused date lives here. It
+ // is seeded at setup so the first render already has `tabindex=0` on the cell
+ // `focus()` will land on.
+ export function useFocusedDate(options: UseFocusedDateOptions) {
+-  const focusedDate = ref<Dayjs | null>(null)
+-  let ownKey: string | null = null
++  const focusedDate = ref<Dayjs | null>(null);
++  let ownKey: string | null = null;
+ 
+   function seed(): void {
+-    const anchor = options.anchor()
++    const anchor = options.anchor();
+     if (anchor?.isValid() && !options.isUnavailable(anchor)) {
+-      focusedDate.value = anchor
+-      return
++      focusedDate.value = anchor;
++      return;
+     }
+     const cells = options
+       .months()
+-      .flatMap(({ year, month }) => generateWeeks(year, month, '').flat())
+-      .filter((cell) => cell.inMonth && !options.isUnavailable(cell.date))
+-    const target = cells.find((cell) => cell.isToday) ?? cells[0]
+-    if (target) focusedDate.value = target.date
++      .flatMap(({ year, month }) => generateWeeks(year, month, "").flat())
++      .filter((cell) => cell.inMonth && !options.isUnavailable(cell.date));
++    const target = cells.find((cell) => cell.isToday) ?? cells[0];
++    if (target) focusedDate.value = target.date;
+   }
+ 
+   // Only a value set from outside moves the view. The calendar's own click
+@@ -172,24 +173,24 @@ export function useFocusedDate(options: UseFocusedDateOptions) {
+   watch(
+     options.key,
+     (key) => {
+-      if (key === ownKey) return
+-      options.resetView()
+-      const anchor = options.anchor()
+-      if (anchor?.isValid()) options.focusOn(anchor)
+-      seed()
++      if (key === ownKey) return;
++      options.resetView();
++      const anchor = options.anchor();
++      if (anchor?.isValid()) options.focusOn(anchor);
++      seed();
+     },
+-    { immediate: true },
+-  )
++    { immediate: true }
++  );
+ 
+   /** Record the value the calendar is committing, so the watch ignores it. */
+   function markOwnCommit(key: string): void {
+-    ownKey = key
++    ownKey = key;
+   }
+ 
+   /** Move keyboard focus into the day grid. */
+   function focus(): void {
+-    for (const panel of options.panels()) panel?.focusInitialCell()
++    for (const panel of options.panels()) panel?.focusInitialCell();
+   }
+ 
+-  return { focusedDate, markOwnCommit, focus }
++  return { focusedDate, markOwnCommit, focus };
+ }
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/jalali.ts b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+new file mode 100644
+index 0000000..056cb09
+--- /dev/null
++++ b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
+@@ -0,0 +1,193 @@
++import {
++  digitsEnToFa,
++  digitsFaToEn,
++  digitsArToFa,
++} from "@persian-tools/persian-tools";
++import {
++  isValidJalaaliDate,
++  jalaaliMonthLength,
++  jalaaliWeek,
++  toGregorian,
++  toJalaali,
++} from "jalaali-js";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs } from "../../utils/dayjs";
++
++const intlLocale = "fa-IR-u-ca-persian-nu-arabext";
++
++export function isPersianCalendar(): boolean {
++  return dayjs.locale().split("-")[0] === "fa";
++}
++
++export function toCalendarDate(date: Dayjs) {
++  return isPersianCalendar()
++    ? toJalaali(date.year(), date.month() + 1, date.date())
++    : { jy: date.year(), jm: date.month() + 1, jd: date.date() };
++}
++
++export function fromCalendarDate(
++  year: number,
++  monthIndex: number,
++  day: number
++): Dayjs {
++  if (isPersianCalendar()) {
++    const date = toGregorian(year, monthIndex + 1, day);
++    return dayjs(
++      `${date.gy}-${String(date.gm).padStart(2, "0")}-${String(date.gd).padStart(2, "0")}`
++    );
++  }
++  return dayjs(
++    `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(
++      2,
++      "0"
++    )}`
++  );
++}
++
++export function shiftCalendarMonth(
++  year: number,
++  monthIndex: number,
++  amount: number
++) {
++  if (isPersianCalendar()) {
++    const month = monthIndex + amount;
++    return {
++      year: year + Math.floor(month / 12),
++      month: ((month % 12) + 12) % 12,
++    };
++  }
++  const date = dayjs(
++    `${year}-${String(monthIndex + 1).padStart(2, "0")}-01`
++  ).add(amount, "month");
++  return { year: date.year(), month: date.month() };
++}
++
++export function shiftCalendarDate(
++  date: Dayjs,
++  years: number,
++  months: number
++): Dayjs {
++  if (!isPersianCalendar()) return date.add(years, "year").add(months, "month");
++  const current = toJalaali(date.year(), date.month() + 1, date.date());
++  let year = current.jy + years;
++  let month = current.jm - 1 + months;
++  year += Math.floor(month / 12);
++  month = ((month % 12) + 12) % 12;
++  const day = Math.min(current.jd, jalaaliMonthLength(year, month + 1));
++  return fromCalendarDate(year, month, day);
++}
++
++export function calendarMonths(year: number): string[] {
++  return Array.from({ length: 12 }, (_, monthIndex) => {
++    const date = fromCalendarDate(year, monthIndex, 1);
++    if (!isPersianCalendar()) return date.format("MMM");
++    return new Intl.DateTimeFormat(intlLocale, {
++      month: "long",
++      timeZone: "UTC",
++    }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++  });
++}
++
++export function calendarYear(year: number): string {
++  return isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
++}
++
++export function calendarMonthYear(year: number, monthIndex: number): string {
++  const date = fromCalendarDate(year, monthIndex, 1);
++  if (!isPersianCalendar()) return date.format("MMM YYYY");
++  return new Intl.DateTimeFormat(intlLocale, {
++    month: "long",
++    year: "numeric",
++    timeZone: "UTC",
++  }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++}
++
++export function calendarWeekdays(): string[] {
++  if (!isPersianCalendar()) return ["S", "M", "T", "W", "T", "F", "S"];
++  const now = dayjs();
++  const today = toJalaali(now.year(), now.month() + 1, now.date());
++  const saturday = jalaaliWeek(today.jy, today.jm, today.jd).saturday;
++  const gregorian = toGregorian(saturday.jy, saturday.jm, saturday.jd);
++  const start = new Date(
++    Date.UTC(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12)
++  );
++  const weekday = new Intl.DateTimeFormat(intlLocale, {
++    weekday: "narrow",
++    timeZone: "UTC",
++  });
++  return Array.from({ length: 7 }, (_, index) => {
++    const date = new Date(start);
++    date.setUTCDate(date.getUTCDate() + index);
++    return weekday.format(date);
++  });
++}
++
++export function calendarDay(date: Dayjs): string {
++  const { jd } = toCalendarDate(date);
++  return isPersianCalendar() ? digitsEnToFa(String(jd)) : String(jd);
++}
++
++export function calendarWeekdayIndex(date: Dayjs): number {
++  if (!isPersianCalendar()) return date.day();
++  const { jy, jm, jd } = toCalendarDate(date);
++  const saturday = jalaaliWeek(jy, jm, jd).saturday;
++  return date.startOf("day").diff(
++    fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd),
++    "day"
++  );
++}
++
++export function startOfCalendarWeek(date: Dayjs): Dayjs {
++  if (!isPersianCalendar()) return date.startOf("week");
++  const { jy, jm, jd } = toCalendarDate(date);
++  const saturday = jalaaliWeek(jy, jm, jd).saturday;
++  return fromCalendarDate(saturday.jy, saturday.jm - 1, saturday.jd);
++}
++
++export function formatCalendarRange(from: Dayjs, to: Dayjs): string {
++  if (!isPersianCalendar())
++    return `${from.format("YYYY-MM-DD")} to ${to.format("YYYY-MM-DD")}`;
++  return new Intl.DateTimeFormat(dayjs.locale(), {
++    calendar: "persian",
++    day: "numeric",
++    month: "long",
++    year: "numeric",
++  }).formatRange(from.toDate(), to.toDate());
++}
++
++export function formatCalendarDate(date: Dayjs): string {
++  if (!isPersianCalendar()) return date.format("YYYY-MM-DD");
++  const { jy, jm, jd } = toJalaali(date.year(), date.month() + 1, date.date());
++  return digitsEnToFa(
++    `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`
++  );
++}
++
++export function formatCalendarDateTime(date: Dayjs): string {
++  if (!isPersianCalendar()) return date.format("YYYY-MM-DD HH:mm");
++  return digitsEnToFa(`${formatCalendarDate(date)} - ${date.format("HH:mm")}`);
++}
++
++export function parseCalendarDateTime(value: string): Dayjs | null {
++  if (!isPersianCalendar()) return null;
++  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
++  const match = normalized.match(
++    /^(\d{4}[/-]\d{1,2}[/-]\d{1,2})\s*(?:-|,)?\s*(\d{1,2}:\d{2}(?::\d{2})?)$/
++  );
++  if (!match) return null;
++  const date = parseCalendarDate(match[1]);
++  return date ? dayjs(`${date.format("YYYY-MM-DD")} ${match[2]}`) : null;
++}
++
++export function parseCalendarDate(value: string): Dayjs | null {
++  if (!isPersianCalendar()) return null;
++  const normalized = digitsFaToEn(digitsArToFa(value.trim()));
++  const match = normalized.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
++  if (!match) return null;
++  const [, year, month, day] = match.map(Number);
++  if (!isValidJalaaliDate(year, month, day)) return null;
++  const gregorian = toGregorian(year, month, day);
++  return dayjs(
++    `${gregorian.gy}-${String(gregorian.gm).padStart(2, "0")}-${String(gregorian.gd).padStart(2, "0")}`
++  );
++}
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/utils.ts b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
+index 1060017..2981a32 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/utils.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/utils.ts
+@@ -1,9 +1,16 @@
+-import { dayjs, dayjsLocal } from '../../utils/dayjs'
+-import type { Dayjs } from 'dayjs/esm'
+-import type { DatePickerDateObj as DateObj, DateRangeValue } from './types'
+-import type { CalendarPanelCell } from './calendarTypes'
++import { dayjs, dayjsLocal } from "../../utils/dayjs";
++import type { Dayjs } from "dayjs/esm";
++import type { DatePickerDateObj as DateObj, DateRangeValue } from "./types";
++import type { CalendarPanelCell } from "./calendarTypes";
++import {
++  calendarDay,
++  fromCalendarDate,
++  isPersianCalendar,
++  startOfCalendarWeek,
++  toCalendarDate,
++} from "./jalali";
+ 
+-// Constant list of month labels
++// Constant list of month labels used by the shared calendar panel.
+ export const months: string[] = [
+   'Jan',
+   'Feb',
+@@ -21,47 +28,60 @@ export const months: string[] = [
+ 
+ // Start of given month (0-indexed month)
+ export function monthStart(year: number, monthIndex: number): Dayjs {
+-  return dayjs(`${year}-${monthIndex + 1}-01`)
++  return fromCalendarDate(year, monthIndex, 1);
+ }
+ 
+ // Build weeks grid for the calendar
+ export function generateWeeks(
+   year: number,
+   monthIndex: number,
+-  selected: string,
++  selected: string
+ ): DateObj[][] {
+   // Always emit 6 rows × 7 days so the calendar height stays constant — both
+   // across months in a single pane (no jiggle when navigating) and between
+   // panes in dual-pane mode (where one month may span 5 weeks and the other 6).
+-  const start = monthStart(year, monthIndex).startOf('week')
+-  const days: DateObj[] = []
+-  let d: Dayjs = start
+-  const sel = dayjs(selected)
+-  const today = dayjsLocal().format('YYYY-MM-DD')
++  const gregorianMonthStart = monthStart(year, monthIndex);
++  const calendarMonthStart = toCalendarDate(gregorianMonthStart);
++  const first = fromCalendarDate(
++    calendarMonthStart.jy,
++    calendarMonthStart.jm - 1,
++    1
++  );
++  const start = isPersianCalendar()
++    ? startOfCalendarWeek(first)
++    : gregorianMonthStart.startOf("week");
++  const days: DateObj[] = [];
++  let d: Dayjs = start;
++  const sel = dayjs(selected);
++  const today = dayjsLocal().format("YYYY-MM-DD");
+   for (let i = 0; i < 42; i++) {
+     days.push({
+       date: d,
+-      key: d.format('YYYY-MM-DD'),
+-      inMonth: d.month() === monthIndex,
+-      isToday: d.isSame(today, 'day'),
+-      isSelected: sel.isValid() && d.isSame(sel, 'day'),
+-    })
+-    d = d.add(1, 'day')
++      key: d.format("YYYY-MM-DD"),
++      inMonth: isPersianCalendar()
++        ? toCalendarDate(d).jy === year &&
++          toCalendarDate(d).jm === monthIndex + 1
++        : d.month() === monthIndex,
++      isToday: d.isSame(today, "day"),
++      isSelected: sel.isValid() && d.isSame(sel, "day"),
++      calendarDay: calendarDay(d),
++    });
++    d = d.add(1, "day");
+   }
+-  const chunked: DateObj[][] = []
+-  for (let i = 0; i < days.length; i += 7) chunked.push(days.slice(i, i + 7))
+-  return chunked
++  const chunked: DateObj[][] = [];
++  for (let i = 0; i < days.length; i += 7) chunked.push(days.slice(i, i + 7));
++  return chunked;
+ }
+ 
+ export function getDateValue(date: Date | string) {
+-  if (!date || date.toString() === 'Invalid Date') return ''
++  if (!date || date.toString() === "Invalid Date") return "";
+ 
+   return dayjs(date)
+-    .set('hour', 0)
+-    .set('minute', 0)
+-    .set('second', 0)
+-    .set('millisecond', 0)
+-    .format('YYYY-MM-DD')
++    .set("hour", 0)
++    .set("minute", 0)
++    .set("second", 0)
++    .set("millisecond", 0)
++    .format("YYYY-MM-DD");
+ }
+ 
+ /**
+@@ -70,32 +90,32 @@ export function getDateValue(date: Date | string) {
+  * preview render as in-range, not as selected.
+  */
+ export function generateRangeWeeks(options: {
+-  year: number
+-  monthIndex: number
+-  from: string
+-  to: string
+-  preview?: Dayjs | null
+-  isUnavailable: (date: Dayjs) => boolean
++  year: number;
++  monthIndex: number;
++  from: string;
++  to: string;
++  preview?: Dayjs | null;
++  isUnavailable: (date: Dayjs) => boolean;
+ }): CalendarPanelCell[][] {
+-  const { year, monthIndex, from, to, preview, isUnavailable } = options
+-  const raw = generateWeeks(year, monthIndex, '')
+-  const f = from ? dayjs(from) : null
+-  const t = to ? dayjs(to) : null
+-  const hovering = !t && f && preview ? preview : null
+-  const hoverEnd = hovering && hovering.isAfter(f!, 'day') ? hovering : null
+-  const hoverStart = hovering && hovering.isBefore(f!, 'day') ? hovering : null
++  const { year, monthIndex, from, to, preview, isUnavailable } = options;
++  const raw = generateWeeks(year, monthIndex, "");
++  const f = from ? dayjs(from) : null;
++  const t = to ? dayjs(to) : null;
++  const hovering = !t && f && preview ? preview : null;
++  const hoverEnd = hovering && hovering.isAfter(f!, "day") ? hovering : null;
++  const hoverStart = hovering && hovering.isBefore(f!, "day") ? hovering : null;
+   return raw.map((week) =>
+     week.map((d) => {
+-      const isRangeStart = !!(f && d.date.isSame(f, 'day'))
+-      const isRangeEnd = !!(t && d.date.isSame(t, 'day'))
+-      let inRange = false
++      const isRangeStart = !!(f && d.date.isSame(f, "day"));
++      const isRangeEnd = !!(t && d.date.isSame(t, "day"));
++      let inRange = false;
+       if (f && t) {
+-        inRange = d.date.isAfter(f, 'day') && d.date.isBefore(t, 'day')
++        inRange = d.date.isAfter(f, "day") && d.date.isBefore(t, "day");
+       } else if (hoverEnd && f) {
+-        inRange = d.date.isAfter(f, 'day') && !d.date.isAfter(hoverEnd, 'day')
++        inRange = d.date.isAfter(f, "day") && !d.date.isAfter(hoverEnd, "day");
+       } else if (hoverStart && f) {
+         inRange =
+-          !d.date.isBefore(hoverStart, 'day') && d.date.isBefore(f, 'day')
++          !d.date.isBefore(hoverStart, "day") && d.date.isBefore(f, "day");
+       }
+       return {
+         ...d,
+@@ -104,20 +124,20 @@ export function generateRangeWeeks(options: {
+         isRangeStart,
+         isRangeEnd,
+         inRange,
+-      }
+-    }),
+-  )
++      };
++    })
++  );
+ }
+ 
+ /** Put a range's endpoints in order, so picking the end first gives the same result. */
+ export function orderRange(range: [string, string]): [string, string] {
+-  const [from, to] = range
+-  return from && to && from > to ? [to, from] : [from, to]
++  const [from, to] = range;
++  return from && to && from > to ? [to, from] : [from, to];
+ }
+ 
+ /** A range as one string, for comparing two ranges. */
+ export function rangeKey(range: DateRangeValue | [string, string]): string {
+-  return `${range[0] ?? ''},${range[1] ?? ''}`
++  return `${range[0] ?? ""},${range[1] ?? ""}`;
+ }
+ 
+ /**
+@@ -126,10 +146,10 @@ export function rangeKey(range: DateRangeValue | [string, string]): string {
+  */
+ export function stepRange(
+   range: [string, string],
+-  date: Dayjs,
++  date: Dayjs
+ ): [string, string] {
+-  const [from, to] = range
+-  const value = date.format('YYYY-MM-DD')
+-  if (!from || to) return [value, '']
+-  return orderRange([from, value])
++  const [from, to] = range;
++  const value = date.format("YYYY-MM-DD");
++  if (!from || to) return [value, ""];
++  return orderRange([from, value]);
+ }
+diff --git a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
+index f034a73..f25a6b1 100644
+--- a/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
++++ b/node_modules/frappe-ui/src/components/Dialog/Dialog.vue
+@@ -87,7 +87,7 @@
+                         </DialogTitle>
+                       </div>
+                       <DialogClose v-if="props.showCloseButton" as-child>
+-                        <Button variant="ghost" label="Close">
++                        <Button variant="ghost" :label="translate('Close')">
+                           <template #icon>
+                             <span class="lucide-x size-4 text-ink-gray-9" />
+                           </template>
+@@ -142,7 +142,7 @@
+               <Button
+                 class="absolute right-4 top-4 z-10"
+                 variant="ghost"
+-                label="Close"
++                :label="translate('Close')"
+               >
+                 <template #icon>
+                   <span class="lucide-x size-4 text-ink-gray-9" />
+@@ -396,6 +396,8 @@ function handleOpenAutoFocus(event: Event) {
+     event.preventDefault()
+   }
+ }
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <style scoped>
+diff --git a/node_modules/frappe-ui/src/components/Menu/Menu.vue b/node_modules/frappe-ui/src/components/Menu/Menu.vue
+index c2ab540..9d1462b 100644
+--- a/node_modules/frappe-ui/src/components/Menu/Menu.vue
++++ b/node_modules/frappe-ui/src/components/Menu/Menu.vue
+@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<MenuProps>(), {
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const router = useRouter()
++const noOptionsText = computed(() => (window as any).__?.('No options') ?? 'No options')
+ 
+ const hasVisibleItems = computed(() => {
+   return props.groups.some((group) => group.options.length)
+@@ -181,7 +182,7 @@ async function handleItemSelect(item: MenuOption, event: Event) {
+ 
+   <div v-else data-slot="empty" class="p-1.5 text-base text-ink-gray-5">
+     <MenuRenderContent v-if="slotFns?.empty" :content="slotFns.empty?.()" />
+-    <template v-else>No options</template>
++    <template v-else>{{ noOptionsText }}</template>
+   </div>
+ </template>
+ 
+diff --git a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
+index 61ccd67..9f1ef3f 100644
+--- a/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
++++ b/node_modules/frappe-ui/src/components/Menu/MenuItemContent.vue
+@@ -212,4 +212,8 @@ function handleSwitchChange(value: boolean) {
+ [data-slot='item-list-row'] {
+   background-color: transparent;
+ }
++
++html[dir='rtl'] .lucide-chevron-right {
++  transform: rotate(180deg);
++}
+ </style>
+diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+index 08641f7..031d774 100644
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelect.vue
+@@ -1,4 +1,5 @@
+ <script setup lang="ts">
++import { useTextDirection } from '@vueuse/core'
+ import { computed, ref, useAttrs, useTemplateRef, watch } from 'vue'
+ import {
+   ComboboxAnchor,
+@@ -59,12 +60,20 @@ const props = withDefaults(defineProps<MultiSelectProps>(), {
+   hideSearch: false,
+   loading: false,
+   filterable: true,
+-  emptyText: 'No results',
++  emptyText: (window as any).__?.('No results') ?? 'No results',
+   side: 'bottom',
+   align: 'start',
+   offset: 4,
+ })
+ 
++const textDirection = useTextDirection({ observe: true })
++
++const displayPlaceholder = computed(() =>
++  props.placeholder === 'Select option'
++    ? (window as any).__?.('Select option') ?? 'Select option'
++    : props.placeholder,
++)
++
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const emit = defineEmits<MultiSelectEmits>()
+@@ -166,7 +175,7 @@ const selectedOptions = computed(() =>
+ // in the trigger's prefix area — see template). For 2+ we collapse to
+ // "N selected" so the width doesn't balloon.
+ const triggerSummary = computed(() => {
+-  if (selectedOptions.value.length === 0) return props.placeholder
++  if (selectedOptions.value.length === 0) return displayPlaceholder.value
+   if (selectedOptions.value.length === 1) return selectedOptions.value[0].label
+   return `${selectedOptions.value.length} selected`
+ })
+@@ -184,7 +193,7 @@ const singleSelectedOption = computed(() =>
+ // sizer's minimum, not the label's length.
+ const triggerSizingText = computed(() => {
+   const maxCount = Math.max(allOptions.value.length, 1)
+-  return [props.placeholder, `${maxCount} selected`].join('\n')
++  return [displayPlaceholder.value, `${maxCount} selected`].join('\n')
+ })
+ 
+ const typedQuery = computed(() => (hasTypedSinceOpen.value ? query.value : ''))
+@@ -351,6 +360,8 @@ defineExpose<SelectionExposed>({
+   focus,
+ })
+ defineSlots<MultiSelectSlots>()
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <template>
+@@ -371,6 +382,7 @@ defineSlots<MultiSelectSlots>()
+       </template>
+     </InputLabel>
+     <ComboboxRoot
++      :dir="textDirection"
+       multiple
+       :model-value="internalModel"
+       :open="open"
+@@ -445,7 +457,7 @@ defineSlots<MultiSelectSlots>()
+             :icon="singleSelectedOption.icon"
+           />
+ 
+-          <span class="grid min-w-0 flex-1 text-left font-normal">
++          <span class="grid min-w-0 flex-1 text-start font-normal">
+             <span
+               :class="[
+                 'col-start-1 row-start-1 max-w-full truncate',
+@@ -485,6 +497,7 @@ defineSlots<MultiSelectSlots>()
+         <ComboboxContent
+           data-slot="content"
+           data-selection
++          :dir="textDirection"
+           :data-variant="variant"
+           :data-size="size"
+           :data-loading="loading ? '' : undefined"
+@@ -522,10 +535,11 @@ defineSlots<MultiSelectSlots>()
+                 <ComboboxInput
+                   ref="searchInput"
+                   :id="`${inputId}-search-input`"
++                  :dir="textDirection"
+                   data-slot="input"
+                   :value="query"
+                   :disabled="disabled"
+-                  :placeholder="placeholder"
++                  :placeholder="displayPlaceholder"
+                   autocomplete="off"
+                   class="min-w-0 flex-1 border-0 bg-transparent px-0 py-2 text-base text-ink-gray-8 outline-none placeholder:text-ink-gray-4 focus:ring-0"
+                   @input="handleInputChange"
+@@ -576,16 +590,16 @@ defineSlots<MultiSelectSlots>()
+                   size="sm"
+                   @click="clear"
+                 >
+-                  Clear All
++                  {{ translate('Clear All') }}
+                 </Button>
+                 <Button
+                   v-if="!allSelected"
+                   variant="ghost"
+                   size="sm"
+-                  class="ml-auto"
++                  class="ms-auto"
+                   @click="selectAll"
+                 >
+-                  Select All
++                  {{ translate('Select All') }}
+                 </Button>
+               </div>
+             </div>
+diff --git a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
+index 4b5c646..6e9794e 100644
+--- a/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
++++ b/node_modules/frappe-ui/src/components/MultiSelect/MultiSelectResults.vue
+@@ -72,6 +72,8 @@ const { toInternal: getInternalValue } = useEmptyValueMapping(
+ function getItemTextValue(item: NormalizedOption) {
+   return `${item.label} ${item.value}`.trim()
+ }
++
++const translate = (text: string) => (window as any).__?.(text) ?? text
+ </script>
+ 
+ <template>
+@@ -82,7 +84,7 @@ function getItemTextValue(item: NormalizedOption) {
+       class="flex items-center gap-2 px-2 py-1.5 text-base text-ink-gray-5"
+     >
+       <Spinner class="size-4" />
+-      <span>Loading...</span>
++      <span>{{ translate('Loading...') }}</span>
+     </div>
+ 
+     <template v-else>
+diff --git a/node_modules/frappe-ui/src/components/Popover/Popover.vue b/node_modules/frappe-ui/src/components/Popover/Popover.vue
+index e91fad8..1b64b04 100644
+--- a/node_modules/frappe-ui/src/components/Popover/Popover.vue
++++ b/node_modules/frappe-ui/src/components/Popover/Popover.vue
+@@ -22,6 +22,7 @@
+         ref="contentRef"
+         data-slot="content"
+         class="z-[100]"
++        :dir="textDirection"
+         :side="side"
+         :align="align"
+         :side-offset="offset"
+@@ -51,6 +52,7 @@
+ 
+ <script setup lang="ts">
+ import { computed, ref, watch } from 'vue'
++import { useTextDirection } from '@vueuse/core'
+ import {
+   PopoverAnchor,
+   PopoverArrow,
+@@ -83,6 +85,7 @@ const props = withDefaults(defineProps<PopoverProps>(), {
+ })
+ 
+ const portalTarget = usePortalTarget(() => props.portalTo)
++const textDirection = useTextDirection({ observe: true })
+ 
+ const emit = defineEmits<PopoverEmits>()
+ 
+diff --git a/node_modules/frappe-ui/src/components/Select/Select.vue b/node_modules/frappe-ui/src/components/Select/Select.vue
+index 056fcd2..57c082a 100644
+--- a/node_modules/frappe-ui/src/components/Select/Select.vue
++++ b/node_modules/frappe-ui/src/components/Select/Select.vue
+@@ -1,5 +1,6 @@
+ <script setup lang="ts">
+ import { computed, useAttrs, useTemplateRef } from 'vue'
++import { useTextDirection } from '@vueuse/core'
+ import { useInputLabeling } from '../../composables/useInputLabeling'
+ import { useReactiveSlots } from '../../composables/useReactiveSlots'
+ import { usePortalTarget } from '../../composables/usePortalTarget'
+@@ -56,6 +57,11 @@ defineOptions({
+ // fire. Nothing is emitted on mount. The component normalizes `undefined` to
+ // `null` where it reads the value, and `clear()` emits `null` (INP-Q2).
+ const model = defineModel<SelectOptionValue | null>()
++const displayEmptyText = computed(() =>
++  props.emptyText === 'No options'
++    ? (window as any).__?.('No options') ?? 'No options'
++    : props.emptyText,
++)
+ const open = defineModel<boolean>('open', { default: false })
+ 
+ const props = withDefaults(defineProps<SelectProps>(), {
+@@ -66,6 +72,14 @@ const props = withDefaults(defineProps<SelectProps>(), {
+   emptyText: 'No options',
+ })
+ 
++const textDirection = useTextDirection({ observe: true })
++
++const displayPlaceholder = computed(() =>
++  props.placeholder === 'Select option'
++    ? (window as any).__?.('Select option') ?? 'Select option'
++    : props.placeholder,
++)
++
+ const portalTarget = usePortalTarget(() => props.portalTo)
+ 
+ const attrs = useAttrs()
+@@ -264,7 +278,7 @@ const showPlaceholderForSelected = computed(() => {
+ })
+ 
+ const displayValue = computed(() => {
+-  if (showPlaceholderForSelected.value) return props.placeholder
++  if (showPlaceholderForSelected.value) return displayPlaceholder.value
+   return selectedOption.value?.label || ''
+ })
+ 
+@@ -272,7 +286,9 @@ const displayValue = computed(() => {
+ // placeholder when unselected). The trigger hugs the selection, so the
+ // item-aligned dropdown — anchored over the trigger — expands outward to fit
+ // longer options (Linear-style). Trigger width shifts as the value changes.
+-const selectSizingText = computed(() => displayValue.value || props.placeholder)
++const selectSizingText = computed(
++  () => displayValue.value || displayPlaceholder.value,
++)
+ 
+ // Return type is annotated, not inferred: `SelectSlots` keys its dynamic
+ // entries as `` `item-${string}` ``, and a plain inferred `string` cannot
+@@ -329,7 +345,12 @@ defineExpose(exposed)
+         <slot name="label" v-bind="slotProps" />
+       </template>
+     </InputLabel>
+-    <SelectRoot v-model="internalModel" v-model:open="open" v-bind="rootAttrs">
++    <SelectRoot
++      v-model="internalModel"
++      v-model:open="open"
++      :dir="textDirection"
++      v-bind="rootAttrs"
++    >
+       <SelectTrigger
+         :id="inputId"
+         ref="trigger"
+@@ -366,14 +387,14 @@ defineExpose(exposed)
+             aria-hidden="true"
+           >
+             <SelectValue
+-              :placeholder="placeholder"
++              :placeholder="displayPlaceholder"
+               class="max-w-full truncate leading-tighter opacity-0"
+               :class="{ 'text-ink-gray-4': showPlaceholderForSelected }"
+             >
+               <template v-if="selectedOption">
+                 {{
+                   showPlaceholderForSelected
+-                    ? placeholder
++                    ? displayPlaceholder
+                     : selectedOption.label
+                 }}
+               </template>
+@@ -402,16 +423,16 @@ defineExpose(exposed)
+           />
+           <slot v-else name="prefix" v-bind="controlSlotProps" />
+ 
+-          <div class="grid min-w-0 text-left truncate">
++          <div class="grid min-w-0 text-start truncate">
+             <SelectValue
+-              :placeholder="placeholder"
++              :placeholder="displayPlaceholder"
+               class="col-start-1 row-start-1 max-w-full truncate leading-tighter"
+               :class="{ 'text-ink-gray-4': showPlaceholderForSelected }"
+             >
+               <template v-if="selectedOption">
+                 {{
+                   showPlaceholderForSelected
+-                    ? placeholder
++                    ? displayPlaceholder
+                     : selectedOption.label
+                 }}
+               </template>
+@@ -426,7 +447,7 @@ defineExpose(exposed)
+           <slot name="suffix" v-bind="controlSlotProps">
+             <span
+               data-slot="chevron"
+-              class="lucide-chevron-down ml-auto size-4 shrink-0 text-ink-gray-4"
++              class="lucide-chevron-down ms-auto size-4 shrink-0 text-ink-gray-4"
+             />
+           </slot>
+         </template>
+@@ -435,6 +456,7 @@ defineExpose(exposed)
+       <SelectPortal :to="portalTarget">
+         <SelectContent
+           data-slot="content"
++          :dir="textDirection"
+           class="z-[100] origin-[var(--reka-select-content-transform-origin)]"
+           :class="
+             usesPopperPosition ? 'min-w-[--reka-select-trigger-width]' : null
+@@ -457,7 +479,7 @@ defineExpose(exposed)
+                 data-slot="empty"
+                 class="px-2 py-1.5 text-base text-ink-gray-5"
+               >
+-                <slot name="empty">{{ emptyText }}</slot>
++                <slot name="empty">{{ displayEmptyText }}</slot>
+               </div>
+ 
+               <template v-else>
+@@ -564,7 +586,7 @@ defineExpose(exposed)
+                         v-bind="getItemSlotProps(internalOption.option)"
+                       />
+                       <SelectItemIndicator
+-                        class="ml-1 inline-flex items-center justify-center"
++                        class="ms-1 inline-flex items-center justify-center"
+                       >
+                         <span class="lucide-check size-4 text-ink-gray-6" />
+                       </SelectItemIndicator>
+diff --git a/node_modules/frappe-ui/src/components/Select/utils.ts b/node_modules/frappe-ui/src/components/Select/utils.ts
+index 65b9ca3..732c468 100644
+--- a/node_modules/frappe-ui/src/components/Select/utils.ts
++++ b/node_modules/frappe-ui/src/components/Select/utils.ts
+@@ -69,4 +69,4 @@ export function triggerVariantClasses(
+  * which is why Select doesn't reuse the shared base string.
+  */
+ export const triggerBaseClasses =
+-  'relative inline-flex items-center gap-2 text-left transition-[background-color,border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-[state=open]:outline-none text-ink-gray-7 data-[placeholder]:text-ink-gray-4 data-[disabled]:text-ink-gray-4'
++  'relative inline-flex items-center gap-2 text-start transition-[background-color,border-color,box-shadow] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-[state=open]:outline-none text-ink-gray-7 data-[placeholder]:text-ink-gray-4 data-[disabled]:text-ink-gray-4'
+diff --git a/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue b/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
+index d4e2a29..d5633a8 100644
+--- a/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
++++ b/node_modules/frappe-ui/src/components/Sidebar/SidebarCollapseToggle.vue
+@@ -1,5 +1,5 @@
+ <template>
+-  <SidebarItem :label="isCollapsed ? 'Expand' : 'Collapse'" @click="toggle">
++  <SidebarItem :label="isCollapsed ? __('Expand') : __('Collapse')" @click="toggle">
+     <template #prefix>
+       <span
+         class="lucide-panel-right-open size-4 text-ink-gray-6 transition-transform duration-300 ease-in-out"
+diff --git a/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue b/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
+index 88b0f12..b5ba49a 100644
+--- a/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
++++ b/node_modules/frappe-ui/src/components/TimePicker/TimePicker.vue
+@@ -14,7 +14,7 @@
+           :required="required"
+           :variant="variant"
+           :size="size"
+-          :placeholder="placeholder"
++          :placeholder="resolvedPlaceholder"
+           :disabled="disabled"
+           :readonly="isReadonly"
+           role="combobox"
+@@ -97,7 +97,7 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { computed, nextTick, onMounted, ref, watch } from 'vue'
++import { computed, getCurrentInstance, nextTick, onMounted, ref, watch } from 'vue'
+ import {
+   PopoverAnchor,
+   PopoverContent,
+@@ -131,7 +131,6 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
+   modelValue: '',
+   interval: 15,
+   options: () => [],
+-  placeholder: 'Select time',
+   variant: 'subtle' as Variant,
+   disabled: false,
+   typeable: true,
+@@ -140,6 +139,10 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
+ })
+ 
+ const emit = defineEmits<TimePickerEmits>()
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__
++const resolvedPlaceholder = computed(
++  () => props.placeholder ?? translate?.('Select time') ?? 'Select time',
++)
+ 
+ const portalTarget = usePortalTarget()
+ 
+diff --git a/node_modules/frappe-ui/src/components/Toast/ToastProvider.vue b/node_modules/frappe-ui/src/components/Toast/ToastProvider.vue
+index 7af458c..cbaf7bb 100644
+--- a/node_modules/frappe-ui/src/components/Toast/ToastProvider.vue
++++ b/node_modules/frappe-ui/src/components/Toast/ToastProvider.vue
+@@ -9,7 +9,7 @@
+       unstyled: true,
+       classes: {
+         toast:
+-          'group py-2.5 flex items-center px-4 bg-surface-gray-9 rounded-5 shadow-xl w-[360px] after:bg-transparent',
++          'group py-2.5 flex items-center px-4 bg-surface-gray-9 rounded-5 shadow-xl w-[360px] font-sans after:bg-transparent',
+         title: 'text-p-base font-medium text-ink-base',
+         description: 'text-p-base text-ink-base',
+         icon: 'mr-2 text-ink-base [&_svg]:size-4',
+diff --git a/node_modules/frappe-ui/src/components/Tooltip/TooltipBubble.vue b/node_modules/frappe-ui/src/components/Tooltip/TooltipBubble.vue
+index aa14fbe..3e7d628 100644
+--- a/node_modules/frappe-ui/src/components/Tooltip/TooltipBubble.vue
++++ b/node_modules/frappe-ui/src/components/Tooltip/TooltipBubble.vue
+@@ -51,7 +51,7 @@ defineSlots<{
+       <div
+         v-else
+         data-slot="bubble"
+-        class="rounded-4 bg-surface-gray-10 px-2 py-1 text-xs text-ink-base shadow-xl"
++        class="rounded-4 bg-surface-gray-10 px-2 py-1 font-sans text-xs text-ink-base shadow-xl"
+       >
+         <slot name="content">{{ text }}</slot>
+       </div>
+diff --git a/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue b/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue
+index 7d96b79..23a83d8 100644
+--- a/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue
++++ b/node_modules/frappe-ui/src/components/shared/popover/PopoverPanel.vue
+@@ -4,6 +4,7 @@
+     data-panel
+     data-motion="instant"
+     :data-state="state"
++    :dir="textDirection"
+     :class="shellClass"
+   >
+     <slot />
+@@ -40,6 +41,7 @@
+  * transforms.
+  */
+ import './popoverPanel.css'
++import { useTextDirection } from '@vueuse/core'
+ 
+ defineProps<{
+   /**
+@@ -58,4 +60,5 @@ defineSlots<{ default?: () => any }>()
+ // Consumer `class` (layout) auto-merges after this.
+ const shellClass =
+   'overflow-hidden rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 will-change-[opacity]'
++const textDirection = useTextDirection({ observe: true })
+ </script>
+diff --git a/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts b/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts
+index 91c8dc4..2883b93 100644
+--- a/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts
++++ b/node_modules/frappe-ui/src/molecules/editor/extensions/shared/suggestion-renderer.ts
+@@ -5,6 +5,7 @@ import type {
+ } from '@tiptap/suggestion'
+ import type { Component } from 'vue'
+ import {
++  autoUpdate,
+   computePosition,
+   flip,
+   offset,
+@@ -40,6 +41,9 @@ export function createSuggestionRenderer(
+   let isActive = false
+   // Monotonic token; a stale onUpdate from a superseded query bails.
+   let renderToken = 0
++  // Monotonic token; a stale computePosition settling later bails.
++  let positionToken = 0
++  let cleanupAutoUpdate: (() => void) | null = null
+ 
+   function getListExpose(): SuggestionListExpose | null {
+     const ref = renderer?.ref as SuggestionListExpose | null | undefined
+@@ -52,6 +56,7 @@ export function createSuggestionRenderer(
+     const rect = getReferenceClientRect()
+     if (!rect) return
+     const reference = { getBoundingClientRect: () => rect }
++    const token = ++positionToken
+     void computePosition(reference, floatingEl, {
+       placement: floatingOptions?.placement ?? 'bottom-start',
+       middleware: [
+@@ -60,7 +65,7 @@ export function createSuggestionRenderer(
+         shift({ padding: 8 }),
+       ],
+     }).then(({ x, y }) => {
+-      if (!floatingEl) return
++      if (!floatingEl || token !== positionToken) return
+       Object.assign(floatingEl.style, {
+         position: 'absolute',
+         left: `${x}px`,
+@@ -93,7 +98,19 @@ export function createSuggestionRenderer(
+     floatingEl.style.position = 'absolute'
+     document.body.appendChild(floatingEl)
+     getReferenceClientRect = props.clientRect as () => DOMRect | null
+-    updatePosition()
++
++    // Positions once, then keeps the popup on the caret through scroll, window
++    // resize and its own height changes (`flip()` measures a height that async
++    // rows and late fonts change after the fact).
++    cleanupAutoUpdate = autoUpdate(
++      {
++        getBoundingClientRect: () =>
++          getReferenceClientRect?.() ?? new DOMRect(),
++        contextElement: props.editor?.view?.dom as HTMLElement | undefined,
++      },
++      floatingEl,
++      updatePosition,
++    )
+   }
+ 
+   return {
+@@ -139,6 +156,9 @@ export function createSuggestionRenderer(
+     onExit() {
+       isActive = false
+       renderToken++
++      positionToken++
++      cleanupAutoUpdate?.()
++      cleanupAutoUpdate = null
+       floatingEl?.remove()
+       renderer?.destroy()
+       floatingEl = null
+diff --git a/node_modules/frappe-ui/src/molecules/editor/style.css b/node_modules/frappe-ui/src/molecules/editor/style.css
+index cc3f745..e51412c 100644
+--- a/node_modules/frappe-ui/src/molecules/editor/style.css
++++ b/node_modules/frappe-ui/src/molecules/editor/style.css
+@@ -13,7 +13,8 @@
+ 
+ .ProseMirror:not(.ProseMirror-focused) p.is-editor-empty::before {
+   content: attr(data-placeholder);
+-  float: left;
++  float: inline-start;
++  text-align: start;
+   color: var(--ink-gray-4);
+   pointer-events: none;
+   height: 0;

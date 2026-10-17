@@ -31,6 +31,8 @@
           </template>
         </Dropdown>
         <DateRangePicker
+          :calendar="calendar"
+          :format="rangeFormat"
           v-else
           class="!w-48"
           :today-label="__('Today')"
@@ -38,7 +40,6 @@
           v-model="periodRange"
           variant="outline"
           :placeholder="__('Period')"
-          :format="'MMM D'"
           @update:open="onPickerToggle"
         >
           <template #prefix>
@@ -217,8 +218,9 @@ import { useScreenSize } from "@/composables/screen";
 import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
-import { formatLocalizedDate, formatLocalizedDateRange } from "@/utils";
+import { formatLocalizedDate } from "@/utils";
 import { formatLocalizedDigits } from "@/utils/number";
+import { formatLocaleDateRange, resolveCalendar } from "frappe-ui/localization";
 import { Link } from "@framework/ui";
 import { useStorage } from "@vueuse/core";
 import {
@@ -234,6 +236,9 @@ import { AxisChart, DonutChart, NumberChart } from "frappe-ui/experimental";
 import { computed, h, onMounted, reactive, ref, watch } from "vue";
 import LucideBuilding2 from "~icons/lucide/building-2";
 import LucideUser from "~icons/lucide/user";
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
+
+const { calendar, dateFormat, rangeFormat } = useCalendarPresentation();
 const { isMobileView } = useScreenSize();
 
 function translateDefaultTeam(label: string) {
@@ -678,7 +683,22 @@ function formatter(range: string) {
   const sameYear =
     formatLocalizedDate(from, "YYYY") ===
     formatLocalizedDate(new Date(), "YYYY");
-  return formatLocalizedDateRange(from, to, sameYear ? "MMM D" : "MMM D, YYYY");
+  const calendar = resolveCalendar("auto");
+  if (calendar === "persian") {
+    return formatLocaleDateRange(from, to, {
+      calendar,
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+  return formatLocaleDateRange(from, to, {
+    calendar: "gregory",
+    day: "numeric",
+    month: "short",
+    ...(sameYear ? {} : { year: "numeric" }),
+    rangeSeparator: " to ",
+  });
 }
 
 watch(

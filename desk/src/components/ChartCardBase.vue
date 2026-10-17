@@ -38,8 +38,8 @@
               class="flex items-center gap-0.5 text-ink-gray-5 hover:text-ink-gray-6 cursor-pointer shrink-0"
             >
               <div class="flex gap-1">
-                <span>{{ __("vs") }}</span>
-                <span>{{ __(currentDuration).toLowerCase() }}</span>
+                <span>{{ localizedVs }}</span>
+                <span>{{ localizedCurrentDuration.toLowerCase() }}</span>
               </div>
               <LucideChevronDown class="size-4" />
             </div>
@@ -54,7 +54,7 @@
             </template>
             <template #item-suffix="{ item }">
               <LucideCheck
-                v-if="item.label == __(currentDuration)"
+                v-if="item.label == localizedCurrentDuration"
                 class="size-4"
               />
             </template>
@@ -97,7 +97,7 @@
           <div
             class="flex items-center gap-0.5 text-ink-gray-5 hover:text-ink-gray-6 cursor-pointer shrink-0"
           >
-            {{ __("vs") }} {{ __(currentDuration).toLowerCase() }}
+            {{ localizedVs }} {{ localizedCurrentDuration.toLowerCase() }}
             <LucideChevronDown class="size-4" />
           </div>
           <template #item-label="{ item }">
@@ -111,7 +111,7 @@
           </template>
           <template #item-suffix="{ item }">
             <LucideCheck
-              v-if="item.label == __(currentDuration)"
+              v-if="item.label == localizedCurrentDuration"
               class="size-4"
             />
           </template>
@@ -127,6 +127,7 @@ import LucideChevronDown from "~icons/lucide/chevron-down";
 import { __ } from "@/translation";
 import { EChartsOption } from "echarts";
 import { Dropdown } from "frappe-ui";
+import { useDocumentLocale } from "frappe-ui/localization";
 import { ECharts } from "frappe-ui/experimental";
 import { computed, type PropType } from "vue";
 import { dayjs } from "frappe-ui";
@@ -171,12 +172,25 @@ const emit = defineEmits(["changeDuration"]);
 // the emitted value is the untranslated key: it travels to the API as the
 // period, so only the label goes through __()
 const DURATIONS = ["Last week", "Last month", "Last 3 months"];
+const { locale } = useDocumentLocale();
+const localizedVs = computed(() => {
+  locale.value;
+  return __("vs");
+});
+const localizedCurrentDuration = computed(() => {
+  locale.value;
+  return __(currentDuration.value);
+});
+const localizedDurations = computed(() => {
+  locale.value;
+  return DURATIONS.map((value) => ({ value, label: __(value) }));
+});
 
 const durationOptions = computed(() =>
-  DURATIONS.map((duration) => ({
-    label: __(duration),
+  localizedDurations.value.map(({ value, label }) => ({
+    label,
     onClick: () => {
-      if (currentDuration.value !== duration) emit("changeDuration", duration);
+      if (currentDuration.value !== value) emit("changeDuration", value);
     },
   }))
 );

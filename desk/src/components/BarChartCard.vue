@@ -22,11 +22,11 @@ import { __ } from "@/translation";
 import {
   buildPercentageChange,
   formatLocalizedDate,
-  formatLocalizedDateRange,
   formatLocalizedNumber,
 } from "@/utils";
 import { EChartsOption } from "echarts";
 import { createResource } from "frappe-ui";
+import { formatLocaleDateRange, resolveCalendar } from "frappe-ui/localization";
 import { computed, onMounted, ref, type PropType } from "vue";
 import CardBase from "./ChartCardBase.vue";
 
@@ -110,7 +110,14 @@ const chartData = computed(() => {
     : [];
   const labels = timeData.map((item) => {
     if (item.end_date && _data?.bucket === "weekly") {
-      return formatLocalizedDateRange(item.date, item.end_date, "MMM D");
+      const calendar = resolveCalendar("auto");
+      return formatLocaleDateRange(item.date, item.end_date, {
+        calendar: calendar === "persian" ? calendar : "gregory",
+        day: "numeric",
+        month: calendar === "persian" ? "long" : "short",
+        ...(calendar === "persian" ? { year: "numeric" } : {}),
+        ...(calendar === "gregorian" ? { rangeSeparator: " to " } : {}),
+      });
     }
     if (_data?.bucket === "monthly") {
       return formatLocalizedDate(item.date, "MMM YYYY");

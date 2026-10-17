@@ -7,6 +7,7 @@
     :label="label ? __(label) : undefined"
     :options="options"
     :placeholder="__('Select timezone')"
+    :translator="__"
     :loading="timezoneResource.loading"
   />
 </template>

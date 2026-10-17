@@ -29,6 +29,9 @@
     v-else-if="['Date', 'Datetime'].includes(filter.type)"
     class="border-none !min-w-36 max-w-36"
     :is="filter.type === 'Date' ? DatePicker : DateTimePicker"
+    :calendar="filter.type === 'Date' ? calendar : 'gregorian'"
+    :format="filter.type === 'Date' ? dateFormat : undefined"
+    :today-label="__('Today')"
     :model-value="props.value"
     @change="(v) => updateFilter(filter, v)"
     :placeholder="filter.label"
@@ -43,6 +46,8 @@
   />
 </template>
 <script setup>
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
+import { __ } from "@/translation";
 import { Link } from "@framework/ui";
 import { useDebounceFn } from "@vueuse/core";
 import { DatePicker, DateTimePicker, FormControl, TextInput } from "frappe-ui";
@@ -57,6 +62,7 @@ const props = defineProps({
     required: true,
   },
 });
+const { calendar, dateFormat } = useCalendarPresentation();
 
 const emit = defineEmits(["applyQuickFilter"]);
 

@@ -9,7 +9,7 @@
 | Python | `>=3.14,<3.15` طبق `pyproject.toml` Frappe/Helpdesk |
 | Telephony | `frappe/telephony` روی SHA در `desk/patches/telephony-source.ref` |
 | ERPNext تست Backend | SHA در `desk/patches/erpnext-source.ref`؛ فقط برای تست‌هایی که این اپ را لازم دارند |
-| `frappe-ui` | `1.0.0-rc.1`، نسخه و integrity در `desk/yarn.lock` |
+| `frappe-ui` | `1.0.0` از SHA ثابت در `desk/package.json` و `desk/yarn.lock` |
 | Node / Yarn | Node 20.20.0 برای Desk lockfile، Node 24.14.0 برای Bench، Yarn 1.22.18 |
 
 `frappe/ui` بخشی از سورس مخزن Frappe است و با وابستگی محلی `@framework/ui: link:../../frappe/ui` استفاده می‌شود. `frappe-ui` پکیج مستقل Yarn است. Patchهای این دو مقصد جدا هستند و نباید با هم ادغام شوند.
@@ -18,8 +18,8 @@
 
 | هدف | مسیر | روش | کنترل |
 |---|---|---|---|
-| Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` روی checkout Frappe | SHA منبع و reverse applicability بررسی می‌شوند؛ اعمال تکراری idempotent است |
-| `frappe-ui` | `desk/patches/frappe-ui+1.0.0-rc.1.patch` | `patch-package` در `postinstall` | نسخه package و اعمال patch در clean install بررسی می‌شوند |
+| Frappe `ui/` | `desk/patches/frappe-ui-framework.diff` | `desk/scripts/apply-ui-patches.sh` روی checkout Frappe | CIهای عادی SHA مبنا را Pin می‌کنند؛ برای Candidateهای Frappe دیگر، فقط سازگاری کامل Patch با forward/reverse check پذیرفته می‌شود و منبع ناسازگار Fail می‌شود |
+| `frappe-ui` | `desk/patches/frappe-ui+1.0.0.patch` | `patch-package` در `postinstall` | نسخه package و اعمال patch در clean install بررسی می‌شوند |
 | اسکریپت‌های runtime | `docker/entrypoint.sh`, `docker/start.sh` | داخل Containerfile | کپی‌شده از `frappe/frappe_docker` روی SHA `docker/frappe-docker-source.ref` |
 
 ## Clean Docker Build

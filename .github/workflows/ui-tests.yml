@@ -51,15 +51,15 @@ jobs:
         shard: [1, 2]
     services:
       redis-cache:
-        image: public.ecr.aws/docker/library/redis:8.4-alpine@sha256:0514fa59e3d84e2f3be66731c5401fc2a85b8ea71b49c0116c850f6a558076f4
+        image: docker.io/library/redis:8.4-alpine@sha256:0514fa59e3d84e2f3be66731c5401fc2a85b8ea71b49c0116c850f6a558076f4
         ports:
           - 13000:6379
       redis-queue:
-        image: public.ecr.aws/docker/library/redis:8.4-alpine@sha256:0514fa59e3d84e2f3be66731c5401fc2a85b8ea71b49c0116c850f6a558076f4
+        image: docker.io/library/redis:8.4-alpine@sha256:0514fa59e3d84e2f3be66731c5401fc2a85b8ea71b49c0116c850f6a558076f4
         ports:
           - 11000:6379
       mariadb:
-        image: public.ecr.aws/docker/library/mariadb:10.6@sha256:23616f0bd3aff922f4dea4130f1d0a09f3571d20b7b36c8f49840672dc309e8c
+        image: docker.io/library/mariadb:10.6@sha256:23616f0bd3aff922f4dea4130f1d0a09f3571d20b7b36c8f49840672dc309e8c
         env:
           MARIADB_ROOT_PASSWORD: root
         ports:
@@ -114,6 +114,9 @@ jobs:
           git -C ~/frappe-bench/apps/frappe fetch --depth 1 https://github.com/frappe/frappe.git "$frappe_ui_ref"
           git -C ~/frappe-bench/apps/frappe checkout --detach "$frappe_ui_ref"
           test "$(git -C ~/frappe-bench/apps/frappe rev-parse HEAD)" = "$frappe_ui_ref"
+          cd ~/frappe-bench || exit
+          bench pip install --editable apps/frappe
+          env/bin/python -c "import pdfkit; print('pdfkit', pdfkit.__version__)"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 

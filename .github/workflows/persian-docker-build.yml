@@ -28,6 +28,42 @@ on:
       - ".dockerignore"
       - ".github/workflows/persian-docker-build.yml"
   workflow_dispatch:
+    inputs:
+      frappe_ref:
+        description: Frappe Persian PR #11 commit SHA
+        required: true
+        type: string
+        default: 57b937147c2bdef31f46ef6acb4a73c9fc335586
+      erpnext_ref:
+        description: ERPNext Persian PR #7 commit SHA
+        required: true
+        type: string
+        default: e662c3ffec9b4cc260270920660f5bbd2407c25a
+      helpdesk_ref:
+        description: Approved Helpdesk Persian candidate commit SHA
+        required: true
+        type: string
+        default: 68b2c85e8dec228f6d061e62e3321a927dfac6a5
+      insights_ref:
+        description: Insights Persian PR #5 commit SHA
+        required: true
+        type: string
+        default: 339a6078037e19cf29090c184cf8e2f810790e2c
+      telephony_ref:
+        description: Existing Telephony source commit SHA
+        required: true
+        type: string
+        default: 039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
+      frappe_ui_ref:
+        description: Frappe UI Persian PR #6 commit SHA
+        required: true
+        type: string
+        default: e85a5450bab1bf37ab349fdf7b84df0c37a5231f
+      insights_frappe_ui_ref:
+        description: Frappe UI Persian commit SHA pinned by Insights
+        required: true
+        type: string
+        default: 4c517f643542d70949bfca02ad72e58c2b59ca88
 
 permissions:
   contents: read
@@ -38,10 +74,38 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+
+      - name: Resolve and validate candidate refs
+        id: candidate
+        env:
+          FRAPPE_REF: ${{ inputs.frappe_ref || '57b937147c2bdef31f46ef6acb4a73c9fc335586' }}
+          ERPNEXT_REF: ${{ inputs.erpnext_ref || 'e662c3ffec9b4cc260270920660f5bbd2407c25a' }}
+          HELPDESK_REF: ${{ inputs.helpdesk_ref || github.event.pull_request.head.sha || github.sha }}
+          INSIGHTS_REF: ${{ inputs.insights_ref || '339a6078037e19cf29090c184cf8e2f810790e2c' }}
+          TELEPHONY_REF: ${{ inputs.telephony_ref || '039cf39f245d6818ead03cf94eea6ce7f9c1e1f7' }}
+          FRAPPE_UI_REF: ${{ inputs.frappe_ui_ref || 'e85a5450bab1bf37ab349fdf7b84df0c37a5231f' }}
+          INSIGHTS_FRAPPE_UI_REF: ${{ inputs.insights_frappe_ui_ref || '4c517f643542d70949bfca02ad72e58c2b59ca88' }}
+        run: |
+          set -euo pipefail
+          for ref in "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" "$INSIGHTS_FRAPPE_UI_REF"; do
+            [[ "$ref" =~ ^[0-9a-f]{40}$ ]] || { echo "Invalid commit SHA: $ref" >&2; exit 1; }
+          done
+          key="$(printf '%s\n' "$FRAPPE_REF" "$ERPNEXT_REF" "$HELPDESK_REF" "$INSIGHTS_REF" "$TELEPHONY_REF" "$FRAPPE_UI_REF" "$INSIGHTS_FRAPPE_UI_REF" | sha256sum | cut -c1-16)"
+          {
+            echo "image_tag=office-staging:integrated-$key"
+            echo "frappe_ref=$FRAPPE_REF"
+            echo "erpnext_ref=$ERPNEXT_REF"
+            echo "helpdesk_ref=$HELPDESK_REF"
+            echo "insights_ref=$INSIGHTS_REF"
+            echo "telephony_ref=$TELEPHONY_REF"
+            echo "frappe_ui_ref=$FRAPPE_UI_REF"
+            echo "insights_frappe_ui_ref=$INSIGHTS_FRAPPE_UI_REF"
+          } >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-buildx-action@v3
 
@@ -50,8 +114,71 @@ jobs:
           context: .
           file: docker/HelpdeskPersian.Containerfile
           push: false
-          tags: helpdesk-persian:candidate
+          load: true
+          tags: ${{ steps.candidate.outputs.image_tag }}
           build-args: |
-            HELPDESK_REF=${{ github.event.pull_request.head.sha || github.sha }}
+            FRAPPE_REF=${{ steps.candidate.outputs.frappe_ref }}
+            ERPNEXT_REF=${{ steps.candidate.outputs.erpnext_ref }}
+            HELPDESK_REF=${{ steps.candidate.outputs.helpdesk_ref }}
+            INSIGHTS_REF=${{ steps.candidate.outputs.insights_ref }}
+            TELEPHONY_REF=${{ steps.candidate.outputs.telephony_ref }}
+            FRAPPE_UI_REF=${{ steps.candidate.outputs.frappe_ui_ref }}
+            INSIGHTS_FRAPPE_UI_REF=${{ steps.candidate.outputs.insights_frappe_ui_ref }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Inspect built application and asset set
+        env:
+          IMAGE_TAG: ${{ steps.candidate.outputs.image_tag }}
+        run: |
+          set -euo pipefail
+          docker run --rm --entrypoint bash "$IMAGE_TAG" -ec '
+            root=/home/frappe/frappe-bench
+            for app in frappe erpnext helpdesk insights telephony; do
+              test -d "$root/apps/$app"
+            done
+            test -s "$root/assets/assets.json"
+            for app in frappe erpnext helpdesk insights; do
+              test -d "$root/assets/$app"
+              find -L "$root/assets/$app" -type f -size +0c -print -quit | grep -q .
+            done
+            test -s "$root/candidate-sha-manifest.json"
+          '
+          docker run --rm --entrypoint cat "$IMAGE_TAG" /home/frappe/frappe-bench/candidate-sha-manifest.json > candidate-sha-manifest.json
+          image_id="$(docker image inspect "$IMAGE_TAG" --format '{{.Id}}')"
+          jq --arg tag "$IMAGE_TAG" --arg image_id "$image_id" '. + {local_image_tag: $tag, local_image_id: $image_id, pushed: false}' candidate-sha-manifest.json > candidate-build.json
+          mv candidate-build.json candidate-sha-manifest.json
+
+      - name: Record Frappe Core security gate
+        id: core-security
+        env:
+          FRAPPE_REF: ${{ steps.candidate.outputs.frappe_ref }}
+        run: |
+          set -euo pipefail
+          conclusion="unavailable"
+          response="$(curl --silent --show-error --fail "https://api.github.com/repos/shahinesi/frappe-persian/commits/$FRAPPE_REF/check-runs?per_page=100" || true)"
+          if [[ -n "$response" ]]; then
+            conclusion="$(jq -r '[.check_runs[] | select(.name == "Vulnerable Dependency Check")] | sort_by(.started_at) | last | .conclusion // "missing"' <<< "$response")"
+          fi
+          jq --arg security "$conclusion" '. + {frappe_vulnerable_dependency_check: $security, candidate_accepted: false}' candidate-sha-manifest.json > candidate-build.json
+          mv candidate-build.json candidate-sha-manifest.json
+          echo "conclusion=$conclusion" >> "$GITHUB_OUTPUT"
+          echo "Frappe Vulnerable Dependency Check: $conclusion" >> "$GITHUB_STEP_SUMMARY"
+          echo "Candidate acceptance: false (build-only; Staging/browser acceptance is separate)." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload candidate SHA manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: integrated-candidate-sha-manifest
+          path: candidate-sha-manifest.json
+          retention-days: 7
+
+      - name: Require the Core security gate for acceptance
+        if: always()
+        env:
+          CONCLUSION: ${{ steps.core-security.outputs.conclusion }}
+        run: |
+          if [[ "$CONCLUSION" != "success" ]]; then
+            echo "Candidate not accepted: Frappe Vulnerable Dependency Check is '$CONCLUSION'." >&2
+            exit 1
+          fi

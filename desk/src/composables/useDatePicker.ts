@@ -1,6 +1,10 @@
 import { dayjs } from "frappe-ui";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { jalaaliWeek, toGregorian, toJalaali } from "jalaali-js";
+import {
+  formatLocaleNumber,
+  getISODateFromPersianDate,
+  getPersianCalendarMonth,
+  getPersianDateFromISO,
+} from "frappe-ui/localization";
 import { computed, ref } from "vue";
 
 /**
@@ -15,48 +19,47 @@ export function useDatePicker() {
   const isPersianCalendar = () => dayjs.locale().split("-")[0] === "fa";
 
   const today = computed(() => dayjs().toDate());
+  const persianMonth = computed(() => {
+    if (!isPersianCalendar() || !currentYear.value || !currentMonth.value) {
+      return null;
+    }
+    return getPersianCalendarMonth(
+      currentYear.value,
+      currentMonth.value,
+      dayjs.locale()
+    );
+  });
 
   const firstOfMonth = computed(() => {
     if (!currentYear.value || !currentMonth.value) return null;
     if (isPersianCalendar()) {
-      const gregorian = toGregorian(currentYear.value, currentMonth.value, 1);
-      return dayjs(new Date(gregorian.gy, gregorian.gm - 1, gregorian.gd));
+      const isoDate = getISODateFromPersianDate({
+        year: currentYear.value,
+        month: currentMonth.value,
+        day: 1,
+      });
+      return dayjs(localDateFromISO(isoDate));
     }
     return dayjs(new Date(currentYear.value, currentMonth.value - 1, 1));
   });
 
   const weekdays = computed(() => {
     if (!isPersianCalendar()) return ["s", "m", "t", "w", "t", "f", "s"];
-    const { saturday } = jalaaliWeek(currentYear.value, currentMonth.value, 1);
-    const gregorian = toGregorian(saturday.jy, saturday.jm, saturday.jd);
-    const start = new Date(
-      Date.UTC(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12)
-    );
-    const formatter = new Intl.DateTimeFormat("fa-u-ca-persian-nu-arabext", {
-      weekday: "narrow",
-      timeZone: "UTC",
-    });
-    return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(start);
-      date.setUTCDate(date.getUTCDate() + index);
-      return formatter.format(date);
-    });
+    return persianMonth.value?.weekdayLabels ?? [];
   });
 
   // Always six weeks, so the grid height never jumps between months.
   const datesAsWeeks = computed<Date[][]>(() => {
     const first = firstOfMonth.value;
     if (!first) return [];
-    let start = first.startOf("week");
     if (isPersianCalendar()) {
-      const { saturday } = jalaaliWeek(
-        currentYear.value,
-        currentMonth.value,
-        1
+      return (
+        persianMonth.value?.weeks.map((week) =>
+          week.map((cell) => localDateFromISO(cell.isoDate))
+        ) ?? []
       );
-      const gregorian = toGregorian(saturday.jy, saturday.jm, saturday.jd);
-      start = dayjs(new Date(gregorian.gy, gregorian.gm - 1, gregorian.gd));
     }
+    const start = first.startOf("week");
     return Array.from({ length: 6 }, (_, week) =>
       Array.from({ length: 7 }, (_, day) =>
         start.add(week * 7 + day, "day").toDate()
@@ -67,18 +70,8 @@ export function useDatePicker() {
   const formattedMonth = computed(() => {
     if (!firstOfMonth.value) return "";
     if (!isPersianCalendar()) return firstOfMonth.value.format("MMMM, YYYY");
-    const date = firstOfMonth.value.toDate();
-    return digitsEnToFa(
-      new Intl.DateTimeFormat("fa-u-ca-persian-nu-arabext", {
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-      }).format(
-        new Date(
-          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12)
-        )
-      )
-    );
+    const month = persianMonth.value;
+    return month ? `${month.monthName} ${month.yearLabel}` : "";
   });
 
   function isInCurrentMonth(date: Date): boolean {
@@ -88,23 +81,23 @@ export function useDatePicker() {
         date.getMonth() === currentMonth.value - 1
       );
     }
-    const value = toJalaali(
-      date.getFullYear(),
-      date.getMonth() + 1,
-      date.getDate()
+    const value = getPersianDateFromISO(localISODate(date));
+    return (
+      value.year === currentYear.value && value.month === currentMonth.value
     );
-    return value.jy === currentYear.value && value.jm === currentMonth.value;
   }
 
   function dayLabel(date: Date): string {
-    const day = isPersianCalendar()
-      ? toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate()).jd
-      : date.getDate();
-    return isPersianCalendar() ? digitsEnToFa(String(day)) : String(day);
+    if (!isPersianCalendar()) return String(date.getDate());
+    return formatLocaleNumber(getPersianDateFromISO(localISODate(date)).day, {
+      useGrouping: false,
+    });
   }
 
   function yearLabel(year: number): string {
-    return isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
+    return isPersianCalendar()
+      ? formatLocaleNumber(year, { useGrouping: false })
+      : String(year);
   }
 
   return {
@@ -118,4 +111,16 @@ export function useDatePicker() {
     dayLabel,
     yearLabel,
   };
+}
+
+function localISODate(date: Date): string {
+  const year = String(date.getFullYear()).padStart(4, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function localDateFromISO(isoDate: string): Date {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }

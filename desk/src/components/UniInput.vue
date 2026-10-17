@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { useCalendarPresentation } from "@/composables/useCalendarPresentation";
 import { __ } from "@/translation";
 import { APIOptions, Field } from "@/types";
 import { parseApiOptions } from "@/utils";
@@ -56,6 +57,7 @@ interface E {
 
 const props = defineProps<P>();
 const emit = defineEmits<E>();
+const { calendar, dateFormat } = useCalendarPresentation();
 
 const SEARCHABLE_FROM = 10;
 
@@ -120,7 +122,9 @@ const component = computed(() => {
   } else if (props.field.fieldtype === "Date") {
     return h(DatePicker, {
       id: props.field.fieldname,
-      format: window.date_format.toUpperCase(),
+      calendar: calendar.value,
+      format: dateFormat.value,
+      todayLabel: __("Today"),
     });
   } else {
     return h(TextInput, {

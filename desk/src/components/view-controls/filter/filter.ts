@@ -1,8 +1,9 @@
 import { __ } from "@/translation";
+import { dateFormat } from "@/utils";
 import { useDebounceFn } from "@vueuse/core";
 import { createResource } from "frappe-ui";
+import { formatLocaleDate, resolveCalendar } from "frappe-ui/localization";
 import { computed, inject, Component, ComputedRef } from "vue";
-import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import LucideCalendar from "~icons/lucide/calendar";
 import LucideClock from "~icons/lucide/clock";
@@ -325,6 +326,28 @@ export function filterSummary(filter: ActiveFilter): string {
 
 function displayValue(filter: ActiveFilter): string {
   const value = filter.value;
+  if (typeDate.includes(filter.field.fieldtype)) {
+    if (filter.operator === "timespan") {
+      return (
+        timespanOptions.find((option) => option.value === value)?.label ??
+        String(value ?? "")
+      );
+    }
+    const formatDate = (date: any) =>
+      date == null || date === ""
+        ? ""
+        : filter.field.fieldtype === "Datetime"
+        ? dateFormat(date)
+        : formatLocaleDate(date, {
+            calendar: resolveCalendar(undefined),
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
+    return Array.isArray(value)
+      ? value.map(formatDate).join(", ")
+      : formatDate(value);
+  }
   if ([...typeSelect, ...typeCheck].includes(filter.field.fieldtype)) {
     const translateOption = (option: any) => __(String(option));
     return Array.isArray(value)
