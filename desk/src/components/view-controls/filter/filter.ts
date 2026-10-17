@@ -1,9 +1,9 @@
 import { __ } from "@/translation";
-import { dateFormat, formatLocalizedDate } from "@/utils";
+import { dateFormat } from "@/utils";
 import { useDebounceFn } from "@vueuse/core";
 import { createResource } from "frappe-ui";
+import { formatLocaleDate, resolveCalendar } from "frappe-ui/localization";
 import { computed, inject, Component, ComputedRef } from "vue";
-import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import LucideCalendar from "~icons/lucide/calendar";
 import LucideClock from "~icons/lucide/clock";
@@ -332,7 +332,12 @@ function displayValue(filter: ActiveFilter): string {
         ? ""
         : filter.field.fieldtype === "Datetime"
         ? dateFormat(date)
-        : formatLocalizedDate(date);
+        : formatLocaleDate(date, {
+            calendar: resolveCalendar(undefined),
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
     return Array.isArray(value)
       ? value.map(formatDate).join(", ")
       : formatDate(value);
