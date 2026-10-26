@@ -75,6 +75,7 @@ import { __ } from "@/translation";
 import { CustomerContact, CustomerResourceSymbol } from "@/types";
 import { HDCustomerMember } from "@/types/doctypes";
 import { getErrorMessage, hasPermission, prettyDate } from "@/utils";
+import { formatLocalizedNumber } from "@/utils/number";
 import { Avatar, Badge, Button, Dropdown, Tooltip, toast } from "frappe-ui";
 import { computed, inject, markRaw } from "vue";
 import { useRouter } from "vue-router";
@@ -97,7 +98,9 @@ const customer = inject(CustomerResourceSymbol)!;
 const ticketCountLabel = computed(() => {
   const count = props.contact.ticket_count;
   if (count === 0) return __("No active tickets");
-  return `${count} ${count === 1 ? __("active ticket") : __("active tickets")}`;
+  return `${formatLocalizedNumber(count)} ${
+    count === 1 ? __("active ticket") : __("active tickets")
+  }`;
 });
 
 function goToContact() {

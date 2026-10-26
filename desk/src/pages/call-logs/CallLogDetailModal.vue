@@ -61,6 +61,9 @@
               <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
                 {{ field.value }}
               </Tooltip>
+              <div v-else-if="field.name === 'duration'">
+                {{ formatLocalizedDigits(field.value) }}
+              </div>
               <div class="w-full" v-else-if="field.name == 'recording_url'">
                 <audio
                   class="audio-control w-full"
@@ -103,6 +106,7 @@ import { Avatar, Tooltip, createResource, dayjs } from "frappe-ui";
 import { __ } from "@/translation";
 import { computed, h, nextTick, ref, watch } from "vue";
 import { formatLocalizedDate, timeAgo } from "@/utils";
+import { formatLocalizedDigits } from "@/utils/number";
 import { statusColorMap, statusLabelMap, statusTextColorMap } from "./utils";
 import { useAuthStore } from "@/stores/auth";
 

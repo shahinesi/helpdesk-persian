@@ -36,9 +36,14 @@
                 #{{ activity.name }} · {{ label(activity) }}
               </span>
             </div>
-            <span class="text-ink-gray-4 whitespace-nowrap tabular-nums">
-              {{ activity.timestamp }}
-            </span>
+            <Tooltip
+              :text="formatLocalizedDate(activity.creation, dateTooltipFormat)"
+              side="top"
+            >
+              <span class="text-ink-gray-4 whitespace-nowrap tabular-nums">
+                {{ timeAgo(activity.creation) }}
+              </span>
+            </Tooltip>
           </router-link>
         </template>
         <div v-else class="flex flex-col">
@@ -74,6 +79,7 @@
 <script setup lang="ts">
 import EmptyState from "@/components/EmptyState.vue";
 import { __ } from "@/translation";
+import { dateTooltipFormat, formatLocalizedDate, timeAgo } from "@/utils";
 import { createResource, Tooltip } from "frappe-ui";
 import { computed, onMounted, ref, type PropType } from "vue";
 import ActivityIcon from "~icons/lucide/activity";

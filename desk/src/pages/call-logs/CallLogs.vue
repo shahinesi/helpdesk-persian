@@ -47,6 +47,7 @@ import CallLogModal from "./CallLogModal.vue";
 import { statusColorMap, statusLabelMap } from "./utils";
 import { __ } from "@/translation";
 import { PhoneIcon } from "@/components/icons";
+import { formatLocalizedNumber } from "@/utils/number";
 
 const showCallLogModal = ref(false);
 const showCallLogDetailModal = ref(false);
@@ -125,7 +126,10 @@ const options = computed(() => {
           });
         },
         custom: ({ row }) => {
-          return h("span", __("{0}s", [row.duration || 0]));
+          return h(
+            "span",
+            __("{0}s", [formatLocalizedNumber(row.duration || 0)])
+          );
         },
       },
     },

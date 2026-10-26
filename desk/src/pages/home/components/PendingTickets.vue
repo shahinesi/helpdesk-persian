@@ -85,7 +85,9 @@
                   v-else-if="ticket.reason.type === 'pending'"
                   class="size-4 flex-shrink-0"
                 />
-                <span class="truncate pe-2">{{ ticket.reason.text }}</span>
+                <span class="truncate pe-2">
+                  {{ formatLocalizedDigits(ticket.reason.text) }}
+                </span>
               </div>
               <span
                 v-else
@@ -170,6 +172,7 @@ import EmptyState from "@/components/EmptyState.vue";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { useView } from "@/composables/useView";
 import { __ } from "@/translation";
+import { formatLocalizedDigits } from "@/utils/number";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import { View } from "@/types";
 import { createResource, TabButtons } from "frappe-ui";
@@ -299,7 +302,15 @@ function getReasonColorClass(reason: {
   text: string;
   seconds_until_due?: number;
 }) {
-  if (reason.text.includes("overdue")) {
+  if (
+    reason.seconds_until_due !== undefined &&
+    reason.seconds_until_due !== null &&
+    reason.seconds_until_due <= 0
+  ) {
+    return "text-ink-red-6";
+  }
+
+  if (reason.text.toLowerCase().includes("overdue")) {
     return "text-ink-red-6";
   }
 
