@@ -43,4 +43,4 @@ RUN mkdir -p sites && printf '{}' > sites/common_site_config.json \
     && bench set-config -gp socketio_port 9000 \
     && bench compile-po-to-mo --app helpdesk --force \
     && (cd apps/helpdesk/desk && yarn apply:ui-patches) \
-    && CI=Yes bench build --apps frappe,helpdesk
+    && YARN_OFFLINE=true CI=Yes bench build --apps frappe,helpdesk
