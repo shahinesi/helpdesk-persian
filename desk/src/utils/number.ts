@@ -1,8 +1,12 @@
-import { dayjs } from "frappe-ui";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
+function getDisplayLocale() {
+  if (typeof document === "undefined") return "en";
+  return document.documentElement.lang || "en";
+}
+
 export function formatLocalizedDigits(value: string | number) {
-  if (dayjs.locale().split("-")[0] !== "fa") return String(value);
+  if (getDisplayLocale().split("-")[0] !== "fa") return String(value);
   return digitsEnToFa(String(value)).replace(/%/g, "٪");
 }
 
@@ -10,7 +14,7 @@ export function formatLocalizedNumber(
   value: number,
   options: Intl.NumberFormatOptions = {}
 ) {
-  const locale = dayjs.locale().toLowerCase().replace("_", "-");
+  const locale = getDisplayLocale().toLowerCase().replace("_", "-");
   const language = locale.split("-")[0];
   if (language === "en" && Object.keys(options).length === 0) {
     return String(value);

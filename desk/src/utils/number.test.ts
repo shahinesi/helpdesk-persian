@@ -1,27 +1,36 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import "dayjs/esm/locale/fa.js";
-import { dayjs } from "frappe-ui";
-import { formatLocalizedDigits, formatLocalizedNumber } from "./number";
+import { formatLocalizedDigits, formatLocalizedNumber } from "./number.ts";
+
+function setDisplayLocale(locale: string) {
+  Object.defineProperty(globalThis, "document", {
+    configurable: true,
+    value: { documentElement: { lang: locale } },
+  });
+}
 
 test("localized dynamic SLA digits follow the active display locale", () => {
-  const previousLocale = dayjs.locale();
+  const previousDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
 
   try {
-    dayjs.locale("fa");
+    setDisplayLocale("fa-IR");
     assert.equal(
       formatLocalizedDigits("Resolution due in 3h 15m (50%)"),
       "Resolution due in ۳h ۱۵m (۵۰٪)"
     );
     assert.equal(formatLocalizedNumber(1250), "۱٬۲۵۰");
 
-    dayjs.locale("en");
+    setDisplayLocale("en");
     assert.equal(
       formatLocalizedDigits("Resolution due in 3h 15m (50%)"),
       "Resolution due in 3h 15m (50%)"
     );
     assert.equal(formatLocalizedNumber(1250), "1250");
   } finally {
-    dayjs.locale(previousLocale);
+    if (previousDocument) {
+      Object.defineProperty(globalThis, "document", previousDocument);
+    } else {
+      Reflect.deleteProperty(globalThis, "document");
+    }
   }
 });
