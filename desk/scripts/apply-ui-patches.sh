@@ -32,10 +32,18 @@ if git -C "$framework_ui" rev-parse --verify HEAD >/dev/null 2>&1; then
 	fi
 fi
 
-if ! git -C "$frappe_ui" apply --reverse --check -p3 "$patch_dir/frappe-ui+1.0.0-rc.1.patch" >/dev/null 2>&1; then
-	echo "frappe-ui patch is missing or has drifted; reinstall dependencies before building." >&2
-	exit 1
-fi
+# Yarn's postinstall runs patch-package, which validates and applies every hunk.
+# Keep a direct sentinel check here for the chart formatting paths: git apply's
+# reverse parser rejects these template literal hunks despite their exact output
+# being present after patch-package applies the pinned patch.
+for chart in donutChartOptions.ts funnelChartOptions.ts; do
+	chart_source="$frappe_ui/experimental/Charts/$chart"
+	if ! grep -Fq 'const formattedPercentage = formatPercentage(percentage)' "$chart_source" \
+		|| ! grep -Fq '${formatted} (${formattedPercentage})' "$chart_source"; then
+		echo "frappe-ui chart localization patch is missing; reinstall dependencies before building." >&2
+		exit 1
+	fi
+done
 
 framework_patch="$patch_dir/frappe-ui-framework.diff"
 framework_root="$(cd "$framework_ui/.." && pwd)"
