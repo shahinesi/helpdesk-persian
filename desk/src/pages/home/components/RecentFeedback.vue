@@ -310,7 +310,10 @@ import LucideStar from "~icons/lucide/star";
 import { useRouter } from "vue-router";
 import { dayjsLocal } from "frappe-ui";
 import { __ } from "@/translation";
-import { formatLocalizedNumber } from "@/utils/number";
+import {
+  formatLocalizedNumber,
+  formatLocalizedRatingScale,
+} from "@/utils/number";
 import { timeAgo } from "@/utils";
 import type { EChartsOption } from "echarts";
 import { useView } from "@/composables/useView";
@@ -545,7 +548,7 @@ const barChartOptions = computed<EChartsOption>(() => {
     },
     xAxis: {
       type: "category",
-      data: [1, 2, 3, 4, 5].map(formatLocalizedNumber),
+      data: formatLocalizedRatingScale(),
       axisLine: { show: true, lineStyle: { color: axisLineColor } },
       axisTick: { show: false },
       axisLabel: {
@@ -612,7 +615,7 @@ const placeholderChartOptions = computed<EChartsOption>(() => {
     },
     xAxis: {
       type: "category",
-      data: ["1", "2", "3", "4", "5"],
+      data: formatLocalizedRatingScale(),
       axisLine: { show: true, lineStyle: { color: axisLineColor } },
       axisTick: { show: false },
       axisLabel: {

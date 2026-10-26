@@ -25,6 +25,7 @@ import {
   formatLocalizedMonthBucket,
   formatLocalizedDateRange,
   formatLocalizedNumber,
+  formatLocalizedRatingScale,
 } from "@/utils";
 import { EChartsOption } from "echarts";
 import { createResource } from "frappe-ui";
@@ -97,7 +98,7 @@ const chartData = computed(() => {
     const distribution = _data.data as Record<number, number>;
     const values = [1, 2, 3, 4, 5].map((s) => distribution[s] ?? 0);
     return {
-      labels: [1, 2, 3, 4, 5].map(formatLocalizedNumber),
+      labels: formatLocalizedRatingScale(),
       counts: values,
       percentageChange: buildPercentageChange(0, props.negativeIsBetter),
       text: _data?.average ?? 0,
@@ -170,7 +171,7 @@ const chartConfig = computed<EChartsOption>(() => {
       grid: { left: 4, right: 4, top: 16, bottom: 20, containLabel: false },
       xAxis: {
         type: "category",
-        data: ["1", "2", "3", "4", "5"],
+        data: chartData.value.labels,
         axisLine: { show: true, lineStyle: { color: "#ededed" } },
         axisTick: { show: false },
         axisLabel: { color: "#6b7280", fontSize: 11 },

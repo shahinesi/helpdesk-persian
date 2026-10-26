@@ -15,7 +15,10 @@ import { __ } from "./translation";
 import { formatLocalizedNumber } from "./utils/number";
 import { formatLocalizedMonthBucket as formatGregorianMonthBucket } from "./utils/monthBucket";
 import { formatPersianDateRange } from "./utils/intlDate";
-export { formatLocalizedNumber } from "./utils/number";
+export {
+  formatLocalizedNumber,
+  formatLocalizedRatingScale,
+} from "./utils/number";
 
 export function formatLocalizedMonthBucket(date: string) {
   return formatGregorianMonthBucket(date, dayjs.locale());
