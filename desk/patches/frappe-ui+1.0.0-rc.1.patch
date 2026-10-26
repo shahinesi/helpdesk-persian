@@ -345,7 +345,14 @@ index 4611ee8..16dd8d7 100644
 -            <div>{{ options.rowCount || '0' }}</div>
 -            <div>of</div>
 -            <div>{{ options.totalCount || '0' }}</div>
-+            <div>{{ __('{0} of {1}', [options.rowCount || '0', options.totalCount || '0']) }}</div>
++            <div>{{ __('{0} of {1}', [
+              document.documentElement.lang.startsWith('fa')
+                ? new Intl.NumberFormat('fa-IR').format(Number(options.rowCount || '0'))
+                : options.rowCount || '0',
+              document.documentElement.lang.startsWith('fa')
+                ? new Intl.NumberFormat('fa-IR').format(Number(options.totalCount || '0'))
+                : options.totalCount || '0',
+            ]) }}</div>
            </div>
          </div>
        </slot>

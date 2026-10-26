@@ -149,3 +149,16 @@ test("Persian dashboard metrics localize percentages and decimals", async ({
   );
   expect(fontFamily).toContain("vazirmatn");
 });
+
+test("Persian ticket list localizes the record count while English keeps ASCII digits", async ({
+  pageAs,
+}) => {
+  const persianPage = await pageAs("persianAgent");
+  await skipGettingStarted(persianPage, "e2e-persian@example.com");
+  await persianPage.goto("/helpdesk/tickets");
+  await expect(persianPage.getByText(/[۰-۹]+ از [۰-۹]+/)).toBeVisible();
+
+  const englishPage = await pageAs("agent");
+  await englishPage.goto("/helpdesk/tickets");
+  await expect(englishPage.getByText(/[0-9]+ of [0-9]+/)).toBeVisible();
+});
