@@ -10,7 +10,7 @@ test("Persian date range picker displays Jalali dates and sends Gregorian API va
   await expect(page.locator("html")).toHaveAttribute("lang", "fa");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 
-  await page.locator(".mb-4 .min-w-48").click();
+  await page.locator('.mb-4 [class*="min-w-48"]').click();
   await page.getByText("محدوده سفارشی", { exact: true }).click();
 
   const calendar = page.locator(".calendar-panel").first();
@@ -48,14 +48,14 @@ test("English calendar keeps Gregorian month names and left-to-right layout", as
 
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await page.locator(".mb-4 .min-w-48").click();
+  await page.locator('.mb-4 [class*="min-w-48"]').click();
   await page.getByRole("menuitem").last().click();
 
   const calendar = page.locator(".calendar-panel").first();
   await expect(calendar).toBeVisible();
   const expectedMonth = await page.evaluate(() =>
     new Intl.DateTimeFormat("en-US", {
-      month: "long",
+      month: "short",
       year: "numeric",
     }).format(new Date())
   );
