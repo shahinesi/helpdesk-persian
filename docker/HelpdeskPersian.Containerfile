@@ -1,6 +1,10 @@
 FROM node:20.20.0-bookworm-slim@sha256:d8a35d586fad3af7abb6fdb9ba972388395405f4d462da9e4a4ddcde67b5e0fb AS node-runtime
 
-RUN npm install --global --prefix /opt/yarn-v1.22.18 yarn@1.22.18
+RUN mkdir -p /opt/yarn-v1.22.18/bin \
+    && node -e 'const fs = require("node:fs"); const crypto = require("node:crypto"); fetch("https://github.com/yarnpkg/yarn/releases/download/v1.22.18/yarn-1.22.18.js").then(async (response) => { if (!response.ok) throw new Error(`Yarn download failed: ${response.status}`); const bytes = Buffer.from(await response.arrayBuffer()); const digest = crypto.createHash("sha256").update(bytes).digest("hex"); if (digest !== "1746e18721e2ddbef2ada453e6fd93c3f4aedee2ba19a711a4c838cda83ebde5") throw new Error(`Unexpected Yarn checksum: ${digest}`); fs.writeFileSync("/opt/yarn-v1.22.18/bin/yarn.js", bytes); }).catch((error) => { console.error(error); process.exit(1); })' \
+    && chmod 755 /opt/yarn-v1.22.18/bin/yarn.js \
+    && ln -s yarn.js /opt/yarn-v1.22.18/bin/yarn \
+    && ln -s yarn.js /opt/yarn-v1.22.18/bin/yarnpkg
 
 FROM helpdesk-persian:styled AS frappe-ui-source
 
