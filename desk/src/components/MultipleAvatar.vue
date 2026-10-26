@@ -39,7 +39,7 @@
         <div
           class="user-avatar relative z-10 -mr-1.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-surface-gray-3 text-xs text-ink-gray-7 ring-2 ring-[var(--surface-base)]"
         >
-          +{{ overflowCount }}
+          +{{ formatLocalizedNumber(overflowCount) }}
         </div>
       </Tooltip>
     </template>
@@ -49,6 +49,7 @@
 import { useUserStore } from "@/stores/user";
 import { Avatar, Tooltip } from "frappe-ui";
 import { computed } from "vue";
+import { formatLocalizedNumber } from "@/utils/number";
 
 const props = defineProps({
   // Frappe hands `_assign` over as a JSON string; callers with the list
