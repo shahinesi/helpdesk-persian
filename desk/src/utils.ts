@@ -81,10 +81,13 @@ export function dateFormat(
 /** Format Gregorian API dates in the active display calendar. */
 export function formatLocalizedDate(
   date: string | number | Date | Dayjs | null | undefined,
-  format = getDateFormat()
+  format = getDateFormat(),
+  calendar: "locale" | "gregorian" = "locale"
 ) {
   const value =
     date instanceof Date
+      ? dayjs(date)
+      : typeof date === "number"
       ? dayjs(date)
       : date && typeof date === "object" && "$isDayjsObject" in date
       ? (date as Dayjs)
@@ -93,6 +96,9 @@ export function formatLocalizedDate(
       : dayjsLocal(date as string);
   if (!value.isValid()) return "";
   if (dayjs.locale().split("-")[0] !== "fa") return value.format(format);
+  if (calendar === "gregorian") {
+    return digitsEnToFa(value.locale("fa").format(format));
+  }
 
   const { jy, jm, jd } = toJalaali(
     value.year(),

@@ -535,6 +535,7 @@ const barChartOptions = computed<EChartsOption>(() => {
   });
 
   return {
+    textStyle: { fontFamily: '"Vazirmatn", sans-serif' },
     grid: {
       left: 4,
       right: 4,
@@ -601,6 +602,7 @@ const placeholderChartOptions = computed<EChartsOption>(() => {
   }));
 
   return {
+    textStyle: { fontFamily: '"Vazirmatn", sans-serif' },
     grid: {
       left: 4,
       right: 4,

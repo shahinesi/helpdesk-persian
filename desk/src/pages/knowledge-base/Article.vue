@@ -84,7 +84,9 @@
                 v-if="!editable && !isCustomerPortal && !isMobileView"
                 class="text-p-sm text-ink-gray-4 items-center"
               >
-                <span>{{ __("{0} views", [views]) }}</span>
+                <span>{{
+                  __("{0} views", [formatLocalizedNumber(views)])
+                }}</span>
               </div>
             </div>
             <div class="flex gap-4 justify-between sm:items-start">
@@ -100,7 +102,7 @@
                     :disabled="!isCustomerPortal"
                   >
                     <template #suffix>
-                      {{ likes }}
+                      {{ formatLocalizedNumber(likes || 0) }}
                     </template>
                     <template #icon>
                       <ThumbsUpFilledIcon
@@ -117,7 +119,7 @@
                     :disabled="!isCustomerPortal"
                   >
                     <template #suffix>
-                      {{ dislikes }}
+                      {{ formatLocalizedNumber(dislikes || 0) }}
                     </template>
                     <template #icon>
                       <ThumbsDownFilledIcon
@@ -287,6 +289,7 @@ import {
   ConfirmDelete,
   copyToClipboard,
   formatLocalizedDate,
+  formatLocalizedNumber,
   isCustomerPortal,
   uploadFunction,
 } from "@/utils";

@@ -64,7 +64,7 @@
                 size="lg"
                 class="shrink-0 text-ink-gray-7 transition-colors duration-150 hover:bg-surface-gray-2"
               >
-                {{ __("+{0} more", String(hiddenTags.length)) }}
+                {{ __("+{0} more", formatLocalizedNumber(hiddenTags.length)) }}
               </Badge>
             </Tooltip>
           </div>
@@ -103,6 +103,7 @@ import { useShortcut } from "@/composables/shortcuts";
 import { colorToken, useTags, type Tag } from "@/composables/useTags";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
+import { formatLocalizedNumber } from "@/utils/number";
 import { useEventListener } from "@vueuse/core";
 import { Badge, call, MultiSelect, toast, Tooltip } from "frappe-ui";
 import { computed, h, onBeforeUnmount, ref, watch } from "vue";

@@ -16,7 +16,11 @@
         {{ category?.category_name }}
       </p>
       <span class="truncate text-xs md:text-sm text-ink-gray-5">
-        {{ __("Number of articles: {0}", [category?.article_count || 0]) }}
+        {{
+          __("Number of articles: {0}", [
+            formatLocalizedNumber(category?.article_count || 0),
+          ])
+        }}
       </span>
     </div>
   </router-link>
@@ -24,6 +28,7 @@
 
 <script setup lang="ts">
 import LucideFolder from "~icons/lucide/folder";
+import { formatLocalizedNumber } from "@/utils/number";
 const props = defineProps({
   category: {
     required: true,

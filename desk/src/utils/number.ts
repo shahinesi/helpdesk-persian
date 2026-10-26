@@ -2,9 +2,8 @@ import { dayjs } from "frappe-ui";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export function formatLocalizedDigits(value: string | number) {
-  return dayjs.locale().split("-")[0] === "fa"
-    ? digitsEnToFa(String(value))
-    : String(value);
+  if (dayjs.locale().split("-")[0] !== "fa") return String(value);
+  return digitsEnToFa(String(value)).replace(/%/g, "٪");
 }
 
 export function formatLocalizedNumber(

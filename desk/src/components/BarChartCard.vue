@@ -113,7 +113,7 @@ const chartData = computed(() => {
       return formatLocalizedDateRange(item.date, item.end_date, "MMM D");
     }
     if (_data?.bucket === "monthly") {
-      return formatLocalizedDate(item.date, "MMM YYYY");
+      return formatLocalizedDate(item.date, "MMM YYYY", "gregorian");
     }
     return _data?.bucket === "daily"
       ? formatLocalizedDate(item.date, "MMM D")

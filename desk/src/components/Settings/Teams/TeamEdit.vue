@@ -57,7 +57,7 @@
           class="grid grid-cols-8 items-center gap-3 text-sm text-ink-gray-5"
         >
           <div class="col-span-6 text-p-sm">
-            {{ __("Members ({0})", teamMembers.length) }}
+            {{ __("Members ({0})", formatLocalizedNumber(teamMembers.length)) }}
           </div>
         </div>
         <hr class="mt-2" />
@@ -124,6 +124,7 @@ import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import { TeamListResourceSymbol } from "@/types";
 import { ConfirmDelete } from "@/utils";
+import { formatLocalizedNumber } from "@/utils/number";
 import {
   Button,
   createDocumentResource,

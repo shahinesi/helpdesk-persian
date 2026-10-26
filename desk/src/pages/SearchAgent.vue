@@ -114,18 +114,28 @@
               <div class="space-y-1">
                 <p class="text-ink-gray-6">
                   {{
-                    __("{0} matches", [searchResponse.summary.filtered_matches])
+                    __("{0} matches", [
+                      formatLocalizedNumber(
+                        searchResponse.summary.filtered_matches
+                      ),
+                    ])
                   }}
                   <span>
-                    {{ __("({0}s)", [searchResponse.summary.duration]) }}
+                    {{
+                      __("({0}s)", [
+                        formatLocalizedNumber(searchResponse.summary.duration),
+                      ])
+                    }}
                   </span>
                   <span v-if="hasActiveFilters()">
                     •
                     {{
                       __("{0} filter(s) applied", [
-                        Object.keys(
-                          searchResponse.summary.applied_filters || {}
-                        ).length,
+                        formatLocalizedNumber(
+                          Object.keys(
+                            searchResponse.summary.applied_filters || {}
+                          ).length
+                        ),
                       ])
                     }}
                   </span>
@@ -212,7 +222,7 @@ import { LayoutHeader } from "@/components";
 import SearchMultiSelect from "@/components/SearchMultiSelect.vue";
 import { useShortcut } from "@/composables/shortcuts";
 import { __ } from "@/translation";
-import { formatLocalizedDate } from "@/utils";
+import { formatLocalizedDate, formatLocalizedNumber } from "@/utils";
 import {
   Breadcrumbs,
   createResource,

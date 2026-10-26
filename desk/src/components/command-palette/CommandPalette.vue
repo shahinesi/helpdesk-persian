@@ -187,6 +187,7 @@ import LucideLoaderCircle from "~icons/lucide/loader-circle";
 import LucideSearch from "~icons/lucide/search";
 import LucideSearchX from "~icons/lucide/search-x";
 import CommandPaletteRow from "./CommandPaletteRow.vue";
+import { formatLocalizedNumber } from "@/utils/number";
 import type { Command } from "./paletteTypes";
 import {
   back,
@@ -249,7 +250,7 @@ const emptyMessage = computed(() => {
 const resultAnnouncement = computed(() => {
   if (isLoading.value) return __("Searching…");
   if (!flatItems.value.length) return emptyMessage.value;
-  return __("{0} results", String(flatItems.value.length));
+  return __("{0} results", formatLocalizedNumber(flatItems.value.length));
 });
 
 const stepLabel = computed(() => (depth.value ? breadcrumb.value.at(-1) : ""));

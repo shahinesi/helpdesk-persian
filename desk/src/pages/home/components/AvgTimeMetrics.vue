@@ -270,12 +270,13 @@ const chartConfig = computed<EChartsOption>(() => {
     ? getAvgTimeMetricsResource.data?.data
     : props.data?.data || [];
   data = data.map(([month, firstResponse, resolution]) => [
-    formatLocalizedDate(month, "MMM"),
+    formatLocalizedDate(month, "MMM YYYY", "gregorian"),
     firstResponse,
     resolution,
   ]);
 
   return {
+    textStyle: { fontFamily: '"Vazirmatn", sans-serif' },
     legend: {},
     tooltip: {
       trigger: "item",
@@ -285,6 +286,7 @@ const chartConfig = computed<EChartsOption>(() => {
       padding: 10,
       textStyle: {
         color: cssVar("--ink-gray-9"),
+        fontFamily: '"Vazirmatn", sans-serif',
       },
       formatter: (params) => {
         const p = params as unknown as {

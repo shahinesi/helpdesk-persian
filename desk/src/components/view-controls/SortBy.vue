@@ -27,7 +27,7 @@
           <div
             class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-base pt-px text-xs-medium text-ink-gray-8 shadow-sm"
           >
-            {{ sortValues.size }}
+            {{ formatLocalizedNumber(sortValues.size) }}
           </div>
         </template>
       </Button>
@@ -169,6 +169,7 @@ import LucidePlus from "~icons/lucide/plus";
 import { computed, inject, ref } from "vue";
 import { useSortable } from "@vueuse/integrations/useSortable";
 import { Combobox, Popover } from "frappe-ui";
+import { formatLocalizedNumber } from "@/utils/number";
 import {
   AscendingIcon,
   DescendingIcon,

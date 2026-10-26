@@ -553,7 +553,14 @@ function getChartType(chart: any) {
               formatter: (value: string | number) =>
                 formatLocalizedDate(
                   value,
-                  chart.xAxis.timeGrain === "month" ? "MMM YYYY" : "MMM D"
+                  chart.xAxis.timeGrain === "year"
+                    ? "YYYY"
+                    : chart.xAxis.timeGrain === "month"
+                    ? "MMM YYYY"
+                    : "MMM D",
+                  ["year", "month"].includes(chart.xAxis.timeGrain)
+                    ? "gregorian"
+                    : "locale"
                 ),
             },
           },

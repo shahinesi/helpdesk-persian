@@ -9,13 +9,15 @@ export type PersonaKey =
   | "agent"
   | "agent2"
   | "customer"
-  | "customerManager";
+  | "customerManager"
+  | "persianAgent";
 
 export interface Persona {
   email: string;
   firstName: string;
   roles: string[];
   kind: "agent" | "customer";
+  language?: string;
 }
 
 export const personas: Record<Exclude<PersonaKey, "admin">, Persona> = {
@@ -27,6 +29,7 @@ export const personas: Record<Exclude<PersonaKey, "admin">, Persona> = {
     "HD Customer",
     "HD Customer Manager",
   ]),
+  persianAgent: { ...agent("persian", "Parisa", ["Agent"]), language: "fa" },
 };
 
 export function emailOf(key: PersonaKey) {
@@ -52,13 +55,22 @@ function agent(slug: string, firstName: string, roles: string[]): Persona {
 }
 
 function customer(slug: string, firstName: string, roles: string[]): Persona {
-  return { email: `e2e-${slug}@example.com`, firstName, roles, kind: "customer" };
+  return {
+    email: `e2e-${slug}@example.com`,
+    firstName,
+    roles,
+    kind: "customer",
+  };
 }
 
 async function ensureUser(api: Api, persona: Persona) {
   const roles = persona.roles.map((role) => ({ role }));
   if (await api.exists("User", { name: persona.email })) {
-    await api.update("User", persona.email, { roles, enabled: 1, language: "en" });
+    await api.update("User", persona.email, {
+      roles,
+      enabled: 1,
+      language: persona.language || "en",
+    });
     return;
   }
   await api.insert("User", {
@@ -68,7 +80,7 @@ async function ensureUser(api: Api, persona: Persona) {
     send_welcome_email: 0,
     user_type: persona.kind === "agent" ? "System User" : "Website User",
     new_password: PASSWORD,
-    language: "en",
+    language: persona.language || "en",
     roles,
   });
 }
@@ -107,5 +119,8 @@ async function ensureCustomerOrg(api: Api) {
   if (await api.exists("HD Customer", { name: CUSTOMER_ORG })) {
     return api.update("HD Customer", CUSTOMER_ORG, { contacts: rows });
   }
-  await api.insert("HD Customer", { customer_name: CUSTOMER_ORG, contacts: rows });
+  await api.insert("HD Customer", {
+    customer_name: CUSTOMER_ORG,
+    contacts: rows,
+  });
 }

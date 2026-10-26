@@ -18,6 +18,7 @@ const PERSONAS: PersonaKey[] = [
   "agent2",
   "customer",
   "customerManager",
+  "persianAgent",
 ];
 
 setup("seed site and log every persona in", async ({ browser, baseURL }) => {
@@ -41,4 +42,3 @@ setup("seed site and log every persona in", async ({ browser, baseURL }) => {
     await context.close();
   }
 });
-
