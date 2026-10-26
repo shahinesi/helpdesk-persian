@@ -189,4 +189,17 @@ test("Persian single-value DateTimePicker shows Jalali dates", async ({ pageAs }
   await expect(calendar.locator('[role="grid"] button').first()).toContainText(
     /[۰-۹]/
   );
+
+  const listRequest = page.waitForRequest((request) =>
+    request.url().includes("helpdesk.api.doc.get_list_data")
+  );
+  await calendar.locator('[role="grid"] button:not([disabled])').nth(10).click();
+  const requestPayload = (await listRequest).postDataJSON();
+  const creationFilter = requestPayload.filters.find(
+    ([field, operator]: string[]) => field === "creation" && operator === ">"
+  );
+  expect(creationFilter?.[2]).toMatch(
+    /^20\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+  );
+  expect(creationFilter?.[2]).not.toMatch(/[۰-۹٠-٩]/);
 });
