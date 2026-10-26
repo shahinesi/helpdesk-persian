@@ -43,4 +43,6 @@ RUN mkdir -p sites && printf '{}' > sites/common_site_config.json \
     && bench set-config -gp socketio_port 9000 \
     && bench compile-po-to-mo --app helpdesk --force \
     && (cd apps/helpdesk/desk && yarn apply:ui-patches) \
-    && YARN_OFFLINE=true CI=Yes bench build --apps frappe,helpdesk
+    && printf '%s\n' '--offline true' > /home/frappe/.yarnrc \
+    && YARN_OFFLINE=true CI=Yes bench build --apps frappe,helpdesk \
+    && rm /home/frappe/.yarnrc
