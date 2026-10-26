@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 38803)
-Total output lines: 4127
-
 diff --git a/node_modules/frappe-ui/experimental/Charts/ECharts.vue b/node_modules/frappe-ui/experimental/Charts/ECharts.vue
 index 4c580fd..23c0ce3 100644
 --- a/node_modules/frappe-ui/experimental/Charts/ECharts.vue
@@ -1575,7 +1572,991 @@ index 77fb912..2fc3052 100644
  }
  
  function selectToday(): void {
--  const today =…8803 tokens truncated…1,
+-  const today = dayjsLocal().startOf('day')
+-  if (checkUnavailable(today)) return
+-  const value = today.format(DATE_FORMAT)
+-  const range: DateRangeValue = [value, value]
+-  commit(range)
+-  emit('today', range)
++  const today = dayjsLocal().startOf("day");
++  if (checkUnavailable(today)) return;
++  const value = today.format(DATE_FORMAT);
++  const range: DateRangeValue = [value, value];
++  commit(range);
++  emit("today", range);
+ }
+ 
+ function onCellHover(d: Dayjs | null): void {
+-  hoverDate.value = fromDate.value && !toDate.value ? d : null
++  hoverDate.value = fromDate.value && !toDate.value ? d : null;
+ }
+ 
+-defineExpose<DateRangeCalendarExposed>({ focus })
++defineExpose<DateRangeCalendarExposed>({ focus });
+ </script>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
+index bd682fa..2ef3058 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateRangePicker.vue
+@@ -16,7 +16,7 @@
+     :required="props.required"
+     :size="props.size"
+     :variant="props.variant"
+-    :placeholder="props.placeholder"
++    :placeholder="resolvedPlaceholder"
+     :disabled="props.disabled"
+     :readonly="inputReadonly"
+     :display-label="displayLabel"
+@@ -44,7 +44,7 @@
+         <aside
+           v-if="$slots.actions"
+           data-slot="actions"
+-          aria-label="Shortcuts"
++          :aria-label="translateLabel('Shortcuts')"
+           class="flex flex-col p-2 gap-0.5"
+         >
+           <slot
+@@ -66,7 +66,7 @@
+           ref="calendarRef"
+           :model-value="[fromDate, toDate]"
+           :dual-pane="props.dualPane"
+-          today-label="Today"
++          :today-label="resolvedTodayLabel"
+           :min="props.min"
+           :max="props.max"
+           :is-date-unavailable="props.isDateUnavailable"
+@@ -79,82 +79,92 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { ref, computed, nextTick, watch } from 'vue'
+-import { dayjs } from '../../utils/dayjs'
+-import { orderRange, rangeKey, stepRange } from './utils'
+-import DateRangeCalendar from './DateRangeCalendar.vue'
+-import PickerShell from '../shared/picker/PickerShell.vue'
++import { ref, computed, getCurrentInstance, nextTick, watch } from "vue";
++import { dayjs } from "../../utils/dayjs";
++import { orderRange, rangeKey, stepRange } from "./utils";
++import DateRangeCalendar from "./DateRangeCalendar.vue";
++import PickerShell from "../shared/picker/PickerShell.vue";
+ import {
+   usePopoverPositioning,
+   useKeepOpen,
+   useTypeable,
+   useDateCoercion,
+   makeUnavailableCheck,
+-} from './composables'
+-import type { Dayjs } from 'dayjs/esm'
++} from "./composables";
++import type { Dayjs } from "dayjs/esm";
+ import type {
+   DateRangePickerProps,
+   DateRangePickerEmits,
+   DateRangePickerSlots,
+   DateRangeValue,
+-} from './types'
+-import type { DateRangeCalendarExposed } from './calendarTypes'
+-import type {
+-  PickerExposed,
+-  PickerShellExposed,
+-} from '../shared/picker/types'
++} from "./types";
++import type { DateRangeCalendarExposed } from "./calendarTypes";
++import {
++  formatCalendarDate,
++  formatCalendarRange,
++  isPersianCalendar,
++  parseCalendarDate,
++} from "./jalali";
++import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
+ 
+ const props = withDefaults(defineProps<DateRangePickerProps>(), {
+   modelValue: () => [],
+-  variant: 'subtle',
+-  placeholder: 'Select range',
++  variant: "subtle",
+   typeable: true,
+   disabled: false,
+   clearable: true,
+   dualPane: false,
+   openOnFocus: false,
+   openOnClick: true,
+-})
+-const emit = defineEmits<DateRangePickerEmits>()
+-
+-defineSlots<DateRangePickerSlots>()
++});
++const emit = defineEmits<DateRangePickerEmits>();
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
++const translateLabel = (message: string) => translate?.(message) ?? message;
++const resolvedPlaceholder = computed(() =>
++  props.placeholder ?? translateLabel("Select range")
++);
++const resolvedTodayLabel = computed(() =>
++  props.todayLabel ?? translateLabel("Today")
++);
++
++defineSlots<DateRangePickerSlots>();
+ 
+ // ── Popover open state ───────────────────────────────────────────────────────
+ 
+-const shellRef = ref<PickerShellExposed | null>(null)
++const shellRef = ref<PickerShellExposed | null>(null);
+ // Seeded from the prop, so a parent that mounts the picker with `open` already
+ // true gets an open panel. The watch below only sees later changes.
+-const isOpen = ref(props.open === true)
++const isOpen = ref(props.open === true);
+ 
+ watch(
+   () => props.open,
+   (val) => {
+-    if (typeof val === 'boolean' && val !== isOpen.value) {
+-      isOpen.value = val
++    if (typeof val === "boolean" && val !== isOpen.value) {
++      isOpen.value = val;
+     }
+-  },
+-)
++  }
++);
+ 
+ watch(isOpen, (val) => {
+-  emit('update:open', val)
+-})
++  emit("update:open", val);
++});
+ 
+ function onShellOpen() {
+-  initFromValue()
++  initFromValue();
+ }
+ 
+ function onShellClose() {
+   if (isTyping.value) {
+-    commitInput()
+-    isTyping.value = false
++    commitInput();
++    isTyping.value = false;
+   }
+ }
+ 
+-const calendarRef = ref<DateRangeCalendarExposed | null>(null)
++const calendarRef = ref<DateRangeCalendarExposed | null>(null);
+ 
+ function onShellRequestFocus() {
+   // The calendar only mounts with the popover, so wait a tick for it.
+-  nextTick(() => calendarRef.value?.focus())
++  nextTick(() => calendarRef.value?.focus());
+ }
+ 
+ // ADR-0012: a picker owns its trigger, so `open` and `close` earn a place on
+@@ -163,174 +173,179 @@ defineExpose<PickerExposed>({
+   open: () => shellRef.value?.open(),
+   close: () => shellRef.value?.close(),
+   focus: (options?: FocusOptions) => shellRef.value?.focus(options),
+-})
++});
+ 
+ // ── Positioning / keepOpen ────────────────────────────────────────────────────
+ 
+ const { resolvedSide, resolvedAlign, resolvedOffset } =
+-  usePopoverPositioning(props)
+-const shouldKeepOpen = useKeepOpen(props)
+-const inputReadonly = useTypeable(props)
++  usePopoverPositioning(props);
++const shouldKeepOpen = useKeepOpen(props);
++const inputReadonly = useTypeable(props);
+ 
+ // ── Range state ──────────────────────────────────────────────────────────────
+ 
+-const DATE_FORMAT = 'YYYY-MM-DD'
+-const fromDate = ref<string>('')
+-const toDate = ref<string>('')
++const DATE_FORMAT = "YYYY-MM-DD";
++const fromDate = ref<string>("");
++const toDate = ref<string>("");
+ 
+ const checkUnavailable = makeUnavailableCheck(
+   () => props.min,
+   () => props.max,
+-  () => props.isDateUnavailable,
+-)
++  () => props.isDateUnavailable
++);
+ 
+-const coerceToDayjs = useDateCoercion(() => props.format)
++const coerceToDayjs = useDateCoercion(() => props.format);
+ 
+ // ── Value parsing ────────────────────────────────────────────────────────────
+ 
+ function normalizeIncoming(val?: string[] | null): [string, string] {
+-  if (!val || !val.length) return ['', '']
+-  const from = coerceToDayjs(val[0] || '')
+-  const to = coerceToDayjs(val[1] || '')
+-  return [from?.format(DATE_FORMAT) || '', to?.format(DATE_FORMAT) || '']
++  if (!val || !val.length) return ["", ""];
++  const from = coerceToDayjs(val[0] || "");
++  const to = coerceToDayjs(val[1] || "");
++  return [from?.format(DATE_FORMAT) || "", to?.format(DATE_FORMAT) || ""];
+ }
+ 
+ function parseRangeInput(raw: string): [Dayjs | null, Dayjs | null] {
+-  if (!raw.trim()) return [null, null]
+-  const normalized = raw.replace(/\s+to\s+/i, ',').replace(/\s+-\s+/g, ',')
++  if (!raw.trim()) return [null, null];
++  const normalized = raw.replace(/\s+to\s+/i, ",").replace(/\s+-\s+/g, ",");
+   const parts = normalized
+-    .split(',')
++    .split(/,|\s+to\s+|\s+تا\s+|\s+[–—-]\s+/i)
+     .map((p) => p.trim())
+-    .filter(Boolean)
+-  if (!parts.length) return [null, null]
+-  return [coerceToDayjs(parts[0]), coerceToDayjs(parts[1])]
++    .filter(Boolean);
++  if (!parts.length) return [null, null];
++  return [
++    parseCalendarDate(parts[0]) ?? coerceToDayjs(parts[0]),
++    parseCalendarDate(parts[1] || "") ?? coerceToDayjs(parts[1] || ""),
++  ];
+ }
+ 
+ function pickIncoming(): string[] {
+-  return props.modelValue && props.modelValue.length ? props.modelValue : []
++  return props.modelValue && props.modelValue.length ? props.modelValue : [];
+ }
+ 
+ function syncFromValue(val?: string[]): void {
+-  const [f, t] = normalizeIncoming(val)
+-  fromDate.value = f
+-  toDate.value = t
++  const [f, t] = normalizeIncoming(val);
++  fromDate.value = f;
++  toDate.value = t;
+ }
+ 
+-const initialValue = ref<string>('')
+-syncFromValue(pickIncoming())
+-initialValue.value = rangeKey([fromDate.value, toDate.value])
++const initialValue = ref<string>("");
++syncFromValue(pickIncoming());
++initialValue.value = rangeKey([fromDate.value, toDate.value]);
+ 
+ function initFromValue(): void {
+-  syncFromValue(pickIncoming())
++  syncFromValue(pickIncoming());
+ }
+ 
+ watch(
+   () => props.modelValue,
+   () => {
+-    syncFromValue(pickIncoming())
+-  },
+-)
++    syncFromValue(pickIncoming());
++  }
++);
+ 
+ // ── Display ──────────────────────────────────────────────────────────────────
+ 
+ const displayLabel = computed<string>(() =>
+-  formatDisplay(fromDate.value, toDate.value),
+-)
++  formatDisplay(fromDate.value, toDate.value)
++);
+ 
+ function formatOne(dateStr: string): string {
+-  if (!dateStr) return ''
+-  const d = dayjs(dateStr)
+-  if (!d.isValid()) return dateStr
+-  return props.format ? d.format(props.format) : dateStr
++  if (!dateStr) return "";
++  const d = dayjs(dateStr);
++  if (!d.isValid()) return dateStr;
++  if (isPersianCalendar()) return formatCalendarDate(d);
++  return props.format ? d.format(props.format) : dateStr;
+ }
+ function formatDisplay(from: string, to: string): string {
+-  if (!from && !to) return ''
+-  if (from && !to) return formatOne(from)
+-  return `${formatOne(from)} to ${formatOne(to)}`
++  if (!from && !to) return "";
++  if (from && !to) return formatOne(from);
++  if (isPersianCalendar()) return formatCalendarRange(dayjs(from), dayjs(to));
++  return `${formatOne(from)} to ${formatOne(to)}`;
+ }
+ 
+-const inputValue = ref<string>(displayLabel.value)
+-const isTyping = ref(false)
++const inputValue = ref<string>(displayLabel.value);
++const isTyping = ref(false);
+ watch(displayLabel, (val) => {
+-  if (!isTyping.value) inputValue.value = val
+-})
++  if (!isTyping.value) inputValue.value = val;
++});
+ 
+ // ── Input commit / selection ─────────────────────────────────────────────────
+ 
+ function commitInput(close = false): void {
+-  const raw = inputValue.value.trim()
++  const raw = inputValue.value.trim();
+   if (!raw) {
+-    clearSelection()
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
+-    return
++    clearSelection();
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
++    return;
+   }
+-  const [f, t] = parseRangeInput(raw)
+-  if (f && !checkUnavailable(f)) fromDate.value = f.format(DATE_FORMAT)
+-  if (t && !checkUnavailable(t)) toDate.value = t.format(DATE_FORMAT)
+-  else if (!t) toDate.value = ''
+-  setOrdered([fromDate.value, toDate.value])
+-  emitIfChanged()
+-  inputValue.value = displayLabel.value
++  const [f, t] = parseRangeInput(raw);
++  if (f && !checkUnavailable(f)) fromDate.value = f.format(DATE_FORMAT);
++  if (t && !checkUnavailable(t)) toDate.value = t.format(DATE_FORMAT);
++  else if (!t) toDate.value = "";
++  setOrdered([fromDate.value, toDate.value]);
++  emitIfChanged();
++  inputValue.value = displayLabel.value;
+   if (close && !shouldKeepOpen.value && fromDate.value && toDate.value) {
+-    isOpen.value = false
++    isOpen.value = false;
+   }
+ }
+ 
+ // The calendar reports every click, including the half-open range after the
+ // first one. Emit and close only once both ends are set.
+ function handleRangeSelect(range: DateRangeValue) {
+-  fromDate.value = range[0] ?? ''
+-  toDate.value = range[1] ?? ''
++  fromDate.value = range[0] ?? "";
++  toDate.value = range[1] ?? "";
+   if (fromDate.value && toDate.value) {
+-    emitIfChanged()
+-    if (!shouldKeepOpen.value) isOpen.value = false
++    emitIfChanged();
++    if (!shouldKeepOpen.value) isOpen.value = false;
+   }
+-  isTyping.value = false
++  isTyping.value = false;
+ }
+ 
+ function handleDateCellClick(date: string | Date | Dayjs) {
+-  const d = dayjs(date as any)
+-  if (!d.isValid() || checkUnavailable(d)) return
+-  handleRangeSelect(stepRange([fromDate.value, toDate.value], d))
++  const d = dayjs(date as any);
++  if (!d.isValid() || checkUnavailable(d)) return;
++  handleRangeSelect(stepRange([fromDate.value, toDate.value], d));
+ }
+ 
+ function setOrdered(range: [string, string]): void {
+-  const [from, to] = orderRange(range)
+-  fromDate.value = from
+-  toDate.value = to
++  const [from, to] = orderRange(range);
++  fromDate.value = from;
++  toDate.value = to;
+ }
+ 
+ function emitIfChanged() {
+-  const next = rangeKey([fromDate.value, toDate.value])
+-  if (next === initialValue.value) return
++  const next = rangeKey([fromDate.value, toDate.value]);
++  if (next === initialValue.value) return;
+   const payload: DateRangeValue =
+-    fromDate.value && toDate.value ? [fromDate.value, toDate.value] : []
+-  emit('update:modelValue', payload)
+-  emit('change', payload)
+-  initialValue.value = next
++    fromDate.value && toDate.value ? [fromDate.value, toDate.value] : [];
++  emit("update:modelValue", payload);
++  emit("change", payload);
++  initialValue.value = next;
+ }
+ 
+ function clearSelection() {
+-  if (!fromDate.value && !toDate.value) return
+-  fromDate.value = ''
+-  toDate.value = ''
+-  emitIfChanged()
+-  inputValue.value = ''
++  if (!fromDate.value && !toDate.value) return;
++  fromDate.value = "";
++  toDate.value = "";
++  emitIfChanged();
++  inputValue.value = "";
+ }
+ 
+ function handleClearClick() {
+-  clearSelection()
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  clearSelection();
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+ }
+ 
+ function handleSetRange(range: [string | Date | Dayjs, string | Date | Dayjs]) {
+-  const a = dayjs(range[0])
+-  const b = dayjs(range[1])
+-  if (!a.isValid() || !b.isValid()) return
+-  if (checkUnavailable(a) || checkUnavailable(b)) return
+-  setOrdered([a.format(DATE_FORMAT), b.format(DATE_FORMAT)])
+-  emitIfChanged()
+-  isTyping.value = false
++  const a = dayjs(range[0]);
++  const b = dayjs(range[1]);
++  if (!a.isValid() || !b.isValid()) return;
++  if (checkUnavailable(a) || checkUnavailable(b)) return;
++  setOrdered([a.format(DATE_FORMAT), b.format(DATE_FORMAT)]);
++  emitIfChanged();
++  isTyping.value = false;
+ }
+ </script>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
+index ca8ae34..9dd65e5 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
++++ b/node_modules/frappe-ui/src/components/DatePicker/DateTimePicker.vue
+@@ -16,7 +16,7 @@
+     :required="props.required"
+     :size="props.size"
+     :variant="props.variant"
+-    :placeholder="props.placeholder"
++    :placeholder="resolvedPlaceholder"
+     :disabled="props.disabled"
+     :readonly="inputReadonly"
+     :display-label="displayLabel"
+@@ -46,7 +46,7 @@
+         <aside
+           v-if="$slots.actions"
+           data-slot="actions"
+-          aria-label="Shortcuts"
++          :aria-label="translateLabel('Shortcuts')"
+           class="flex flex-col p-2 gap-0.5"
+         >
+           <slot
+@@ -67,7 +67,7 @@
+           <DateCalendar
+             ref="calendarRef"
+             :model-value="selectedDate"
+-            today-label="Now"
++            :today-label="resolvedTodayLabel"
+             :min="resolvedMin"
+             :max="resolvedMax"
+             :is-date-unavailable="props.isDateUnavailable"
+@@ -81,7 +81,7 @@
+               :typeable="props.typeable"
+               side="bottom"
+               align="start"
+-              placeholder="Select time"
++              :placeholder="resolvedTimePlaceholder"
+               :min="computedMinTime"
+               :max="computedMaxTime"
+               @change="onTimeChange"
+@@ -94,71 +94,81 @@
+ </template>
+ 
+ <script setup lang="ts">
+-import { ref, computed, nextTick, watch } from 'vue'
+-import TimePicker from '../TimePicker/TimePicker.vue'
+-import { dayjs, dayjsLocal, dayjsSystem } from '../../utils/dayjs'
+-import DateCalendar from './DateCalendar.vue'
+-import PickerShell from '../shared/picker/PickerShell.vue'
++import { ref, computed, getCurrentInstance, nextTick, watch } from "vue";
++import TimePicker from "../TimePicker/TimePicker.vue";
++import { dayjs, dayjsLocal, dayjsSystem } from "../../utils/dayjs";
++import DateCalendar from "./DateCalendar.vue";
++import PickerShell from "../shared/picker/PickerShell.vue";
+ import {
+   usePopoverPositioning,
+   useKeepOpen,
+   useTypeable,
+   useDateCoercion,
+-} from './composables'
+-import type { Dayjs } from 'dayjs/esm'
++} from "./composables";
++import type { Dayjs } from "dayjs/esm";
+ import type {
+   DateTimePickerProps,
+   DateTimePickerEmits,
+   DateTimePickerSlots,
+-} from './types'
+-import type { DateCalendarExposed } from './calendarTypes'
+-import type {
+-  PickerExposed,
+-  PickerShellExposed,
+-} from '../shared/picker/types'
++} from "./types";
++import type { DateCalendarExposed } from "./calendarTypes";
++import {
++  formatCalendarDateTime,
++  isPersianCalendar,
++  parseCalendarDateTime,
++} from "./jalali";
++import type { PickerExposed, PickerShellExposed } from "../shared/picker/types";
+ 
+ const props = withDefaults(defineProps<DateTimePickerProps>(), {
+-  modelValue: '',
+-  variant: 'subtle',
+-  placeholder: 'Select date & time',
++  modelValue: "",
++  variant: "subtle",
+   typeable: true,
+   disabled: false,
+   clearable: true,
+   openOnFocus: false,
+   openOnClick: true,
+-})
+-const emit = defineEmits<DateTimePickerEmits>()
+-
+-defineSlots<DateTimePickerSlots>()
++});
++const emit = defineEmits<DateTimePickerEmits>();
++const translate = getCurrentInstance()?.appContext.config.globalProperties.__;
++const translateLabel = (message: string) => translate?.(message) ?? message;
++const resolvedPlaceholder = computed(() =>
++  props.placeholder ?? translateLabel("Select date & time")
++);
++const resolvedTimePlaceholder = computed(() => translateLabel("Select time"));
++const resolvedTodayLabel = computed(() =>
++  props.todayLabel ?? translateLabel("Now")
++);
++
++defineSlots<DateTimePickerSlots>();
+ 
+ // ── Popover open state ───────────────────────────────────────────────────────
+ 
+-const shellRef = ref<PickerShellExposed | null>(null)
++const shellRef = ref<PickerShellExposed | null>(null);
+ // Seeded from the prop, so a parent that mounts the picker with `open` already
+ // true gets an open panel. The watch below only sees later changes.
+-const isOpen = ref(props.open === true)
++const isOpen = ref(props.open === true);
+ 
+ watch(
+   () => props.open,
+   (val) => {
+-    if (typeof val === 'boolean' && val !== isOpen.value) {
+-      isOpen.value = val
++    if (typeof val === "boolean" && val !== isOpen.value) {
++      isOpen.value = val;
+     }
+-  },
+-)
++  }
++);
+ 
+ watch(isOpen, (val) => {
+-  emit('update:open', val)
+-})
++  emit("update:open", val);
++});
+ 
+ function onShellOpen() {
+-  initFromValue()
++  initFromValue();
+ }
+ 
+ function onShellClose() {
+   if (isTyping.value) {
+-    commitInput()
+-    isTyping.value = false
++    commitInput();
++    isTyping.value = false;
+   }
+ }
+ 
+@@ -168,55 +178,55 @@ defineExpose<PickerExposed>({
+   open: () => shellRef.value?.open(),
+   close: () => shellRef.value?.close(),
+   focus: (options?: FocusOptions) => shellRef.value?.focus(options),
+-})
++});
+ 
+-const calendarRef = ref<DateCalendarExposed | null>(null)
+-const timePickerRef = ref<{ focus: () => void } | null>(null)
++const calendarRef = ref<DateCalendarExposed | null>(null);
++const timePickerRef = ref<{ focus: () => void } | null>(null);
+ 
+ function onShellRequestFocus() {
+   // The calendar only mounts with the popover, so wait a tick for it.
+-  nextTick(() => calendarRef.value?.focus())
++  nextTick(() => calendarRef.value?.focus());
+ }
+ 
+ // ── Positioning / keepOpen ────────────────────────────────────────────────────
+ 
+ const { resolvedSide, resolvedAlign, resolvedOffset } =
+-  usePopoverPositioning(props)
+-const shouldKeepOpen = useKeepOpen(props)
+-const inputReadonly = useTypeable(props)
++  usePopoverPositioning(props);
++const shouldKeepOpen = useKeepOpen(props);
++const inputReadonly = useTypeable(props);
+ 
+ // ── Calendar state ───────────────────────────────────────────────────────────
+ 
+-const DATE_FORMAT = 'YYYY-MM-DD'
+-const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
++const DATE_FORMAT = "YYYY-MM-DD";
++const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+ 
+-const selectedDate = ref<string>('')
+-const timeValue = ref<string>('')
++const selectedDate = ref<string>("");
++const timeValue = ref<string>("");
+ 
+-const initialValue = ref(props.modelValue || '')
++const initialValue = ref(props.modelValue || "");
+ 
+-const coerceToDayjs = useDateCoercion(() => props.format)
++const coerceToDayjs = useDateCoercion(() => props.format);
+ 
+ // ── Constraints ──────────────────────────────────────────────────────────────
+ 
+ // `min`/`max` accept either a date (`YYYY-MM-DD`) or a date-time
+ // (`YYYY-MM-DD HH:mm:ss`); date-only values parse as midnight, which gives
+ // day-level semantics for free under the second-level check below.
+-const resolvedMin = computed<string | undefined>(() => props.min)
+-const resolvedMax = computed<string | undefined>(() => props.max)
++const resolvedMin = computed<string | undefined>(() => props.min);
++const resolvedMax = computed<string | undefined>(() => props.max);
+ 
+ const minDT = computed<Dayjs | null>(() =>
+-  resolvedMin.value ? coerceToDayjs(resolvedMin.value) : null,
+-)
++  resolvedMin.value ? coerceToDayjs(resolvedMin.value) : null
++);
+ const maxDT = computed<Dayjs | null>(() =>
+-  resolvedMax.value ? coerceToDayjs(resolvedMax.value) : null,
+-)
++  resolvedMax.value ? coerceToDayjs(resolvedMax.value) : null
++);
+ 
+ function checkUnavailable(d: Dayjs): boolean {
+-  if (props.isDateUnavailable?.(d)) return true
+-  if (minDT.value && d.endOf('day').isBefore(minDT.value)) return true
+-  if (maxDT.value && d.startOf('day').isAfter(maxDT.value)) return true
+-  return false
++  if (props.isDateUnavailable?.(d)) return true;
++  if (minDT.value && d.endOf("day").isBefore(minDT.value)) return true;
++  if (maxDT.value && d.startOf("day").isAfter(maxDT.value)) return true;
++  return false;
+ }
+ 
+ // ── Value sync ───────────────────────────────────────────────────────────────
+@@ -224,170 +234,172 @@ function checkUnavailable(d: Dayjs): boolean {
+ function syncFromValue(val?: string): void {
+   if (!val) {
+     if (!props.clearable) {
+-      const now = dayjsLocal()
+-      selectedDate.value = now.format(DATE_FORMAT)
+-      timeValue.value = now.format('HH:mm:ss')
++      const now = dayjsLocal();
++      selectedDate.value = now.format(DATE_FORMAT);
++      timeValue.value = now.format("HH:mm:ss");
+     } else {
+-      selectedDate.value = ''
+-      timeValue.value = ''
++      selectedDate.value = "";
++      timeValue.value = "";
+     }
+-    return
++    return;
+   }
+-  const d = coerceToDayjs(val)
++  const d = coerceToDayjs(val);
+   if (!d) {
+-    selectedDate.value = ''
+-    timeValue.value = ''
+-    return
++    selectedDate.value = "";
++    timeValue.value = "";
++    return;
+   }
+-  selectedDate.value = d.format(DATE_FORMAT)
+-  timeValue.value = d.format('HH:mm:ss')
++  selectedDate.value = d.format(DATE_FORMAT);
++  timeValue.value = d.format("HH:mm:ss");
+ }
+ 
+-syncFromValue(initialValue.value)
++syncFromValue(initialValue.value);
+ 
+ function initFromValue(): void {
+-  syncFromValue(props.modelValue)
++  syncFromValue(props.modelValue);
+ }
+ 
+ watch(
+   () => props.modelValue,
+   (m) => {
+-    syncFromValue(m)
+-  },
+-)
++    syncFromValue(m);
++  }
++);
+ 
+ // ── Display ──────────────────────────────────────────────────────────────────
+ 
+ const combinedValue = computed<string>(() => {
+-  if (!selectedDate.value) return ''
+-  const base = `${selectedDate.value} ${timeValue.value || '00:00:00'}`
+-  const local = dayjs(base)
+-  if (!local.isValid()) return ''
+-  return local.format(DATE_TIME_FORMAT)
+-})
++  if (!selectedDate.value) return "";
++  const base = `${selectedDate.value} ${timeValue.value || "00:00:00"}`;
++  const local = dayjs(base);
++  if (!local.isValid()) return "";
++  return local.format(DATE_TIME_FORMAT);
++});
+ 
+ const displayLabel = computed<string>(() => {
+-  if (!combinedValue.value) return ''
+-  if (props.format) return dayjs(combinedValue.value).format(props.format)
+-  return combinedValue.value
+-})
+-
+-const inputValue = ref<string>(displayLabel.value)
+-const isTyping = ref(false)
++  if (!combinedValue.value) return "";
++  if (isPersianCalendar())
++    return formatCalendarDateTime(dayjs(combinedValue.value));
++  if (props.format) return dayjs(combinedValue.value).format(props.format);
++  return combinedValue.value;
++});
++
++const inputValue = ref<string>(displayLabel.value);
++const isTyping = ref(false);
+ watch(displayLabel, (val) => {
+-  if (!isTyping.value) inputValue.value = val
+-})
++  if (!isTyping.value) inputValue.value = val;
++});
+ 
+ const computedMinTime = computed<string>(() => {
+-  if (!minDT.value || !selectedDate.value) return ''
+-  if (dayjs(selectedDate.value).isSame(minDT.value, 'day'))
+-    return minDT.value.format('HH:mm:ss')
+-  return ''
+-})
++  if (!minDT.value || !selectedDate.value) return "";
++  if (dayjs(selectedDate.value).isSame(minDT.value, "day"))
++    return minDT.value.format("HH:mm:ss");
++  return "";
++});
+ const computedMaxTime = computed<string>(() => {
+-  if (!maxDT.value || !selectedDate.value) return ''
+-  if (dayjs(selectedDate.value).isSame(maxDT.value, 'day'))
+-    return maxDT.value.format('HH:mm:ss')
+-  return ''
+-})
++  if (!maxDT.value || !selectedDate.value) return "";
++  if (dayjs(selectedDate.value).isSame(maxDT.value, "day"))
++    return maxDT.value.format("HH:mm:ss");
++  return "";
++});
+ 
+ watch([computedMinTime, computedMaxTime, timeValue, selectedDate], () => {
+-  if (!selectedDate.value || !timeValue.value) return
+-  const cur = dayjs(`${selectedDate.value} ${timeValue.value}`)
++  if (!selectedDate.value || !timeValue.value) return;
++  const cur = dayjs(`${selectedDate.value} ${timeValue.value}`);
+   if (minDT.value && cur.isBefore(minDT.value))
+-    timeValue.value = computedMinTime.value || timeValue.value
++    timeValue.value = computedMinTime.value || timeValue.value;
+   if (maxDT.value && cur.isAfter(maxDT.value))
+-    timeValue.value = computedMaxTime.value || timeValue.value
+-})
++    timeValue.value = computedMaxTime.value || timeValue.value;
++});
+ 
+ // ── Input commit / selection ─────────────────────────────────────────────────
+ 
+ function commitInput(close = false): void {
+-  const raw = inputValue.value.trim()
++  const raw = inputValue.value.trim();
+   if (!raw) {
+     if (!props.clearable) {
+-      const now = dayjsLocal()
+-      selectDate(now)
+-      timeValue.value = now.format('HH:mm:ss')
+-      emitChange()
++      const now = dayjsLocal();
++      selectDate(now);
++      timeValue.value = now.format("HH:mm:ss");
++      emitChange();
+     } else {
+-      clearSelection()
++      clearSelection();
+     }
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
+-    return
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
++    return;
+   }
+-  const parsed = coerceToDayjs(raw)
++  const parsed = parseCalendarDateTime(raw) ?? coerceToDayjs(raw);
+   if (parsed && !checkUnavailable(parsed)) {
+-    selectDate(parsed)
+-    timeValue.value = parsed.format('HH:mm:ss')
+-    emitChange()
+-    if (close && !shouldKeepOpen.value) isOpen.value = false
++    selectDate(parsed);
++    timeValue.value = parsed.format("HH:mm:ss");
++    emitChange();
++    if (close && !shouldKeepOpen.value) isOpen.value = false;
+   } else {
+-    inputValue.value = displayLabel.value
++    inputValue.value = displayLabel.value;
+   }
+ }
+ 
+ function selectDate(date: string | Date | Dayjs): void {
+-  const d = dayjs(date as any)
+-  if (!d.isValid() || checkUnavailable(d)) return
+-  selectedDate.value = d.format(DATE_FORMAT)
++  const d = dayjs(date as any);
++  if (!d.isValid() || checkUnavailable(d)) return;
++  selectedDate.value = d.format(DATE_FORMAT);
+ }
+ 
+ function handleDateCellClick(date: string | Date | Dayjs) {
+-  selectDate(date)
+-  emitChange()
+-  isTyping.value = false
++  selectDate(date);
++  emitChange();
++  isTyping.value = false;
+   // A date alone is half a selection. Keep the popover open and move focus to
+   // the TimePicker.
+-  nextTick(() => timePickerRef.value?.focus?.())
++  nextTick(() => timePickerRef.value?.focus?.());
+ }
+ 
+ function onTimeChange(val: string) {
+-  timeValue.value = val
+-  isTyping.value = false
+-  if (selectedDate.value) emitChange()
++  timeValue.value = val;
++  isTyping.value = false;
++  if (selectedDate.value) emitChange();
+ }
+ 
+ function emitChange() {
+   if (!selectedDate.value) {
+-    clearSelection()
+-    return
++    clearSelection();
++    return;
+   }
+ 
+-  const localDateTime = combinedValue.value
+-  const systemDateTime = dayjsSystem(localDateTime).format(DATE_TIME_FORMAT)
++  const localDateTime = combinedValue.value;
++  const systemDateTime = dayjsSystem(localDateTime).format(DATE_TIME_FORMAT);
+ 
+   if (systemDateTime !== initialValue.value) {
+-    emit('update:modelValue', systemDateTime)
+-    emit('change', systemDateTime)
+-    initialValue.value = systemDateTime
++    emit("update:modelValue", systemDateTime);
++    emit("change", systemDateTime);
++    initialValue.value = systemDateTime;
+   }
+ 
+-  if (!isTyping.value) inputValue.value = displayLabel.value
++  if (!isTyping.value) inputValue.value = displayLabel.value;
+ }
+ 
+ function clearSelection() {
+-  if (!selectedDate.value && !timeValue.value) return
+-  selectedDate.value = ''
+-  timeValue.value = ''
+-  emit('update:modelValue', '')
+-  emit('change', '')
+-  initialValue.value = ''
+-  inputValue.value = ''
++  if (!selectedDate.value && !timeValue.value) return;
++  selectedDate.value = "";
++  timeValue.value = "";
++  emit("update:modelValue", "");
++  emit("change", "");
++  initialValue.value = "";
++  inputValue.value = "";
+ }
+ 
+ // Now commits date and time together, in one emit.
+ function handleNowClick(date: string) {
+-  selectDate(date)
+-  timeValue.value = dayjsLocal().format('HH:mm:ss')
+-  emitChange()
+-  isTyping.value = false
+-  if (!shouldKeepOpen.value) isOpen.value = false
++  selectDate(date);
++  timeValue.value = dayjsLocal().format("HH:mm:ss");
++  emitChange();
++  isTyping.value = false;
++  if (!shouldKeepOpen.value) isOpen.value = false;
+ }
+ 
+ function handleClearClick() {
+-  clearSelection()
+-  if (!shouldKeepOpen.value) isOpen.value = false
+-  isTyping.value = false
++  clearSelection();
++  if (!shouldKeepOpen.value) isOpen.value = false;
++  isTyping.value = false;
+ }
+ </script>
+diff --git a/node_modules/frappe-ui/src/components/DatePicker/composables.ts b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
+index 553986b..438efd8 100644
+--- a/node_modules/frappe-ui/src/components/DatePicker/composables.ts
++++ b/node_modules/frappe-ui/src/components/DatePicker/composables.ts
+@@ -1,61 +1,62 @@
+-import { ref, computed, watch } from 'vue'
+-import type { Dayjs } from 'dayjs/esm'
+-import { dayjs } from '../../utils/dayjs'
+-import { generateWeeks, monthStart, getDateValue } from './utils'
+-import type { CalendarPanelExposed } from './calendarTypes'
++import { ref, computed, watch } from "vue";
++import type { Dayjs } from "dayjs/esm";
++import { dayjs } from "../../utils/dayjs";
++import { generateWeeks, monthStart, getDateValue } from "./utils";
++import type { CalendarPanelExposed } from "./calendarTypes";
++import { shiftCalendarMonth, toCalendarDate } from "./jalali";
+ import type {
+   CommonDatePickerProps,
+   PopoverAlign,
+   PopoverSide,
+   DatePickerViewMode as ViewMode,
+-} from './types'
++} from "./types";
+ 
+ // View + month/year navigation state shared by all three pickers.
+ export function useCalendarView() {
+-  const view = ref<ViewMode>('date')
+-  const currentYear = ref<number>(dayjs().year())
+-  const currentMonth = ref<number>(dayjs().month())
++  const view = ref<ViewMode>("date");
++  const today = dayjs();
++  const initial = toCalendarDate(today);
++  const currentYear = ref<number>(initial.jy);
++  const currentMonth = ref<number>(initial.jm - 1);
+ 
+   // Prev/next only navigate months in the day grid. The month-year split view
+   // scrolls instead of paging, so it has no prev/next controls.
+   function prev(): void {
+-    const m = monthStart(currentYear.value, currentMonth.value).subtract(
+-      1,
 -      'month',
 -    )
 -    currentYear.value = m.year()
@@ -3143,4 +4124,3 @@ index cc3f745..e51412c 100644
    color: var(--ink-gray-4);
    pointer-events: none;
    height: 0;
-
