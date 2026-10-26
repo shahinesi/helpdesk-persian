@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import "dayjs/esm/locale/fa";
+import "dayjs/esm/locale/fa.js";
 import { dayjs } from "frappe-ui";
 import { formatLocalizedDigits, formatLocalizedNumber } from "./number";
 
