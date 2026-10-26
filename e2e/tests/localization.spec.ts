@@ -46,6 +46,8 @@ test("English calendar keeps Gregorian month names and left-to-right layout", as
   const page = await pageAs("agent");
   await page.goto("/helpdesk/dashboard");
 
+  await expect(page.getByText("0%", { exact: true })).toBeVisible();
+  await expect(page.getByText("0/5", { exact: true })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
   await page.locator('.mb-4 [class*="min-w-48"]').click();
@@ -129,4 +131,21 @@ test("Persian calendar month and year selection honors leap Esfand", async ({
     .click();
   await expect(inMonthDays.filter({ hasText: /^۳۰$/ })).toHaveCount(0);
   await expect(inMonthDays.filter({ hasText: /^۲۹$/ })).toHaveCount(1);
+});
+
+test("Persian dashboard metrics localize percentages and decimals", async ({
+  pageAs,
+}) => {
+  const page = await pageAs("persianAgent");
+  await page.goto("/helpdesk/dashboard");
+
+  const percentage = page.getByText("۰٪", { exact: true });
+  const rating = page.getByText("۰/۵", { exact: true });
+  await expect(percentage).toBeVisible();
+  await expect(rating).toBeVisible();
+
+  const fontFamily = await percentage.evaluate((element) =>
+    getComputedStyle(element).fontFamily.toLowerCase()
+  );
+  expect(fontFamily).toContain("vazirmatn");
 });
