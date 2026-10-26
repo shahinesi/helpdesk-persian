@@ -64,3 +64,69 @@ test("English calendar keeps Gregorian month names and left-to-right layout", as
     /[0-9]/
   );
 });
+
+test("Persian ticket details keep timeline dates and digits localized", async ({
+  pageAs,
+  ticket,
+}) => {
+  const page = await pageAs("persianAgent");
+  await skipGettingStarted(page, "e2e-persian@example.com");
+  await page.goto(`/helpdesk/tickets/${ticket.name}`);
+
+  await expect(
+    page.getByText(ticket.subject, { exact: true }).first()
+  ).toBeVisible();
+  const body = page.locator("body");
+  await expect(body).toContainText(/[۰-۹]/);
+  await expect(body).not.toContainText(
+    /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/
+  );
+
+  const fontFamily = await body.evaluate((element) =>
+    getComputedStyle(element).fontFamily.toLowerCase()
+  );
+  expect(fontFamily).toContain("vazirmatn");
+});
+
+test("Persian calendar month and year selection honors leap Esfand", async ({
+  pageAs,
+}) => {
+  const page = await pageAs("persianAgent");
+  await skipGettingStarted(page, "e2e-persian@example.com");
+  await page.goto("/helpdesk/dashboard");
+
+  await page.locator('.mb-4 [class*="min-w-48"]').click();
+  await page.getByText("محدوده سفارشی", { exact: true }).click();
+  const calendar = page.locator(".calendar-panel").first();
+  const currentMonth = await page.evaluate(() =>
+    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-arabext", {
+      month: "long",
+      year: "numeric",
+    }).format(new Date())
+  );
+  await calendar.getByRole("button").filter({ hasText: currentMonth }).click();
+
+  const yearList = calendar.locator('[role="listbox"]').first();
+  const monthList = calendar.locator('[role="listbox"]').last();
+  await yearList.getByText("۱۴۰۳", { exact: true }).click();
+  await monthList.getByText("اسفند", { exact: true }).click();
+
+  const inMonthDays = calendar.locator(
+    '[role="grid"] [role="gridcell"]:not([data-outside-view])'
+  );
+  await expect(inMonthDays.filter({ hasText: /^۳۰$/ })).toHaveCount(1);
+
+  await calendar.getByRole("button").filter({ hasText: "اسفند" }).click();
+  await calendar
+    .locator('[role="listbox"]')
+    .first()
+    .getByText("۱۴۰۴", { exact: true })
+    .click();
+  await calendar
+    .locator('[role="listbox"]')
+    .last()
+    .getByText("اسفند", { exact: true })
+    .click();
+  await expect(inMonthDays.filter({ hasText: /^۳۰$/ })).toHaveCount(0);
+  await expect(inMonthDays.filter({ hasText: /^۲۹$/ })).toHaveCount(1);
+});
