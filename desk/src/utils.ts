@@ -13,7 +13,12 @@ import { Icon } from "frappe-ui/experimental";
 import { getMeta } from "./stores/meta";
 import { __ } from "./translation";
 import { formatLocalizedNumber } from "./utils/number";
+import { formatLocalizedMonthBucket as formatGregorianMonthBucket } from "./utils/monthBucket";
 export { formatLocalizedNumber } from "./utils/number";
+
+export function formatLocalizedMonthBucket(date: string) {
+  return formatGregorianMonthBucket(date, dayjs.locale());
+}
 
 /**
  * Wrapper to create toasts, supplied with default options.

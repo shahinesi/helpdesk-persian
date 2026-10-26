@@ -22,6 +22,7 @@ import { __ } from "@/translation";
 import {
   buildPercentageChange,
   formatLocalizedDate,
+  formatLocalizedMonthBucket,
   formatLocalizedDateRange,
   formatLocalizedNumber,
 } from "@/utils";
@@ -113,7 +114,7 @@ const chartData = computed(() => {
       return formatLocalizedDateRange(item.date, item.end_date, "MMM D");
     }
     if (_data?.bucket === "monthly") {
-      return formatLocalizedDate(item.date, "MMM YYYY", "gregorian");
+      return formatLocalizedMonthBucket(item.date);
     }
     return _data?.bucket === "daily"
       ? formatLocalizedDate(item.date, "MMM D")
