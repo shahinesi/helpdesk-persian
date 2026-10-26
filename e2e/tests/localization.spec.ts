@@ -162,3 +162,31 @@ test("Persian ticket list localizes the record count while English keeps ASCII d
   await englishPage.goto("/helpdesk/tickets");
   await expect(englishPage.getByTestId("list-footer-count")).toContainText(/[0-9]+ of [0-9]+/);
 });
+
+test("Persian single-value DateTimePicker shows Jalali dates", async ({ pageAs }) => {
+  const page = await pageAs("persianAgent");
+  await skipGettingStarted(page, "e2e-persian@example.com");
+  await page.goto("/helpdesk/tickets");
+
+  await page.getByRole("button", { name: "فیلتر", exact: true }).click();
+  await page.getByText("افزودن فیلتر", { exact: true }).click();
+  await page.getByText("تاریخ ایجاد", { exact: true }).last().click();
+  await page.getByRole("button", { name: "مدت زمان", exact: true }).click();
+  await page.getByText("بزرگتر از", { exact: true }).click();
+
+  const dateTimeInput = page.getByPlaceholder("انتخاب تاریخ و ساعت");
+  await expect(dateTimeInput).toBeVisible();
+  await dateTimeInput.click();
+
+  const calendar = page.locator(".calendar-panel").first();
+  const expectedMonth = await page.evaluate(() =>
+    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-arabext", {
+      month: "long",
+      year: "numeric",
+    }).format(new Date())
+  );
+  await expect(calendar).toContainText(expectedMonth);
+  await expect(calendar.locator('[role="grid"] button').first()).toContainText(
+    /[۰-۹]/
+  );
+});

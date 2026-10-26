@@ -125,6 +125,7 @@
         :is="field.fieldtype === 'Date' ? DatePicker : DateTimePicker"
         :today-label="__('Today')"
         :model-value="value"
+        :placeholder="field.fieldtype === 'Date' ? __('Select date') : __('Select date & time')"
         icon-left=""
         @change="(date) => commitAndClose(date)"
       />
