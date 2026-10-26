@@ -171,8 +171,8 @@ test("Persian single-value DateTimePicker shows Jalali dates", async ({ pageAs }
   await page.getByRole("button", { name: "فیلتر", exact: true }).click();
   await page.getByText("افزودن فیلتر", { exact: true }).click();
   await page.getByText("تاریخ ایجاد", { exact: true }).last().click();
-  await page.getByRole("button", { name: "مدت زمان", exact: true }).click();
-  await page.getByText("بزرگتر از", { exact: true }).click();
+  await page.getByRole("button", { name: "بازهٔ زمانی", exact: true }).click();
+  await page.getByText("بیشتر از", { exact: true }).click();
 
   const dateTimeInput = page.getByPlaceholder("انتخاب تاریخ و ساعت");
   await expect(dateTimeInput).toBeVisible();
