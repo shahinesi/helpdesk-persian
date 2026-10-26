@@ -1,13 +1,12 @@
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-
 function getDisplayLocale() {
   if (typeof document === "undefined") return "en";
   return document.documentElement.lang || "en";
 }
 
 export function formatLocalizedDigits(value: string | number) {
-  if (getDisplayLocale().split("-")[0] !== "fa") return String(value);
-  return digitsEnToFa(String(value)).replace(/%/g, "٪");
+  // Retained name for existing callers; display text stays canonical and
+  // Vazirmatn handles Persian glyph rendering.
+  return String(value);
 }
 
 export function formatLocalizedNumber(
@@ -21,7 +20,7 @@ export function formatLocalizedNumber(
   }
   return new Intl.NumberFormat(
     language === "fa" ? "fa-IR" : language === "en" ? "en-US" : locale,
-    options
+    { ...options, numberingSystem: "latn" }
   ).format(value);
 }
 

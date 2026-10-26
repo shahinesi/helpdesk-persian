@@ -13,16 +13,16 @@ function setDisplayLocale(locale: string) {
   });
 }
 
-test("localized dynamic SLA digits follow the active display locale", () => {
+test("display number strings stay canonical in Persian and English locales", () => {
   const previousDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
 
   try {
     setDisplayLocale("fa-IR");
     assert.equal(
       formatLocalizedDigits("Resolution due in 3h 15m (50%)"),
-      "Resolution due in ۳h ۱۵m (۵۰٪)"
+      "Resolution due in 3h 15m (50%)"
     );
-    assert.equal(formatLocalizedNumber(1250), "۱٬۲۵۰");
+    assert.equal(formatLocalizedNumber(1250), "1,250");
 
     setDisplayLocale("en");
     assert.equal(
@@ -48,11 +48,11 @@ test("chart rating labels use the active display locale", () => {
   try {
     setDisplayLocale("fa-IR");
     assert.deepEqual(formatLocalizedRatingScale(), [
-      "۱",
-      "۲",
-      "۳",
-      "۴",
-      "۵",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
     ]);
 
     setDisplayLocale("en");
