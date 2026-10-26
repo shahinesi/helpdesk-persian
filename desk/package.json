@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "yarn apply:ui-patches && vite build",
-    "test:localization": "node --experimental-strip-types --test src/utils/monthBucket.test.ts",
+    "test:localization": "node --experimental-strip-types --test src/utils/monthBucket.test.ts src/utils/intlDate.test.ts",
     "serve": "vite preview",
     "postinstall": "patch-package",
     "apply:ui-patches": "bash scripts/apply-ui-patches.sh"

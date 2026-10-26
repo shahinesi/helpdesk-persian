@@ -14,6 +14,7 @@ import { getMeta } from "./stores/meta";
 import { __ } from "./translation";
 import { formatLocalizedNumber } from "./utils/number";
 import { formatLocalizedMonthBucket as formatGregorianMonthBucket } from "./utils/monthBucket";
+import { formatPersianDateRange } from "./utils/intlDate";
 export { formatLocalizedNumber } from "./utils/number";
 
 export function formatLocalizedMonthBucket(date: string) {
@@ -189,13 +190,7 @@ export function formatLocalizedDateRange(
     return new Date(Date.UTC(value.year(), value.month(), value.date(), 12));
   };
 
-  return new Intl.DateTimeFormat("fa-u-ca-persian-nu-arabext", {
-    calendar: "persian",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).formatRange(toIntlDate(from), toIntlDate(to));
+  return formatPersianDateRange(toIntlDate(from), toIntlDate(to));
 }
 
 export function timeAgo(date) {
