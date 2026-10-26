@@ -10652,3 +10652,6 @@ msgstr "انتخاب سال"
 
 msgid "Select month"
 msgstr "انتخاب ماه"
+
+msgid "Thanks for reaching out 👋. This ticket was created outside our working hours. You can expect the next response by {{ next_working_day }}."
+msgstr "از اینکه با ما تماس گرفتید سپاسگزاریم 👋. این تیکت خارج از ساعات کاری ثبت شده است. پاسخ بعدی در {{ next_working_day }} ارسال می‌شود."

@@ -31,7 +31,7 @@
         >
           <Alert
             v-if="outsideHourSettings.data?.show"
-            :title="outsideHourSettings.data?.msg"
+            :title="localizedOutsideHoursMessage"
             theme="amber"
             dismissible
             class="text-p-sm [&_.size-4]:relative [&>.size-4]:top-[3.5px] [&_button>:first-child]:top-[2.25px] border border-outline-amber-2"
@@ -121,7 +121,8 @@ import { globalStore } from "@/stores/globalStore";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
 import { useUploadTracker } from "@/composables/useUploadTracker";
-import { isContentEmpty, uploadFunction } from "@/utils";
+import { formatLocalizedDate, isContentEmpty, uploadFunction } from "@/utils";
+import { formatOutsideHoursMessage } from "@/utils/outsideHoursMessage";
 import { ActivityIcon, DetailsIcon } from "@/components/icons";
 import {
   Alert,
@@ -279,6 +280,14 @@ const outsideHourSettings = createResource({
   },
   auto: true,
 });
+
+const localizedOutsideHoursMessage = computed(() =>
+  formatOutsideHoursMessage(
+    outsideHourSettings.data?.msg,
+    ticket.data?.response_by,
+    formatLocalizedDate
+  )
+);
 
 const send = createResource({
   url: "run_doc_method",

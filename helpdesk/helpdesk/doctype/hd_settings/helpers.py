@@ -93,6 +93,39 @@ def get_default_email_content(type: str) -> str:
 default_banner_msg = """Thanks for reaching out 👋. This ticket was created outside our working hours. You can expect the next response by {{ next_working_day }}."""
 
 
+def _get_banner_date_context(response_by, language):
+    """Keep English template values stable; defer Persian date display to the UI."""
+    if not response_by:
+        return {
+            "next_working_daytime": None,
+            "next_working_day": None,
+            "next_working_date": None,
+            "expected_response": None,
+        }
+
+    if (language or "").lower().replace("_", "-").split("-")[0] == "fa":
+        def marker(name):
+            return f"__HELPDESK_LOCALIZED_DATE:{name}__"
+
+        return {
+            "next_working_daytime": marker("next_working_daytime"),
+            "next_working_day": marker("next_working_day"),
+            "next_working_date": marker("next_working_date"),
+            "expected_response": marker("expected_response"),
+        }
+
+    return {
+        "next_working_daytime": response_by,
+        "next_working_day": response_by.strftime("%A, %d %b"),
+        "next_working_date": response_by.strftime("%d %b"),
+        "expected_response": response_by.strftime("%H:%M, %A, %d %b"),
+    }
+
+
+def _translated_default_banner_msg():
+    return frappe._(default_banner_msg)
+
+
 @frappe.whitelist()
 def get_banner_msg():
     """Get current and default banner message for settings UI"""
@@ -103,7 +136,7 @@ def get_banner_msg():
     enabled = frappe.db.get_single_value("HD Settings", "enable_outside_hours_banner")
 
     return {
-        "default": default_banner_msg,
+        "default": _translated_default_banner_msg(),
         "current": current_msg or None,
         "enabled": bool(enabled),
     }
@@ -115,24 +148,16 @@ def get_rendered_banner_msg(ticket_id):
     )
     ticket = frappe.get_doc("HD Ticket", ticket_id).as_dict()
     if not banner_msg:
-        banner_msg = default_banner_msg
+        banner_msg = _translated_default_banner_msg()
 
-    next_working_day = None
-    next_working_date = None
-    expected_response = None
-
-    if ticket.get("response_by"):
-        next_working_day_dt = get_datetime(ticket.get("response_by"))
-        next_working_day = next_working_day_dt.strftime("%A, %d %b")
-        next_working_date = next_working_day_dt.strftime("%d %b")
-        expected_response = next_working_day_dt.strftime("%H:%M, %A, %d %b")
+    response_by = (
+        get_datetime(ticket["response_by"]) if ticket.get("response_by") else None
+    )
+    date_context = _get_banner_date_context(response_by, frappe.local.lang)
 
     context = {
         "ticket": ticket,
-        "next_working_daytime": next_working_day_dt,
-        "next_working_day": next_working_day,
-        "next_working_date": next_working_date,
-        "expected_response": expected_response,
+        **date_context,
     }
 
     rendered = frappe.render_template(banner_msg, context)
