@@ -38,7 +38,7 @@ RUN export PATH="/opt/yarn-v1.22.18/bin:/opt/node-v20/bin:${PATH}" \
     && test "$(yarn --version)" = "1.22.18" \
     && rm -rf apps/helpdesk/desk/node_modules \
     && cd apps/helpdesk/desk \
-    && yarn install --frozen-lockfile --non-interactive
+    && yarn install --offline --frozen-lockfile --non-interactive
 RUN mkdir -p sites && printf '{}' > sites/common_site_config.json \
     && bench set-config -gp socketio_port 9000 \
     && bench compile-po-to-mo --app helpdesk --force \
