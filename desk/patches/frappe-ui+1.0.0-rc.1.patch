@@ -137,7 +137,7 @@ index 0335128..1f35d7e 100644
            },
            textStyle: {
              padding: [0, 0, 0, -5],
-@@ -123,7 +123,7 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
+@@ -123,9 +123,9 @@ export default function useDonutChartOptions(config: DonutChartConfig) {
          const value = p.value[1]
          const percentage = total > 0 ? (value / total) * 100 : 0
          const formatted = isNaN(value) ? value : formatValue(value, 1, true)
@@ -146,6 +146,9 @@ index 0335128..1f35d7e 100644
          return `
            <div${dirAttr} class="flex items-center justify-between gap-5">
              <div>${p.name}</div>
+             <div class="font-bold">
+-              ${formatted} (${formattedPercentage}%)
++              ${formatted} (${formattedPercentage})
 diff --git a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts b/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
 index b8be33b..34449d0 100644
 --- a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
@@ -210,10 +213,11 @@ index 59dd5d7..bb48c39 100644
              }
 -            const percentage = Number((values[index] / total) * 100).toFixed(0)
 +            const percentage = formatPercentage((values[index] / total) * 100)
-             return `${value} (${percentage})`
+-            return `${value} (${percentage}%)`
++            return `${value} (${percentage})`
            },
          },
-@@ -104,7 +104,7 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
+@@ -104,9 +104,9 @@ export default function getFunnelChartOptions(config: FunnelChartConfig) {
          const value = p.value
          const percentage = total > 0 ? (value / total) * 100 : 0
          const formatted = isNaN(value) ? value : formatValue(value, 1, true)
@@ -222,6 +226,9 @@ index 59dd5d7..bb48c39 100644
          return `
            <div${dirAttr} class="flex items-center justify-between gap-5">
              <div>${p.name}</div>
+             <div class="font-bold">
+-              ${formatted} (${formattedPercentage}%)
++              ${formatted} (${formattedPercentage})
 diff --git a/node_modules/frappe-ui/experimental/Charts/helpers.ts b/node_modules/frappe-ui/experimental/Charts/helpers.ts
 index c576b80..ad2ac98 100644
 --- a/node_modules/frappe-ui/experimental/Charts/helpers.ts
