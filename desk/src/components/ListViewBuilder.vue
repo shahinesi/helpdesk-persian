@@ -108,35 +108,31 @@
     class="p-20 border-t sm:px-5 px-3 py-2"
     v-if="list.data?.data.length > 0"
   >
-    <ListFooter
-      :options="{
-        rowCount: list?.data?.row_count,
-        totalCount: list?.data?.total_count,
-      }"
-      :pageLengthCount="defaultParams.page_length_count"
-      @loadMore="handlePageLength(defaultParams.page_length_count, true)"
-      v-model="defaultParams.page_length_count"
-      @update:modelValue="
-        (count) => {
-          handlePageLength(count);
-        }
-      "
-    >
-      <!-- frappe-ui's ListFooter still feeds TabButtons the removed `buttons`
-           prop, so its own page-length picker renders nothing. -->
-      <template #left>
-        <TabButtons
-          :model-value="defaultParams.page_length_count"
-          :options="
-            [20, 50, 100].map((o) => ({
-              label: formatLocalizedNumber(o),
-              value: o,
-            }))
-          "
-          @update:model-value="(count) => handlePageLength(count)"
+    <div class="flex items-center justify-between gap-2">
+      <TabButtons
+        :model-value="defaultParams.page_length_count"
+        :options="
+          [20, 50, 100].map((o) => ({
+            label: formatLocalizedNumber(o),
+            value: o,
+          }))
+        "
+        @update:model-value="(count) => handlePageLength(count)"
+      />
+      <div class="flex items-center gap-2 text-base text-ink-gray-5">
+        <Button
+          v-if="list.data.row_count < list.data.total_count"
+          :label="__('Load More')"
+          @click="handlePageLength(defaultParams.page_length_count, true)"
         />
-      </template>
-    </ListFooter>
+        <span data-testid="list-footer-count">{{
+          __('{0} of {1}', [
+            formatLocalizedNumber(Number(list.data.row_count || 0)),
+            formatLocalizedNumber(Number(list.data.total_count || 0)),
+          ])
+        }}</span>
+      </div>
+    </div>
   </div>
   <!-- Empty State -->
   <EmptyState
@@ -181,7 +177,6 @@ import {
 } from "frappe-ui";
 import {
   Icon as SpriteIcon,
-  ListFooter,
   ListHeader,
   ListHeaderItem,
   ListRowItem,

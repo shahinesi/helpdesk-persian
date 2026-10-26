@@ -156,9 +156,9 @@ test("Persian ticket list localizes the record count while English keeps ASCII d
   const persianPage = await pageAs("persianAgent");
   await skipGettingStarted(persianPage, "e2e-persian@example.com");
   await persianPage.goto("/helpdesk/tickets");
-  await expect(persianPage.getByText(/[۰-۹]+ از [۰-۹]+/)).toBeVisible();
+  await expect(persianPage.getByTestId("list-footer-count")).toContainText(/[۰-۹]+ از [۰-۹]+/);
 
   const englishPage = await pageAs("agent");
   await englishPage.goto("/helpdesk/tickets");
-  await expect(englishPage.getByText(/[0-9]+ of [0-9]+/)).toBeVisible();
+  await expect(englishPage.getByTestId("list-footer-count")).toContainText(/[0-9]+ of [0-9]+/);
 });
