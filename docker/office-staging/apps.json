@@ -1,6 +1,6 @@
 [
   {"url":"https://github.com/shahinesi/erpnext-persian","branch":"custom/develop-fa"},
-  {"url":"https://github.com/shahinesi/helpdesk-persian","branch":"custom/develop-fa"},
+  {"url":"https://github.com/shahinesi/helpdesk-persian","branch":"feat/persian-setup-wizard"},
   {"url":"https://github.com/frappe/telephony","branch":"develop"},
   {"url":"https://github.com/shahinesi/insights-persian","branch":"custom/develop-fa"}
 ]
