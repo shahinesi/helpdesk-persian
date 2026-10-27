@@ -11,6 +11,7 @@ ARG HELPDESK_EXPECTED_SHA
 ARG TELEPHONY_EXPECTED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
 ARG INSIGHTS_EXPECTED_SHA=110ca16d118081cfc4908accdb0bd3e88667f571
 ARG APP_MANIFEST_SHA
+ARG TYPST_WHEEL_SHA256=8f33d98451bab132a612b98ffc8d1830c97a076ea3f3fde11f6ff7ab9bcae89c
 ENV PATH="/home/frappe/.nvm/current/bin:${PATH}"
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 ENV CI=Yes
@@ -21,9 +22,11 @@ USER frappe
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
 
 RUN --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0 \
+    --mount=type=secret,id=typst_wheel,target=/opt/frappe/typst.whl,uid=1000,gid=0 \
     test "$(sha256sum /opt/frappe/apps.json | cut -d' ' -f1)" = "$APP_MANIFEST_SHA" \
+    && printf '%s  %s\n' "$TYPST_WHEEL_SHA256" /opt/frappe/typst.whl | sha256sum -c - \
     && : "$FRAPPE_EXPECTED_SHA" "$ERPNEXT_EXPECTED_SHA" "$HELPDESK_EXPECTED_SHA" "$TELEPHONY_EXPECTED_SHA" "$INSIGHTS_EXPECTED_SHA" \
-    && bench init --apps_path=/opt/frappe/apps.json \
+    && UV_FIND_LINKS=/opt/frappe bench init --apps_path=/opt/frappe/apps.json \
     --frappe-branch=${FRAPPE_BRANCH} \
     --frappe-path=${FRAPPE_PATH} \
     --no-procfile \

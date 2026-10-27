@@ -14,6 +14,19 @@ building assets. Supply `docker/office-staging/apps.json` as the BuildKit secret
 the clone-layer cache key. Update refs and pins together only after
 compatibility checks.
 
+The Frappe build environment also installs Typst 0.15.0. On hosts where the
+BuildKit container cannot reliably stream the 34 MB PyPI wheel, fetch it on the
+build host and pass it as the `typst_wheel` BuildKit secret. The helper downloads
+the official PyPI artifact and verifies its pinned SHA-256 before returning:
+
+```sh
+sh docker/office-staging/fetch-typst-wheel.sh /tmp/typst-0.15.0.whl
+```
+
+Add `--secret id=typst_wheel,src=/tmp/typst-0.15.0.whl` to the image build.
+The Containerfile verifies the same digest and directs `uv` to this local wheel;
+neither the artifact nor credentials are copied into the resulting image.
+
 The build must finish successfully and the asset validator must pass before
 any Staging service uses the candidate image. The final image contains a real,
 image-owned `assets/` directory even when the builder's `sites/assets` path is
