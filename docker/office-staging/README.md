@@ -64,7 +64,9 @@ versioned `Containerfile.staging-update` reuses the existing
 packages. It verifies the seed's app SHAs, proves the Helpdesk and Insights
 Python dependencies did not change, checks the relevant JavaScript packages,
 then replaces Helpdesk, Insights, and Insights' pinned Frappe UI source before
-building and validating their assets. This avoids reinstalling the entire
+building and validating their assets. It applies only the new Vite path hunk
+from Helpdesk's versioned Frappe UI patch, leaving the seed image's other
+already-applied package hunks and patch-package state intact. This avoids reinstalling the entire
 Frappe Python environment from PyPI. It is only valid while that exact seed
 image is present and the dependency checks pass; use the full `Containerfile`
 when the base app pins or dependency manifests change.

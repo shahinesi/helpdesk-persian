@@ -12,6 +12,7 @@ ENV NODE_OPTIONS="--max-old-space-size=3072"
 WORKDIR /home/frappe/frappe-bench
 COPY --from=dependency-seed --chown=frappe:frappe /home/frappe/frappe-bench /home/frappe/frappe-bench
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
+COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
 ARG HELPDESK_BASE_SHA=cff7d5ff70f6b6020da8ae6197f73dfc86120db9
 ARG HELPDESK_PINNED_SHA=585f75d07068730a24f637dfab027a21d0fe953c
@@ -135,7 +136,7 @@ RUN test -d apps/helpdesk/desk/node_modules/jalaali-js \
 
 RUN cd apps/helpdesk/desk \
     && yarn apply:ui-patches \
-    && node node_modules/patch-package/index.js --error-on-fail \
+    && bash /opt/frappe/apply-helpdesk-vite-patch.sh \
     && cd /home/frappe/frappe-bench \
     && env/bin/python -m pip check \
     && bench build --apps helpdesk \
