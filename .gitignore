@@ -43,6 +43,7 @@ helpdesk/public/node_modules
 helpdesk/www/helpdesk/index.html
 desk/components.d.ts
 desk/stats.html
+/docker/office-staging/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
 # Playwright
 e2e/.auth
 playwright-report

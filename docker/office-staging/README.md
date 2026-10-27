@@ -28,18 +28,20 @@ ranges from the official PyPI artifact and verifies its pinned size and SHA-256
 before returning:
 
 ```sh
-sh docker/office-staging/fetch-typst-wheel.sh docker/office-staging/typst.whl
+sh docker/office-staging/fetch-typst-wheel.sh
 ```
 
-The generated wheel is ignored by Git but included in the Docker context. The
-Containerfile verifies the same digest and directs `uv` to this local wheel;
+The generated wheel is ignored by Git but included in the Docker context under
+its full PEP 427 filename so `uv` recognizes its package, version, ABI, and
+platform tags. The Containerfile verifies the same digest and directs `uv` to
+this local wheel;
 the wheel is copied only into the intermediate builder stage and is absent from
 the resulting runtime image.
 
 Build the candidate from the repository root after fetching the verified wheel:
 
 ```sh
-sh docker/office-staging/fetch-typst-wheel.sh docker/office-staging/typst.whl
+sh docker/office-staging/fetch-typst-wheel.sh
 APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain \
   --secret id=apps_json,src=docker/office-staging/apps.json \

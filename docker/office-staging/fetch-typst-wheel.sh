@@ -6,7 +6,7 @@ expected_sha256='8f33d98451bab132a612b98ffc8d1830c97a076ea3f3fde11f6ff7ab9bcae89
 expected_size=34161270
 chunk_size=4000000
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-output=${1:-"$script_dir/typst.whl"}
+output=${1:-"$script_dir/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"}
 
 if [ -e "$output" ]; then
 	actual_sha256=$(sha256sum "$output" | cut -d' ' -f1)
