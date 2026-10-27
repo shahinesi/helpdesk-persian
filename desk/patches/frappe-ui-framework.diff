@@ -1,5 +1,5 @@
 diff --git a/src/components/ActivityTimeline/EmailItem.vue b/src/components/ActivityTimeline/EmailItem.vue
-index 4b31ee9..6cfab01 100644
+index 4b31ee9126..6cfab0153e 100644
 --- a/src/components/ActivityTimeline/EmailItem.vue
 +++ b/src/components/ActivityTimeline/EmailItem.vue
 @@ -36,16 +36,16 @@
@@ -38,7 +38,7 @@ index 4b31ee9..6cfab01 100644
  
  const status = computed(() => {
 diff --git a/src/components/ActivityTimeline/VersionItem.vue b/src/components/ActivityTimeline/VersionItem.vue
-index 3c0bd81..f384012 100644
+index 3c0bd81d02..f384012c1f 100644
 --- a/src/components/ActivityTimeline/VersionItem.vue
 +++ b/src/components/ActivityTimeline/VersionItem.vue
 @@ -12,9 +12,8 @@
@@ -141,7 +141,7 @@ index 3c0bd81..f384012 100644
  
  // per-change history panels, keyed by change.name
 diff --git a/src/components/ActivityTimeline/types.ts b/src/components/ActivityTimeline/types.ts
-index a148456..79a7bd2 100644
+index a148456729..79a7bd2d2c 100644
 --- a/src/components/ActivityTimeline/types.ts
 +++ b/src/components/ActivityTimeline/types.ts
 @@ -128,6 +128,7 @@ export interface FieldChange {
@@ -161,6 +161,8 @@ index a148456..79a7bd2 100644
    /** every field change across merged saves; absent/length-1 ⇒ no chevron */
    history?: FieldChange[];
  }
+diff --git a/src/components/Onboarding/GettingStartedBanner.vue b/src/components/Onboarding/GettingStartedBanner.vue
+index 703ca8a91e..a2b96bf988 100644
 --- a/src/components/Onboarding/GettingStartedBanner.vue
 +++ b/src/components/Onboarding/GettingStartedBanner.vue
 @@ -7,10 +7,10 @@
@@ -209,6 +211,104 @@ index a148456..79a7bd2 100644
  		@click="openOnboarding"
  	>
  		<StepsIcon class="h-4 my-0.5 shrink-0" />
+@@ -60,7 +60,7 @@ import { Button } from "frappe-ui";
+ import LucideChevronsRight from "~icons/lucide/chevrons-right";
+ import LucideX from "~icons/lucide/x";
+ import { StepsIcon } from "frappe-ui/icons";
+-import { useOnboarding } from "./onboarding";
++import { formatLocalizedNumber, useOnboarding } from "./onboarding";
+ import { showHelpCenter } from "./helpCenter";
+ import { minimize, showHelpModal } from "./help";
+ import type { GettingStartedBannerProps } from "./types";
+diff --git a/src/components/Onboarding/HelpCenter.vue b/src/components/Onboarding/HelpCenter.vue
+index 88a53f1dc3..a9c02182d8 100644
+--- a/src/components/Onboarding/HelpCenter.vue
++++ b/src/components/Onboarding/HelpCenter.vue
+@@ -3,7 +3,7 @@
+ 		<div class="m-1">
+ 			<TextInput
+ 				ref="searchInput"
+-				:placeholder="'Search articles...'"
++				:placeholder="__('Search articles...')"
+ 				v-model="search"
+ 				:debounce="300"
+ 			>
+@@ -13,8 +13,8 @@
+ 			</TextInput>
+ 		</div>
+ 		<div class="flex justify-between items-center text-base text-ink-gray-5 mx-2">
+-			<div>All articles</div>
+-			<Button variant="ghost" aria-label="Open docs" @click="openDocs">
++			<div>{{ __("All articles") }}</div>
++			<Button variant="ghost" :aria-label="__('Open docs')" @click="openDocs">
+ 				<LucideArrowUpRight class="size-4 text-ink-gray-5" />
+ 			</Button>
+ 		</div>
+diff --git a/src/components/Onboarding/HelpModal.vue b/src/components/Onboarding/HelpModal.vue
+index 891b59a7f8..0329e28b5a 100644
+--- a/src/components/Onboarding/HelpModal.vue
++++ b/src/components/Onboarding/HelpModal.vue
+@@ -11,16 +11,16 @@
+ 			</div>
+ 			<div class="flex gap-1">
+ 				<Dropdown v-if="options.length" :options="options">
+-					<Button variant="ghost" icon="lucide-ellipsis" aria-label="More options" />
++					<Button variant="ghost" icon="lucide-ellipsis" :aria-label="__('More options')" />
+ 				</Dropdown>
+ 				<Button
+ 					@click="minimize = !minimize"
+ 					variant="ghost"
+-					:aria-label="minimize ? 'Maximize' : 'Minimize'"
++					:aria-label="minimize ? __('Maximize') : __('Minimize')"
+ 				>
+ 					<component :is="minimize ? MaximizeIcon : MinimizeIcon" class="h-3.5" />
+ 				</Button>
+-				<Button variant="ghost" aria-label="Close" @click="show = false">
++				<Button variant="ghost" :aria-label="__('Close')" @click="show = false">
+ 					<LucideX class="size-3.5" />
+ 				</Button>
+ 			</div>
+@@ -74,9 +74,9 @@ const articles = defineModel<HelpArticle[]>("articles");
+ 
+ const headingTitle = computed(() => {
+ 	if (!isOnboardingStepsCompleted.value && !showHelpCenter.value) {
+-		return "Getting started";
++		return __("Getting started");
+ 	} else if (showHelpCenter.value) {
+-		return "Help center";
++		return __("Help center");
+ 	}
+ });
+ 
+@@ -84,7 +84,7 @@ const options = computed(() => {
+ 	let items = [
+ 		{
+ 			icon: StepsIcon,
+-			label: "Reset onboarding steps",
++			label: __("Reset onboarding steps"),
+ 			onClick: resetOnboardingSteps,
+ 			condition: () => showHelpCenter.value && isOnboardingStepsCompleted.value,
+ 		},
+@@ -97,7 +97,7 @@ const footerItems = computed(() => {
+ 	let items = [
+ 		{
+ 			icon: HelpIcon,
+-			label: "Help centre",
++			label: __("Help centre"),
+ 			onClick: () => {
+ 				syncStatus();
+ 				showHelpCenter.value = true;
+@@ -106,7 +106,7 @@ const footerItems = computed(() => {
+ 		},
+ 		{
+ 			icon: StepsIcon,
+-			label: "Getting started",
++			label: __("Getting started"),
+ 			onClick: () => (showHelpCenter.value = false),
+ 			condition: showHelpCenter.value && !isOnboardingStepsCompleted.value,
+ 		},
+diff --git a/src/components/Onboarding/OnboardingSteps.vue b/src/components/Onboarding/OnboardingSteps.vue
+index b3a775c1e7..80bd6aa1f4 100644
 --- a/src/components/Onboarding/OnboardingSteps.vue
 +++ b/src/components/Onboarding/OnboardingSteps.vue
 @@ -2,16 +2,16 @@
@@ -272,7 +372,7 @@ index a148456..79a7bd2 100644
  import type { OnboardingStep, OnboardingStepsProps } from "./types";
  
  const props = withDefaults(defineProps<OnboardingStepsProps>(), {
-@@ -97,7 +97,7 @@
+@@ -97,7 +97,7 @@ function dependsOnTooltip(step: OnboardingStep) {
  	if (step.dependsOn && !step.completed) {
  		const dependsOnStep = steps?.find((s) => s.name === step.dependsOn);
  		if (dependsOnStep && !dependsOnStep.completed) {
@@ -281,102 +381,46 @@ index a148456..79a7bd2 100644
  		}
  	}
  	return "";
---- a/src/components/Onboarding/HelpModal.vue
-+++ b/src/components/Onboarding/HelpModal.vue
-@@ -11,16 +11,16 @@
- 			</div>
- 			<div class="flex gap-1">
- 				<Dropdown v-if="options.length" :options="options">
--					<Button variant="ghost" icon="lucide-ellipsis" aria-label="More options" />
-+					<Button variant="ghost" icon="lucide-ellipsis" :aria-label="__('More options')" />
- 				</Dropdown>
- 				<Button
- 					@click="minimize = !minimize"
- 					variant="ghost"
--					:aria-label="minimize ? 'Maximize' : 'Minimize'"
-+					:aria-label="minimize ? __('Maximize') : __('Minimize')"
- 				>
- 					<component :is="minimize ? MaximizeIcon : MinimizeIcon" class="h-3.5" />
- 				</Button>
--				<Button variant="ghost" aria-label="Close" @click="show = false">
-+				<Button variant="ghost" :aria-label="__('Close')" @click="show = false">
- 					<LucideX class="size-3.5" />
- 				</Button>
- 			</div>
-@@ -74,9 +74,9 @@
- 
- const headingTitle = computed(() => {
- 	if (!isOnboardingStepsCompleted.value && !showHelpCenter.value) {
--		return "Getting started";
-+		return __("Getting started");
- 	} else if (showHelpCenter.value) {
--		return "Help center";
-+		return __("Help center");
- 	}
- });
- 
-@@ -84,7 +84,7 @@
- 	let items = [
- 		{
- 			icon: StepsIcon,
--			label: "Reset onboarding steps",
-+			label: __("Reset onboarding steps"),
- 			onClick: resetOnboardingSteps,
- 			condition: () => showHelpCenter.value && isOnboardingStepsCompleted.value,
- 		},
-@@ -97,7 +97,7 @@
- 	let items = [
- 		{
- 			icon: HelpIcon,
--			label: "Help centre",
-+			label: __("Help centre"),
- 			onClick: () => {
- 				syncStatus();
- 				showHelpCenter.value = true;
-@@ -106,7 +106,7 @@
- 		},
- 		{
- 			icon: StepsIcon,
--			label: "Getting started",
-+			label: __("Getting started"),
- 			onClick: () => (showHelpCenter.value = false),
- 			condition: showHelpCenter.value && !isOnboardingStepsCompleted.value,
- 		},
---- a/src/components/Onboarding/HelpCenter.vue
-+++ b/src/components/Onboarding/HelpCenter.vue
-@@ -3,7 +3,7 @@
- 		<div class="m-1">
- 			<TextInput
- 				ref="searchInput"
--				:placeholder="'Search articles...'"
-+				:placeholder="__('Search articles...')"
- 				v-model="search"
- 				:debounce="300"
- 			>
-@@ -13,8 +13,8 @@
- 			</TextInput>
- 		</div>
- 		<div class="flex justify-between items-center text-base text-ink-gray-5 mx-2">
--			<div>All articles</div>
--			<Button variant="ghost" aria-label="Open docs" @click="openDocs">
-+			<div>{{ __("All articles") }}</div>
-+			<Button variant="ghost" :aria-label="__('Open docs')" @click="openDocs">
- 				<LucideArrowUpRight class="size-4 text-ink-gray-5" />
- 			</Button>
- 		</div>
+diff --git a/src/components/Onboarding/formatLocalizedNumber.test.ts b/src/components/Onboarding/formatLocalizedNumber.test.ts
+new file mode 100644
+index 0000000000..95372e5565
+--- /dev/null
++++ b/src/components/Onboarding/formatLocalizedNumber.test.ts
+@@ -0,0 +1,12 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++import { formatLocalizedNumber } from "./formatLocalizedNumber.ts";
++
++test("Persian onboarding numbers stay ASCII for Vazirmatn ss01", () => {
++	assert.equal(formatLocalizedNumber(12345.6, "fa-IR"), "12,345.6");
++	assert.doesNotMatch(formatLocalizedNumber(12345.6, "fa-IR"), /[۰-۹٠-٩]/);
++});
++
++test("English onboarding numbers keep their existing formatting", () => {
++	assert.equal(formatLocalizedNumber(12345.6, "en"), "12,345.6");
++});
+diff --git a/src/components/Onboarding/formatLocalizedNumber.ts b/src/components/Onboarding/formatLocalizedNumber.ts
+new file mode 100644
+index 0000000000..7faddca745
+--- /dev/null
++++ b/src/components/Onboarding/formatLocalizedNumber.ts
+@@ -0,0 +1,6 @@
++export function formatLocalizedNumber(
++	value: number,
++	locale = document.documentElement.lang || "en"
++) {
++	return new Intl.NumberFormat(locale, { numberingSystem: "latn" }).format(value);
++}
 diff --git a/src/components/Onboarding/onboarding.ts b/src/components/Onboarding/onboarding.ts
-index 03f0d51..76d17fe 100644
+index 03f0d51069..6f84af1bc1 100644
 --- a/src/components/Onboarding/onboarding.ts
 +++ b/src/components/Onboarding/onboarding.ts
-@@ -10,6 +10,11 @@ import type {
+@@ -9,6 +9,8 @@ import type {
+   OnboardingStepCallback,
    UseOnboarding,
  } from "./types";
++import { formatLocalizedNumber } from "./formatLocalizedNumber";
++export { formatLocalizedNumber };
  
-+export function formatLocalizedNumber(value: number) {
-+  const locale = document.documentElement.lang || "en";
-+  return new Intl.NumberFormat(locale).format(value);
-+}
-+
  type StoredStep = { name: string; completed: boolean };
  type StoredStatus = Record<string, Record<string, StoredStep[]>>;
- 

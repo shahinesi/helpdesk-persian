@@ -17,7 +17,7 @@ if [[ ! -d "$frappe_ui" ]]; then
 	exit 1
 fi
 
-frappe_ui_version="$(node -p "require('$frappe_ui/package.json').version")"
+frappe_ui_version="$(cd "$desk_dir" && node -p "require('./node_modules/frappe-ui/package.json').version")"
 if [[ "$frappe_ui_version" != "1.0.0-rc.1" ]]; then
 	echo "Unsupported frappe-ui version: $frappe_ui_version (expected 1.0.0-rc.1)." >&2
 	exit 1
@@ -46,10 +46,9 @@ for chart in donutChartOptions.ts funnelChartOptions.ts; do
 done
 
 framework_patch="$patch_dir/frappe-ui-framework.diff"
-framework_root="$(cd "$framework_ui/.." && pwd)"
-if git -C "$framework_root" apply --reverse --check --directory=ui -p1 "$framework_patch" >/dev/null 2>&1; then
+if git -C "$framework_ui" apply --reverse --check -p1 "$framework_patch" >/dev/null 2>&1; then
 	echo "Frappe UI Persian patch is already applied."
 else
 	echo "Applying Frappe UI Persian patch."
-	git -C "$framework_root" apply --directory=ui -p1 "$framework_patch"
+	git -C "$framework_ui" apply -p1 "$framework_patch"
 fi
