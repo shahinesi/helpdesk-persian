@@ -87,9 +87,6 @@ RUN test "$(node --version)" = "v24.21.0" \
     && bench build --apps erpnext \
     && bench build --apps helpdesk \
     && bench build --apps telephony \
-    && cd apps/insights \
-    && yarn build \
-    && cd /home/frappe/frappe-bench \
     && bench build --apps insights \
     && python /opt/frappe/validate-assets.py sites/assets
 
