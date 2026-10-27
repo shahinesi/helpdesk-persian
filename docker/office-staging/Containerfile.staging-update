@@ -142,15 +142,18 @@ RUN cd apps/helpdesk/desk \
     && bash /opt/frappe/apply-helpdesk-vite-patch.sh \
     && cd /home/frappe/frappe-bench \
     && env/bin/python -m pip check \
+    && test ! -e sites/assets \
+    && ln -s ../assets sites/assets \
     && bench build --apps helpdesk \
     && bench build --apps insights \
     && python /opt/frappe/validate-assets.py sites/assets
 
 RUN find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} + \
-    && rm -rf assets \
-    && if [ -L sites/assets ]; then cp -RL sites/assets assets; else cp -a sites/assets assets; fi \
+    && test -L sites/assets \
+    && test "$(readlink sites/assets)" = "../assets" \
+    && rm sites/assets \
     && test -d assets \
     && test ! -L assets \
-    && rm -rf sites/assets
+    && test ! -e sites/assets
 
 FROM builder AS runtime
