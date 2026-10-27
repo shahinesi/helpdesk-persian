@@ -1,3 +1,6 @@
+import { toJalaali } from "jalaali-js";
+import { getPersianMonthName } from "./intlDate.ts";
+
 /**
  * Format a Gregorian month bucket for charts without changing its grouping.
  * Persian labels show the Jalali dates spanned by the Gregorian month, so the
@@ -27,10 +30,9 @@ export function formatLocalizedMonthBucket(
   }
 
   if (locale.split("-")[0] === "fa") {
-    return new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-arabext", {
-      dateStyle: "medium",
-      timeZone: "UTC",
-    }).formatRange(monthStart, monthEnd);
+    const start = toJalaali(year, month, 1);
+    const end = toJalaali(year, month, monthEnd.getUTCDate());
+    return `${start.jd} ${getPersianMonthName(start.jm)} ${start.jy} تا ${end.jd} ${getPersianMonthName(end.jm)} ${end.jy}`;
   }
 
   return new Intl.DateTimeFormat(locale, {

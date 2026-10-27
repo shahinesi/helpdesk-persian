@@ -16,7 +16,7 @@ test("Persian date range picker displays Jalali dates and sends Gregorian API va
   const calendar = page.locator(".calendar-panel").first();
   await expect(calendar).toBeVisible();
   const expectedMonth = await page.evaluate(() =>
-    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-arabext", {
+    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-latn", {
       month: "long",
       year: "numeric",
     }).format(new Date())
@@ -24,7 +24,8 @@ test("Persian date range picker displays Jalali dates and sends Gregorian API va
   await expect(calendar).toContainText(expectedMonth);
 
   const dateCells = calendar.locator('[role="grid"] button:not([disabled])');
-  await expect(dateCells.first()).toContainText(/[۰-۹]/);
+  await expect(dateCells.first()).toContainText(/[0-9]/);
+  await expect(calendar).not.toContainText(/[۰-۹٠-٩]/);
 
   const request = page.waitForRequest((candidate) =>
     candidate.url().includes("get_dashboard_data")
@@ -79,7 +80,8 @@ test("Persian ticket details keep timeline dates and digits localized", async ({
     page.getByText(ticket.subject, { exact: true }).first()
   ).toBeVisible();
   const body = page.locator("body");
-  await expect(body).toContainText(/[۰-۹]/);
+  await expect(body).toContainText(/[0-9]/);
+  await expect(body).not.toContainText(/[۰-۹٠-٩]/);
   await expect(body).not.toContainText(
     /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/
   );
@@ -101,7 +103,7 @@ test("Persian calendar month and year selection honors leap Esfand", async ({
   await page.getByText("محدوده سفارشی", { exact: true }).click();
   const calendar = page.locator(".calendar-panel").first();
   const currentMonth = await page.evaluate(() =>
-    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-arabext", {
+    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-latn", {
       month: "long",
       year: "numeric",
     }).format(new Date())
@@ -110,37 +112,37 @@ test("Persian calendar month and year selection honors leap Esfand", async ({
 
   const yearList = calendar.locator('[role="listbox"]').first();
   const monthList = calendar.locator('[role="listbox"]').last();
-  await yearList.getByText("۱۴۰۳", { exact: true }).click();
+  await yearList.getByText("1403", { exact: true }).click();
   await monthList.getByText("اسفند", { exact: true }).click();
 
   const inMonthDays = calendar.locator(
     '[role="grid"] [role="gridcell"]:not([data-outside-view])'
   );
-  await expect(inMonthDays.filter({ hasText: /^۳۰$/ })).toHaveCount(1);
+  await expect(inMonthDays.filter({ hasText: /^30$/ })).toHaveCount(1);
 
   await calendar.getByRole("button").filter({ hasText: "اسفند" }).click();
   await calendar
     .locator('[role="listbox"]')
     .first()
-    .getByText("۱۴۰۴", { exact: true })
+    .getByText("1404", { exact: true })
     .click();
   await calendar
     .locator('[role="listbox"]')
     .last()
     .getByText("اسفند", { exact: true })
     .click();
-  await expect(inMonthDays.filter({ hasText: /^۳۰$/ })).toHaveCount(0);
-  await expect(inMonthDays.filter({ hasText: /^۲۹$/ })).toHaveCount(1);
+  await expect(inMonthDays.filter({ hasText: /^30$/ })).toHaveCount(0);
+  await expect(inMonthDays.filter({ hasText: /^29$/ })).toHaveCount(1);
 });
 
-test("Persian dashboard metrics localize percentages and decimals", async ({
+test("Persian dashboard metrics use canonical digits and the Persian font", async ({
   pageAs,
 }) => {
   const page = await pageAs("persianAgent");
   await page.goto("/helpdesk/dashboard");
 
-  const percentage = page.getByText("۰٪", { exact: true });
-  const rating = page.getByText("۰/۵", { exact: true });
+  const percentage = page.getByText("0%", { exact: true });
+  const rating = page.getByText("0/5", { exact: true });
   await expect(percentage).toBeVisible();
   await expect(rating).toBeVisible();
 
@@ -150,13 +152,14 @@ test("Persian dashboard metrics localize percentages and decimals", async ({
   expect(fontFamily).toContain("vazirmatn");
 });
 
-test("Persian ticket list localizes the record count while English keeps ASCII digits", async ({
+test("Persian and English ticket counts keep canonical ASCII digits", async ({
   pageAs,
 }) => {
   const persianPage = await pageAs("persianAgent");
   await skipGettingStarted(persianPage, "e2e-persian@example.com");
   await persianPage.goto("/helpdesk/tickets");
-  await expect(persianPage.getByTestId("list-footer-count")).toContainText(/[۰-۹]+ از [۰-۹]+/);
+  await expect(persianPage.getByTestId("list-footer-count")).toContainText(/[0-9]+ از [0-9]+/);
+  await expect(persianPage.getByTestId("list-footer-count")).not.toContainText(/[۰-۹٠-٩]/);
 
   const englishPage = await pageAs("agent");
   await englishPage.goto("/helpdesk/tickets");
@@ -180,14 +183,14 @@ test("Persian single-value DateTimePicker shows Jalali dates", async ({ pageAs }
 
   const calendar = page.locator(".calendar-panel").first();
   const expectedMonth = await page.evaluate(() =>
-    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-arabext", {
+    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-latn", {
       month: "long",
       year: "numeric",
     }).format(new Date())
   );
   await expect(calendar).toContainText(expectedMonth);
   await expect(calendar.locator('[role="grid"] button').first()).toContainText(
-    /[۰-۹]/
+    /[0-9]/
   );
 
   const listRequest = page.waitForRequest((request) =>

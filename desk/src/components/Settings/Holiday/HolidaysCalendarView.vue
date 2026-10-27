@@ -107,7 +107,6 @@ import { computed, ref, watch } from "vue";
 import HLCalender from "./HLCalender.vue";
 import { holidayData } from "@/stores/holidayList";
 import { Button, dayjs, Popover } from "frappe-ui";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { toJalaali } from "jalaali-js";
 
 const visibleMonths = ref<"first-half" | "second-half">("first-half");
@@ -118,7 +117,7 @@ const calendarParts = (date) =>
     ? toJalaali(date.year(), date.month() + 1, date.date())
     : { jy: date.year(), jm: date.month() + 1 };
 const yearLabel = (year: number) =>
-  isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
+  String(year);
 const currentDate = calendarParts(dayjs());
 const currentYear = ref(currentDate.jy);
 

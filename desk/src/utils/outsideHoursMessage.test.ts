@@ -9,11 +9,11 @@ test("outside-hours date placeholders use the shared display formatter", () => {
     "2026-03-20 20:45:00",
     (date, format) => {
       calls.push([date, format]);
-      return "۰۱:۱۵، شنبه، ۱ فروردین";
+      return "01:15، شنبه، 1 فروردین";
     }
   );
 
-  assert.equal(message, "پاسخ بعدی در ۰۱:۱۵، شنبه، ۱ فروردین خواهد بود.");
+  assert.equal(message, "پاسخ بعدی در 01:15، شنبه، 1 فروردین خواهد بود.");
   assert.deepEqual(calls, [
     ["2026-03-20 20:45:00", "HH:mm، dddd، D MMM"],
   ]);

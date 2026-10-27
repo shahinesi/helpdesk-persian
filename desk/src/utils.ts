@@ -3,7 +3,6 @@ import { useAuthStore } from "@/stores/auth";
 import type { DropdownOption } from "@/types";
 import { useClipboard } from "@vueuse/core";
 import { call, dayjs, dayjsLocal, toast, useFileUpload } from "frappe-ui";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { toJalaali } from "jalaali-js";
 import type { Dayjs } from "dayjs/esm";
 import { h, ref } from "vue";
@@ -14,7 +13,7 @@ import { getMeta } from "./stores/meta";
 import { __ } from "./translation";
 import { formatLocalizedNumber } from "./utils/number";
 import { formatLocalizedMonthBucket as formatGregorianMonthBucket } from "./utils/monthBucket";
-import { formatPersianDateRange } from "./utils/intlDate";
+import { formatPersianDateRange, getPersianMonthName } from "./utils/intlDate";
 export {
   formatLocalizedNumber,
   formatLocalizedRatingScale,
@@ -105,27 +104,39 @@ export function formatLocalizedDate(
       : dayjsLocal(date as string);
   if (!value.isValid()) return "";
   if (dayjs.locale().split("-")[0] !== "fa") return value.format(format);
-  if (calendar === "gregorian") {
-    return digitsEnToFa(value.locale("fa").format(format));
-  }
-
-  const { jy, jm, jd } = toJalaali(
-    value.year(),
-    value.month() + 1,
-    value.date()
-  );
   const intlDate = new Date(
     Date.UTC(value.year(), value.month(), value.date(), 12)
   );
-  const locale = "fa-u-ca-persian-nu-arabext";
-  const month = new Intl.DateTimeFormat(locale, {
-    month: "long",
-    timeZone: "UTC",
-  }).format(intlDate);
-  const shortMonth = new Intl.DateTimeFormat(locale, {
-    month: "short",
-    timeZone: "UTC",
-  }).format(intlDate);
+  const fields =
+    calendar === "gregorian"
+      ? {
+          year: value.year(),
+          month: value.month() + 1,
+          day: value.date(),
+        }
+      : (() => {
+          const { jy, jm, jd } = toJalaali(
+            value.year(),
+            value.month() + 1,
+            value.date()
+          );
+          return { year: jy, month: jm, day: jd };
+        })();
+  const locale = "fa-IR-u-ca-gregory-nu-latn";
+  const month =
+    calendar === "gregorian"
+      ? new Intl.DateTimeFormat(locale, {
+          month: "long",
+          timeZone: "UTC",
+        }).format(intlDate)
+      : getPersianMonthName(fields.month);
+  const shortMonth =
+    calendar === "gregorian"
+      ? new Intl.DateTimeFormat(locale, {
+          month: "short",
+          timeZone: "UTC",
+        }).format(intlDate)
+      : month.slice(0, 3);
   const weekday = new Intl.DateTimeFormat(locale, {
     weekday: "long",
     timeZone: "UTC",
@@ -146,14 +157,14 @@ export function formatLocalizedDate(
     .formatToParts(new Date(Date.UTC(2000, 0, 1, value.hour())))
     .find((part) => part.type === "dayPeriod")?.value;
   const values: Record<string, string> = {
-    YYYY: String(jy),
-    YY: String(jy).slice(-2),
+    YYYY: String(fields.year),
+    YY: String(fields.year).slice(-2),
     MMMM: month,
     MMM: shortMonth,
-    MM: String(jm).padStart(2, "0"),
-    M: String(jm),
-    DD: String(jd).padStart(2, "0"),
-    D: String(jd),
+    MM: String(fields.month).padStart(2, "0"),
+    M: String(fields.month),
+    DD: String(fields.day).padStart(2, "0"),
+    D: String(fields.day),
     dddd: weekday,
     ddd: shortWeekday,
     dd: narrowWeekday,
@@ -165,7 +176,7 @@ export function formatLocalizedDate(
     /\[[^\]]+\]|YYYY|MMMM|dddd|MMM|ddd|YY|MM|DD|M|D|dd|d|A|a/g,
     (token) => (token.startsWith("[") ? token : `[${values[token]}]`)
   );
-  return digitsEnToFa(value.format(localizedFormat));
+  return value.locale("en").format(localizedFormat);
 }
 
 export function formatLocalizedDateRange(

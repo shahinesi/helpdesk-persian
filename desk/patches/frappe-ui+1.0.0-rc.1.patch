@@ -153,12 +153,11 @@ diff --git a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts b/node_
 index b8be33b..34449d0 100644
 --- a/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
 +++ b/node_modules/frappe-ui/experimental/Charts/eChartOptions.ts
-@@ -1,5 +1,12 @@
+@@ -1,5 +1,11 @@
  import type { EChartsOption } from 'echarts'
 -import { formatDate, formatLabel, formatValue, mergeDeep } from './helpers'
 +import {
 +  formatDate,
-+  formatDigits,
 +  formatLabel,
 +  formatValue,
 +  getChartFontFamily,
@@ -172,7 +171,7 @@ index b8be33b..34449d0 100644
    const isRTL = config.dir === 'rtl'
    const title = config.title
 -  const subtitle = config.subtitle
-+  const subtitle = config.subtitle ? formatDigits(config.subtitle) : config.subtitle
++  const subtitle = config.subtitle
    const hasTitle = title ? 1 : 0
    const hasSubtitle = subtitle ? 1 : 0
    const hasXAxisTitle = config.xAxis.title ? 1 : 0
@@ -233,20 +232,14 @@ diff --git a/node_modules/frappe-ui/experimental/Charts/helpers.ts b/node_module
 index c576b80..ad2ac98 100644
 --- a/node_modules/frappe-ui/experimental/Charts/helpers.ts
 +++ b/node_modules/frappe-ui/experimental/Charts/helpers.ts
-@@ -1,5 +1,38 @@
+@@ -1,5 +1,32 @@
  import { dayjs } from '#utils/dayjs'
++import { calendarMonths, formatCalendarDate, toCalendarDate } from '../../src/components/DatePicker/jalali'
  
 +export function getChartLocale() {
 +  if (typeof document === 'undefined') return 'en-US'
 +  const language = document.documentElement.lang.toLowerCase().replace('_', '-')
 +  return language.startsWith('fa') ? 'fa-IR' : language || 'en-US'
-+}
-+
-+export function formatDigits(value: string | number) {
-+  const locale = getChartLocale()
-+  return locale.startsWith('fa')
-+    ? String(value).replace(/\d/g, (digit) => new Intl.NumberFormat(locale).format(Number(digit)))
-+    : String(value)
 +}
 +
 +export function getChartFontFamily() {
@@ -258,21 +251,21 @@ index c576b80..ad2ac98 100644
 +  return new Intl.NumberFormat(getChartLocale(), {
 +    style: 'percent',
 +    maximumFractionDigits: 0,
++    numberingSystem: 'latn',
 +  }).format(value / 100)
 +}
 +
 +export function formatSuffix(suffix?: string) {
 +  if (!suffix) return ''
 +  const locale = getChartLocale()
-+  if (!locale.startsWith('fa')) return suffix
-+  if (suffix === '%') return '٪'
-+  return formatDigits(suffix)
++  if (locale.startsWith('fa') && suffix === '%') return '٪'
++  return suffix
 +}
 +
  export function formatLabel(name: string) {
    return name
      .split('_')
-@@ -10,7 +43,7 @@ export function formatLabel(name: string) {
+@@ -10,7 +43,8 @@ export function formatLabel(name: string) {
  export function formatValue(value: number, precision = 0, shorten = false) {
    if (isNaN(value)) return value.toString()
  
@@ -281,7 +274,8 @@ index c576b80..ad2ac98 100644
  
    if (shorten) {
      let formatted = new Intl.NumberFormat(locale, {
-@@ -52,6 +85,25 @@ export type TimeGrain =
++      numberingSystem: 'latn',
+@@ -52,6 +85,24 @@ export type TimeGrain =
  export function formatDate(date: string, format?: string, grain: TimeGrain = 'day') {
    if (!date) return ''
  
@@ -289,19 +283,18 @@ index c576b80..ad2ac98 100644
 +  if (locale.startsWith('fa')) {
 +    const value = dayjs(date)
 +    if (!value.isValid()) return ''
-+    const intlDate = new Date(Date.UTC(value.year(), value.month(), value.date(), 12))
-+    const options: Intl.DateTimeFormatOptions = {
-+      timeZone: 'UTC',
-+      ...(grain === 'month'
-+        ? { month: 'long', year: 'numeric' }
-+        : grain === 'year'
-+          ? { year: 'numeric' }
-+          : { day: 'numeric', month: grain === 'week' ? 'short' : 'long', year: 'numeric' }),
-+      ...(grain === 'hour' || grain === 'minute' || grain === 'second'
-+        ? { hour: '2-digit', minute: '2-digit', ...(grain === 'second' ? { second: '2-digit' } : {}) }
-+        : {}),
++    const { jy, jm, jd } = toCalendarDate(value)
++    if (grain === 'year') return String(jy)
++    if (grain === 'quarter') return 'سه‌ماههٔ ' + (Math.floor((jm - 1) / 3) + 1) + ' ' + jy
++    const monthName = calendarMonths(jy)[jm - 1]
++    if (grain === 'month') return monthName + ' ' + jy
++    const visibleMonth = grain === 'week' ? monthName.slice(0, 3) : monthName
++    const label = visibleMonth + ' ' + jd + ', ' + jy
++    if (grain === 'hour' || grain === 'minute' || grain === 'second') {
++      const time = grain === 'second' ? value.locale('en').format('HH:mm:ss') : value.locale('en').format('HH:mm')
++      return label + ' ' + time
 +    }
-+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian-nu-arabext', options).format(intlDate)
++    return label
 +  }
 +
    if (grain) {
@@ -352,7 +345,7 @@ index 4611ee8..16dd8d7 100644
 -            <div>{{ options.rowCount || '0' }}</div>
 -            <div>of</div>
 -            <div>{{ options.totalCount || '0' }}</div>
-+            <div>{{ __('{0} of {1}', [document.documentElement.lang.startsWith('fa') ? new Intl.NumberFormat('fa-IR').format(Number(options.rowCount || '0')) : options.rowCount || '0', document.documentElement.lang.startsWith('fa') ? new Intl.NumberFormat('fa-IR').format(Number(options.totalCount || '0')) : options.totalCount || '0']) }}</div>
++            <div>{{ __('{0} of {1}', [document.documentElement.lang.startsWith('fa') ? new Intl.NumberFormat('fa-IR', { numberingSystem: 'latn' }).format(Number(options.rowCount || '0')) : options.rowCount || '0', document.documentElement.lang.startsWith('fa') ? new Intl.NumberFormat('fa-IR', { numberingSystem: 'latn' }).format(Number(options.totalCount || '0')) : options.totalCount || '0']) }}</div>
            </div>
          </div>
        </slot>
@@ -396,7 +389,7 @@ index da0ec5f..41da68c 100644
  
  /** What the charts set as `textStyle.fontFamily`; every label inherits it. */
 -export const CHART_FONT_FAMILY = 'InterVar, Inter, sans-serif'
-+export const CHART_FONT_FAMILY = 'Vazirmatn, InterVar, Inter, sans-serif'
++export const CHART_FONT_FAMILY = 'InterVar, Inter, sans-serif'
  
  /**
   * The CSS font a label of `fontSize` is drawn with. Measuring and rendering
@@ -2803,9 +2796,8 @@ new file mode 100644
 index 0000000..056cb09
 --- /dev/null
 +++ b/node_modules/frappe-ui/src/components/DatePicker/jalali.ts
-@@ -0,0 +1,193 @@
+@@ -0,0 +1,164 @@
 +import {
-+  digitsEnToFa,
 +  digitsFaToEn,
 +  digitsArToFa,
 +} from "@persian-tools/persian-tools";
@@ -2819,7 +2811,8 @@ index 0000000..056cb09
 +import type { Dayjs } from "dayjs/esm";
 +import { dayjs } from "../../utils/dayjs";
 +
-+const intlLocale = "fa-IR-u-ca-persian-nu-arabext";
++const PERSIAN_MONTHS = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"] as const;
++const PERSIAN_WEEKDAYS = ["ش", "ی", "د", "س", "چ", "پ", "ج"] as const;
 +
 +export function isPersianCalendar(): boolean {
 +  return dayjs.locale().split("-")[0] === "fa";
@@ -2887,50 +2880,28 @@ index 0000000..056cb09
 +  return Array.from({ length: 12 }, (_, monthIndex) => {
 +    const date = fromCalendarDate(year, monthIndex, 1);
 +    if (!isPersianCalendar()) return date.format("MMM");
-+    return new Intl.DateTimeFormat(intlLocale, {
-+      month: "long",
-+      timeZone: "UTC",
-+    }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++    return PERSIAN_MONTHS[monthIndex];
 +  });
 +}
 +
 +export function calendarYear(year: number): string {
-+  return isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
++  return String(year);
 +}
 +
 +export function calendarMonthYear(year: number, monthIndex: number): string {
 +  const date = fromCalendarDate(year, monthIndex, 1);
 +  if (!isPersianCalendar()) return date.format("MMM YYYY");
-+  return new Intl.DateTimeFormat(intlLocale, {
-+    month: "long",
-+    year: "numeric",
-+    timeZone: "UTC",
-+  }).format(new Date(Date.UTC(date.year(), date.month(), date.date(), 12)));
++  return `${PERSIAN_MONTHS[monthIndex]} ${year}`;
 +}
 +
 +export function calendarWeekdays(): string[] {
 +  if (!isPersianCalendar()) return ["S", "M", "T", "W", "T", "F", "S"];
-+  const now = dayjs();
-+  const today = toJalaali(now.year(), now.month() + 1, now.date());
-+  const saturday = jalaaliWeek(today.jy, today.jm, today.jd).saturday;
-+  const gregorian = toGregorian(saturday.jy, saturday.jm, saturday.jd);
-+  const start = new Date(
-+    Date.UTC(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12)
-+  );
-+  const weekday = new Intl.DateTimeFormat(intlLocale, {
-+    weekday: "narrow",
-+    timeZone: "UTC",
-+  });
-+  return Array.from({ length: 7 }, (_, index) => {
-+    const date = new Date(start);
-+    date.setUTCDate(date.getUTCDate() + index);
-+    return weekday.format(date);
-+  });
++  return [...PERSIAN_WEEKDAYS];
 +}
 +
 +export function calendarDay(date: Dayjs): string {
 +  const { jd } = toCalendarDate(date);
-+  return isPersianCalendar() ? digitsEnToFa(String(jd)) : String(jd);
++  return String(jd);
 +}
 +
 +export function calendarWeekdayIndex(date: Dayjs): number {
@@ -2953,25 +2924,18 @@ index 0000000..056cb09
 +export function formatCalendarRange(from: Dayjs, to: Dayjs): string {
 +  if (!isPersianCalendar())
 +    return `${from.format("YYYY-MM-DD")} to ${to.format("YYYY-MM-DD")}`;
-+  return new Intl.DateTimeFormat(dayjs.locale(), {
-+    calendar: "persian",
-+    day: "numeric",
-+    month: "long",
-+    year: "numeric",
-+  }).formatRange(from.toDate(), to.toDate());
++  return `${formatCalendarDate(from)} - ${formatCalendarDate(to)}`;
 +}
 +
 +export function formatCalendarDate(date: Dayjs): string {
 +  if (!isPersianCalendar()) return date.format("YYYY-MM-DD");
 +  const { jy, jm, jd } = toJalaali(date.year(), date.month() + 1, date.date());
-+  return digitsEnToFa(
-+    `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`
-+  );
++  return `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`;
 +}
 +
 +export function formatCalendarDateTime(date: Dayjs): string {
 +  if (!isPersianCalendar()) return date.format("YYYY-MM-DD HH:mm");
-+  return digitsEnToFa(`${formatCalendarDate(date)} - ${date.format("HH:mm")}`);
++  return `${formatCalendarDate(date)} - ${date.locale("en").format("HH:mm")}`;
 +}
 +
 +export function parseCalendarDateTime(value: string): Dayjs | null {

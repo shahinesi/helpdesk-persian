@@ -572,7 +572,6 @@ function getChartType(chart: any) {
     data,
     xAxis,
     colors,
-    fontFamily: '"Vazirmatn", sans-serif',
   };
   if (chart["type"] === "axis") {
     return h(AxisChart, {

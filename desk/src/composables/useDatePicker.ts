@@ -1,7 +1,7 @@
 import { dayjs } from "frappe-ui";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { jalaaliWeek, toGregorian, toJalaali } from "jalaali-js";
 import { computed, ref } from "vue";
+import { getPersianMonthName } from "../utils/intlDate";
 
 /**
  * Calendar grid for a given month, as six weeks of seven days.
@@ -32,7 +32,7 @@ export function useDatePicker() {
     const start = new Date(
       Date.UTC(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12)
     );
-    const formatter = new Intl.DateTimeFormat("fa-u-ca-persian-nu-arabext", {
+    const formatter = new Intl.DateTimeFormat("fa-IR-u-ca-gregory-nu-latn", {
       weekday: "narrow",
       timeZone: "UTC",
     });
@@ -67,18 +67,7 @@ export function useDatePicker() {
   const formattedMonth = computed(() => {
     if (!firstOfMonth.value) return "";
     if (!isPersianCalendar()) return firstOfMonth.value.format("MMMM, YYYY");
-    const date = firstOfMonth.value.toDate();
-    return digitsEnToFa(
-      new Intl.DateTimeFormat("fa-u-ca-persian-nu-arabext", {
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-      }).format(
-        new Date(
-          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12)
-        )
-      )
-    );
+    return `${getPersianMonthName(currentMonth.value)} ${currentYear.value}`;
   });
 
   function isInCurrentMonth(date: Date): boolean {
@@ -100,11 +89,11 @@ export function useDatePicker() {
     const day = isPersianCalendar()
       ? toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate()).jd
       : date.getDate();
-    return isPersianCalendar() ? digitsEnToFa(String(day)) : String(day);
+    return String(day);
   }
 
   function yearLabel(year: number): string {
-    return isPersianCalendar() ? digitsEnToFa(String(year)) : String(year);
+    return String(year);
   }
 
   return {

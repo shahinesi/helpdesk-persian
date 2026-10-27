@@ -2,16 +2,16 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { formatPersianDateRange } from "./intlDate.ts";
 
-test("Persian date ranges cross the Jalali new year with Persian digits", () => {
+test("Persian date ranges cross the Jalali new year using canonical digits", () => {
   const from = new Date(Date.UTC(2026, 2, 20, 12));
   const to = new Date(Date.UTC(2026, 2, 21, 12));
   const label = formatPersianDateRange(from, to);
 
   assert.match(label, /اسفند/);
   assert.match(label, /فروردین/);
-  assert.match(label, /۱۴۰۴/);
-  assert.match(label, /۱۴۰۵/);
-  assert.doesNotMatch(label, /[0-9]/);
+  assert.match(label, /1404/);
+  assert.match(label, /1405/);
+  assert.doesNotMatch(label, /[۰-۹٠-٩]/);
 });
 
 test("Persian date ranges stay stable across Tehran midnight", () => {

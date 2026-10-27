@@ -12,14 +12,31 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
+html:lang(fa) {
+  font-family: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif !important;
+  font-feature-settings: "ss01";
+}
+
+html:lang(fa) :is(button, input, select, textarea, .font-sans) {
   font-family: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif !important;
 }
 
-html[lang="fa"],
-html[lang="fa"] * {
+html:lang(fa) * {
   font-feature-settings: "ss01";
+}
+
+/* SVG chart labels use inline font families; let Persian charts use the same
+   Vazirmatn stylistic digits as the rest of the interface. */
+html:lang(fa) svg :is(text, tspan) {
+  font-family: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif !important;
+  font-feature-settings: "ss01";
+}
+
+html:lang(fa) :is(code, pre, kbd, samp, [dir="ltr"]) {
+  font-feature-settings: normal;
 }
 
 @layer components {

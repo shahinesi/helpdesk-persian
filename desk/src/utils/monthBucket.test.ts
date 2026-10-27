@@ -7,7 +7,7 @@ test("Persian Gregorian month buckets show the Jalali date span", () => {
 
   assert.match(label, /اسفند/);
   assert.match(label, /فروردین/);
-  assert.match(label, /۱۴۰۴|۱۴۰۵/);
+  assert.match(label, /1404|1405/);
   assert.doesNotMatch(label, /\bMar\b|\b2026\b/);
 });
 
@@ -20,8 +20,8 @@ test("Persian labels keep leap Gregorian month boundaries accurate", () => {
 
   assert.match(label, /بهمن/);
   assert.match(label, /اسفند/);
-  assert.match(label, /۱۴۰۲/);
-  assert.doesNotMatch(label, /[0-9]/);
+  assert.match(label, /1402/);
+  assert.doesNotMatch(label, /[۰-۹٠-٩]/);
 });
 
 test("date-only month buckets remain stable across Tehran midnight", () => {

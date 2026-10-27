@@ -280,7 +280,6 @@ const chartConfig = computed<EChartsOption>(() => {
   ]);
 
   return {
-    textStyle: { fontFamily: '"Vazirmatn", sans-serif' },
     legend: {},
     tooltip: {
       trigger: "item",
@@ -290,7 +289,6 @@ const chartConfig = computed<EChartsOption>(() => {
       padding: 10,
       textStyle: {
         color: cssVar("--ink-gray-9"),
-        fontFamily: '"Vazirmatn", sans-serif',
       },
       formatter: (params) => {
         const p = params as unknown as {

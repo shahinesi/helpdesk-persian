@@ -162,27 +162,11 @@ const props = defineProps({
   },
 });
 
-const chartConfig = computed<EChartsOption>(() => {
-  const config = props.chartConfig as any;
-  const fontFamily = '"Vazirmatn", sans-serif';
-  const tooltip = Array.isArray(config.tooltip)
-    ? config.tooltip.map((item) => ({
-        ...item,
-        textStyle: { ...item.textStyle, fontFamily },
-      }))
-    : config.tooltip
-    ? {
-        ...config.tooltip,
-        textStyle: { ...config.tooltip.textStyle, fontFamily },
-      }
-    : config.tooltip;
-
-  return {
-    ...config,
-    textStyle: { ...config.textStyle, fontFamily },
-    tooltip,
-  };
-});
+// Frappe UI's shared ECharts patch supplies the active app font. Keeping the
+// caller's options intact preserves English and any deliberate chart styling.
+const chartConfig = computed<EChartsOption>(
+  () => props.chartConfig as EChartsOption
+);
 
 const currentDuration = computed(() => props.currentDuration);
 

@@ -1,5 +1,4 @@
 import { dayjs, dayjsLocal } from "frappe-ui";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { __ } from "@/translation";
 import { computed, type ComputedRef, type Ref } from "vue";
 
@@ -219,8 +218,7 @@ function coarseDuration(date: string): string {
 /** Format a duration using its two most significant units, e.g. "1d 9h" */
 function twoUnitDuration(milliseconds: number): string {
   const duration = dayjs.duration(milliseconds);
-  const localize = (value: number) =>
-    dayjs.locale().split("-")[0] === "fa" ? digitsEnToFa(String(value)) : value;
+  const localize = (value: number) => String(value);
 
   const years = duration.years();
   const months = duration.months();
