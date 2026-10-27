@@ -5,7 +5,8 @@ url='https://files.pythonhosted.org/packages/2b/57/e2bb9b7823c049361c9e7d2d97199
 expected_sha256='8f33d98451bab132a612b98ffc8d1830c97a076ea3f3fde11f6ff7ab9bcae89c'
 expected_size=34161270
 chunk_size=4000000
-output=${1:-/tmp/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.whl}
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+output=${1:-"$script_dir/typst.whl"}
 
 if [ -e "$output" ]; then
 	actual_sha256=$(sha256sum "$output" | cut -d' ' -f1)

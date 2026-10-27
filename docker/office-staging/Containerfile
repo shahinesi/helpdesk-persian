@@ -20,9 +20,9 @@ ENV UV_HTTP_TIMEOUT=300
 USER frappe
 
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
+COPY --chown=frappe:frappe docker/office-staging/typst.whl /opt/frappe/typst.whl
 
 RUN --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0 \
-    --mount=type=secret,id=typst_wheel,target=/opt/frappe/typst.whl,uid=1000,gid=0 \
     test "$(sha256sum /opt/frappe/apps.json | cut -d' ' -f1)" = "$APP_MANIFEST_SHA" \
     && printf '%s  %s\n' "$TYPST_WHEEL_SHA256" /opt/frappe/typst.whl | sha256sum -c - \
     && : "$FRAPPE_EXPECTED_SHA" "$ERPNEXT_EXPECTED_SHA" "$HELPDESK_EXPECTED_SHA" "$TELEPHONY_EXPECTED_SHA" "$INSIGHTS_EXPECTED_SHA" \

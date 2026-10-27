@@ -16,17 +16,18 @@ compatibility checks.
 
 The Frappe build environment also installs Typst 0.15.0. On hosts where the
 BuildKit container cannot reliably stream the 34 MB PyPI wheel, fetch it on the
-build host and pass it as the `typst_wheel` BuildKit secret. The helper downloads
-bounded HTTP ranges from the official PyPI artifact and verifies its pinned
-size and SHA-256 before returning:
+build host into the Docker build context. The helper downloads bounded HTTP
+ranges from the official PyPI artifact and verifies its pinned size and SHA-256
+before returning:
 
 ```sh
-sh docker/office-staging/fetch-typst-wheel.sh /tmp/typst-0.15.0.whl
+sh docker/office-staging/fetch-typst-wheel.sh docker/office-staging/typst.whl
 ```
 
-Add `--secret id=typst_wheel,src=/tmp/typst-0.15.0.whl` to the image build.
-The Containerfile verifies the same digest and directs `uv` to this local wheel;
-neither the artifact nor credentials are copied into the resulting image.
+The generated wheel is ignored by Git but included in the Docker context. The
+Containerfile verifies the same digest and directs `uv` to this local wheel;
+the wheel is copied only into the intermediate builder stage and is absent from
+the resulting runtime image.
 
 The build must finish successfully and the asset validator must pass before
 any Staging service uses the candidate image. The final image contains a real,
