@@ -58,6 +58,32 @@ a symlink. Keep the previous image digest and database backup available for
 rollback; image rollback is appropriate only when the candidate has not applied
 a database migration.
 
+For a source-only update whose Python dependency manifests are unchanged, the
+versioned `Containerfile.staging-update` reuses the existing
+`runtime-569be35` dependency seed and preserves its installed Python and Node
+packages. It verifies the seed's app SHAs, proves the Helpdesk and Insights
+Python dependencies did not change, checks the relevant JavaScript packages,
+then replaces Helpdesk, Insights, and Insights' pinned Frappe UI source before
+building and validating their assets. This avoids reinstalling the entire
+Frappe Python environment from PyPI. It is only valid while that exact seed
+image is present and the dependency checks pass; use the full `Containerfile`
+when the base app pins or dependency manifests change.
+
+Build this candidate without touching the running services or their volumes:
+
+```sh
+docker image inspect helpdesk-persian:runtime-569be35 --format '{{.Id}}'
+docker buildx build --load --progress=plain --allow network.host \
+  --tag helpdesk-persian:runtime-fa-585f75d \
+  --file docker/office-staging/Containerfile.staging-update .
+```
+
+The update image does not run database migrations. Validate it against the
+separate test site first; only then recreate the intended Staging application
+services with `compose.integrated-candidate.yaml` and run the browser smoke
+checks. Keep the `runtime-569be35` image and existing volumes intact for
+rollback.
+
 Git checkout and dependency-install `RUN` instructions use BuildKit's
 `network.host` entitlement to avoid slow or stalled GitHub, PyPI, and npm
 downloads through the Docker bridge. The image-asset compilation step uses the
