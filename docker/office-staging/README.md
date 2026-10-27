@@ -47,7 +47,7 @@ docker buildx build --load --progress=plain \
   --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-855bf59 \
+  --tag helpdesk-persian:runtime-fa-585f75d \
   --file docker/office-staging/Containerfile .
 ```
 
@@ -77,7 +77,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-855bf59`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-585f75d`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous
 `helpdesk-persian:runtime-569be35` image remains available for rollback. Build
 the pinned image from this directory's `Containerfile` before selecting it.
