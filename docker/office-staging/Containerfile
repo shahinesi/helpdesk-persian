@@ -18,6 +18,7 @@ ENV CI=Yes
 USER frappe
 
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
+COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/frappe/validate-translations.py
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/uv-pip-wrapper.sh /opt/frappe/bin/uv
 COPY --chown=frappe:frappe docker/office-staging/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl /opt/frappe/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
 
@@ -99,6 +100,11 @@ RUN --network=host test "$(node --version)" = "v24.21.0" \
 RUN cd apps/helpdesk/desk \
     && yarn apply:ui-patches \
     && cd /home/frappe/frappe-bench \
+    && bench compile-po-to-mo --app frappe --locale fa --force \
+    && bench compile-po-to-mo --app erpnext --locale fa --force \
+    && bench compile-po-to-mo --app helpdesk --locale fa --force \
+    && bench compile-po-to-mo --app insights --locale fa --force \
+    && python /opt/frappe/validate-translations.py sites/assets/locale \
     && bench build --apps frappe \
     && bench build --apps erpnext \
     && bench build --apps helpdesk \

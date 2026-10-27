@@ -3,6 +3,7 @@ ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-569be35
 FROM ${SEED_RUNTIME_IMAGE} AS builder
 WORKDIR /home/frappe/frappe-bench
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
+COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/frappe/validate-translations.py
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
 ARG HELPDESK_BASE_SHA=cff7d5ff70f6b6020da8ae6197f73dfc86120db9
@@ -144,6 +145,11 @@ RUN cd apps/helpdesk/desk \
     && env/bin/python -m pip check \
     && test ! -e sites/assets \
     && ln -s ../assets sites/assets \
+    && bench compile-po-to-mo --app frappe --locale fa --force \
+    && bench compile-po-to-mo --app erpnext --locale fa --force \
+    && bench compile-po-to-mo --app helpdesk --locale fa --force \
+    && bench compile-po-to-mo --app insights --locale fa --force \
+    && python /opt/frappe/validate-translations.py sites/assets/locale \
     && bench build --apps helpdesk \
     && bench build --apps insights \
     && python /opt/frappe/validate-assets.py sites/assets
