@@ -50,6 +50,14 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 `sites` volume and do not mount a separate volume at `sites/assets`; the image
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
+`compose.integrated-candidate.yaml` is the versioned Staging override for the
+currently built `helpdesk-persian:runtime-569be35` image. It uses
+`pull_policy: never`, so the immutable local image must already exist on the
+target host. Build the pinned image from this directory's `Containerfile`
+before selecting a different image tag. The current GHCR push was rejected by
+the registry, so this tag is host-local until registry authorization is
+restored.
+
 Frappe keeps the merged `assets.json` in the shared Redis cache. Replacing the
 image does not invalidate that entry, so old cached paths can still be emitted
 even when the new image contains a complete manifest. After recreating the app
