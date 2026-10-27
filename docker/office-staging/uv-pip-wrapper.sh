@@ -26,17 +26,21 @@ if [[ "${1:-}" == "pip" && "${2:-}" == "install" ]]; then
 				;;
 		esac
 	done
+	pip_options=(
+		--index-url https://pypi.org/simple
+		--find-links "${UV_FIND_LINKS:-/opt/frappe}"
+		--timeout "${PIP_DEFAULT_TIMEOUT:-90}"
+		--retries "${PIP_RETRIES:-8}"
+	)
 
 	if [[ -n "$python_target" ]]; then
 		exec /usr/local/bin/python3 -m pip --python "$python_target" install \
-			--timeout "${PIP_DEFAULT_TIMEOUT:-90}" \
-			--retries "${PIP_RETRIES:-8}" \
+			"${pip_options[@]}" \
 			"${pip_args[@]}"
 	fi
 
 	exec /usr/local/bin/python3 -m pip install \
-		--timeout "${PIP_DEFAULT_TIMEOUT:-90}" \
-		--retries "${PIP_RETRIES:-8}" \
+		"${pip_options[@]}" \
 		"${pip_args[@]}"
 fi
 

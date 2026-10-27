@@ -64,7 +64,10 @@ downloads through the Docker bridge. The image-asset compilation step uses the
 default network mode. The builder must allow the `network.host` entitlement.
 Frappe Bench still uses `uv` for virtual environments; the versioned `uv`
 compatibility wrapper routes only `uv pip install` through pip, whose interrupted
-wheel downloads were verified to resume successfully on this host.
+wheel downloads were verified to resume successfully on this host. The wrapper
+uses the official `https://pypi.org/simple` index and the verified local wheel
+directory so stale injected package-index configuration cannot hide pinned
+Frappe dependencies.
 
 ## Activate or roll back an image
 
