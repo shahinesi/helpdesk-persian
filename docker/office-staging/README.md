@@ -60,11 +60,12 @@ a database migration.
 
 For a source-only update whose Python dependency manifests are unchanged, the
 versioned `Containerfile.staging-update` reuses the existing
-`runtime-569be35` dependency seed and preserves its installed Python and Node
-packages. It verifies the seed's app SHAs, proves the Helpdesk and Insights
-Python dependencies did not change, checks the relevant JavaScript packages,
-then replaces Helpdesk, Insights, and Insights' pinned Frappe UI source before
-building and validating their assets. It applies only the new Vite path hunk
+`runtime-569be35` dependency seed and builds directly in that pinned runtime,
+without copying its 6 GB filesystem into a separate builder stage. It verifies
+the seed's app SHAs, proves the Helpdesk and Insights Python dependencies did
+not change, checks the relevant JavaScript packages, then replaces Helpdesk,
+Insights, and Insights' pinned Frappe UI source before building and validating
+their assets. It applies only the new Vite path hunk
 from Helpdesk's versioned Frappe UI patch, leaving the seed image's other
 already-applied package hunks and patch-package state intact. This avoids reinstalling the entire
 Frappe Python environment from PyPI. It is only valid while that exact seed
