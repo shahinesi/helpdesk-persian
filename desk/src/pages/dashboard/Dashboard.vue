@@ -217,6 +217,7 @@ import { useScreenSize } from "@/composables/screen";
 import { useAuthStore } from "@/stores/auth";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
+import { localizeDashboardChartLabels } from "@/utils/localizeDashboardChartLabels";
 import { formatLocalizedDate, formatLocalizedDateRange } from "@/utils";
 import { formatLocalizedDigits } from "@/utils/number";
 import { Link } from "@framework/ui";
@@ -525,50 +526,54 @@ const loading = computed(() => {
 });
 
 function getChartType(chart: any) {
+  const localizedChart = localizeDashboardChartLabels(
+    chart,
+    displayLinkOption,
+  );
   const data =
-    chart.key === "tickets_by_type"
-      ? chart.data.map((row: any) => ({
+    localizedChart.key === "tickets_by_type"
+      ? localizedChart.data.map((row: any) => ({
           ...row,
-          [chart.categoryColumn]: displayLinkOption(
+          [localizedChart.categoryColumn]: displayLinkOption(
             "HD Ticket Type",
-            row[chart.categoryColumn] || "Unspecified"
+            row[localizedChart.categoryColumn] || "Unspecified"
           ),
         }))
-      : chart.key === "tickets_by_team"
-      ? chart.data.map((row: any) => ({
+      : localizedChart.key === "tickets_by_team"
+      ? localizedChart.data.map((row: any) => ({
           ...row,
-          [chart.categoryColumn]: translateDefaultTeam(
-            row[chart.categoryColumn]
+          [localizedChart.categoryColumn]: translateDefaultTeam(
+            row[localizedChart.categoryColumn]
           ),
         }))
-      : chart.data;
+      : localizedChart.data;
   const xAxis =
-    chart.xAxis?.type === "time"
+    localizedChart.xAxis?.type === "time"
       ? {
-          ...chart.xAxis,
+          ...localizedChart.xAxis,
           echartOptions: {
-            ...chart.xAxis.echartOptions,
+            ...localizedChart.xAxis.echartOptions,
             axisLabel: {
-              ...chart.xAxis.echartOptions?.axisLabel,
+              ...localizedChart.xAxis.echartOptions?.axisLabel,
               formatter: (value: string | number) =>
                 formatLocalizedDate(
                   value,
-                  chart.xAxis.timeGrain === "year"
+                  localizedChart.xAxis.timeGrain === "year"
                     ? "YYYY"
-                    : chart.xAxis.timeGrain === "month"
+                    : localizedChart.xAxis.timeGrain === "month"
                     ? "MMM YYYY"
                     : "MMM D",
-                  ["year", "month"].includes(chart.xAxis.timeGrain)
+                  ["year", "month"].includes(localizedChart.xAxis.timeGrain)
                     ? "gregorian"
                     : "locale"
                 ),
             },
           },
         }
-      : chart.xAxis;
+      : localizedChart.xAxis;
   const config = {
-    ...chart,
-    subtitle: formatLocalizedDigits(chart.subtitle || ""),
+    ...localizedChart,
+    subtitle: formatLocalizedDigits(localizedChart.subtitle || ""),
     data,
     xAxis,
     colors,
