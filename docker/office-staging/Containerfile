@@ -5,11 +5,11 @@ ARG FRAPPE_BASE_IMAGE=frappe/base@sha256:704b6c8f7ce9f09633b4c83da3d0384de85a3f9
 FROM ${FRAPPE_BUILD_IMAGE} AS builder
 ARG FRAPPE_BRANCH=codex/shared-persian-core
 ARG FRAPPE_PATH=https://github.com/shahinesi/frappe-persian
-ARG FRAPPE_EXPECTED_SHA=cdfea098081b0d49f5b026343e489ff0912de342
-ARG ERPNEXT_EXPECTED_SHA=d2072755c94adc101f9571e5263badc1e6493082
-ARG HELPDESK_EXPECTED_SHA
-ARG TELEPHONY_EXPECTED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
-ARG INSIGHTS_EXPECTED_SHA=110ca16d118081cfc4908accdb0bd3e88667f571
+ARG FRAPPE_EXPECTED_SHA=5b0e147ed17174acf554da0cfa73df77e07476d2
+ARG ERPNEXT_EXPECTED_SHA=46cd4e99088871dade6e9a647cb2e9c289bc374d
+ARG HELPDESK_EXPECTED_SHA=e56ff43a81173c4723c7eef029ea8e759d777ade
+ARG TELEPHONY_EXPECTED_SHA=9447577500a25d242088398157b72c654fa34b20
+ARG INSIGHTS_EXPECTED_SHA=855bf592f580309d18a23d9346d8481630aadb10
 ARG APP_MANIFEST_SHA
 ARG TYPST_WHEEL_SHA256=8f33d98451bab132a612b98ffc8d1830c97a076ea3f3fde11f6ff7ab9bcae89c
 ENV PATH="/home/frappe/.nvm/current/bin:${PATH}"
@@ -25,7 +25,6 @@ COPY --chown=frappe:frappe docker/office-staging/typst.whl /opt/frappe/typst.whl
 RUN --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0 \
     test "$(sha256sum /opt/frappe/apps.json | cut -d' ' -f1)" = "$APP_MANIFEST_SHA" \
     && printf '%s  %s\n' "$TYPST_WHEEL_SHA256" /opt/frappe/typst.whl | sha256sum -c - \
-    && : "$FRAPPE_EXPECTED_SHA" "$ERPNEXT_EXPECTED_SHA" "$HELPDESK_EXPECTED_SHA" "$TELEPHONY_EXPECTED_SHA" "$INSIGHTS_EXPECTED_SHA" \
     && UV_FIND_LINKS=/opt/frappe bench init --apps_path=/opt/frappe/apps.json \
     --frappe-branch=${FRAPPE_BRANCH} \
     --frappe-path=${FRAPPE_PATH} \
@@ -33,7 +32,23 @@ RUN --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0
     --no-backups \
     --skip-redis-config-generation \
     --skip-assets \
-    /home/frappe/frappe-bench
+    /home/frappe/frappe-bench \
+    && python - "$FRAPPE_EXPECTED_SHA" "$ERPNEXT_EXPECTED_SHA" "$HELPDESK_EXPECTED_SHA" "$TELEPHONY_EXPECTED_SHA" "$INSIGHTS_EXPECTED_SHA" <<'PY'
+import subprocess
+import sys
+
+names = ("frappe", "erpnext", "helpdesk", "telephony", "insights")
+expected = dict(zip(names, sys.argv[1:], strict=True))
+for name in names:
+    actual = subprocess.check_output(
+        ["git", "-C", f"/home/frappe/frappe-bench/apps/{name}", "rev-parse", "HEAD"],
+        text=True,
+    ).strip()
+    if actual != expected[name]:
+        raise SystemExit(
+            f"Bootstrap app SHA mismatch for {name}: {actual} != {expected[name]}"
+        )
+PY
 
 WORKDIR /home/frappe/frappe-bench
 
@@ -41,9 +56,9 @@ WORKDIR /home/frappe/frappe-bench
 # These exact source pins are checked out before dependencies and assets build.
 ARG FRAPPE_PINNED_SHA=40259f266039f4c659586a24724ce7fd1f6f99c2
 ARG ERPNEXT_PINNED_SHA=46cd4e99088871dade6e9a647cb2e9c289bc374d
-ARG HELPDESK_PINNED_SHA=cff7d5ff70f6b6020da8ae6197f73dfc86120db9
+ARG HELPDESK_PINNED_SHA=e56ff43a81173c4723c7eef029ea8e759d777ade
 ARG TELEPHONY_PINNED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
-ARG INSIGHTS_PINNED_SHA=ca237e436f8f19d1260b8635c94b48470b44f70f
+ARG INSIGHTS_PINNED_SHA=855bf592f580309d18a23d9346d8481630aadb10
 RUN python - "$FRAPPE_PINNED_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_PINNED_SHA" "$TELEPHONY_PINNED_SHA" "$INSIGHTS_PINNED_SHA" <<'PY'
 import json
 import subprocess

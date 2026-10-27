@@ -1,18 +1,18 @@
-# Versioned override for the already-built Staging candidate.
-# Rebuild docker/office-staging/Containerfile before changing this image tag.
+# Versioned override for the Persian ecosystem Staging candidate.
+# The previous runtime-569be35 image remains available for rollback.
 services:
   backend:
-    image: helpdesk-persian:runtime-569be35
+    image: helpdesk-persian:runtime-fa-855bf59
     pull_policy: never
   frontend:
-    image: helpdesk-persian:runtime-569be35
+    image: helpdesk-persian:runtime-fa-855bf59
     pull_policy: never
   websocket:
-    image: helpdesk-persian:runtime-569be35
+    image: helpdesk-persian:runtime-fa-855bf59
     pull_policy: never
   queue-short:
-    image: helpdesk-persian:runtime-569be35
+    image: helpdesk-persian:runtime-fa-855bf59
     pull_policy: never
   queue-long:
-    image: helpdesk-persian:runtime-569be35
+    image: helpdesk-persian:runtime-fa-855bf59
     pull_policy: never

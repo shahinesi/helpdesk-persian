@@ -9,12 +9,12 @@ The image pins the Frappe build/base images by digest. `apps.json` selects the
 Git remotes and initial branches; after clone, the builder fetches and checks
 out the exact expected SHA for every app before reconciling dependencies or
 building assets. Supply `docker/office-staging/apps.json` as the BuildKit secret
-`apps_json`, pass its SHA-256 as `APP_MANIFEST_SHA`, and provide all five
-`*_EXPECTED_SHA` bootstrap values. The separate `*_PINNED_SHA` values select
-the final app commits; their defaults match the currently tested Persian
-branches. The manifest digest and bootstrap refs participate in the cached
-initialization layer, while final pins invalidate the checkout/dependency/build
-layers. Update refs and pins together only after compatibility checks.
+`apps_json` and pass its SHA-256 as `APP_MANIFEST_SHA`. The five bootstrap
+branch heads and five final app commits are pinned in the `Containerfile`; the
+build rejects any mismatch after checkout. The manifest digest and bootstrap
+refs participate in the cached initialization layer, while final pins
+invalidate the checkout/dependency/build layers. Update refs and pins together
+only after compatibility checks.
 After checking out final revisions, the builder installs each app's locked
 JavaScript dependencies before running its asset build. This is required when
 a final pin adds packages that were absent from the bootstrap branch.
@@ -36,6 +36,18 @@ Containerfile verifies the same digest and directs `uv` to this local wheel;
 the wheel is copied only into the intermediate builder stage and is absent from
 the resulting runtime image.
 
+Build the candidate from the repository root after fetching the verified wheel:
+
+```sh
+sh docker/office-staging/fetch-typst-wheel.sh docker/office-staging/typst.whl
+APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
+docker buildx build --load --progress=plain \
+  --secret id=apps_json,src=docker/office-staging/apps.json \
+  --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
+  --tag helpdesk-persian:runtime-fa-855bf59 \
+  --file docker/office-staging/Containerfile .
+```
+
 The build must finish successfully and the asset validator must pass before
 any Staging service uses the candidate image. The final image contains a real,
 image-owned `assets/` directory even when the builder's `sites/assets` path is
@@ -50,13 +62,13 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 `sites` volume and do not mount a separate volume at `sites/assets`; the image
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
-`compose.integrated-candidate.yaml` is the versioned Staging override for the
-currently built `helpdesk-persian:runtime-569be35` image. It uses
-`pull_policy: never`, so the immutable local image must already exist on the
-target host. Build the pinned image from this directory's `Containerfile`
-before selecting a different image tag. The current GHCR push was rejected by
-the registry, so this tag is host-local until registry authorization is
-restored.
+`compose.integrated-candidate.yaml` is the versioned Staging override for
+`helpdesk-persian:runtime-fa-855bf59`. It uses `pull_policy: never`, so the
+immutable local image must already exist on the target host. The previous
+`helpdesk-persian:runtime-569be35` image remains available for rollback. Build
+the pinned image from this directory's `Containerfile` before selecting it.
+The current GHCR push was rejected by the registry, so this tag is host-local
+until registry authorization is restored.
 
 Frappe keeps the merged `assets.json` in the shared Redis cache. Replacing the
 image does not invalidate that entry, so old cached paths can still be emitted
