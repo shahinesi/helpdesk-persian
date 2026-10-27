@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "yarn apply:ui-patches && vite build",
+    "test:build-tools": "node --test tests/frappe-ui-vite-utils.test.mjs",
     "test:localization": "node --experimental-strip-types --test src/utils/monthBucket.test.ts src/utils/intlDate.test.ts src/utils/number.test.ts src/utils/outsideHoursMessage.test.ts src/utils/fontStyles.test.ts",
     "serve": "vite preview",
     "postinstall": "patch-package",

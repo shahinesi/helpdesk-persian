@@ -4095,3 +4095,63 @@ index cc3f745..e51412c 100644
    color: var(--ink-gray-4);
    pointer-events: none;
    height: 0;
+diff --git a/node_modules/frappe-ui/vite/utils.js b/node_modules/frappe-ui/vite/utils.js
+index 1111111..2222222 100644
+--- a/node_modules/frappe-ui/vite/utils.js
++++ b/node_modules/frappe-ui/vite/utils.js
+@@ -25,19 +25,22 @@ export function getCommonSiteConfig() {
+-export function findBenchPath() {
+-  let currentDir = path.resolve('.')
+-  while (currentDir !== '/') {
++export function findBenchPath(startDir = process.cwd()) {
++  let currentDir = path.resolve(startDir)
++  while (true) {
+     if (
+       fs.existsSync(path.join(currentDir, 'sites')) &&
+       fs.existsSync(path.join(currentDir, 'apps'))
+     ) {
+       return currentDir
+     }
+-    currentDir = path.resolve(currentDir, '..')
++    const parentDir = path.dirname(currentDir)
++    if (parentDir === currentDir) {
++      return null
++    }
++    currentDir = parentDir
+   }
+-  return null
+ }
+ 
+-export function findAppsFolder() {
+-  const benchPath = findBenchPath()
++export function findAppsFolder(startDir = process.cwd()) {
++  const benchPath = findBenchPath(startDir)
+   if (!benchPath) {
+     return null
+   }
+@@ -67,18 +70,19 @@ export function findAppsFolder() {
+-export function findAppName() {
+-  const appsFolder = findAppsFolder()
++export function findAppName(startDir = process.cwd()) {
++  const appsFolder = findAppsFolder(startDir)
+   if (!appsFolder) {
+     return null
+   }
+ 
+   // Walk up from cwd until we find a directory whose parent is the apps folder
+-  let currentDir = path.resolve('.')
+-  while (currentDir !== '/') {
++  let currentDir = path.resolve(startDir)
++  while (true) {
+     const parent = path.dirname(currentDir)
+     if (path.resolve(parent) === path.resolve(appsFolder)) {
+       return path.basename(currentDir)
+     }
++    if (parent === currentDir) {
++      return null
++    }
+     currentDir = parent
+   }
+-
+-  return null
+ }
