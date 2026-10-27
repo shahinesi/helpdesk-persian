@@ -102,7 +102,6 @@ USER frappe
 COPY --from=builder --chown=frappe:0 /home/frappe/frappe-bench /home/frappe/frappe-bench
 COPY --from=builder --chown=frappe:0 /home/frappe/.nvm/current/bin/node /usr/local/bin/node
 WORKDIR /home/frappe/frappe-bench
-RUN chmod -R g=u /home/frappe/frappe-bench
 VOLUME ["/home/frappe/frappe-bench/sites", "/home/frappe/frappe-bench/logs"]
 USER root
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
