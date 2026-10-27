@@ -15,6 +15,9 @@ the final app commits; their defaults match the currently tested Persian
 branches. The manifest digest and bootstrap refs participate in the cached
 initialization layer, while final pins invalidate the checkout/dependency/build
 layers. Update refs and pins together only after compatibility checks.
+After checking out final revisions, the builder installs each app's locked
+JavaScript dependencies before running its asset build. This is required when
+a final pin adds packages that were absent from the bootstrap branch.
 
 The Frappe build environment also installs Typst 0.15.0. On hosts where the
 BuildKit container cannot reliably stream the 34 MB PyPI wheel, fetch it on the

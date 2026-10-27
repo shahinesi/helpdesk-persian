@@ -73,9 +73,15 @@ RUN bench setup requirements --dev
 # Build assets in the image builder; never write them into a running sites volume.
 RUN test "$(node --version)" = "v24.21.0" \
     && test "$(yarn --version)" = "1.22.22" \
-    && cd apps/helpdesk/desk \
+    && cd apps/frappe \
+    && yarn install --frozen-lockfile --non-interactive \
+    && cd ../erpnext \
+    && yarn install --frozen-lockfile --non-interactive \
+    && cd ../helpdesk/desk \
     && yarn install --frozen-lockfile --non-interactive \
     && yarn apply:ui-patches \
+    && cd ../../insights/frontend \
+    && yarn install --frozen-lockfile --non-interactive \
     && cd /home/frappe/frappe-bench \
     && bench build --apps frappe \
     && bench build --apps erpnext \
