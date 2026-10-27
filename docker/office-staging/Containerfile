@@ -36,7 +36,15 @@ RUN --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0
     /home/frappe/frappe-bench
 
 WORKDIR /home/frappe/frappe-bench
-RUN python - "$FRAPPE_EXPECTED_SHA" "$ERPNEXT_EXPECTED_SHA" "$HELPDESK_EXPECTED_SHA" "$TELEPHONY_EXPECTED_SHA" "$INSIGHTS_EXPECTED_SHA" <<'PY'
+
+# Final app revisions are independent from the cached bootstrap install above.
+# These exact source pins are checked out before dependencies and assets build.
+ARG FRAPPE_PINNED_SHA=40259f266039f4c659586a24724ce7fd1f6f99c2
+ARG ERPNEXT_PINNED_SHA=46cd4e99088871dade6e9a647cb2e9c289bc374d
+ARG HELPDESK_PINNED_SHA=cff7d5ff70f6b6020da8ae6197f73dfc86120db9
+ARG TELEPHONY_PINNED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
+ARG INSIGHTS_PINNED_SHA=ca237e436f8f19d1260b8635c94b48470b44f70f
+RUN python - "$FRAPPE_PINNED_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_PINNED_SHA" "$TELEPHONY_PINNED_SHA" "$INSIGHTS_PINNED_SHA" <<'PY'
 import json
 import subprocess
 import sys

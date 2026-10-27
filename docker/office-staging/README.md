@@ -10,9 +10,11 @@ Git remotes and initial branches; after clone, the builder fetches and checks
 out the exact expected SHA for every app before reconciling dependencies or
 building assets. Supply `docker/office-staging/apps.json` as the BuildKit secret
 `apps_json`, pass its SHA-256 as `APP_MANIFEST_SHA`, and provide all five
-`*_EXPECTED_SHA` values. The manifest digest and all app pins participate in
-the clone-layer cache key. Update refs and pins together only after
-compatibility checks.
+`*_EXPECTED_SHA` bootstrap values. The separate `*_PINNED_SHA` values select
+the final app commits; their defaults match the currently tested Persian
+branches. The manifest digest and bootstrap refs participate in the cached
+initialization layer, while final pins invalidate the checkout/dependency/build
+layers. Update refs and pins together only after compatibility checks.
 
 The Frappe build environment also installs Typst 0.15.0. On hosts where the
 BuildKit container cannot reliably stream the 34 MB PyPI wheel, fetch it on the
