@@ -17,7 +17,8 @@ compatibility checks.
 The Frappe build environment also installs Typst 0.15.0. On hosts where the
 BuildKit container cannot reliably stream the 34 MB PyPI wheel, fetch it on the
 build host and pass it as the `typst_wheel` BuildKit secret. The helper downloads
-the official PyPI artifact and verifies its pinned SHA-256 before returning:
+bounded HTTP ranges from the official PyPI artifact and verifies its pinned
+size and SHA-256 before returning:
 
 ```sh
 sh docker/office-staging/fetch-typst-wheel.sh /tmp/typst-0.15.0.whl
