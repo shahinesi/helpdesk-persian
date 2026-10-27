@@ -18,6 +18,8 @@ layers. Update refs and pins together only after compatibility checks.
 After checking out final revisions, the builder installs each app's locked
 JavaScript dependencies before running its asset build. This is required when
 a final pin adds packages that were absent from the bootstrap branch.
+Insights has its own Vite frontend and island bundles; the builder runs its
+versioned `yarn build` script before linking and validating the final assets.
 
 The Frappe build environment also installs Typst 0.15.0. On hosts where the
 BuildKit container cannot reliably stream the 34 MB PyPI wheel, fetch it on the
