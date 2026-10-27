@@ -13,6 +13,7 @@ ARG INSIGHTS_FRAPPE_UI_SHA=929b8bf16dddf90bb0c29ab26c129f60a9274a08
 
 RUN --network=host python - "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" <<'PY'
 import json
+import os
 import pathlib
 import shutil
 import subprocess
@@ -27,11 +28,8 @@ def run(*args):
 def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
     target = apps / name
     temporary = apps / f".{name}-pinned"
-    preserved_modules = apps / f".{name}-node_modules"
     if temporary.exists():
         shutil.rmtree(temporary)
-    if preserved_modules.exists():
-        shutil.rmtree(preserved_modules)
     run("git", "init", str(temporary))
     run("git", "-C", str(temporary), "remote", "add", "upstream", url)
     run("git", "-C", str(temporary), "fetch", "--depth=1", "upstream", pinned_sha)
@@ -57,10 +55,24 @@ def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
     modules = target / node_modules_relative
     if not modules.is_dir():
         raise SystemExit(f"Expected installed dependencies are missing: {modules}")
-    shutil.move(str(modules), str(preserved_modules))
-    shutil.rmtree(target)
-    shutil.move(str(temporary), str(target))
-    shutil.move(str(preserved_modules), str(target / node_modules_relative))
+    stale_paths = []
+    for current, directories, files in os.walk(target):
+        current_path = pathlib.Path(current)
+        for directory in list(directories):
+            path = current_path / directory
+            relative = path.relative_to(target)
+            if relative == node_modules_relative or node_modules_relative in relative.parents:
+                directories.remove(directory)
+            elif relative not in node_modules_relative.parents:
+                stale_paths.append(path)
+        stale_paths.extend(current_path / filename for filename in files)
+    for path in sorted(stale_paths, key=lambda item: len(item.parts), reverse=True):
+        if path.is_symlink() or path.is_file():
+            path.unlink()
+        elif path.is_dir():
+            path.rmdir()
+    shutil.copytree(temporary, target, dirs_exist_ok=True)
+    shutil.rmtree(temporary)
     actual = subprocess.check_output(["git", "-C", str(target), "rev-parse", "HEAD"], text=True).strip()
     if actual != pinned_sha:
         raise SystemExit(f"{name} SHA mismatch: {actual} != {pinned_sha}")
