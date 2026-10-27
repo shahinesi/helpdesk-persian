@@ -58,10 +58,13 @@ a symlink. Keep the previous image digest and database backup available for
 rollback; image rollback is appropriate only when the candidate has not applied
 a database migration.
 
-The initial dependency bootstrap uses BuildKit's `network.host` entitlement to
-avoid slow or stalled PyPI/GitHub downloads through the Docker bridge. Only
-that `RUN` instruction uses host networking; subsequent build steps keep their
+Git checkout and dependency-install `RUN` instructions use BuildKit's
+`network.host` entitlement to avoid slow or stalled GitHub, PyPI, and npm
+downloads through the Docker bridge. The image-asset compilation step uses the
 default network mode. The builder must allow the `network.host` entitlement.
+Frappe Bench still uses `uv` for virtual environments; the versioned `uv`
+compatibility wrapper routes only `uv pip install` through pip, whose interrupted
+wheel downloads were verified to resume successfully on this host.
 
 ## Activate or roll back an image
 

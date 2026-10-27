@@ -12,16 +12,13 @@ ARG TELEPHONY_EXPECTED_SHA=9447577500a25d242088398157b72c654fa34b20
 ARG INSIGHTS_EXPECTED_SHA=855bf592f580309d18a23d9346d8481630aadb10
 ARG APP_MANIFEST_SHA
 ARG TYPST_WHEEL_SHA256=8f33d98451bab132a612b98ffc8d1830c97a076ea3f3fde11f6ff7ab9bcae89c
-ENV PATH="/home/frappe/.nvm/current/bin:${PATH}"
+ENV PATH="/opt/frappe/bin:/home/frappe/.nvm/current/bin:${PATH}"
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 ENV CI=Yes
-# Staging egress intermittently stalls large PyPI response bodies. Retry more
-# often with a bounded per-read timeout instead of waiting 5 minutes per retry.
-ENV UV_HTTP_TIMEOUT=90
-ENV UV_HTTP_RETRIES=8
 USER frappe
 
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
+COPY --chown=frappe:frappe --chmod=755 docker/office-staging/uv-pip-wrapper.sh /opt/frappe/bin/uv
 COPY --chown=frappe:frappe docker/office-staging/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl /opt/frappe/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
 
 RUN --network=host --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0 \
@@ -61,7 +58,7 @@ ARG ERPNEXT_PINNED_SHA=46cd4e99088871dade6e9a647cb2e9c289bc374d
 ARG HELPDESK_PINNED_SHA=e56ff43a81173c4723c7eef029ea8e759d777ade
 ARG TELEPHONY_PINNED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
 ARG INSIGHTS_PINNED_SHA=855bf592f580309d18a23d9346d8481630aadb10
-RUN python - "$FRAPPE_PINNED_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_PINNED_SHA" "$TELEPHONY_PINNED_SHA" "$INSIGHTS_PINNED_SHA" <<'PY'
+RUN --network=host python - "$FRAPPE_PINNED_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_PINNED_SHA" "$TELEPHONY_PINNED_SHA" "$INSIGHTS_PINNED_SHA" <<'PY'
 import json
 import subprocess
 import sys
@@ -85,10 +82,10 @@ with open("PINNED_VERSIONS.json", "w", encoding="utf-8") as output:
 PY
 
 # Reconcile Python and JS dependencies after replacing moving branch checkouts with exact SHAs.
-RUN bench setup requirements --dev
+RUN --network=host bench setup requirements --dev
 
 # Build assets in the image builder; never write them into a running sites volume.
-RUN test "$(node --version)" = "v24.21.0" \
+RUN --network=host test "$(node --version)" = "v24.21.0" \
     && test "$(yarn --version)" = "1.22.22" \
     && cd apps/frappe \
     && yarn install --frozen-lockfile --non-interactive \
@@ -96,9 +93,11 @@ RUN test "$(node --version)" = "v24.21.0" \
     && yarn install --frozen-lockfile --non-interactive \
     && cd ../helpdesk/desk \
     && yarn install --frozen-lockfile --non-interactive \
-    && yarn apply:ui-patches \
     && cd ../../insights/frontend \
-    && yarn install --frozen-lockfile --non-interactive \
+    && yarn install --frozen-lockfile --non-interactive
+
+RUN cd apps/helpdesk/desk \
+    && yarn apply:ui-patches \
     && cd /home/frappe/frappe-bench \
     && bench build --apps frappe \
     && bench build --apps erpnext \
