@@ -1,4 +1,18 @@
 import { skipGettingStarted, test, expect } from "../helpers/fixtures";
+import { formatPersianDateRange } from "../../desk/src/utils/intlDate";
+
+function currentPersianMonthLabel() {
+  const now = new Date();
+  const utcToday = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  );
+  const formattedRange = formatPersianDateRange(utcToday, utcToday);
+  const [, month, year] = formattedRange.match(/^\d+ (.+) (\d+) تا /) || [];
+  if (!month || !year) {
+    throw new Error("Could not format the current Jalali month");
+  }
+  return `${month} ${year}`;
+}
 
 test("Persian date range picker displays Jalali dates and sends Gregorian API values", async ({
   pageAs,
@@ -15,12 +29,7 @@ test("Persian date range picker displays Jalali dates and sends Gregorian API va
 
   const calendar = page.locator(".calendar-panel").first();
   await expect(calendar).toBeVisible();
-  const expectedMonth = await page.evaluate(() =>
-    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-latn", {
-      month: "long",
-      year: "numeric",
-    }).format(new Date())
-  );
+  const expectedMonth = currentPersianMonthLabel();
   await expect(calendar).toContainText(expectedMonth);
 
   const dateCells = calendar.locator('[role="grid"] button:not([disabled])');
@@ -102,12 +111,7 @@ test("Persian calendar month and year selection honors leap Esfand", async ({
   await page.locator('.mb-4 [class*="min-w-48"]').click();
   await page.getByText("محدوده سفارشی", { exact: true }).click();
   const calendar = page.locator(".calendar-panel").first();
-  const currentMonth = await page.evaluate(() =>
-    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-latn", {
-      month: "long",
-      year: "numeric",
-    }).format(new Date())
-  );
+  const currentMonth = currentPersianMonthLabel();
   await calendar.getByRole("button").filter({ hasText: currentMonth }).click();
 
   const yearList = calendar.locator('[role="listbox"]').first();
@@ -182,12 +186,7 @@ test("Persian single-value DateTimePicker shows Jalali dates", async ({ pageAs }
   await dateTimeInput.click();
 
   const calendar = page.locator(".calendar-panel").first();
-  const expectedMonth = await page.evaluate(() =>
-    new Intl.DateTimeFormat("fa-IR-u-ca-persian-nu-latn", {
-      month: "long",
-      year: "numeric",
-    }).format(new Date())
-  );
+  const expectedMonth = currentPersianMonthLabel();
   await expect(calendar).toContainText(expectedMonth);
   await expect(calendar.locator('[role="grid"] button').first()).toContainText(
     /[0-9]/

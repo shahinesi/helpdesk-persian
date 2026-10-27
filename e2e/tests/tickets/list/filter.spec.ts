@@ -20,7 +20,7 @@ test("pasting ticket IDs into an In filter selects them all and narrows the list
 }) => {
   const id = uid();
   const customer = await apiAs("customer");
-  const tickets = [];
+  const tickets: { name: string }[] = [];
   for (const n of [1, 2, 3, 4, 5]) tickets.push(await raiseTicket(customer, `${id} ${n}`));
   const picked = tickets.slice(0, 4).map((ticket) => String(ticket.name));
 
