@@ -44,6 +44,7 @@ Build the candidate from the repository root after fetching the verified wheel:
 sh docker/office-staging/fetch-typst-wheel.sh
 APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain \
+  --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
   --tag helpdesk-persian:runtime-fa-855bf59 \
@@ -56,6 +57,11 @@ image-owned `assets/` directory even when the builder's `sites/assets` path is
 a symlink. Keep the previous image digest and database backup available for
 rollback; image rollback is appropriate only when the candidate has not applied
 a database migration.
+
+The initial dependency bootstrap uses BuildKit's `network.host` entitlement to
+avoid slow or stalled PyPI/GitHub downloads through the Docker bridge. Only
+that `RUN` instruction uses host networking; subsequent build steps keep their
+default network mode. The builder must allow the `network.host` entitlement.
 
 ## Activate or roll back an image
 
