@@ -54,7 +54,7 @@ WORKDIR /home/frappe/frappe-bench
 
 # Final app revisions are independent from the cached bootstrap install above.
 # These exact source pins are checked out before dependencies and assets build.
-ARG FRAPPE_PINNED_SHA=9ff63e2e033d18728cd0e7f811e9cb08d579224f
+ARG FRAPPE_PINNED_SHA=e8695e4c92336c55c4a80cc81f196c94a7ae9421
 ARG ERPNEXT_PINNED_SHA=a2113022a3aa495478f518c1a8184019b871f449
 ARG HELPDESK_PINNED_SHA=3439a72e5b05ec4ad51968476e37aa29ab86cebc
 ARG TELEPHONY_PINNED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
