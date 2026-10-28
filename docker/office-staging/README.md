@@ -67,23 +67,23 @@ a symlink. Keep the previous image digest and database backup available for
 rollback; image rollback is appropriate only when the candidate has not applied
 a database migration.
 
-This full build includes the Persian catalog fixes in Frappe, ERPNext, Helpdesk,
-and Insights. `Containerfile.staging-update` only replaces Helpdesk and Insights,
-so it is not sufficient for this cross-app catalog batch.
+The current catalog-only batch can use this updater because dependency
+manifests are unchanged. Use the full `Containerfile` when those checks fail.
 
-For a source-only update whose Python dependency manifests are unchanged, the
+For a source-only update whose Python and JavaScript dependency manifests are
+unchanged, the
 versioned `Containerfile.staging-update` reuses the existing
 `runtime-569be35` dependency seed and builds directly in that pinned runtime,
 without copying its 6 GB filesystem into a separate builder stage. It verifies
-the seed's app SHAs, proves the Helpdesk and Insights Python dependencies did
-not change, checks the relevant JavaScript packages, then replaces Helpdesk,
-Insights, and Insights' pinned Frappe UI source before building and validating
-their assets. It applies only the new Vite path hunk
+the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
+dependencies did not change, checks their JavaScript packages, then replaces
+the four app sources and Insights' pinned Frappe UI source before building and
+validating their assets. It applies only the new Vite path hunk
 from Helpdesk's versioned Frappe UI patch, leaving the seed image's other
 already-applied package hunks and patch-package state intact. This avoids reinstalling the entire
 Frappe Python environment from PyPI. It is only valid while that exact seed
-image is present and the dependency checks pass; use the full `Containerfile`
-when the base app pins or dependency manifests change.
+image is present and all dependency checks pass; use the full `Containerfile`
+when the seed is unavailable or any dependency manifest changes.
 
 Build this candidate without touching the running services or their volumes:
 
@@ -91,7 +91,7 @@ Build this candidate without touching the running services or their volumes:
 docker image inspect helpdesk-persian:runtime-569be35 --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-b18f7a8-insights-718841a \
+  --tag helpdesk-persian:runtime-fa-9ff63e2-a211302-b18f7a8-718841a \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
