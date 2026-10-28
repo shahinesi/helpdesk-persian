@@ -16,3 +16,6 @@ services:
   queue-long:
     image: helpdesk-persian:runtime-fa-c30ddd4-28d37ae-0dea290-de3b688-ui96a6439
     pull_policy: never
+  scheduler:
+    image: helpdesk-persian:runtime-fa-c30ddd4-28d37ae-0dea290-de3b688-ui96a6439
+    pull_policy: never

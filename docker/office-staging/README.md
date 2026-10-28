@@ -115,7 +115,7 @@ Frappe dependencies.
 ## Activate or roll back an image
 
 Recreate only the application services (`backend`, `frontend`, `queue-long`,
-`queue-short`, and `websocket`) with the selected image. Keep the existing
+`queue-short`, `scheduler`, and `websocket`) with the selected image. Keep the existing
 `sites` volume and do not mount a separate volume at `sites/assets`; the image
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
