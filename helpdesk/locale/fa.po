@@ -47,39 +47,39 @@ msgstr "- {0} به‌عنوان وضعیت بازگشایی<br>"
 #. Feedback'
 #: helpdesk/helpdesk/doctype/hd_article_feedback/hd_article_feedback.json
 msgid "0 is no feedback, 1 is Like, 2 is Dislike"
-msgstr "۰ یعنی بدون بازخورد، ۱ یعنی پسندیدن و ۲ یعنی نپسندیدن"
+msgstr "0 یعنی بدون بازخورد، 1 یعنی پسندیدن و 2 یعنی نپسندیدن"
 
 #: desk/src/pages/home/components/AvgTimeMetrics.vue:172
 #: desk/src/pages/home/components/AvgTimeMetrics.vue:190
 msgid "1 Year"
-msgstr "۱ سال"
+msgstr "1 سال"
 
 #: desk/src/components/SavedRepliesSelectorModal.vue:293
 msgid "1 action"
-msgstr "۱ اقدام"
+msgstr "1 اقدام"
 
 #: desk/src/components/SavedReplyActions/SavedReplyActions.vue:143
 msgid "1 action will be applied after sending the email"
-msgstr "پس از ارسال ایمیل، ۱ اقدام اجرا می‌شود"
+msgstr "پس از ارسال ایمیل، 1 اقدام اجرا می‌شود"
 
 #: helpdesk/notifications.py:49
 msgid "1 person reacted to your comment"
-msgstr "۱ نفر به نظر شما واکنش نشان داد"
+msgstr "1 نفر به نظر شما واکنش نشان داد"
 
 #: desk/src/components/ticket-agent/analytics/ConversationSummary.vue:84
 msgid "1 time"
-msgstr "۱ بار"
+msgstr "1 بار"
 
 #: desk/src/pages/home/components/AvgTimeMetrics.vue:170
 #: desk/src/pages/home/components/AvgTimeMetrics.vue:182
 msgid "3 Months"
-msgstr "۳ ماه"
+msgstr "3 ماه"
 
 #: desk/src/pages/home/components/AvgTimeMetrics.vue:171
 #: desk/src/pages/home/components/AvgTimeMetrics.vue:177
 #: desk/src/pages/home/components/AvgTimeMetrics.vue:186
 msgid "6 Months"
-msgstr "۶ ماه"
+msgstr "6 ماه"
 
 #: helpdesk/helpdesk/doctype/hd_ticket_status/hd_ticket_status.py:117
 msgid "<br>Please update HD Settings to use a different status before disabling this status."
@@ -584,7 +584,7 @@ msgstr "{0} اقدام پاسخ آماده اعمال شد"
 
 #: desk/src/components/SavedRepliesSelectorModal.vue:297
 msgid "Applies 1 action when sent"
-msgstr "با ارسال، ۱ اقدام اجرا می‌شود"
+msgstr "با ارسال، 1 اقدام اجرا می‌شود"
 
 #: desk/src/components/SavedRepliesSelectorModal.vue:298
 msgid "Applies {0} actions when sent"
@@ -1182,7 +1182,7 @@ msgstr "عملیات انبوه با موفقیت انجام شد"
 
 #: desk/src/components/ticket-agent/BulkReplyModal.vue:104
 msgid "Bulk reply sent successfully to 1 ticket."
-msgstr "پاسخ گروهی برای ۱ تیکت ارسال شد."
+msgstr "پاسخ گروهی برای 1 تیکت ارسال شد."
 
 #: desk/src/components/ticket-agent/BulkReplyModal.vue:105
 msgid "Bulk reply sent successfully to {0} tickets."
@@ -3500,23 +3500,23 @@ msgstr "سرفصل"
 
 #: desk/src/translationLabels.js:26
 msgid "Heading 2"
-msgstr "عنوان ۲"
+msgstr "عنوان 2"
 
 #: desk/src/translationLabels.js:28
 msgid "Heading 3"
-msgstr "عنوان ۳"
+msgstr "عنوان 3"
 
 #: desk/src/translationLabels.js:30
 msgid "Heading 4"
-msgstr "عنوان ۴"
+msgstr "عنوان 4"
 
 #: desk/src/translationLabels.js:32
 msgid "Heading 5"
-msgstr "عنوان ۵"
+msgstr "عنوان 5"
 
 #: desk/src/translationLabels.js:34
 msgid "Heading 6"
-msgstr "عنوان ۶"
+msgstr "عنوان 6"
 
 #. Label of the headings_weight (Int) field in DocType 'HD Settings'
 #: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
@@ -3721,7 +3721,7 @@ msgstr "در صورت فعال بودن، وقتی کاربری سعی در بس
 
 #: desk/src/components/banners/TicketFieldPermissionBanner.vue:27
 msgid "If you created custom agent roles, raise their permission level to 8 in Role Permission Manager so they can see agent-only fields."
-msgstr "اگر نقش سفارشی برای کارشناسان ساخته‌اید، سطح دسترسی آن را در بخش مدیریت مجوز نقش‌ها روی ۸ بگذارید تا فیلدهای مخصوص کارشناس را ببینند."
+msgstr "اگر نقش سفارشی برای کارشناسان ساخته‌اید، سطح دسترسی آن را در بخش مدیریت مجوز نقش‌ها روی 8 بگذارید تا فیلدهای مخصوص کارشناس را ببینند."
 
 #: desk/src/components/knowledge-base/ArticleFeedback.vue:15
 msgid "If your issue isn't resolved, raise a support ticket"
@@ -3750,7 +3750,7 @@ msgstr "تصویر با موفقیت حذف شد."
 #. Description of the 'Logo' (Attach Image) field in DocType 'HD Settings'
 #: helpdesk/helpdesk/doctype/hd_settings/hd_settings.json
 msgid "Image to be used in various places, including Login and Signup pages. An image with transparent background and 160 x 32 is preferred"
-msgstr "تصویری که در بخش‌های مختلف، از جمله صفحه‌های ورود و ثبت‌نام، نمایش داده می‌شود. تصویر شفاف با اندازهٔ ۱۶۰ در ۳۲ پیکسل پیشنهاد می‌شود."
+msgstr "تصویری که در بخش‌های مختلف، از جمله صفحه‌های ورود و ثبت‌نام، نمایش داده می‌شود. تصویر شفاف با اندازهٔ 160 در 32 پیکسل پیشنهاد می‌شود."
 
 #: desk/src/components/Settings/General/components/Branding.vue:83
 msgid "Image updated successfully."
@@ -4078,22 +4078,22 @@ msgstr "سه ماه گذشته"
 #: desk/src/pages/dashboard/Dashboard.vue:581
 #: desk/src/pages/dashboard/Dashboard.vue:617
 msgid "Last 30 Days"
-msgstr "۳۰ روز گذشته"
+msgstr "30 روز گذشته"
 
 #: desk/src/pages/dashboard/Dashboard.vue:586
 #: desk/src/pages/dashboard/Dashboard.vue:588
 msgid "Last 60 Days"
-msgstr "۶۰ روز گذشته"
+msgstr "60 روز گذشته"
 
 #: desk/src/pages/dashboard/Dashboard.vue:572
 #: desk/src/pages/dashboard/Dashboard.vue:574
 msgid "Last 7 Days"
-msgstr "۷ روز گذشته"
+msgstr "7 روز گذشته"
 
 #: desk/src/pages/dashboard/Dashboard.vue:593
 #: desk/src/pages/dashboard/Dashboard.vue:595
 msgid "Last 90 Days"
-msgstr "۹۰ روز گذشته"
+msgstr "90 روز گذشته"
 
 #. Label of the last_agent_response (Datetime) field in DocType 'HD Ticket'
 #: helpdesk/helpdesk/doctype/hd_ticket/hd_ticket.json
@@ -4272,7 +4272,7 @@ msgstr "کم تا متوسط"
 #. Agreement'
 #: helpdesk/helpdesk/doctype/hd_service_level_agreement/hd_service_level_agreement.json
 msgid "Lower rank is applied first. 0 means unranked, and is applied last."
-msgstr "قاعده‌هایی با رتبهٔ کمتر زودتر اعمال می‌شوند. رتبهٔ ۰ یعنی بدون رتبه و قاعدهٔ مربوط در پایان اعمال می‌شود."
+msgstr "قاعده‌هایی با رتبهٔ کمتر زودتر اعمال می‌شوند. رتبهٔ 0 یعنی بدون رتبه و قاعدهٔ مربوط در پایان اعمال می‌شود."
 
 #: desk/src/pages/ticket/MobileTicketAgent.vue:158
 msgid "Mail"
@@ -4825,7 +4825,7 @@ msgstr "اعلان جدیدی وجود ندارد"
 
 #: desk/src/pages/home/components/PendingTickets.vue:253
 msgid "No new tickets assigned to you in the last 7 days"
-msgstr "در ۷ روز گذشته هیچ تیکت جدیدی به شما اختصاص داده نشده است"
+msgstr "در 7 روز گذشته هیچ تیکت جدیدی به شما اختصاص داده نشده است"
 
 #: desk/src/components/ticket-agent/AssignTo.vue:218
 msgid "No one"
@@ -5208,7 +5208,7 @@ msgstr "گذرواژه"
 
 #: desk/src/components/Settings/Profile/components/ChangePasswordModal.vue:104
 msgid "Password must be at least 8 characters"
-msgstr "رمز عبور باید دست‌کم ۸ نویسه داشته باشد."
+msgstr "رمز عبور باید دست‌کم 8 نویسه داشته باشد."
 
 #: desk/src/components/Settings/Profile/components/ChangePasswordModal.vue:107
 msgid "Password must contain lowercase, uppercase, number, and symbol"
@@ -5674,7 +5674,7 @@ msgstr "امتیاز"
 
 #: helpdesk/helpdesk/doctype/hd_ticket_feedback_option/hd_ticket_feedback_option.py:23
 msgid "Rating must be between 0.2 and 1.0"
-msgstr "امتیاز باید بین ۰٫۲ و ۱٫۰ باشد."
+msgstr "امتیاز باید بین 0٫2 و 1٫0 باشد."
 
 #: helpdesk/helpdesk/doctype/hd_ticket_feedback_option/hd_ticket_feedback_option.py:19
 msgid "Rating {0} is not allowed"
@@ -6381,7 +6381,7 @@ msgstr "جستجو یا ایجاد برچسب"
 
 #: helpdesk/api/search.py:17
 msgid "Search query must be at least 2 characters"
-msgstr "عبارت جستجو باید دست‌کم ۲ نویسه داشته باشد."
+msgstr "عبارت جستجو باید دست‌کم 2 نویسه داشته باشد."
 
 #: desk/src/components/Settings/SavedReplies/components/PreviewDialog.vue:20
 msgid "Search ticket"
@@ -7356,7 +7356,7 @@ msgstr "پس از برچسب‌گذاری تیکت‌ها، برچسب‌های 
 
 #: desk/src/components/Settings/General/components/TicketSettings.vue:187
 msgid "The number of days must be 1 or more"
-msgstr "تعداد روزها باید دست‌کم ۱ باشد."
+msgstr "تعداد روزها باید دست‌کم 1 باشد."
 
 #: helpdesk/helpdesk/doctype/hd_ticket/hd_ticket.py:331
 msgid "The selected customer {0} is not linked to the contact {1}.Please select a valid customer or update the contact's linked customers."
@@ -7380,7 +7380,7 @@ msgstr "در حال حاضر دسته‌بندی منتشرشده‌ای وجو�
 
 #: helpdesk/extends/assignment_rule.py:14
 msgid "There should be at least 1 assignment rule for ticket"
-msgstr "حداقل باید ۱ قانون تخصیص برای تیکت وجود داشته باشد"
+msgstr "حداقل باید 1 قانون تخصیص برای تیکت وجود داشته باشد"
 
 #: desk/src/components/SearchArticles.vue:7
 msgid "These articles may already cover what you are looking for"
@@ -7697,7 +7697,7 @@ msgstr "تیکت‌هایی که به مهلت SLA نزدیک شده‌اند ی
 
 #: desk/src/pages/home/components/PendingTickets.vue:238
 msgid "Tickets assigned to you in the last 7 days"
-msgstr "تیکت‌هایی که در ۷ روز گذشته به شما اختصاص داده شده است"
+msgstr "تیکت‌هایی که در 7 روز گذشته به شما اختصاص داده شده است"
 
 #: desk/src/pages/dashboard/Dashboard.vue:323 helpdesk/api/dashboard.py:579
 msgid "Tickets by Channel"
@@ -8249,7 +8249,7 @@ msgstr "وقتی فعال باشد، هر زمان که اپراتور به یک
 
 #: desk/src/components/Settings/Sla/SlaPolicyView.vue:71
 msgid "When more than one policy matches, the lower rank is applied first. 0 means unranked, and is applied last."
-msgstr "اگر چند سیاست با شرایط تیکت مطابقت داشته باشند، سیاستی با رتبهٔ کمتر زودتر اعمال می‌شود. رتبهٔ ۰ یعنی سیاست رتبه‌بندی نشده و در آخر اعمال می‌شود."
+msgstr "اگر چند سیاست با شرایط تیکت مطابقت داشته باشند، سیاستی با رتبهٔ کمتر زودتر اعمال می‌شود. رتبهٔ 0 یعنی سیاست رتبه‌بندی نشده و در آخر اعمال می‌شود."
 
 #: desk/src/components/conditions-filter/CFCondition.vue:20
 msgid "Where"
@@ -9074,7 +9074,7 @@ msgstr "همین حالا"
 
 #: desk/src/utils.ts
 msgid "1 minute ago"
-msgstr "۱ دقیقه پیش"
+msgstr "1 دقیقه پیش"
 
 #: desk/src/utils.ts
 msgid "{0} minutes ago"
@@ -9082,7 +9082,7 @@ msgstr "{0} دقیقه پیش"
 
 #: desk/src/utils.ts
 msgid "1 hour ago"
-msgstr "۱ ساعت پیش"
+msgstr "1 ساعت پیش"
 
 #: desk/src/utils.ts
 msgid "{0} hours ago"
@@ -9090,7 +9090,7 @@ msgstr "{0} ساعت پیش"
 
 #: desk/src/utils.ts
 msgid "In 1 minute"
-msgstr "تا ۱ دقیقه دیگر"
+msgstr "تا 1 دقیقه دیگر"
 
 #: desk/src/utils.ts
 msgid "In {0} minutes"
@@ -9098,7 +9098,7 @@ msgstr "تا {0} دقیقه دیگر"
 
 #: desk/src/utils.ts
 msgid "In 1 hour"
-msgstr "تا ۱ ساعت دیگر"
+msgstr "تا 1 ساعت دیگر"
 
 #: desk/src/utils.ts
 msgid "In {0} hours"
@@ -9118,7 +9118,7 @@ msgstr "تا {0} ماه دیگر"
 
 #: desk/src/utils.ts
 msgid "In 1 year"
-msgstr "تا ۱ سال دیگر"
+msgstr "تا 1 سال دیگر"
 
 #: desk/src/utils.ts
 msgid "In {0} years"
@@ -9134,7 +9134,7 @@ msgstr "{0} روز پیش"
 
 #: desk/src/utils.ts
 msgid "1 week ago"
-msgstr "۱ هفته پیش"
+msgstr "1 هفته پیش"
 
 #: desk/src/utils.ts
 msgid "{0} weeks ago"
@@ -9142,7 +9142,7 @@ msgstr "{0} هفته پیش"
 
 #: desk/src/utils.ts
 msgid "1 month ago"
-msgstr "۱ ماه پیش"
+msgstr "1 ماه پیش"
 
 #: desk/src/utils.ts
 msgid "{0} months ago"
@@ -9150,7 +9150,7 @@ msgstr "{0} ماه پیش"
 
 #: desk/src/utils.ts
 msgid "1 year ago"
-msgstr "۱ سال پیش"
+msgstr "1 سال پیش"
 
 #: desk/src/utils.ts
 msgid "{0} years ago"
@@ -9187,11 +9187,11 @@ msgstr "{0} ساعت"
 #: desk/src/utils.ts desk/src/pages/home/components/AvgTimeMetrics.vue
 #: desk/src/components/LineChartCard.vue
 msgid "0m"
-msgstr "۰ دقیقه"
+msgstr "0 دقیقه"
 
 #: helpdesk/utils.py
 msgid "1 day ago"
-msgstr "۱ روز پیش"
+msgstr "1 روز پیش"
 
 #: helpdesk/api/agent_home/agent_home.py
 msgid "status"
@@ -9668,7 +9668,7 @@ msgstr "تماس خروجی"
 
 #: desk/src/components/ticket-agent/TicketFeedback.vue
 msgid "{0} out of 5"
-msgstr "{0} از ۵"
+msgstr "{0} از 5"
 
 #: desk/src/components/CommunicationArea.vue
 msgid "@John could you please look into this?"
@@ -10103,7 +10103,7 @@ msgstr "کوچک‌تر یا مساوی با"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Last 14 Days"
-msgstr "۱۴ روز گذشته"
+msgstr "14 روز گذشته"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Last Quarter"
@@ -10111,7 +10111,7 @@ msgstr "سه‌ماههٔ گذشته"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Last 6 Months"
-msgstr "۶ ماه گذشته"
+msgstr "6 ماه گذشته"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Last Year"
@@ -10147,7 +10147,7 @@ msgstr "سه‌ماههٔ آینده"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Next 6 Months"
-msgstr "۶ ماه آینده"
+msgstr "6 ماه آینده"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Next Year"
@@ -10155,15 +10155,15 @@ msgstr "سال آینده"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Next 7 Days"
-msgstr "۷ روز آینده"
+msgstr "7 روز آینده"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Next 14 Days"
-msgstr "۱۴ روز آینده"
+msgstr "14 روز آینده"
 
 #: desk/src/components/view-controls/filter/filter.ts
 msgid "Next 30 Days"
-msgstr "۳۰ روز آینده"
+msgstr "30 روز آینده"
 
 #: desk/src/composables/contact.ts
 msgid "First name is required"
@@ -10449,7 +10449,7 @@ msgid "{0} values selected"
 msgstr "{0} مقدار انتخاب شده"
 
 msgid "1 value selected"
-msgstr "۱ مقدار انتخاب شده"
+msgstr "1 مقدار انتخاب شده"
 
 #: frappe-ui/src/charts/components/ChartContainer.vue
 msgid "Loading chart"
@@ -10542,7 +10542,7 @@ msgstr "ادغام با تیکت شمارهٔ {0}"
 
 #: desk/src/components/view-controls/ColumnSettings.vue
 msgid "Width can be in number, pixel or rem (eg. 3, 30px, 10rem)"
-msgstr "پهنای ستون را می‌توان به‌شکل عدد، پیکسل یا rem وارد کرد (مثلاً ۳، 30px یا 10rem)."
+msgstr "پهنای ستون را می‌توان به‌شکل عدد، پیکسل یا rem وارد کرد (مثلاً 3، 30px یا 10rem)."
 
 #: desk/src/components/knowledge-base/CategoryFolder.vue
 msgid "Number of articles: {0}"
@@ -10594,31 +10594,31 @@ msgstr "واردکردن گذرواژه الزامی است."
 
 #: desk/src/components/Settings/General/components/TicketSettings.vue
 msgid "e.g. 30"
-msgstr "مثلاً ۳۰"
+msgstr "مثلاً 30"
 
 #: desk/src/pages/PersonaForm.vue
 msgid "1–5"
-msgstr "۱ تا ۵ نفر"
+msgstr "1 تا 5 نفر"
 
 #: desk/src/pages/PersonaForm.vue
 msgid "6–10"
-msgstr "۶ تا ۱۰ نفر"
+msgstr "6 تا 10 نفر"
 
 #: desk/src/pages/PersonaForm.vue
 msgid "11–25"
-msgstr "۱۱ تا ۲۵ نفر"
+msgstr "11 تا 25 نفر"
 
 #: desk/src/pages/PersonaForm.vue
 msgid "26–50"
-msgstr "۲۶ تا ۵۰ نفر"
+msgstr "26 تا 50 نفر"
 
 #: desk/src/pages/PersonaForm.vue
 msgid "51–100"
-msgstr "۵۱ تا ۱۰۰ نفر"
+msgstr "51 تا 100 نفر"
 
 #: desk/src/pages/PersonaForm.vue
 msgid "100+"
-msgstr "بیش از ۱۰۰ نفر"
+msgstr "بیش از 100 نفر"
 
 #: desk/src/components/Settings/Assignment Rules/AssignmentRuleView.vue
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
