@@ -94,10 +94,10 @@ for Python or app-root dependency changes, or when the seed is unavailable.
 Build this candidate without touching the running services or their volumes:
 
 ```sh
-docker image inspect helpdesk-persian:runtime-fa-aec59b4-37ece84-f36b239-de3b688-ui96a6439 --format '{{.Id}}'
+docker image inspect helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439 --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439 \
+  --tag helpdesk-persian:runtime-fa-c468464-2bde8f9-f36b239-de3b688-ui96a6439 \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -125,7 +125,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-c468464-2bde8f9-f36b239-de3b688-ui96a6439`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous
 `helpdesk-persian:runtime-fa-6076dd41c-i18n1` image and original
 `helpdesk-persian:runtime-569be35` seed remain available for rollback. Build
