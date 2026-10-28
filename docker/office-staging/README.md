@@ -68,30 +68,33 @@ rollback; image rollback is appropriate only when the candidate has not applied
 a database migration.
 
 The Banking Jalali calendar update adds `jalaali-js` and
-`@persian-tools/persian-tools` to ERPNext's Banking package manifest and lockfile.
-It therefore requires the full `Containerfile`, which reinstalls the locked
-JavaScript dependencies. The staging updater is only for source changes whose
-dependency manifests remain unchanged.
+`@persian-tools/persian-tools` to ERPNext's nested Banking package manifest and
+lockfile. The staging updater explicitly runs a frozen Banking install for
+these dependencies. It also handles source changes without Python or app-root
+JavaScript dependency changes; other dependency changes use the full
+`Containerfile`.
 
-For a source-only update whose Python and JavaScript dependency manifests are
-unchanged, the
-versioned `Containerfile.staging-update` reuses the existing
-`runtime-569be35` dependency seed and builds directly in that pinned runtime,
-without copying its 6 GB filesystem into a separate builder stage. It verifies
+The versioned `Containerfile.staging-update` reuses the current
+`runtime-fa-aec59b4-37ece84-f36b239-de3b688-ui96a6439` image as its dependency
+seed and builds directly in that pinned runtime, without copying its 6 GB
+filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
-dependencies did not change, checks their JavaScript packages, then replaces
-the four app sources and Insights' pinned Frappe UI source before building and
-validating their assets. It applies only the new Vite path hunk
+dependencies and app-root JavaScript dependencies did not change, then replaces
+the four app sources and Insights' pinned Frappe UI source. For this update it
+runs `yarn install --frozen-lockfile` inside ERPNext's Banking package, so its
+new `jalaali-js` and `@persian-tools/persian-tools` dependencies are installed
+from the committed lockfile before building and validating assets. It applies
+only the new Vite path hunk
 from Helpdesk's versioned Frappe UI patch, leaving the seed image's other
 already-applied package hunks and patch-package state intact. This avoids reinstalling the entire
-Frappe Python environment from PyPI. It is only valid while that exact seed
-image is present and all dependency checks pass; use the full `Containerfile`
-when the seed is unavailable or any dependency manifest changes.
+Frappe Python environment from PyPI. It is valid only while that exact seed
+image is present and all dependency checks pass. Use the full `Containerfile`
+for Python or app-root dependency changes, or when the seed is unavailable.
 
 Build this candidate without touching the running services or their volumes:
 
 ```sh
-docker image inspect helpdesk-persian:runtime-569be35 --format '{{.Id}}'
+docker image inspect helpdesk-persian:runtime-fa-aec59b4-37ece84-f36b239-de3b688-ui96a6439 --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
   --tag helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439 \
@@ -101,8 +104,7 @@ docker buildx build --load --progress=plain --allow network.host \
 The update image does not run database migrations. Validate it against the
 separate test site first; only then recreate the intended Staging application
 services with `compose.integrated-candidate.yaml` and run the browser smoke
-checks. Keep the `runtime-569be35` image and existing volumes intact for
-rollback.
+checks. Keep the prior candidate image and existing volumes intact for rollback.
 
 Git checkout and dependency-install `RUN` instructions use BuildKit's
 `network.host` entitlement to avoid slow or stalled GitHub, PyPI, and npm

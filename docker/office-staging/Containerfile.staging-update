@@ -1,20 +1,20 @@
 # syntax=docker/dockerfile:1.7
-ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-569be35
+ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-aec59b4-37ece84-f36b239-de3b688-ui96a6439
 FROM ${SEED_RUNTIME_IMAGE} AS builder
 WORKDIR /home/frappe/frappe-bench
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
 COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/frappe/validate-translations.py
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
-ARG HELPDESK_BASE_SHA=cff7d5ff70f6b6020da8ae6197f73dfc86120db9
+ARG HELPDESK_BASE_SHA=f36b2398f4f71fd29f33004ae362a95ea2d4d4e9
 ARG HELPDESK_PINNED_SHA=f36b2398f4f71fd29f33004ae362a95ea2d4d4e9
-ARG INSIGHTS_BASE_SHA=ca237e436f8f19d1260b8635c94b48470b44f70f
+ARG INSIGHTS_BASE_SHA=de3b6883768cc5864dcbc3766caf2908571a1f6a
 ARG INSIGHTS_PINNED_SHA=de3b6883768cc5864dcbc3766caf2908571a1f6a
 ARG INSIGHTS_FRAPPE_UI_SHA=96a6439f5c4a9911b8bd4efdc8b994a95858c88a
-ARG FRAPPE_BASE_SHA=40259f266039f4c659586a24724ce7fd1f6f99c2
+ARG FRAPPE_BASE_SHA=aec59b402f4f8c9856ec9feeafb976c6573813e5
 ARG FRAPPE_PINNED_SHA=aec59b402f4f8c9856ec9feeafb976c6573813e5
-ARG ERPNEXT_BASE_SHA=46cd4e99088871dade6e9a647cb2e9c289bc374d
-ARG ERPNEXT_PINNED_SHA=37ece84976b979130c4923d4cc471e2de03e216c
+ARG ERPNEXT_BASE_SHA=37ece84976b979130c4923d4cc471e2de03e216c
+ARG ERPNEXT_PINNED_SHA=2bde8f96afe9153681edc9799004ce0f88d7dc46
 
 RUN --network=host python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" <<'PY'
 import json
@@ -159,6 +159,11 @@ for app, expected in {
     json.dumps(pins, indent=2) + "\n", encoding="utf-8"
 )
 PY
+
+RUN --network=host cd apps/erpnext/banking \
+    && yarn install --frozen-lockfile --non-interactive --network-timeout 600000 --network-concurrency 4 \
+    && test -d node_modules/jalaali-js \
+    && test -d node_modules/@persian-tools/persian-tools
 
 RUN test -d apps/helpdesk/desk/node_modules/jalaali-js \
     && test -d apps/helpdesk/desk/node_modules/@persian-tools/persian-tools \
