@@ -16,6 +16,14 @@ build rejects any mismatch after checkout. The manifest digest and bootstrap
 refs participate in the cached initialization layer, while final pins
 invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
+
+The current candidate pins Frappe `40259f266039f4c659586a24724ce7fd1f6f99c2`,
+ERPNext `46cd4e99088871dade6e9a647cb2e9c289bc374d`, Helpdesk
+`6076dd41cea8434b6fea3dd4768d238af03a8adc`, Telephony
+`039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
+`532d069cbd2c09805bf6ce809e4db4772eaea46b`, and Insights' Frappe UI
+`9c58b3bbe8009a5d3c696cd31ffe6b66c3ed25c7`. The candidate image writes these
+exact revisions to `PINNED_VERSIONS.json` for runtime verification.
 After checking out final revisions, the builder installs each app's locked
 JavaScript dependencies before running its asset build. This is required when
 a final pin adds packages that were absent from the bootstrap branch.
@@ -48,7 +56,7 @@ docker buildx build --load --progress=plain \
   --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-6076dd41c-i18n1 \
+  --tag helpdesk-persian:runtime-fa-6076dd41c-insights-532d069 \
   --file docker/office-staging/Containerfile .
 ```
 
@@ -77,8 +85,9 @@ Build this candidate without touching the running services or their volumes:
 
 ```sh
 docker image inspect helpdesk-persian:runtime-569be35 --format '{{.Id}}'
+docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-6076dd41c-i18n1 \
+  --tag helpdesk-persian:runtime-fa-6076dd41c-insights-532d069 \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -107,9 +116,10 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-6076dd41c-i18n1`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-6076dd41c-insights-532d069`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous
-`helpdesk-persian:runtime-569be35` image remains available for rollback. Build
+`helpdesk-persian:runtime-fa-6076dd41c-i18n1` image and original
+`helpdesk-persian:runtime-569be35` seed remain available for rollback. Build
 the pinned image from this directory's `Containerfile` before selecting it.
 The current GHCR push was rejected by the registry, so this tag is host-local
 until registry authorization is restored.
