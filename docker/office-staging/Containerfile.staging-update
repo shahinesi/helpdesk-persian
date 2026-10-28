@@ -33,6 +33,10 @@ def run(*args):
 def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
     target = apps / name
     temporary = apps / f".{name}-pinned"
+    if isinstance(node_modules_relative, (str, pathlib.Path)):
+        preserved_modules = (pathlib.Path(node_modules_relative),)
+    else:
+        preserved_modules = tuple(pathlib.Path(path) for path in node_modules_relative)
     if temporary.exists():
         shutil.rmtree(temporary)
     run("git", "init", str(temporary))
@@ -62,18 +66,18 @@ def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
             previous_deps = {key: value for key, value in previous_deps.items() if key != "frappe-ui"}
         if current_deps != previous_deps:
             raise SystemExit(f"Unexpected {name} {field} changes; dependency seed must be rebuilt")
-    modules = target / node_modules_relative
-    if not modules.is_dir():
-        raise SystemExit(f"Expected installed dependencies are missing: {modules}")
+    missing_modules = [target / path for path in preserved_modules if not (target / path).is_dir()]
+    if missing_modules:
+        raise SystemExit(f"Expected installed dependencies are missing: {missing_modules}")
     stale_paths = []
     for current, directories, files in os.walk(target):
         current_path = pathlib.Path(current)
         for directory in list(directories):
             path = current_path / directory
             relative = path.relative_to(target)
-            if relative == node_modules_relative or node_modules_relative in relative.parents:
+            if any(relative == path or path in relative.parents for path in preserved_modules):
                 directories.remove(directory)
-            elif relative not in node_modules_relative.parents:
+            elif not any(relative in path.parents for path in preserved_modules):
                 stale_paths.append(path)
         stale_paths.extend(current_path / filename for filename in files)
     for path in sorted(stale_paths, key=lambda item: len(item.parts), reverse=True):
@@ -99,7 +103,7 @@ replace_checkout(
     "https://github.com/shahinesi/erpnext-persian",
     erpnext_base,
     erpnext_pin,
-    pathlib.Path("node_modules"),
+    (pathlib.Path("node_modules"), pathlib.Path("banking/node_modules")),
 )
 replace_checkout(
     "helpdesk",
