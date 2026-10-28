@@ -9,7 +9,7 @@
 | بخش | مقدار ثبت‌شده |
 |---|---|
 | Helpdesk branch | `feat/persian-setup-wizard`؛ SHA انتشار در manifest هر استقرار ثبت می‌شود |
-| Frappe UI source | `frappe/frappe` SHA `c4472b622192e0b1cbdbaa9792a38f4e5006e9f6`، در `desk/patches/frappe-ui-source.ref` |
+| Frappe UI source | `frappe/frappe` SHA `e8695e4c92336c55c4a80cc81f196c94a7ae9421`، در `desk/patches/frappe-ui-source.ref` |
 | `frappe-ui` | `1.0.0-rc.1`، tarball integrity در `desk/yarn.lock` |
 | Vue / Vite / TypeScript | 3.5.31 / 5.4.21 / 5.9.3 |
 | Node / Yarn | 20.20.0 / 1.22.18، در `.nvmrc` و `packageManager` |
