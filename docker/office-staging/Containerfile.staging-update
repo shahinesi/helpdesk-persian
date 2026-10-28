@@ -7,9 +7,9 @@ COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/f
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
 ARG HELPDESK_BASE_SHA=cff7d5ff70f6b6020da8ae6197f73dfc86120db9
-ARG HELPDESK_PINNED_SHA=6076dd41cea8434b6fea3dd4768d238af03a8adc
+ARG HELPDESK_PINNED_SHA=b18f7a800244741a06993a446ac0e0198cacaa86
 ARG INSIGHTS_BASE_SHA=ca237e436f8f19d1260b8635c94b48470b44f70f
-ARG INSIGHTS_PINNED_SHA=532d069cbd2c09805bf6ce809e4db4772eaea46b
+ARG INSIGHTS_PINNED_SHA=718841a8cef50197a0e11c7f4aa53f8bf33e95f9
 ARG INSIGHTS_FRAPPE_UI_SHA=9c58b3bbe8009a5d3c696cd31ffe6b66c3ed25c7
 
 RUN --network=host python - "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" <<'PY'
@@ -149,7 +149,7 @@ RUN cd apps/helpdesk/desk \
     && bench compile-po-to-mo --app erpnext --locale fa --force \
     && bench compile-po-to-mo --app helpdesk --locale fa --force \
     && bench compile-po-to-mo --app insights --locale fa --force \
-    && python /opt/frappe/validate-translations.py sites/assets/locale \
+    && python /opt/frappe/validate-translations.py sites/assets/locale helpdesk insights \
     && bench build --apps helpdesk \
     && bench build --apps insights \
     && python /opt/frappe/validate-assets.py sites/assets

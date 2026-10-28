@@ -6,10 +6,10 @@ FROM ${FRAPPE_BUILD_IMAGE} AS builder
 ARG FRAPPE_BRANCH=codex/shared-persian-core
 ARG FRAPPE_PATH=https://github.com/shahinesi/frappe-persian
 ARG FRAPPE_EXPECTED_SHA=5b0e147ed17174acf554da0cfa73df77e07476d2
-ARG ERPNEXT_EXPECTED_SHA=46cd4e99088871dade6e9a647cb2e9c289bc374d
-ARG HELPDESK_EXPECTED_SHA=6076dd41cea8434b6fea3dd4768d238af03a8adc
+ARG ERPNEXT_EXPECTED_SHA=a2113022a3aa495478f518c1a8184019b871f449
+ARG HELPDESK_EXPECTED_SHA=b18f7a800244741a06993a446ac0e0198cacaa86
 ARG TELEPHONY_EXPECTED_SHA=9447577500a25d242088398157b72c654fa34b20
-ARG INSIGHTS_EXPECTED_SHA=532d069cbd2c09805bf6ce809e4db4772eaea46b
+ARG INSIGHTS_EXPECTED_SHA=718841a8cef50197a0e11c7f4aa53f8bf33e95f9
 ARG APP_MANIFEST_SHA
 ARG TYPST_WHEEL_SHA256=8f33d98451bab132a612b98ffc8d1830c97a076ea3f3fde11f6ff7ab9bcae89c
 ENV PATH="/opt/frappe/bin:/home/frappe/.nvm/current/bin:${PATH}"
@@ -54,11 +54,11 @@ WORKDIR /home/frappe/frappe-bench
 
 # Final app revisions are independent from the cached bootstrap install above.
 # These exact source pins are checked out before dependencies and assets build.
-ARG FRAPPE_PINNED_SHA=40259f266039f4c659586a24724ce7fd1f6f99c2
-ARG ERPNEXT_PINNED_SHA=46cd4e99088871dade6e9a647cb2e9c289bc374d
-ARG HELPDESK_PINNED_SHA=6076dd41cea8434b6fea3dd4768d238af03a8adc
+ARG FRAPPE_PINNED_SHA=9ff63e2e033d18728cd0e7f811e9cb08d579224f
+ARG ERPNEXT_PINNED_SHA=a2113022a3aa495478f518c1a8184019b871f449
+ARG HELPDESK_PINNED_SHA=b18f7a800244741a06993a446ac0e0198cacaa86
 ARG TELEPHONY_PINNED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
-ARG INSIGHTS_PINNED_SHA=532d069cbd2c09805bf6ce809e4db4772eaea46b
+ARG INSIGHTS_PINNED_SHA=718841a8cef50197a0e11c7f4aa53f8bf33e95f9
 RUN --network=host python - "$FRAPPE_PINNED_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_PINNED_SHA" "$TELEPHONY_PINNED_SHA" "$INSIGHTS_PINNED_SHA" <<'PY'
 import json
 import subprocess
@@ -104,7 +104,7 @@ RUN cd apps/helpdesk/desk \
     && bench compile-po-to-mo --app erpnext --locale fa --force \
     && bench compile-po-to-mo --app helpdesk --locale fa --force \
     && bench compile-po-to-mo --app insights --locale fa --force \
-    && python /opt/frappe/validate-translations.py sites/assets/locale \
+    && python /opt/frappe/validate-translations.py sites/assets/locale frappe erpnext helpdesk insights \
     && bench build --apps frappe \
     && bench build --apps erpnext \
     && bench build --apps helpdesk \
