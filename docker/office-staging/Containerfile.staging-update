@@ -143,8 +143,8 @@ pins = {
 }
 seed_pins = json.loads(pathlib.Path("/home/frappe/frappe-bench/PINNED_VERSIONS.json").read_text(encoding="utf-8"))
 for app, expected in {
-    "frappe": pins["frappe"],
-    "erpnext": pins["erpnext"],
+    "frappe": frappe_base,
+    "erpnext": erpnext_base,
     "helpdesk": helpdesk_base,
     "telephony": pins["telephony"],
     "insights": insights_base,
