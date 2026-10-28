@@ -27,6 +27,20 @@ if missing:
 
 print(f"validated {len(expected)} Helpdesk Persian translations from {locale_root}")
 
+frappe_catalog = gettext.translation(
+    "frappe", localedir=str(locale_root), languages=["fa"], fallback=False
+)
+frappe_expected = {"Continue": "ادامه"}
+frappe_missing = {
+    message: (frappe_catalog.gettext(message), translation)
+    for message, translation in frappe_expected.items()
+    if frappe_catalog.gettext(message) != translation
+}
+if frappe_missing:
+    raise SystemExit(f"Frappe Persian MO catalog is missing expected labels: {frappe_missing}")
+
+print(f"validated {len(frappe_expected)} Frappe Persian translations from {locale_root}")
+
 # Rendered numeric strings stay canonical ASCII; Vazirmatn supplies the glyphs.
 # Catch static Persian/Arabic-Indic digits in any app's compiled fa catalog.
 noncanonical_digits = re.compile(r"[\u0660-\u0669\u06F0-\u06F9]")
