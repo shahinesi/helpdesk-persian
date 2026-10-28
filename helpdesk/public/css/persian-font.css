@@ -6,11 +6,11 @@
 	font-display: swap;
 }
 
-html,
-body,
-button,
-input,
-select,
-textarea {
+html:lang(fa),
+html:lang(fa) body,
+html:lang(fa) button,
+html:lang(fa) input,
+html:lang(fa) select,
+html:lang(fa) textarea {
 	font-family: "Vazirmatn", sans-serif !important;
 }
