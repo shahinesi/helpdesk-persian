@@ -19,7 +19,7 @@ only after compatibility checks.
 
 The current source candidate pins Frappe `aec59b402f4f8c9856ec9feeafb976c6573813e5`,
 ERPNext `28d37ae487acad4aa9794caacacf6452f3980906`, Helpdesk
-`0dea290433978de8a7bd3c98b59ad92629947340`, Telephony
+`a8d45777057ab7c8b64ce110c65d327bfe751538`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
 `de3b6883768cc5864dcbc3766caf2908571a1f6a`, and Insights' Frappe UI
 `96a6439f5c4a9911b8bd4efdc8b994a95858c88a`. The candidate image writes these
@@ -56,7 +56,7 @@ docker buildx build --load --progress=plain \
   --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-aec59b4-28d37ae-0dea290-de3b688-ui96a6439 \
+  --tag helpdesk-persian:runtime-fa-aec59b4-28d37ae-a8d4577-de3b688-ui96a6439 \
   --file docker/office-staging/Containerfile .
 ```
 
@@ -91,7 +91,7 @@ Build this candidate without touching the running services or their volumes:
 docker image inspect helpdesk-persian:runtime-569be35 --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-aec59b4-28d37ae-0dea290-de3b688-ui96a6439 \
+  --tag helpdesk-persian:runtime-fa-aec59b4-28d37ae-a8d4577-de3b688-ui96a6439 \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -120,7 +120,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-aec59b4-28d37ae-0dea290-de3b688-ui96a6439`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-aec59b4-28d37ae-a8d4577-de3b688-ui96a6439`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous
 `helpdesk-persian:runtime-fa-6076dd41c-i18n1` image and original
 `helpdesk-persian:runtime-569be35` seed remain available for rollback. Build
