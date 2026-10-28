@@ -7,7 +7,7 @@ COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/f
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
 ARG HELPDESK_BASE_SHA=cff7d5ff70f6b6020da8ae6197f73dfc86120db9
-ARG HELPDESK_PINNED_SHA=981c8b8a7eda2987f1875124d2a772464c75bd75
+ARG HELPDESK_PINNED_SHA=0dea290433978de8a7bd3c98b59ad92629947340
 ARG INSIGHTS_BASE_SHA=ca237e436f8f19d1260b8635c94b48470b44f70f
 ARG INSIGHTS_PINNED_SHA=de3b6883768cc5864dcbc3766caf2908571a1f6a
 ARG INSIGHTS_FRAPPE_UI_SHA=96a6439f5c4a9911b8bd4efdc8b994a95858c88a
