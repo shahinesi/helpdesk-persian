@@ -10655,3 +10655,17 @@ msgstr "انتخاب ماه"
 
 msgid "Thanks for reaching out 👋. This ticket was created outside our working hours. You can expect the next response by {{ next_working_day }}."
 msgstr "از اینکه با ما تماس گرفتید سپاسگزاریم 👋. این تیکت خارج از ساعات کاری ثبت شده است. پاسخ بعدی در {{ next_working_day }} ارسال می‌شود."
+
+
+#: desk/src/components/Settings/emailConfig.ts:195
+msgid "Setting up GMail requires you to enable two-factor authentication and app passwords. Read more"
+msgstr "برای راه‌اندازی Gmail، احراز هویت دومرحله‌ای و گذرواژهٔ برنامه را فعال کنید. اطلاعات بیشتر"
+
+#: desk/src/components/Settings/emailConfig.ts:213
+msgid "Setting up Sendgrid requires you to enable two-factor authentication and app passwords. Read more"
+msgstr "برای راه‌اندازی SendGrid، احراز هویت دومرحله‌ای و گذرواژهٔ برنامه را فعال کنید. اطلاعات بیشتر"
+
+#: helpdesk/api/dashboard.py:192
+#, python-format
+msgid "% of tickets created that were resolved within SLA"
+msgstr "درصد تیکت‌های ایجادشده‌ای که در محدودهٔ SLA حل شده‌اند"
