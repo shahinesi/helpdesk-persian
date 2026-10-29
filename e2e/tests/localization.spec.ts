@@ -145,7 +145,9 @@ test("Persian dashboard metrics use canonical digits and the Persian font", asyn
   const page = await pageAs("persianAgent");
   await page.goto("/helpdesk/dashboard");
 
-  const percentage = page.getByText("0%", { exact: true });
+  // Persian localization renders the percent sign as ٪ while keeping the
+  // numeric value canonical ASCII for Vazirmatn's ss01 glyphs.
+  const percentage = page.getByText("0٪", { exact: true });
   const rating = page.getByText("0/5", { exact: true });
   await expect(percentage).toBeVisible();
   await expect(rating).toBeVisible();
@@ -176,8 +178,9 @@ test("Persian single-value DateTimePicker shows Jalali dates", async ({ pageAs }
   await page.goto("/helpdesk/tickets");
 
   await page.getByRole("button", { name: "فیلتر", exact: true }).click();
-  await page.getByText("افزودن فیلتر", { exact: true }).click();
-  await page.getByText("تاریخ ایجاد", { exact: true }).last().click();
+  await page
+    .getByRole("option", { name: "تاریخ ایجاد", exact: true })
+    .click();
   await page.getByRole("button", { name: "بازهٔ زمانی", exact: true }).click();
   await page.getByText("بیشتر از", { exact: true }).click();
 
