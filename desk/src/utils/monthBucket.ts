@@ -1,5 +1,6 @@
 import { toJalaali } from "jalaali-js";
 import { getPersianMonthName } from "./intlDate.ts";
+import { isPersianLocale, toIntlLocale } from "./locale.ts";
 
 /**
  * Format a Gregorian month bucket for charts without changing its grouping.
@@ -29,13 +30,13 @@ export function formatLocalizedMonthBucket(
     return "";
   }
 
-  if (locale.split("-")[0] === "fa") {
+  if (isPersianLocale(locale)) {
     const start = toJalaali(year, month, 1);
     const end = toJalaali(year, month, monthEnd.getUTCDate());
     return `${start.jd} ${getPersianMonthName(start.jm)} ${start.jy} تا ${end.jd} ${getPersianMonthName(end.jm)} ${end.jy}`;
   }
 
-  return new Intl.DateTimeFormat(locale, {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
     month: "short",
     year: "numeric",
     timeZone: "UTC",

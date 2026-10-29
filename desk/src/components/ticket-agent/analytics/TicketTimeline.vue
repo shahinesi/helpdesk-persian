@@ -152,9 +152,8 @@ const props = defineProps<{
   events: TimelineEvent[];
 }>();
 
-const locale = ((window as any).lang || document.documentElement.lang || "en")
-  .toLowerCase()
-  .split("-")[0];
+const rawLocale = (window as any).lang || document.documentElement.lang || "en";
+const locale = rawLocale.toLowerCase().split(/[-_]/)[0];
 const isRtlLocale = locale === "fa" || locale === "ar";
 
 const scroller = ref<HTMLElement>();

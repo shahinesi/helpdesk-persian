@@ -11,6 +11,13 @@ test("Persian Gregorian month buckets show the Jalali date span", () => {
   assert.doesNotMatch(label, /\bMar\b|\b2026\b/);
 });
 
+test("month buckets recognize legacy Persian locales and normalize Intl locales", () => {
+  const persian = formatLocalizedMonthBucket("2026-03-15", "fa_IR");
+  assert.match(persian, /اسفند/);
+  assert.match(persian, /فروردین/);
+  assert.equal(formatLocalizedMonthBucket("2026-03-15", "en_US"), "Mar 2026");
+});
+
 test("English month buckets preserve Gregorian month and digits", () => {
   assert.equal(formatLocalizedMonthBucket("2026-03-15", "en"), "Mar 2026");
 });
