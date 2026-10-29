@@ -1,3 +1,5 @@
+import { digitsArToFa, digitsFaToEn } from "@persian-tools/persian-tools";
+
 function getDisplayLocale() {
   if (typeof document === "undefined") return "en";
   return document.documentElement.lang || "en";
@@ -26,4 +28,11 @@ export function formatLocalizedNumber(
 
 export function formatLocalizedRatingScale() {
   return [1, 2, 3, 4, 5].map((rating) => formatLocalizedNumber(rating));
+}
+
+/** Normalize numerals and separators at numeric text-input boundaries only. */
+export function normalizeNumericInput(value: string) {
+  return digitsFaToEn(digitsArToFa(value))
+    .replace(/[٬,]/g, "")
+    .replace(/٫/g, ".");
 }

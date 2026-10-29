@@ -25,8 +25,7 @@
 import FieldLabel from "@/components/FieldLabel.vue";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
-import { formatLocalizedNumber } from "@/utils/number";
-import { digitsArToFa, digitsFaToEn } from "@persian-tools/persian-tools";
+import { formatLocalizedNumber, normalizeNumericInput } from "@/utils/number";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { APIOptions, Field, FieldValue } from "@/types";
 import { formatLocalizedDate, getDateFormat, parseApiOptions } from "@/utils";
@@ -238,10 +237,9 @@ const listeners = computed(() => {
       blur: (event: FocusEvent) => {
         const value = (event.target as HTMLInputElement).value;
         const canonicalValue =
+          numberFields.includes(fieldtype) &&
           dayjs.locale().split("-")[0] === "fa"
-            ? digitsFaToEn(digitsArToFa(value))
-                .replace(/[٬,]/g, "")
-                .replace(/٫/g, ".")
+            ? normalizeNumericInput(value)
             : value;
         emitUpdate(props.field.fieldname, canonicalValue);
       },
@@ -360,8 +358,10 @@ function handleRedirect(value: string) {
 
 :deep(button.form-control[data-slot="trigger"]:hover .lucide-chevron-down),
 :deep(button.form-control[data-slot="trigger"]:focus .lucide-chevron-down),
-:deep(button.form-control[data-slot="trigger"][data-state="open"]
-    .lucide-chevron-down) {
+:deep(
+    button.form-control[data-slot="trigger"][data-state="open"]
+      .lucide-chevron-down
+  ) {
   visibility: visible;
 }
 :deep(.form-control [type="checkbox"]) {

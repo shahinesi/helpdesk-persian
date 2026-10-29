@@ -4,6 +4,7 @@ import {
   formatLocalizedDigits,
   formatLocalizedNumber,
   formatLocalizedRatingScale,
+  normalizeNumericInput,
 } from "./number.ts";
 
 function setDisplayLocale(locale: string) {
@@ -14,7 +15,10 @@ function setDisplayLocale(locale: string) {
 }
 
 test("display number strings stay canonical in Persian and English locales", () => {
-  const previousDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
+  const previousDocument = Object.getOwnPropertyDescriptor(
+    globalThis,
+    "document"
+  );
 
   try {
     setDisplayLocale("fa-IR");
@@ -47,13 +51,7 @@ test("chart rating labels use the active display locale", () => {
 
   try {
     setDisplayLocale("fa-IR");
-    assert.deepEqual(formatLocalizedRatingScale(), [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-    ]);
+    assert.deepEqual(formatLocalizedRatingScale(), ["1", "2", "3", "4", "5"]);
 
     setDisplayLocale("en");
     assert.deepEqual(formatLocalizedRatingScale(), ["1", "2", "3", "4", "5"]);
@@ -64,4 +62,10 @@ test("chart rating labels use the active display locale", () => {
       Reflect.deleteProperty(globalThis, "document");
     }
   }
+});
+
+test("numeric input normalization accepts Persian and Arabic numerals", () => {
+  assert.equal(normalizeNumericInput("۱٬۲۳۴٫۵"), "1234.5");
+  assert.equal(normalizeNumericInput("١٬٢٣٤٫٥"), "1234.5");
+  assert.equal(normalizeNumericInput("1,234.5"), "1234.5");
 });
