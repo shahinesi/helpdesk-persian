@@ -19,7 +19,7 @@ only after compatibility checks.
 
 The current source candidate pins Frappe `43462981f18116bd153c4b34f09e5fe28139c13d`,
 ERPNext `eaf92bbb5815ae92810947c638592f285d16a04d`, Helpdesk
-`d6eace4d09973f36c75ba7f3c3cc2e3c691ccae5`, Telephony
+`fb3ba2065265a3f2dc0230045d05f20bcd067ecb`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
 `3190cdcef3c213b5959ea00b710d87e8894757bd`, and Insights' Frappe UI
 `351b9caad7910bea309b2cf15f5b32ccd74ef266`. The candidate image writes these
@@ -56,7 +56,7 @@ docker buildx build --load --progress=plain \
   --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-4346298-eaf92bb-d6eace4-3190cdc-ui351b9ca \
+  --tag helpdesk-persian:runtime-fa-4346298-eaf92bb-fb3ba20-3190cdc-ui351b9ca \
   --file docker/office-staging/Containerfile .
 ```
 
@@ -97,7 +97,7 @@ Build this candidate without touching the running services or their volumes:
 docker image inspect helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439 --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-4346298-eaf92bb-d6eace4-3190cdc-ui351b9ca \
+  --tag helpdesk-persian:runtime-fa-4346298-eaf92bb-fb3ba20-3190cdc-ui351b9ca \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -125,7 +125,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-4346298-eaf92bb-d6eace4-3190cdc-ui351b9ca`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-4346298-eaf92bb-fb3ba20-3190cdc-ui351b9ca`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous
 `helpdesk-persian:runtime-fa-6076dd41c-i18n1` image and original
 `helpdesk-persian:runtime-569be35` seed remain available for rollback. Build
