@@ -17,12 +17,12 @@ refs participate in the cached initialization layer, while final pins
 invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
-The current source candidate pins Frappe `aec59b402f4f8c9856ec9feeafb976c6573813e5`,
-ERPNext `2bde8f96afe9153681edc9799004ce0f88d7dc46`, Helpdesk
-`f36b2398f4f71fd29f33004ae362a95ea2d4d4e9`, Telephony
+The current source candidate pins Frappe `c468464d498db84984cf6880fbd6bf640362a6d9`,
+ERPNext `eaf92bbb5815ae92810947c638592f285d16a04d`, Helpdesk
+`d6eace4d09973f36c75ba7f3c3cc2e3c691ccae5`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
-`de3b6883768cc5864dcbc3766caf2908571a1f6a`, and Insights' Frappe UI
-`96a6439f5c4a9911b8bd4efdc8b994a95858c88a`. The candidate image writes these
+`3190cdcef3c213b5959ea00b710d87e8894757bd`, and Insights' Frappe UI
+`351b9caad7910bea309b2cf15f5b32ccd74ef266`. The candidate image writes these
 exact revisions to `PINNED_VERSIONS.json` for runtime verification.
 After checking out final revisions, the builder installs each app's locked
 JavaScript dependencies before running its asset build. This is required when
@@ -56,7 +56,7 @@ docker buildx build --load --progress=plain \
   --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439 \
+  --tag helpdesk-persian:runtime-fa-c468464-eaf92bb-d6eace4-3190cdc-ui351b9ca \
   --file docker/office-staging/Containerfile .
 ```
 
@@ -75,7 +75,7 @@ JavaScript dependency changes; other dependency changes use the full
 `Containerfile`.
 
 The versioned `Containerfile.staging-update` reuses the current
-`runtime-fa-aec59b4-37ece84-f36b239-de3b688-ui96a6439` image as its dependency
+`runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439` image as its dependency
 seed and builds directly in that pinned runtime, without copying its 6 GB
 filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
@@ -97,7 +97,7 @@ Build this candidate without touching the running services or their volumes:
 docker image inspect helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439 --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-c468464-2bde8f9-df441ad-de3b688-ui96a6439 \
+  --tag helpdesk-persian:runtime-fa-c468464-eaf92bb-d6eace4-3190cdc-ui351b9ca \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -125,7 +125,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-c468464-2bde8f9-df441ad-de3b688-ui96a6439`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-c468464-eaf92bb-d6eace4-3190cdc-ui351b9ca`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous
 `helpdesk-persian:runtime-fa-6076dd41c-i18n1` image and original
 `helpdesk-persian:runtime-569be35` seed remain available for rollback. Build
