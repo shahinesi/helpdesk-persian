@@ -188,6 +188,14 @@ RUN cd apps/helpdesk/desk \
     && bench build --apps insights \
     && python /opt/frappe/validate-assets.py sites/assets
 
+# The UI SHA in PINNED_VERSIONS.json must describe the source that actually
+# survived Insights' asset build, not only the checkout done earlier in this
+# stage. Keep the shared Jalali formatter reproducible in the built image.
+RUN ui=apps/insights/frontend/node_modules/frappe-ui \
+    && test "$(git -C "$ui" rev-parse HEAD)" = "$INSIGHTS_FRAPPE_UI_SHA" \
+    && git -C "$ui" diff --quiet "$INSIGHTS_FRAPPE_UI_SHA" -- src/charts/format.ts \
+    && grep -q 'formatPersianDate' "$ui/src/charts/format.ts"
+
 RUN find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} + \
     && test -L sites/assets \
     && test "$(readlink sites/assets)" = "../assets" \
