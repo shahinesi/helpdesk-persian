@@ -1,0 +1,223 @@
+# syntax=docker/dockerfile:1.7
+ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439
+FROM ${SEED_RUNTIME_IMAGE} AS builder
+WORKDIR /home/frappe/frappe-bench
+COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
+COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/frappe/validate-translations.py
+COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
+
+ARG HELPDESK_BASE_SHA=f36b2398f4f71fd29f33004ae362a95ea2d4d4e9
+ARG HELPDESK_PINNED_SHA=94dd65c509b635e45501302ae2fa316b261f2a45
+ARG INSIGHTS_BASE_SHA=de3b6883768cc5864dcbc3766caf2908571a1f6a
+ARG INSIGHTS_PINNED_SHA=aee50c4696440fce841986f7958e3109ecadd004
+ARG INSIGHTS_FRAPPE_UI_SHA=34ac871021036df581b902b0b89a17b2a5059a7d
+ARG FRAPPE_BASE_SHA=aec59b402f4f8c9856ec9feeafb976c6573813e5
+ARG FRAPPE_PINNED_SHA=b0f6029b52aba2ac89e4f009e65c172e84386ba0
+ARG ERPNEXT_BASE_SHA=2bde8f96afe9153681edc9799004ce0f88d7dc46
+ARG ERPNEXT_PINNED_SHA=dcf0c15f483da1001f486f83370ea35622f3b965
+
+RUN --network=host python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" <<'PY'
+import json
+import os
+import pathlib
+import shutil
+import subprocess
+import sys
+
+apps = pathlib.Path("/home/frappe/frappe-bench/apps")
+frappe_base, frappe_pin, erpnext_base, erpnext_pin, helpdesk_base, helpdesk_pin, insights_base, insights_pin, ui_pin = sys.argv[1:]
+
+def run(*args):
+    subprocess.run(args, check=True)
+
+def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
+    target = apps / name
+    temporary = apps / f".{name}-pinned"
+    if isinstance(node_modules_relative, (str, pathlib.Path)):
+        preserved_modules = (pathlib.Path(node_modules_relative),)
+    else:
+        preserved_modules = tuple(pathlib.Path(path) for path in node_modules_relative)
+    if temporary.exists():
+        shutil.rmtree(temporary)
+    run("git", "init", str(temporary))
+    run("git", "-C", str(temporary), "remote", "add", "upstream", url)
+    run("git", "-C", str(temporary), "fetch", "--depth=1", "upstream", pinned_sha)
+    run("git", "-C", str(temporary), "fetch", "--depth=1", "upstream", base_sha)
+    run("git", "-C", str(temporary), "checkout", "--detach", pinned_sha)
+    run("git", "-C", str(temporary), "diff", "--quiet", base_sha, pinned_sha, "--", "requirements.txt", "pyproject.toml", "setup.py")
+    package_path = {
+        "frappe": pathlib.Path("package.json"),
+        "erpnext": pathlib.Path("package.json"),
+        "helpdesk": pathlib.Path("desk/package.json"),
+        "insights": pathlib.Path("frontend/package.json"),
+    }[name]
+    package = json.loads((temporary / package_path).read_text(encoding="utf-8"))
+    previous_package = json.loads(
+        subprocess.check_output(
+            ["git", "-C", str(temporary), "show", f"{base_sha}:{package_path.as_posix()}"],
+            text=True,
+        )
+    )
+    for field in ("dependencies", "devDependencies", "optionalDependencies"):
+        current_deps = package.get(field, {})
+        previous_deps = previous_package.get(field, {})
+        if name == "insights":
+            current_deps = {key: value for key, value in current_deps.items() if key != "frappe-ui"}
+            previous_deps = {key: value for key, value in previous_deps.items() if key != "frappe-ui"}
+        if current_deps != previous_deps:
+            raise SystemExit(f"Unexpected {name} {field} changes; dependency seed must be rebuilt")
+    missing_modules = [target / path for path in preserved_modules if not (target / path).is_dir()]
+    if missing_modules:
+        raise SystemExit(f"Expected installed dependencies are missing: {missing_modules}")
+    stale_paths = []
+    for current, directories, files in os.walk(target):
+        current_path = pathlib.Path(current)
+        for directory in list(directories):
+            path = current_path / directory
+            relative = path.relative_to(target)
+            if any(relative == path or path in relative.parents for path in preserved_modules):
+                directories.remove(directory)
+            elif not any(relative in path.parents for path in preserved_modules):
+                stale_paths.append(path)
+        stale_paths.extend(current_path / filename for filename in files)
+    for path in sorted(stale_paths, key=lambda item: len(item.parts), reverse=True):
+        if path.is_symlink() or path.is_file():
+            path.unlink()
+        elif path.is_dir():
+            path.rmdir()
+    shutil.copytree(temporary, target, dirs_exist_ok=True)
+    shutil.rmtree(temporary)
+    actual = subprocess.check_output(["git", "-C", str(target), "rev-parse", "HEAD"], text=True).strip()
+    if actual != pinned_sha:
+        raise SystemExit(f"{name} SHA mismatch: {actual} != {pinned_sha}")
+
+replace_checkout(
+    "frappe",
+    "https://github.com/shahinesi/frappe-persian",
+    frappe_base,
+    frappe_pin,
+    pathlib.Path("node_modules"),
+)
+replace_checkout(
+    "erpnext",
+    "https://github.com/shahinesi/erpnext-persian",
+    erpnext_base,
+    erpnext_pin,
+    (pathlib.Path("node_modules"), pathlib.Path("banking/node_modules")),
+)
+replace_checkout(
+    "helpdesk",
+    "https://github.com/shahinesi/helpdesk-persian",
+    helpdesk_base,
+    helpdesk_pin,
+    pathlib.Path("desk/node_modules"),
+)
+replace_checkout(
+    "insights",
+    "https://github.com/shahinesi/insights-persian",
+    insights_base,
+    insights_pin,
+    pathlib.Path("frontend/node_modules"),
+)
+
+ui_modules = apps / "insights/frontend/node_modules/frappe-ui"
+ui_temporary = apps / "insights/frontend/node_modules/.frappe-ui-pinned"
+insights_package = json.loads((apps / "insights/frontend/package.json").read_text(encoding="utf-8"))
+if insights_package.get("dependencies", {}).get("frappe-ui", "").split("#")[-1] != ui_pin:
+    raise SystemExit("Insights package.json does not reference the pinned Frappe UI SHA")
+if ui_temporary.exists():
+    shutil.rmtree(ui_temporary)
+run("git", "init", str(ui_temporary))
+run("git", "-C", str(ui_temporary), "remote", "add", "upstream", "https://github.com/shahinesi/frappe-ui-persian")
+run("git", "-C", str(ui_temporary), "fetch", "--depth=1", "upstream", ui_pin)
+run("git", "-C", str(ui_temporary), "checkout", "--detach", ui_pin)
+ui_actual = subprocess.check_output(["git", "-C", str(ui_temporary), "rev-parse", "HEAD"], text=True).strip()
+if ui_actual != ui_pin:
+    raise SystemExit(f"Insights Frappe UI SHA mismatch: {ui_actual} != {ui_pin}")
+ui_format_blob = subprocess.check_output(
+    ["git", "-C", str(ui_temporary), "rev-parse", f"{ui_pin}:src/charts/format.ts"],
+    text=True,
+).strip()
+pathlib.Path("/tmp/frappe-ui-format-expected.blob").write_text(ui_format_blob + "\n", encoding="ascii")
+shutil.rmtree(ui_modules)
+shutil.move(str(ui_temporary), str(ui_modules))
+
+pins = {
+    "frappe": frappe_pin,
+    "erpnext": erpnext_pin,
+    "helpdesk": helpdesk_pin,
+    "telephony": "039cf39f245d6818ead03cf94eea6ce7f9c1e1f7",
+    "insights": insights_pin,
+    "frappe-ui-insights": ui_pin,
+}
+seed_pins = json.loads(pathlib.Path("/home/frappe/frappe-bench/PINNED_VERSIONS.json").read_text(encoding="utf-8"))
+for app, expected in {
+    "frappe": frappe_base,
+    "erpnext": erpnext_base,
+    "helpdesk": helpdesk_base,
+    "telephony": pins["telephony"],
+    "insights": insights_base,
+}.items():
+    if seed_pins.get(app) != expected:
+        raise SystemExit(f"Dependency seed {app} SHA mismatch: {seed_pins.get(app)} != {expected}")
+(pathlib.Path("/home/frappe/frappe-bench/PINNED_VERSIONS.json")).write_text(
+    json.dumps(pins, indent=2) + "\n", encoding="utf-8"
+)
+PY
+
+RUN --network=host cd apps/insights/frontend \
+    && yarn cache clean frappe-ui \
+    && yarn install --force --frozen-lockfile --check-files --non-interactive --network-timeout 600000 --network-concurrency 4 \
+    && expected_blob="$(cat /tmp/frappe-ui-format-expected.blob)" \
+    && actual_blob="$(git hash-object node_modules/frappe-ui/src/charts/format.ts)" \
+    && printf 'Installed Frappe UI formatter blob: %s\n' "$actual_blob" \
+    && test "$actual_blob" = "$expected_blob"
+
+RUN --network=host cd apps/erpnext/banking \
+    && yarn install --frozen-lockfile --non-interactive --network-timeout 600000 --network-concurrency 4 \
+    && test -d node_modules/jalaali-js \
+    && test -d node_modules/@persian-tools/persian-tools
+
+RUN test -d apps/helpdesk/desk/node_modules/jalaali-js \
+    && test -d apps/helpdesk/desk/node_modules/@persian-tools/persian-tools \
+    && test -d apps/insights/frontend/node_modules/jalaali-js \
+    && test -d apps/insights/frontend/node_modules/@persian-tools/persian-tools
+
+RUN cd apps/helpdesk/desk \
+    && yarn apply:ui-patches \
+    && bash /opt/frappe/apply-helpdesk-vite-patch.sh \
+    && cd /home/frappe/frappe-bench \
+    && env/bin/python -m pip check \
+    && test ! -e sites/assets \
+    && ln -s ../assets sites/assets \
+    && bench compile-po-to-mo --app frappe --locale fa --force \
+    && bench compile-po-to-mo --app erpnext --locale fa --force \
+    && bench compile-po-to-mo --app helpdesk --locale fa --force \
+    && bench compile-po-to-mo --app insights --locale fa --force \
+    && python /opt/frappe/validate-translations.py sites/assets/locale frappe erpnext helpdesk insights \
+    && bench build --apps frappe \
+    && bench build --apps erpnext \
+    && bench build --apps helpdesk \
+    && bench build --apps insights \
+    && python /opt/frappe/validate-assets.py sites/assets
+
+# The UI SHA in PINNED_VERSIONS.json must describe the source that actually
+# survived Insights' asset build, not only the checkout done earlier in this
+# stage. Keep the shared Jalali formatter reproducible in the built image.
+RUN ui=apps/insights/frontend/node_modules/frappe-ui \
+    && expected_blob="$(cat /tmp/frappe-ui-format-expected.blob)" \
+    && actual_blob="$(git hash-object "$ui/src/charts/format.ts")" \
+    && printf 'Built Frappe UI formatter blob: %s\n' "$actual_blob" \
+    && test "$actual_blob" = "$expected_blob" \
+    && grep -q 'formatPersianDate' "$ui/src/charts/format.ts" \
+    && rm /tmp/frappe-ui-format-expected.blob
+
+RUN find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} + \
+    && test -L sites/assets \
+    && test "$(readlink sites/assets)" = "../assets" \
+    && rm sites/assets \
+    && test -d assets \
+    && test ! -L assets \
+    && test ! -e sites/assets
+
+FROM builder AS runtime
