@@ -134,6 +134,11 @@ run("git", "-C", str(ui_temporary), "checkout", "--detach", ui_pin)
 ui_actual = subprocess.check_output(["git", "-C", str(ui_temporary), "rev-parse", "HEAD"], text=True).strip()
 if ui_actual != ui_pin:
     raise SystemExit(f"Insights Frappe UI SHA mismatch: {ui_actual} != {ui_pin}")
+ui_format_blob = subprocess.check_output(
+    ["git", "-C", str(ui_temporary), "rev-parse", f"{ui_pin}:src/charts/format.ts"],
+    text=True,
+).strip()
+pathlib.Path("/tmp/frappe-ui-format-expected.blob").write_text(ui_format_blob + "\n", encoding="ascii")
 shutil.rmtree(ui_modules)
 shutil.move(str(ui_temporary), str(ui_modules))
 
@@ -159,6 +164,14 @@ for app, expected in {
     json.dumps(pins, indent=2) + "\n", encoding="utf-8"
 )
 PY
+
+RUN --network=host cd apps/insights/frontend \
+    && yarn cache clean frappe-ui \
+    && yarn install --force --frozen-lockfile --check-files --non-interactive --network-timeout 600000 --network-concurrency 4 \
+    && expected_blob="$(cat /tmp/frappe-ui-format-expected.blob)" \
+    && actual_blob="$(git hash-object node_modules/frappe-ui/src/charts/format.ts)" \
+    && printf 'Installed Frappe UI formatter blob: %s\n' "$actual_blob" \
+    && test "$actual_blob" = "$expected_blob"
 
 RUN --network=host cd apps/erpnext/banking \
     && yarn install --frozen-lockfile --non-interactive --network-timeout 600000 --network-concurrency 4 \
@@ -192,15 +205,12 @@ RUN cd apps/helpdesk/desk \
 # survived Insights' asset build, not only the checkout done earlier in this
 # stage. Keep the shared Jalali formatter reproducible in the built image.
 RUN ui=apps/insights/frontend/node_modules/frappe-ui \
-    && printf 'Built Frappe UI HEAD: ' \
-    && (git -C "$ui" rev-parse HEAD || true) \
-    && printf 'Expected formatter blob: ' \
-    && (git -C "$ui" rev-parse "$INSIGHTS_FRAPPE_UI_SHA:src/charts/format.ts" || true) \
-    && printf 'Built formatter blob: ' \
-    && (git -C "$ui" hash-object src/charts/format.ts || true) \
-    && test "$(git -C "$ui" rev-parse HEAD)" = "$INSIGHTS_FRAPPE_UI_SHA" \
-    && git -C "$ui" diff --quiet "$INSIGHTS_FRAPPE_UI_SHA" -- src/charts/format.ts \
-    && grep -q 'formatPersianDate' "$ui/src/charts/format.ts"
+    && expected_blob="$(cat /tmp/frappe-ui-format-expected.blob)" \
+    && actual_blob="$(git hash-object "$ui/src/charts/format.ts")" \
+    && printf 'Built Frappe UI formatter blob: %s\n' "$actual_blob" \
+    && test "$actual_blob" = "$expected_blob" \
+    && grep -q 'formatPersianDate' "$ui/src/charts/format.ts" \
+    && rm /tmp/frappe-ui-format-expected.blob
 
 RUN find apps -mindepth 1 -path '*/.git' -prune -exec rm -rf {} + \
     && test -L sites/assets \

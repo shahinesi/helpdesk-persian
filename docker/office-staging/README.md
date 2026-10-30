@@ -91,6 +91,13 @@ Frappe Python environment from PyPI. It is valid only while that exact seed
 image is present and all dependency checks pass. Use the full `Containerfile`
 for Python or app-root dependency changes, or when the seed is unavailable.
 
+Insights' pinned `frappe-ui` checkout is validated by its formatter blob before
+and after the asset build. Before the frozen frontend install, the updater
+clears only Yarn's cached `frappe-ui` package and forces lockfile installation;
+this prevents a stale package cache from silently replacing the pinned source
+during the build. A mismatch fails the image build before a candidate can be
+activated.
+
 Build this candidate without touching the running services or their volumes:
 
 ```sh
