@@ -192,6 +192,12 @@ RUN cd apps/helpdesk/desk \
 # survived Insights' asset build, not only the checkout done earlier in this
 # stage. Keep the shared Jalali formatter reproducible in the built image.
 RUN ui=apps/insights/frontend/node_modules/frappe-ui \
+    && printf 'Built Frappe UI HEAD: ' \
+    && (git -C "$ui" rev-parse HEAD || true) \
+    && printf 'Expected formatter blob: ' \
+    && (git -C "$ui" rev-parse "$INSIGHTS_FRAPPE_UI_SHA:src/charts/format.ts" || true) \
+    && printf 'Built formatter blob: ' \
+    && (git -C "$ui" hash-object src/charts/format.ts || true) \
     && test "$(git -C "$ui" rev-parse HEAD)" = "$INSIGHTS_FRAPPE_UI_SHA" \
     && git -C "$ui" diff --quiet "$INSIGHTS_FRAPPE_UI_SHA" -- src/charts/format.ts \
     && grep -q 'formatPersianDate' "$ui/src/charts/format.ts"
