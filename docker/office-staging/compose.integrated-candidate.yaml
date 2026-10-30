@@ -2,20 +2,20 @@
 # Keep the previous integrated image and original seed available for rollback.
 services:
   backend:
-    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-02a0a07-aee50c4-ui34ac871-jalali
+    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-94dd65c-aee50c4-ui34ac871-jalali
     pull_policy: never
   frontend:
-    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-02a0a07-aee50c4-ui34ac871-jalali
+    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-94dd65c-aee50c4-ui34ac871-jalali
     pull_policy: never
   websocket:
-    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-02a0a07-aee50c4-ui34ac871-jalali
+    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-94dd65c-aee50c4-ui34ac871-jalali
     pull_policy: never
   queue-short:
-    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-02a0a07-aee50c4-ui34ac871-jalali
+    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-94dd65c-aee50c4-ui34ac871-jalali
     pull_policy: never
   queue-long:
-    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-02a0a07-aee50c4-ui34ac871-jalali
+    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-94dd65c-aee50c4-ui34ac871-jalali
     pull_policy: never
   scheduler:
-    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-02a0a07-aee50c4-ui34ac871-jalali
+    image: helpdesk-persian:runtime-fa-b0f6029-dcf0c15-94dd65c-aee50c4-ui34ac871-jalali
     pull_policy: never
