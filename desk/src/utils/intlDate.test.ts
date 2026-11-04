@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { formatPersianDateRange } from "./intlDate.ts";
+import { formatPersianDateRange, getPersianMonthName } from "./intlDate.ts";
+
+test("Persian month names remain complete for short date labels", () => {
+  assert.equal(getPersianMonthName(1), "فروردین");
+});
 
 test("Persian date ranges cross the Jalali new year using canonical digits", () => {
   const from = new Date(Date.UTC(2026, 2, 20, 12));

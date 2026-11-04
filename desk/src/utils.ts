@@ -136,7 +136,7 @@ export function formatLocalizedDate(
           month: "short",
           timeZone: "UTC",
         }).format(intlDate)
-      : month.slice(0, 3);
+      : month;
   const weekday = new Intl.DateTimeFormat(locale, {
     weekday: "long",
     timeZone: "UTC",

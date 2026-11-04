@@ -126,6 +126,8 @@ export default defineConfig(async ({ mode }) => {
         "frappe-ui",
         "dompurify",
         "reka-ui",
+        "@codemirror/state",
+        "@codemirror/view",
         "@tiptap/core",
         "@tiptap/pm",
         "prosemirror-state",
