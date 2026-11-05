@@ -1,19 +1,19 @@
 # syntax=docker/dockerfile:1.7
-ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439
+ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali
 FROM ${SEED_RUNTIME_IMAGE} AS builder
 WORKDIR /home/frappe/frappe-bench
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
 COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/frappe/validate-translations.py
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
-ARG HELPDESK_BASE_SHA=f36b2398f4f71fd29f33004ae362a95ea2d4d4e9
+ARG HELPDESK_BASE_SHA=d68c1937d6f8a6b10fb6237f02ecb9f1bdb45456
 ARG HELPDESK_PINNED_SHA=d68c1937d6f8a6b10fb6237f02ecb9f1bdb45456
-ARG INSIGHTS_BASE_SHA=de3b6883768cc5864dcbc3766caf2908571a1f6a
+ARG INSIGHTS_BASE_SHA=396a7e91c792513e9ff5a256ad0a1eddc1d9910e
 ARG INSIGHTS_PINNED_SHA=396a7e91c792513e9ff5a256ad0a1eddc1d9910e
 ARG INSIGHTS_FRAPPE_UI_SHA=61f753abf23ea69560dc1bd900e77e56a0010359
-ARG FRAPPE_BASE_SHA=aec59b402f4f8c9856ec9feeafb976c6573813e5
-ARG FRAPPE_PINNED_SHA=d1619647a68f4026f22b9f99b41b64c5bc01f801
-ARG ERPNEXT_BASE_SHA=2bde8f96afe9153681edc9799004ce0f88d7dc46
+ARG FRAPPE_BASE_SHA=d1619647a68f4026f22b9f99b41b64c5bc01f801
+ARG FRAPPE_PINNED_SHA=9a4a2432217a53845c99e3cc39d7f7c9ec5a2c28
+ARG ERPNEXT_BASE_SHA=dcf0c15f483da1001f486f83370ea35622f3b965
 ARG ERPNEXT_PINNED_SHA=dcf0c15f483da1001f486f83370ea35622f3b965
 
 RUN --network=host python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" <<'PY'

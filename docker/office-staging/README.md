@@ -75,7 +75,7 @@ JavaScript dependency changes; other dependency changes use the full
 `Containerfile`.
 
 The versioned `Containerfile.staging-update` reuses the current
-`runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439` image as its dependency
+`runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali` image as its dependency
 seed and builds directly in that pinned runtime, without copying its 6 GB
 filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
@@ -101,10 +101,10 @@ activated.
 Build this candidate without touching the running services or their volumes:
 
 ```sh
-docker image inspect helpdesk-persian:runtime-fa-aec59b4-2bde8f9-f36b239-de3b688-ui96a6439 --format '{{.Id}}'
+docker image inspect helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali \
+  --tag helpdesk-persian:runtime-fa-9a4a243-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -132,12 +132,13 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-9a4a243-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous candidate
+`helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`,
 `helpdesk-persian:runtime-fa-997b3bd-dcf0c15-02a0a07-aee50c4-ui34ac871-cachefix-c0338943f`, the earlier
 `helpdesk-persian:runtime-fa-6076dd41c-i18n1` image, and the original
 `helpdesk-persian:runtime-569be35` seed remain available for rollback. Build
-the pinned image from this directory's `Containerfile` before selecting it.
+the pinned image from this directory's `Containerfile.staging-update` before selecting it.
 The current GHCR push was rejected by the registry, so this tag is host-local
 until registry authorization is restored.
 
