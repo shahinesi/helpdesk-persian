@@ -14,12 +14,21 @@ function currentPersianMonthLabel() {
   return `${month} ${year}`;
 }
 
+async function openHelpdesk(page: import("@playwright/test").Page, path: string) {
+  await page.goto(path);
+  // The Helpdesk SPA loads its translated catalog before mounting. On a cold
+  // staging image this can take longer than the initial document load event.
+  await expect(page.locator("#app .helpdesk-sidebar")).toBeVisible({
+    timeout: 45_000,
+  });
+}
+
 test("Persian date range picker displays Jalali dates and sends Gregorian API values", async ({
   pageAs,
 }) => {
   const page = await pageAs("persianAgent");
   await skipGettingStarted(page, "e2e-persian@example.com");
-  await page.goto("/helpdesk/dashboard");
+  await openHelpdesk(page, "/helpdesk/dashboard");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "fa");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
@@ -55,7 +64,7 @@ test("English calendar keeps Gregorian month names and left-to-right layout", as
   pageAs,
 }) => {
   const page = await pageAs("agent");
-  await page.goto("/helpdesk/dashboard");
+  await openHelpdesk(page, "/helpdesk/dashboard");
 
   await expect(page.getByText("0%", { exact: true })).toBeVisible();
   await expect(page.getByText("0/5", { exact: true })).toBeVisible();
@@ -84,7 +93,7 @@ test("Persian ticket details keep timeline dates and digits localized", async ({
 }) => {
   const page = await pageAs("persianAgent");
   await skipGettingStarted(page, "e2e-persian@example.com");
-  await page.goto(`/helpdesk/tickets/${ticket.name}`);
+  await openHelpdesk(page, `/helpdesk/tickets/${ticket.name}`);
 
   await expect(
     page.getByText(ticket.subject, { exact: true }).first()
@@ -107,7 +116,7 @@ test("Persian calendar month and year selection honors leap Esfand", async ({
 }) => {
   const page = await pageAs("persianAgent");
   await skipGettingStarted(page, "e2e-persian@example.com");
-  await page.goto("/helpdesk/dashboard");
+  await openHelpdesk(page, "/helpdesk/dashboard");
   await expect(page.getByText("0٪", { exact: true })).toBeVisible();
 
   await page.getByText("30 روز گذشته", { exact: true }).click();
@@ -145,7 +154,7 @@ test("Persian dashboard metrics use canonical digits and the Persian font", asyn
   pageAs,
 }) => {
   const page = await pageAs("persianAgent");
-  await page.goto("/helpdesk/dashboard");
+  await openHelpdesk(page, "/helpdesk/dashboard");
 
   // Persian localization renders the percent sign as ٪ while keeping the
   // numeric value canonical ASCII for Vazirmatn's ss01 glyphs.
@@ -165,19 +174,19 @@ test("Persian and English ticket counts keep canonical ASCII digits", async ({
 }) => {
   const persianPage = await pageAs("persianAgent");
   await skipGettingStarted(persianPage, "e2e-persian@example.com");
-  await persianPage.goto("/helpdesk/tickets");
+  await openHelpdesk(persianPage, "/helpdesk/tickets");
   await expect(persianPage.getByTestId("list-footer-count")).toContainText(/[0-9]+ از [0-9]+/);
   await expect(persianPage.getByTestId("list-footer-count")).not.toContainText(/[۰-۹٠-٩]/);
 
   const englishPage = await pageAs("agent");
-  await englishPage.goto("/helpdesk/tickets");
+  await openHelpdesk(englishPage, "/helpdesk/tickets");
   await expect(englishPage.getByTestId("list-footer-count")).toContainText(/[0-9]+ of [0-9]+/);
 });
 
 test("Persian single-value DateTimePicker shows Jalali dates", async ({ pageAs }) => {
   const page = await pageAs("persianAgent");
   await skipGettingStarted(page, "e2e-persian@example.com");
-  await page.goto("/helpdesk/tickets");
+  await openHelpdesk(page, "/helpdesk/tickets");
 
   await page.getByRole("button", { name: "فیلتر", exact: true }).click();
   await page
