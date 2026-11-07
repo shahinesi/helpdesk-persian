@@ -94,12 +94,29 @@ into `frontend/node_modules/frappe-ui` and validated by its formatter blob befor
 and after the asset build. A mismatch fails the image build before a candidate
 can be activated; dependency changes use the full `Containerfile`.
 
+The Frappe source repository is private and the build host has no GitHub key.
+From the authorized Windows checkout, export the exact pinned commit as a
+deterministic Git archive, verify its SHA-256 against
+`FRAPPE_SOURCE_ARCHIVE_SHA256` in `Containerfile.staging-update`, and transfer
+that archive to the build host:
+
+```powershell
+git -C C:\path\to\frappe-persian archive --format=tar `
+  --output=$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar `
+  cceef87b94de3c9244cd71e7f0285596cc1cee5c
+Get-FileHash $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar -Algorithm SHA256
+scp $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar `
+  carpet-erp:/home/ubuntu/frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar
+```
+
 Build this candidate without touching the running services or their volumes:
 
 ```sh
-docker image inspect helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali --format '{{.Id}}'
-docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
+APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
+  --secret id=apps_json,src=docker/office-staging/apps.json \
+  --secret id=frappe_source_archive,src=/home/ubuntu/frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar \
+  --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
   --tag helpdesk-persian:runtime-fa-cceef87b-e4e3395-5ee2248-940928b-ui0f8d2a1-pdfpos \
   --file docker/office-staging/Containerfile.staging-update .
 ```
