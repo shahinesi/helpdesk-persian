@@ -97,16 +97,20 @@ can be activated; dependency changes use the full `Containerfile`.
 The Frappe source repository is private and the build host has no GitHub key.
 From the authorized Windows checkout, export the exact pinned commit as a
 deterministic Git archive, verify its SHA-256 against
-`FRAPPE_SOURCE_ARCHIVE_SHA256` in `Containerfile.staging-update`, and transfer
-that archive to the build host:
+`FRAPPE_SOURCE_ARCHIVE_SHA256` in `Containerfile.staging-update`, gzip the tar,
+and transfer that archive to the build host:
 
 ```powershell
 git -C C:\path\to\frappe-persian archive --format=tar `
   --output=$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar `
   cceef87b94de3c9244cd71e7f0285596cc1cee5c
-Get-FileHash $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar -Algorithm SHA256
-scp $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar `
-  carpet-erp:/home/ubuntu/frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar
+$input = [System.IO.File]::OpenRead("$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar")
+$output = [System.IO.File]::Create("$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz")
+$gzip = [System.IO.Compression.GZipStream]::new($output, [System.IO.Compression.CompressionLevel]::Optimal, $false)
+try { $input.CopyTo($gzip) } finally { $gzip.Dispose(); $input.Dispose(); $output.Dispose() }
+Get-FileHash $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz -Algorithm SHA256
+scp $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz `
+  carpet-erp:/home/ubuntu/frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz
 ```
 
 Build this candidate without touching the running services or their volumes:
@@ -115,7 +119,7 @@ Build this candidate without touching the running services or their volumes:
 APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
-  --secret id=frappe_source_archive,src=/home/ubuntu/frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar \
+  --secret id=frappe_source_archive,src=/home/ubuntu/frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
   --tag helpdesk-persian:runtime-fa-cceef87b-e4e3395-5ee2248-940928b-ui0f8d2a1-pdfpos \
   --file docker/office-staging/Containerfile.staging-update .

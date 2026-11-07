@@ -13,7 +13,7 @@ ARG INSIGHTS_PINNED_SHA=940928b74038d2eee31e998997ed7d9f3f69feb8
 ARG INSIGHTS_FRAPPE_UI_SHA=0f8d2a1575ff384182060206c1ab0cb098cb4052
 ARG FRAPPE_BASE_SHA=101039337766162e78678fe6780479462cc9aa82
 ARG FRAPPE_PINNED_SHA=cceef87b94de3c9244cd71e7f0285596cc1cee5c
-ARG FRAPPE_SOURCE_ARCHIVE_SHA256=C9AAEC30323025D70351B3B89DA5CE074878ECD469EE74751758BCAE3087DC47
+ARG FRAPPE_SOURCE_ARCHIVE_SHA256=9430B0BA8A6F10B69CD04293BBFFB07405B7C0D809C6994E59B01E9A43D0BB90
 ARG ERPNEXT_BASE_SHA=e4e33954258b7358abffd9457a5396adfd797e98
 ARG ERPNEXT_PINNED_SHA=e4e33954258b7358abffd9457a5396adfd797e98
 
@@ -59,7 +59,7 @@ def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
         if archive_hash != frappe_archive_sha256.upper():
             raise SystemExit(f"Frappe source archive SHA256 mismatch: {archive_hash} != {frappe_archive_sha256}")
         temporary.mkdir(parents=True)
-        with tarfile.open(source_archive, "r:") as archive:
+        with tarfile.open(source_archive, "r:*") as archive:
             archive.extractall(temporary)
         for filename in ("requirements.txt", "pyproject.toml", "setup.py"):
             base_file, pinned_file = target / filename, temporary / filename
