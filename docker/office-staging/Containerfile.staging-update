@@ -139,8 +139,18 @@ ui_format_blob = subprocess.check_output(
     text=True,
 ).strip()
 pathlib.Path("/tmp/frappe-ui-format-expected.blob").write_text(ui_format_blob + "\n", encoding="ascii")
-shutil.rmtree(ui_modules)
-shutil.move(str(ui_temporary), str(ui_modules))
+installed_format = ui_modules / "src/charts/format.ts"
+if not installed_format.is_file():
+    raise SystemExit(f"Installed Frappe UI formatter is missing: {installed_format}")
+installed_format_blob = subprocess.check_output(
+    ["git", "hash-object", str(installed_format)], text=True
+).strip()
+shutil.rmtree(ui_temporary)
+if installed_format_blob != ui_format_blob:
+    raise SystemExit(
+        f"Seed Frappe UI formatter mismatch: {installed_format_blob} != {ui_format_blob}; "
+        "use the full Containerfile to refresh dependency sources"
+    )
 
 pins = {
     "frappe": frappe_pin,
@@ -165,16 +175,13 @@ for app, expected in {
 )
 PY
 
-RUN --network=host cd apps/insights/frontend \
-    && yarn cache clean frappe-ui \
-    && yarn install --force --frozen-lockfile --check-files --non-interactive --network-timeout 600000 --network-concurrency 4 \
+RUN cd apps/insights/frontend \
     && expected_blob="$(cat /tmp/frappe-ui-format-expected.blob)" \
     && actual_blob="$(git hash-object node_modules/frappe-ui/src/charts/format.ts)" \
     && printf 'Installed Frappe UI formatter blob: %s\n' "$actual_blob" \
     && test "$actual_blob" = "$expected_blob"
 
-RUN --network=host cd apps/erpnext/banking \
-    && yarn install --frozen-lockfile --non-interactive --network-timeout 600000 --network-concurrency 4 \
+RUN cd apps/erpnext/banking \
     && test -d node_modules/jalaali-js \
     && test -d node_modules/@persian-tools/persian-tools
 

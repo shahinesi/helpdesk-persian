@@ -69,9 +69,9 @@ a database migration.
 
 The Banking Jalali calendar update adds `jalaali-js` and
 `@persian-tools/persian-tools` to ERPNext's nested Banking package manifest and
-lockfile. The staging updater explicitly runs a frozen Banking install for
-these dependencies. It also handles source changes without Python or app-root
-JavaScript dependency changes; other dependency changes use the full
+lockfile. The staging updater verifies these dependencies in its pinned seed.
+It also handles source changes without Python or app-root JavaScript dependency
+changes; other dependency changes use the full
 `Containerfile`.
 
 The versioned `Containerfile.staging-update` reuses the current
@@ -80,23 +80,17 @@ seed and builds directly in that pinned runtime, without copying its 6 GB
 filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
 dependencies and app-root JavaScript dependencies did not change, then replaces
-the four app sources and Insights' pinned Frappe UI source. For this update it
-runs `yarn install --frozen-lockfile` inside ERPNext's Banking package, so its
-new `jalaali-js` and `@persian-tools/persian-tools` dependencies are installed
-from the committed lockfile before building and validating assets. It applies
-only the new Vite path hunk
+the four app sources and verifies the already-installed pinned Insights Frappe
+UI formatter and ERPNext Banking date dependencies. It applies only the Vite path hunk
 from Helpdesk's versioned Frappe UI patch, leaving the seed image's other
 already-applied package hunks and patch-package state intact. This avoids reinstalling the entire
 Frappe Python environment from PyPI. It is valid only while that exact seed
 image is present and all dependency checks pass. Use the full `Containerfile`
 for Python or app-root dependency changes, or when the seed is unavailable.
 
-Insights' pinned `frappe-ui` checkout is validated by its formatter blob before
-and after the asset build. Before the frozen frontend install, the updater
-clears only Yarn's cached `frappe-ui` package and forces lockfile installation;
-this prevents a stale package cache from silently replacing the pinned source
-during the build. A mismatch fails the image build before a candidate can be
-activated.
+Insights' pinned `frappe-ui` source is validated by its formatter blob before
+and after the asset build. A mismatch fails the image build before a candidate
+can be activated; dependency changes use the full `Containerfile`.
 
 Build this candidate without touching the running services or their volumes:
 
