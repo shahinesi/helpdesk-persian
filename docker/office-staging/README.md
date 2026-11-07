@@ -19,7 +19,7 @@ only after compatibility checks.
 
 The current source candidate pins Frappe `510d7f3a88`,
 ERPNext `dcf0c15f483da1001f486f83370ea35622f3b965`, Helpdesk
-`92b5f88adba7aa637b2dc49a4dd0973bf86c2ccc` (Framework source ref includes Persian calendar month navigation labels), Telephony
+`bdd66f0710355d3c2037a554de99609eb8ceb85a` (Framework source ref includes Persian calendar month navigation labels), Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
 `396a7e91c792513e9ff5a256ad0a1eddc1d9910e`, and Insights' Frappe UI
 `61f753abf23ea69560dc1bd900e77e56a0010359`. The candidate image writes these
@@ -56,7 +56,7 @@ docker buildx build --load --progress=plain \
   --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-510d7f3-dcf0c15-92b5f88-i396a7e9-ui61f753a-jalali \
+  --tag helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali \
   --file docker/office-staging/Containerfile .
 ```
 
@@ -98,7 +98,7 @@ Build this candidate without touching the running services or their volumes:
 docker image inspect helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-510d7f3-dcf0c15-92b5f88-i396a7e9-ui61f753a-jalali \
+  --tag helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -126,7 +126,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-510d7f3-dcf0c15-92b5f88-i396a7e9-ui61f753a-jalali`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous candidate
 `helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`,
 `helpdesk-persian:runtime-fa-997b3bd-dcf0c15-02a0a07-aee50c4-ui34ac871-cachefix-c0338943f`, the earlier
