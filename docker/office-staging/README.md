@@ -104,13 +104,13 @@ and transfer that archive to the build host:
 git -C C:\path\to\frappe-persian archive --format=tar `
   --output=$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar `
   cceef87b94de3c9244cd71e7f0285596cc1cee5c
-$input = [System.IO.File]::OpenRead("$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar")
-$output = [System.IO.File]::Create("$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz")
-$gzip = [System.IO.Compression.GZipStream]::new($output, [System.IO.Compression.CompressionLevel]::Optimal, $false)
-try { $input.CopyTo($gzip) } finally { $gzip.Dispose(); $input.Dispose(); $output.Dispose() }
+$sourceStream = [System.IO.File]::OpenRead("$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar")
+$compressedStream = [System.IO.File]::Create("$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz")
+$gzipStream = [System.IO.Compression.GZipStream]::new($compressedStream, [System.IO.Compression.CompressionLevel]::Optimal, $false)
+try { $sourceStream.CopyTo($gzipStream) } finally { $gzipStream.Dispose(); $sourceStream.Dispose(); $compressedStream.Dispose() }
 Get-FileHash $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz -Algorithm SHA256
 scp $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz `
-  carpet-erp:/home/ubuntu/frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz
+  carpet-erp:/home/ubuntu/helpdesk-persian-pipeline/docker/office-staging/frappe-source.tar.gz
 ```
 
 Build this candidate without touching the running services or their volumes:
@@ -119,11 +119,15 @@ Build this candidate without touching the running services or their volumes:
 APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
-  --secret id=frappe_source_archive,src=/home/ubuntu/frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
   --tag helpdesk-persian:runtime-fa-cceef87b-e4e3395-5ee2248-940928b-ui0f8d2a1-pdfpos \
   --file docker/office-staging/Containerfile.staging-update .
 ```
+
+The archive is a read-only BuildKit bind mount into this temporary build stage,
+so private source is verified but is not included in an image layer. Remove the
+temporary `docker/office-staging/frappe-source.tar.gz` from the build checkout
+after the build completes.
 
 The update image does not run database migrations. Validate it against the
 separate test site first; only then recreate the intended Staging application

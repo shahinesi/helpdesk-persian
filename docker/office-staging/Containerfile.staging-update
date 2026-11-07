@@ -17,7 +17,7 @@ ARG FRAPPE_SOURCE_ARCHIVE_SHA256=9430B0BA8A6F10B69CD04293BBFFB07405B7C0D809C6994
 ARG ERPNEXT_BASE_SHA=e4e33954258b7358abffd9457a5396adfd797e98
 ARG ERPNEXT_PINNED_SHA=e4e33954258b7358abffd9457a5396adfd797e98
 
-RUN --network=host --mount=type=secret,id=frappe_source_archive,target=/opt/frappe/frappe-source.tar,required=false python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
+RUN --network=host --mount=type=bind,source=docker/office-staging/frappe-source.tar.gz,target=/opt/frappe/frappe-source.tar.gz,readonly python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
 import hashlib
 import json
 import os
@@ -41,7 +41,7 @@ def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
         if seed_pins.get(name) != pinned_sha:
             raise SystemExit(f"Unchanged {name} SHA does not match dependency seed: {seed_pins.get(name)} != {pinned_sha}")
         return
-    source_archive = pathlib.Path("/opt/frappe/frappe-source.tar") if name == "frappe" else None
+    source_archive = pathlib.Path("/opt/frappe/frappe-source.tar.gz") if name == "frappe" else None
     archive_mode = bool(source_archive and source_archive.is_file())
     temporary = apps / (f".{name}-archive" if archive_mode else f".{name}-pinned")
     if isinstance(node_modules_relative, (str, pathlib.Path)):
