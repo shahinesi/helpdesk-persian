@@ -1,8 +1,9 @@
 import { __ } from "@/translation";
 import { useDebounceFn } from "@vueuse/core";
-import { createResource } from "frappe-ui";
+import { createResource, dayjs } from "frappe-ui";
 import { computed, inject, Component, ComputedRef } from "vue";
 import { __ } from "@/translation";
+import { formatLocalizedDate, getDateFormat, getTimeFormat } from "@/utils";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import LucideCalendar from "~icons/lucide/calendar";
 import LucideClock from "~icons/lucide/clock";
@@ -14,6 +15,7 @@ import LucideStar from "~icons/lucide/star";
 import LucideTag from "~icons/lucide/tag";
 import LucideType from "~icons/lucide/type";
 import LucideUser from "~icons/lucide/user";
+import { formatDateFilterDisplayValue } from "./dateDisplay";
 
 export interface FilterField {
   fieldname: string;
@@ -325,6 +327,16 @@ export function filterSummary(filter: ActiveFilter): string {
 
 function displayValue(filter: ActiveFilter): string {
   const value = filter.value;
+  const dateDisplay = formatDateFilterDisplayValue(
+    value,
+    filter.field.fieldtype,
+    dayjs.locale(),
+    getDateFormat(),
+    `${getDateFormat()} ${getTimeFormat()}`,
+    formatLocalizedDate
+  );
+  if (dateDisplay !== null) return dateDisplay;
+
   if ([...typeSelect, ...typeCheck].includes(filter.field.fieldtype)) {
     const translateOption = (option: any) => __(String(option));
     return Array.isArray(value)
