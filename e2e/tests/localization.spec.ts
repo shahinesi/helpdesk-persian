@@ -23,8 +23,9 @@ test("Persian date range picker displays Jalali dates and sends Gregorian API va
 
   await expect(page.locator("html")).toHaveAttribute("lang", "fa");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(page.getByText("0٪", { exact: true })).toBeVisible();
 
-  await page.locator('.mb-4 [class*="min-w-48"]').click();
+  await page.getByText("30 روز گذشته", { exact: true }).click();
   await page.getByText("محدوده سفارشی", { exact: true }).click();
 
   const calendar = page.locator(".calendar-panel").first();
@@ -107,8 +108,9 @@ test("Persian calendar month and year selection honors leap Esfand", async ({
   const page = await pageAs("persianAgent");
   await skipGettingStarted(page, "e2e-persian@example.com");
   await page.goto("/helpdesk/dashboard");
+  await expect(page.getByText("0٪", { exact: true })).toBeVisible();
 
-  await page.locator('.mb-4 [class*="min-w-48"]').click();
+  await page.getByText("30 روز گذشته", { exact: true }).click();
   await page.getByText("محدوده سفارشی", { exact: true }).click();
   const calendar = page.locator(".calendar-panel").first();
   const currentMonth = currentPersianMonthLabel();

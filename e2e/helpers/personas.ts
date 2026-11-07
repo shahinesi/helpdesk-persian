@@ -33,7 +33,9 @@ export const personas: Record<Exclude<PersonaKey, "admin">, Persona> = {
 };
 
 export function emailOf(key: PersonaKey) {
-  return key === "admin" ? "Administrator" : personas[key].email;
+  return key === "admin"
+    ? process.env.ADMIN_USER || "Administrator"
+    : personas[key].email;
 }
 
 export function storageStateOf(key: PersonaKey) {

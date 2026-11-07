@@ -11,6 +11,7 @@ import {
 } from "./helpers/personas";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin";
+const ADMIN_USER = process.env.ADMIN_USER || "Administrator";
 const PERSONAS: PersonaKey[] = [
   "admin",
   "manager",
@@ -22,7 +23,7 @@ const PERSONAS: PersonaKey[] = [
 ];
 
 setup("seed site and log every persona in", async ({ browser, baseURL }) => {
-  const admin = await Api.login(baseURL!, "Administrator", ADMIN_PASSWORD);
+  const admin = await Api.login(baseURL!, ADMIN_USER, ADMIN_PASSWORD);
   await seedSite(admin);
 
   for (const key of PERSONAS) {

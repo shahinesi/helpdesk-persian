@@ -25,7 +25,16 @@ export default defineConfig({
     ...devices["Desktop Chrome"],
     viewport: { width: 1440, height: 900 },
     // Differs from a fresh site's Asia/Kolkata, so timezone bugs show up locally too.
-    timezoneId: "UTC",
+    timezoneId: process.env.PLAYWRIGHT_TIMEZONE || "UTC",
+    // PWA cache state is outside test isolation and can serve stale lazy chunks.
+    serviceWorkers: "block",
+    ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+      ? {
+          launchOptions: {
+            executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+          },
+        }
+      : {}),
   },
   projects: [
     { name: "setup", testMatch: /global\.setup\.ts/ },
