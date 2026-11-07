@@ -63,8 +63,10 @@ def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
             archive.extractall(temporary)
         for filename in ("requirements.txt", "pyproject.toml", "setup.py"):
             base_file, pinned_file = target / filename, temporary / filename
+            normalize_lines = lambda content: content.replace(b"\r\n", b"\n")
             if base_file.exists() != pinned_file.exists() or (
-                base_file.exists() and base_file.read_bytes() != pinned_file.read_bytes()
+                base_file.exists()
+                and normalize_lines(base_file.read_bytes()) != normalize_lines(pinned_file.read_bytes())
             ):
                 raise SystemExit(f"Unexpected Frappe dependency file change: {filename}; use the full Containerfile")
     else:
