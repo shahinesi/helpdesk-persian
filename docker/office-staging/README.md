@@ -82,9 +82,11 @@ the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
 dependencies and app-root JavaScript dependencies did not change, then replaces
 only app sources whose pins differ from the seed and the exact pinned Insights
 Frappe UI package, and verifies
-the formatter and ERPNext Banking date dependencies. It applies only the Vite path hunk
-from Helpdesk's versioned Frappe UI patch, leaving the seed image's other
-already-applied package hunks and patch-package state intact. This avoids reinstalling the entire
+the formatter and ERPNext Banking date dependencies. It applies Helpdesk's versioned
+Frappe UI patch only when needed, and validates exact patch postimages when the
+pinned Frappe source already contains those changes, including normalization of
+Windows CRLF source archives against LF Git patch blobs. This avoids reapplying
+the shared UI changes to an already-localized source and avoids reinstalling the entire
 Frappe Python environment from PyPI. It is valid only while that exact seed
 image is present and all dependency checks pass. Use the full `Containerfile`
 for Python or app-root dependency changes, or when the seed is unavailable.
@@ -120,7 +122,7 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-cceef87b-e4e3395-5ee2248-940928b-ui0f8d2a1-pdfpos \
+  --tag helpdesk-persian:runtime-fa-cceef87b-e4e3395-efe1cfe1-940928b-ui0f8d2a1-pdfpos \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -153,7 +155,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-cceef87b-e4e3395-5ee2248-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-cceef87b-e4e3395-efe1cfe1-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous candidate
 `helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`,
 `helpdesk-persian:runtime-fa-997b3bd-dcf0c15-02a0a07-aee50c4-ui34ac871-cachefix-c0338943f`, the earlier
