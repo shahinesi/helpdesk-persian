@@ -1,0 +1,21 @@
+# Versioned override for the Persian ecosystem Staging candidate.
+# Keep the previous integrated image and original seed available for rollback.
+services:
+  backend:
+    image: helpdesk-persian:runtime-fa-497564c9-e4e3395-ae53326-1534888-ui0f8d2a1-pdfpos
+    pull_policy: never
+  frontend:
+    image: helpdesk-persian:runtime-fa-497564c9-e4e3395-ae53326-1534888-ui0f8d2a1-pdfpos
+    pull_policy: never
+  websocket:
+    image: helpdesk-persian:runtime-fa-497564c9-e4e3395-ae53326-1534888-ui0f8d2a1-pdfpos
+    pull_policy: never
+  queue-short:
+    image: helpdesk-persian:runtime-fa-497564c9-e4e3395-ae53326-1534888-ui0f8d2a1-pdfpos
+    pull_policy: never
+  queue-long:
+    image: helpdesk-persian:runtime-fa-497564c9-e4e3395-ae53326-1534888-ui0f8d2a1-pdfpos
+    pull_policy: never
+  scheduler:
+    image: helpdesk-persian:runtime-fa-497564c9-e4e3395-ae53326-1534888-ui0f8d2a1-pdfpos
+    pull_policy: never

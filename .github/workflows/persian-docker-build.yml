@@ -12,6 +12,7 @@ on:
       - "docker/start.sh"
       - "docker/frappe-docker-source.ref"
       - "desk/patches/*.ref"
+      - "docker/office-staging/**"
       - ".dockerignore"
       - ".github/workflows/persian-docker-build.yml"
   pull_request:
@@ -25,6 +26,7 @@ on:
       - "docker/start.sh"
       - "docker/frappe-docker-source.ref"
       - "desk/patches/*.ref"
+      - "docker/office-staging/**"
       - ".dockerignore"
       - ".github/workflows/persian-docker-build.yml"
   workflow_dispatch:
@@ -55,3 +57,29 @@ jobs:
             HELPDESK_REF=${{ github.event.pull_request.head.sha || github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  office-staging-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Hash app manifest
+        id: manifest
+        run: echo "sha256=$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/office-staging/Containerfile
+          push: false
+          tags: helpdesk-persian:office-staging-candidate
+          secret-files: |
+            apps_json=docker/office-staging/apps.json
+          build-args: |
+            APP_MANIFEST_SHA=${{ steps.manifest.outputs.sha256 }}
+            HELPDESK_EXPECTED_SHA=${{ github.event.pull_request.head.sha || github.sha }}
+          cache-from: type=gha,scope=office-staging
+          cache-to: type=gha,mode=max,scope=office-staging
