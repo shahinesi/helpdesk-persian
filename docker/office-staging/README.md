@@ -74,31 +74,32 @@ It also handles source changes without Python or app-root JavaScript dependency
 changes; other dependency changes use the full
 `Containerfile`.
 
-The versioned `Containerfile.staging-update` reuses the current
-`runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali` image as its dependency
+The versioned `Containerfile.staging-update` reuses the active
+`runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali` image as its dependency
 seed and builds directly in that pinned runtime, without copying its 6 GB
 filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
 dependencies and app-root JavaScript dependencies did not change, then replaces
-the four app sources and verifies the already-installed pinned Insights Frappe
-UI formatter and ERPNext Banking date dependencies. It applies only the Vite path hunk
+the four app sources and the exact pinned Insights Frappe UI package, and verifies
+the formatter and ERPNext Banking date dependencies. It applies only the Vite path hunk
 from Helpdesk's versioned Frappe UI patch, leaving the seed image's other
 already-applied package hunks and patch-package state intact. This avoids reinstalling the entire
 Frappe Python environment from PyPI. It is valid only while that exact seed
 image is present and all dependency checks pass. Use the full `Containerfile`
 for Python or app-root dependency changes, or when the seed is unavailable.
 
-Insights' pinned `frappe-ui` source is validated by its formatter blob before
+Insights' pinned `frappe-ui` source is copied from its detached, exact-SHA checkout
+into `frontend/node_modules/frappe-ui` and validated by its formatter blob before
 and after the asset build. A mismatch fails the image build before a candidate
 can be activated; dependency changes use the full `Containerfile`.
 
 Build this candidate without touching the running services or their volumes:
 
 ```sh
-docker image inspect helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali --format '{{.Id}}'
+docker image inspect helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali --format '{{.Id}}'
 docker image inspect helpdesk-persian:runtime-fa-6076dd41c-i18n1 --format '{{.Id}}'
 docker buildx build --load --progress=plain --allow network.host \
-  --tag helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali \
+  --tag helpdesk-persian:runtime-fa-1010393-dcf0c15-53c7c2f-f9f73f1-ui0f8d2a1 \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -126,7 +127,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-1010393-dcf0c15-53c7c2f-f9f73f1-ui0f8d2a1`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous candidate
 `helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`,
 `helpdesk-persian:runtime-fa-997b3bd-dcf0c15-02a0a07-aee50c4-ui34ac871-cachefix-c0338943f`, the earlier
