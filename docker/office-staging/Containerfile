@@ -54,9 +54,9 @@ WORKDIR /home/frappe/frappe-bench
 
 # Final app revisions are independent from the cached bootstrap install above.
 # These exact source pins are checked out before dependencies and assets build.
-ARG FRAPPE_PINNED_SHA=66429a99d56abf896e19bb78665cb3cb45e744ee
+ARG FRAPPE_PINNED_SHA=06c75e953c4b1a754d78f86bdc7930d191e90cca
 ARG ERPNEXT_PINNED_SHA=dcf0c15f483da1001f486f83370ea35622f3b965
-ARG HELPDESK_PINNED_SHA=f3f6d1b99804ccd5ec1bf7456baf2dcc732b4563
+ARG HELPDESK_PINNED_SHA=92b5f88adba7aa637b2dc49a4dd0973bf86c2ccc
 ARG TELEPHONY_PINNED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
 ARG INSIGHTS_PINNED_SHA=396a7e91c792513e9ff5a256ad0a1eddc1d9910e
 RUN --network=host python - "$FRAPPE_PINNED_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_PINNED_SHA" "$TELEPHONY_PINNED_SHA" "$INSIGHTS_PINNED_SHA" <<'PY'
