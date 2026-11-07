@@ -48,6 +48,28 @@ done
 framework_patch="$patch_dir/frappe-ui-framework.diff"
 if git -C "$framework_ui" apply --reverse --check -p1 "$framework_patch" >/dev/null 2>&1; then
 	echo "Frappe UI Persian patch is already applied."
+elif awk -v root="$framework_ui" '
+	/^diff --git / {
+		path = $3
+		sub(/^a\//, "", path)
+	}
+	/^index / {
+		if (match($0, /\.\.[0-9a-f]+/)) {
+			expected = substr($0, RSTART + 2, RLENGTH - 2)
+			command = "git -C \"" root "\" hash-object \"" path "\""
+			command | getline actual
+			close(command)
+			if (substr(actual, 1, length(expected)) != expected) {
+				failed = 1
+			}
+		}
+	}
+	END { exit failed }
+' "$framework_patch"; then
+	# The source archive may already include this exact patch. Git's all-at-once
+	# reverse check can fail on added files even when their postimage is present.
+	# Match every target blob from the patch before accepting that state.
+	echo "Frappe UI Persian patch postimages already match the source."
 else
 	echo "Applying Frappe UI Persian patch."
 	git -C "$framework_ui" apply -p1 "$framework_patch"
