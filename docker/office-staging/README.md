@@ -80,7 +80,8 @@ seed and builds directly in that pinned runtime, without copying its 6 GB
 filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
 dependencies and app-root JavaScript dependencies did not change, then replaces
-the four app sources and the exact pinned Insights Frappe UI package, and verifies
+only app sources whose pins differ from the seed and the exact pinned Insights
+Frappe UI package, and verifies
 the formatter and ERPNext Banking date dependencies. It applies only the Vite path hunk
 from Helpdesk's versioned Frappe UI patch, leaving the seed image's other
 already-applied package hunks and patch-package state intact. This avoids reinstalling the entire

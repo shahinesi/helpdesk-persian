@@ -6,14 +6,14 @@ COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/
 COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/frappe/validate-translations.py
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
-ARG HELPDESK_BASE_SHA=bdd66f0710355d3c2037a554de99609eb8ceb85a
+ARG HELPDESK_BASE_SHA=ae533262add63fc72b26333c98cf127792b15f77
 ARG HELPDESK_PINNED_SHA=ae533262add63fc72b26333c98cf127792b15f77
 ARG INSIGHTS_BASE_SHA=97e438cf7f1c4d417d2366d7674e2fd9d52d6b2d
 ARG INSIGHTS_PINNED_SHA=153488865cb30be3e5bcaab4cadbd0ff8c54b819
 ARG INSIGHTS_FRAPPE_UI_SHA=0f8d2a1575ff384182060206c1ab0cb098cb4052
-ARG FRAPPE_BASE_SHA=510d7f3a8875b470ebc329ed326c56c165f785d0
+ARG FRAPPE_BASE_SHA=101039337766162e78678fe6780479462cc9aa82
 ARG FRAPPE_PINNED_SHA=101039337766162e78678fe6780479462cc9aa82
-ARG ERPNEXT_BASE_SHA=dcf0c15f483da1001f486f83370ea35622f3b965
+ARG ERPNEXT_BASE_SHA=e4e33954258b7358abffd9457a5396adfd797e98
 ARG ERPNEXT_PINNED_SHA=e4e33954258b7358abffd9457a5396adfd797e98
 
 RUN --network=host python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" <<'PY'
@@ -26,12 +26,18 @@ import sys
 
 apps = pathlib.Path("/home/frappe/frappe-bench/apps")
 frappe_base, frappe_pin, erpnext_base, erpnext_pin, helpdesk_base, helpdesk_pin, insights_base, insights_pin, ui_pin = sys.argv[1:]
+seed_pins_path = pathlib.Path("/home/frappe/frappe-bench/PINNED_VERSIONS.json")
+seed_pins = json.loads(seed_pins_path.read_text(encoding="utf-8"))
 
 def run(*args):
     subprocess.run(args, check=True)
 
 def replace_checkout(name, url, base_sha, pinned_sha, node_modules_relative):
     target = apps / name
+    if base_sha == pinned_sha:
+        if seed_pins.get(name) != pinned_sha:
+            raise SystemExit(f"Unchanged {name} SHA does not match dependency seed: {seed_pins.get(name)} != {pinned_sha}")
+        return
     temporary = apps / f".{name}-pinned"
     if isinstance(node_modules_relative, (str, pathlib.Path)):
         preserved_modules = (pathlib.Path(node_modules_relative),)
