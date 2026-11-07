@@ -56,7 +56,7 @@ elif awk -v root="$framework_ui" '
 	/^index / {
 		if (match($0, /\.\.[0-9a-f]+/)) {
 			expected = substr($0, RSTART + 2, RLENGTH - 2)
-			command = "git -C \"" root "\" hash-object \"" path "\""
+			command = "sed -e 's/\\r$//' \"" root "/" path "\" | git -C \"" root "\" hash-object --stdin"
 			command | getline actual
 			close(command)
 			if (substr(actual, 1, length(expected)) != expected) {
@@ -68,7 +68,8 @@ elif awk -v root="$framework_ui" '
 ' "$framework_patch"; then
 	# The source archive may already include this exact patch. Git's all-at-once
 	# reverse check can fail on added files even when their postimage is present.
-	# Match every target blob from the patch before accepting that state.
+	# Match every target blob from the patch before accepting that state. The
+	# Windows source archive can carry CRLF even though the Git patch blobs use LF.
 	echo "Frappe UI Persian patch postimages already match the source."
 else
 	echo "Applying Frappe UI Persian patch."
