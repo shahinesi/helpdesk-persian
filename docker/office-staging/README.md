@@ -17,13 +17,16 @@ refs participate in the cached initialization layer, while final pins
 invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
-The current source candidate pins Frappe `510d7f3a88`,
-ERPNext `dcf0c15f483da1001f486f83370ea35622f3b965`, Helpdesk
-`bdd66f0710355d3c2037a554de99609eb8ceb85a` (Framework source ref includes Persian calendar month navigation labels), Telephony
+The currently deployed Staging image is
+`helpdesk-persian:runtime-fa-cceef87b-ada7de7-efe1cfe1-940928b-ui0f8d2a1-pdfpos`
+(image digest `sha256:db12071b4513ee97d8b79464ff56a6b28763cc174594c430ea4b2fb81949b803`).
+Its `PINNED_VERSIONS.json` records Frappe
+`cceef87b94de3c9244cd71e7f0285596cc1cee5c`, ERPNext
+`ada7de7b867a10e0898ed78911d509e87640d654`, Helpdesk
+`efe1cfe1356ff923875fb6fb3d8b22af171df88b`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
-`396a7e91c792513e9ff5a256ad0a1eddc1d9910e`, and Insights' Frappe UI
-`61f753abf23ea69560dc1bd900e77e56a0010359`. The candidate image writes these
-exact revisions to `PINNED_VERSIONS.json` for runtime verification.
+`940928b74038d2eee31e998997ed7d9f3f69feb8`, and Insights' Frappe UI
+`0f8d2a1575ff384182060206c1ab0cb098cb4052`.
 After checking out final revisions, the builder installs each app's locked
 JavaScript dependencies before running its asset build. This is required when
 a final pin adds packages that were absent from the bootstrap branch.
@@ -155,9 +158,9 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-cceef87b-8e6261c8-efe1cfe1-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-cceef87b-ada7de7-efe1cfe1-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate
-`helpdesk-persian:runtime-fa-cceef87b-2c6cf41-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
+`helpdesk-persian:runtime-fa-cceef87b-8e6261c8-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`,
 `helpdesk-persian:runtime-fa-997b3bd-dcf0c15-02a0a07-aee50c4-ui34ac871-cachefix-c0338943f`, the earlier
 `helpdesk-persian:runtime-fa-6076dd41c-i18n1` image, and the original
