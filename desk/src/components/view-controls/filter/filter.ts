@@ -16,6 +16,7 @@ import LucideTag from "~icons/lucide/tag";
 import LucideType from "~icons/lucide/type";
 import LucideUser from "~icons/lucide/user";
 import { formatDateFilterDisplayValue } from "./dateDisplay";
+import { resolvePersianMonthTimespan } from "./persianMonthTimespan";
 
 export interface FilterField {
   fieldname: string;
@@ -97,7 +98,10 @@ export function useFilter(): Filter {
   });
 
   function addFilter(field: FilterField, operator: string, value: any): number {
-    const next = [...conditions.value, buildCondition(field, operator, value)];
+    const next = [
+      ...conditions.value,
+      buildCondition(field, operator, value, getFilterLocaleContext()),
+    ];
     apply(next);
     return next.length - 1;
   }
@@ -109,7 +113,12 @@ export function useFilter(): Filter {
     value: any
   ) {
     const next = [...conditions.value];
-    next[index] = buildCondition(field, operator, value);
+    next[index] = buildCondition(
+      field,
+      operator,
+      value,
+      getFilterLocaleContext()
+    );
     apply(next);
   }
 
@@ -188,8 +197,24 @@ export function useLinkSearch(doctype: string, filters?: Record<string, any>) {
 function buildCondition(
   field: FilterField,
   operator: string,
-  value: any
+  value: any,
+  localeContext: { locale: string; timeZone: string }
 ): FilterCondition {
+  const persianMonthFilter = resolvePersianMonthTimespan(
+    field.fieldtype,
+    operator,
+    value,
+    localeContext.locale,
+    new Date(),
+    localeContext.timeZone
+  );
+  if (persianMonthFilter)
+    return [
+      field.fieldname,
+      persianMonthFilter.operator,
+      persianMonthFilter.value,
+    ];
+
   if (operator.includes("like") && typeof value === "string") {
     value = value.includes("%") ? value : `%${value}%`;
   }
@@ -204,6 +229,17 @@ function buildCondition(
     operatorMap[operator.toLowerCase()] || operator,
     value,
   ];
+}
+
+function getFilterLocaleContext() {
+  const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const configuredTimezone = (
+    window as Window & { timezone?: { user?: string } }
+  ).timezone?.user;
+  return {
+    locale: dayjs.locale(),
+    timeZone: configuredTimezone || browserTimezone || "UTC",
+  };
 }
 
 function toUiOperator(frappeOperator: string): string {
