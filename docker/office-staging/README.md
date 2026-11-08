@@ -78,7 +78,7 @@ changes; other dependency changes use the full
 `Containerfile`.
 
 The versioned `Containerfile.staging-update` reuses the currently deployed
-`runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos` image as its dependency
+`runtime-fa-7ece4ec9-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos` image as its dependency
 seed and builds directly in that pinned runtime, without copying its 6 GB
 filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
