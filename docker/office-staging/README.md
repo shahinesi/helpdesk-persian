@@ -18,10 +18,10 @@ invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
 The currently deployed Staging image is
-`helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`
-(image digest `sha256:f61395410a552ce6f46af5730773e073f506598268f91688ae04763a8d0f08dc`).
+`helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`
+(image ID/digest `sha256:bc34f8d9bf8b36d23d38409b23809138fc3de53f93d1770945c0eba3c028b4c9`, deployed 2026-11-08).
 Its `PINNED_VERSIONS.json` records Frappe
-`cceef87b94de3c9244cd71e7f0285596cc1cee5c`, ERPNext
+`7ece4ec911b46c60c35dfc4fefb5c6530468626a`, ERPNext
 `ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
 `efe1cfe1356ff923875fb6fb3d8b22af171df88b`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
@@ -159,8 +159,9 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate
+`helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-41ac010-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-8e6261c8-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`,
