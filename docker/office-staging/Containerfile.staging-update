@@ -158,6 +158,7 @@ replace_checkout(
 
 ui_modules = apps / "insights/frontend/node_modules/frappe-ui"
 ui_temporary = apps / "insights/frontend/node_modules/.frappe-ui-pinned"
+ui_dependencies_temporary = apps / "insights/frontend/node_modules/.frappe-ui-dependencies-preserved"
 insights_package = json.loads((apps / "insights/frontend/package.json").read_text(encoding="utf-8"))
 if insights_package.get("dependencies", {}).get("frappe-ui", "").split("#")[-1] != ui_pin:
     raise SystemExit("Insights package.json does not reference the pinned Frappe UI SHA")
@@ -188,9 +189,20 @@ if installed_format_blob != ui_format_blob:
     )
 if ui_modules.is_symlink():
     raise SystemExit(f"Expected a materialized Frappe UI package, found a symlink: {ui_modules}")
-if ui_modules.exists():
-    shutil.rmtree(ui_modules)
+if not ui_modules.is_dir():
+    raise SystemExit(f"Installed Frappe UI package is missing: {ui_modules}")
+if json.loads((ui_modules / "package.json").read_text(encoding="utf-8")) != json.loads(
+    (ui_temporary / "package.json").read_text(encoding="utf-8")
+):
+    raise SystemExit("Seed Frappe UI package manifest does not match the pinned source; use the full Containerfile")
+if not (ui_modules / "node_modules").is_dir():
+    raise SystemExit(f"Installed Frappe UI nested dependencies are missing: {ui_modules / 'node_modules'}")
+if ui_dependencies_temporary.exists():
+    shutil.rmtree(ui_dependencies_temporary)
+shutil.move(ui_modules / "node_modules", ui_dependencies_temporary)
+shutil.rmtree(ui_modules)
 shutil.move(ui_temporary, ui_modules)
+shutil.move(ui_dependencies_temporary, ui_modules / "node_modules")
 updated_format_blob = subprocess.check_output(
     ["git", "hash-object", str(ui_modules / "src/charts/format.ts")], text=True
 ).strip()

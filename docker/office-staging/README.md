@@ -95,8 +95,9 @@ image is present and all dependency checks pass. Use the full `Containerfile`
 for Python or app-root dependency changes, or when the seed is unavailable.
 
 Insights' pinned `frappe-ui` source is copied from its detached, exact-SHA checkout
-into `frontend/node_modules/frappe-ui` and validated by its formatter blob before
-and after the asset build. A mismatch fails the image build before a candidate
+into `frontend/node_modules/frappe-ui`. The updater verifies the package manifest,
+preserves the installed nested dependencies, and validates the formatter blob
+before and after the asset build. A mismatch fails the image build before a candidate
 can be activated; dependency changes use the full `Containerfile`.
 
 The Frappe source repository is private and the build host has no GitHub key.
