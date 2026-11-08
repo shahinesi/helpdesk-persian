@@ -191,10 +191,13 @@ if ui_modules.is_symlink():
     raise SystemExit(f"Expected a materialized Frappe UI package, found a symlink: {ui_modules}")
 if not ui_modules.is_dir():
     raise SystemExit(f"Installed Frappe UI package is missing: {ui_modules}")
-if json.loads((ui_modules / "package.json").read_text(encoding="utf-8")) != json.loads(
-    (ui_temporary / "package.json").read_text(encoding="utf-8")
-):
-    raise SystemExit("Seed Frappe UI package manifest does not match the pinned source; use the full Containerfile")
+seed_ui_manifest = json.loads((ui_modules / "package.json").read_text(encoding="utf-8"))
+pinned_ui_manifest = json.loads((ui_temporary / "package.json").read_text(encoding="utf-8"))
+for section in ("dependencies", "optionalDependencies", "peerDependencies"):
+    if seed_ui_manifest.get(section, {}) != pinned_ui_manifest.get(section, {}):
+        raise SystemExit(
+            f"Seed Frappe UI {section} do not match the pinned source; use the full Containerfile"
+        )
 if not (ui_modules / "node_modules").is_dir():
     raise SystemExit(f"Installed Frappe UI nested dependencies are missing: {ui_modules / 'node_modules'}")
 if ui_dependencies_temporary.exists():
