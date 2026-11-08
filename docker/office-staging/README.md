@@ -122,7 +122,7 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-cceef87b-2c6cf41-efe1cfe1-940928b-ui0f8d2a1-pdfpos \
+  --tag helpdesk-persian:runtime-fa-cceef87b-8e6261c8-efe1cfe1-940928b-ui0f8d2a1-pdfpos \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -155,8 +155,9 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-cceef87b-2c6cf41-efe1cfe1-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
-immutable local image must already exist on the target host. The previous candidate
+`helpdesk-persian:runtime-fa-cceef87b-8e6261c8-efe1cfe1-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
+immutable local image must already exist on the target host. The previous deployed candidate
+`helpdesk-persian:runtime-fa-cceef87b-2c6cf41-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-d1619647-dcf0c15-d68c193-i396a7e9-ui61f753a-jalali`,
 `helpdesk-persian:runtime-fa-997b3bd-dcf0c15-02a0a07-aee50c4-ui34ac871-cachefix-c0338943f`, the earlier
 `helpdesk-persian:runtime-fa-6076dd41c-i18n1` image, and the original
