@@ -1,23 +1,23 @@
 # syntax=docker/dockerfile:1.7
-ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-497564c9-e4e3395-ae53326-97e438c-ui0f8d2a1-pdfpos
+ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos
 FROM ${SEED_RUNTIME_IMAGE} AS builder
 WORKDIR /home/frappe/frappe-bench
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
 COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/frappe/validate-translations.py
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
-ARG HELPDESK_BASE_SHA=ae533262add63fc72b26333c98cf127792b15f77
+ARG HELPDESK_BASE_SHA=efe1cfe1356ff923875fb6fb3d8b22af171df88b
 ARG HELPDESK_PINNED_SHA=efe1cfe1356ff923875fb6fb3d8b22af171df88b
-ARG INSIGHTS_BASE_SHA=97e438cf7f1c4d417d2366d7674e2fd9d52d6b2d
+ARG INSIGHTS_BASE_SHA=940928b74038d2eee31e998997ed7d9f3f69feb8
 ARG INSIGHTS_PINNED_SHA=940928b74038d2eee31e998997ed7d9f3f69feb8
 ARG INSIGHTS_FRAPPE_UI_SHA=0f8d2a1575ff384182060206c1ab0cb098cb4052
-ARG FRAPPE_BASE_SHA=101039337766162e78678fe6780479462cc9aa82
-ARG FRAPPE_PINNED_SHA=cceef87b94de3c9244cd71e7f0285596cc1cee5c
-ARG FRAPPE_SOURCE_ARCHIVE_SHA256=9430B0BA8A6F10B69CD04293BBFFB07405B7C0D809C6994E59B01E9A43D0BB90
-ARG ERPNEXT_BASE_SHA=e4e33954258b7358abffd9457a5396adfd797e98
+ARG FRAPPE_BASE_SHA=cceef87b94de3c9244cd71e7f0285596cc1cee5c
+ARG FRAPPE_PINNED_SHA=7ece4ec911b46c60c35dfc4fefb5c6530468626a
+ARG FRAPPE_SOURCE_ARCHIVE_SHA256=3B0865025944604E6AC769FD12DD5CFEA1EE27F435ECFB5B6293F6F5490B8C65
+ARG ERPNEXT_BASE_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 ARG ERPNEXT_PINNED_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 
-RUN --network=host --mount=type=bind,source=docker/office-staging/frappe-source.tar.gz,target=/opt/frappe/frappe-source.tar.gz,readonly python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
+RUN --network=host --mount=type=bind,source=docker/office-staging/frappe-source-7ece4ec911.tar.gz,target=/opt/frappe/frappe-source.tar.gz,readonly python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
 import hashlib
 import json
 import os

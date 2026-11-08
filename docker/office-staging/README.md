@@ -77,8 +77,8 @@ It also handles source changes without Python or app-root JavaScript dependency
 changes; other dependency changes use the full
 `Containerfile`.
 
-The versioned `Containerfile.staging-update` reuses the pinned
-`runtime-fa-497564c9-e4e3395-ae53326-97e438c-ui0f8d2a1-pdfpos` image as its dependency
+The versioned `Containerfile.staging-update` reuses the currently deployed
+`runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos` image as its dependency
 seed and builds directly in that pinned runtime, without copying its 6 GB
 filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
@@ -107,15 +107,15 @@ and transfer that archive to the build host:
 
 ```powershell
 git -C C:\path\to\frappe-persian archive --format=tar `
-  --output=$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar `
-  cceef87b94de3c9244cd71e7f0285596cc1cee5c
-$sourceStream = [System.IO.File]::OpenRead("$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar")
-$compressedStream = [System.IO.File]::Create("$env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz")
+  --output=$env:TEMP\frappe-7ece4ec911b46c60c35dfc4fefb5c6530468626a.tar `
+  7ece4ec911b46c60c35dfc4fefb5c6530468626a
+$sourceStream = [System.IO.File]::OpenRead("$env:TEMP\frappe-7ece4ec911b46c60c35dfc4fefb5c6530468626a.tar")
+$compressedStream = [System.IO.File]::Create("$env:TEMP\frappe-7ece4ec911b46c60c35dfc4fefb5c6530468626a.tar.gz")
 $gzipStream = [System.IO.Compression.GZipStream]::new($compressedStream, [System.IO.Compression.CompressionLevel]::Optimal, $false)
 try { $sourceStream.CopyTo($gzipStream) } finally { $gzipStream.Dispose(); $sourceStream.Dispose(); $compressedStream.Dispose() }
-Get-FileHash $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz -Algorithm SHA256
-scp $env:TEMP\frappe-cceef87b94de3c9244cd71e7f0285596cc1cee5c.tar.gz `
-  carpet-erp:/home/ubuntu/helpdesk-persian-pipeline/docker/office-staging/frappe-source.tar.gz
+Get-FileHash $env:TEMP\frappe-7ece4ec911b46c60c35dfc4fefb5c6530468626a.tar.gz -Algorithm SHA256
+scp $env:TEMP\frappe-7ece4ec911b46c60c35dfc4fefb5c6530468626a.tar.gz `
+  carpet-erp:/home/ubuntu/helpdesk-persian-pipeline/docker/office-staging/frappe-source-7ece4ec911.tar.gz
 ```
 
 Build this candidate without touching the running services or their volumes:
@@ -125,14 +125,14 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-cceef87b-8e6261c8-efe1cfe1-940928b-ui0f8d2a1-pdfpos \
+  --tag helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
 The archive is a read-only BuildKit bind mount into this temporary build stage,
-so private source is verified but is not included in an image layer. Remove the
-temporary `docker/office-staging/frappe-source.tar.gz` from the build checkout
-after the build completes.
+so private source is verified but is not included in an image layer. Remove only
+the temporary `docker/office-staging/frappe-source-7ece4ec911.tar.gz` after the
+build completes; preserve the pre-existing `frappe-source.tar.gz` archive.
 
 The update image does not run database migrations. Validate it against the
 separate test site first; only then recreate the intended Staging application
