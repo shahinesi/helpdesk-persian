@@ -18,12 +18,12 @@ invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
 The currently deployed Staging image is
-`helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`
-(image ID/digest `sha256:bc34f8d9bf8b36d23d38409b23809138fc3de53f93d1770945c0eba3c028b4c9`, deployed 2026-11-08).
+`helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos`
+(image ID/digest `sha256:4baafe9f03bf1fdbdb3c3777e1ce057243f5279eb838484149cb8caaf35320dc`, deployed 2026-11-09).
 Its `PINNED_VERSIONS.json` records Frappe
 `7ece4ec911b46c60c35dfc4fefb5c6530468626a`, ERPNext
 `ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
-`efe1cfe1356ff923875fb6fb3d8b22af171df88b`, Telephony
+`5213e0ac133a1293dd16277c90f4f399ad7bcc3f`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
 `940928b74038d2eee31e998997ed7d9f3f69feb8`, and Insights' Frappe UI
 `0f8d2a1575ff384182060206c1ab0cb098cb4052`.
