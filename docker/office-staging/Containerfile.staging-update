@@ -4,6 +4,7 @@ FROM ${SEED_RUNTIME_IMAGE} AS builder
 WORKDIR /home/frappe/frappe-bench
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
 COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/frappe/validate-translations.py
+COPY --chown=frappe:frappe docker/office-staging/telephony-fa.po /opt/frappe/telephony-fa.po
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
 ARG HELPDESK_BASE_SHA=5213e0ac133a1293dd16277c90f4f399ad7bcc3f
@@ -16,6 +17,7 @@ ARG FRAPPE_PINNED_SHA=a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020
 ARG FRAPPE_SOURCE_ARCHIVE_SHA256=7B4EA1341D593667F83B3AD384FD2822B9C03951233D51341DD35EE67A9C4CB3
 ARG ERPNEXT_BASE_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 ARG ERPNEXT_PINNED_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
+ARG TELEPHONY_FA_PO_SHA256=64227fa3557495c428a5679bb75977a1d684d02b1bde05f036368f50032d5610
 
 RUN --network=host --mount=type=bind,source=docker/office-staging/frappe-source-a3165cb074.tar.gz,target=/opt/frappe/frappe-source.tar.gz,readonly python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
 import hashlib
@@ -263,8 +265,10 @@ RUN cd apps/helpdesk/desk \
     && bench compile-po-to-mo --app erpnext --locale fa --force \
     && bench compile-po-to-mo --app helpdesk --locale fa --force \
     && bench compile-po-to-mo --app insights --locale fa --force \
-    && python /opt/frappe/validate-translations.py sites/assets/locale frappe erpnext helpdesk insights \
-    && if test -f apps/telephony/locale/fa.po; then bench compile-po-to-mo --app telephony --locale fa --force && python /opt/frappe/validate-translations.py sites/assets/locale frappe erpnext helpdesk insights telephony; fi \
+    && printf '%s  %s\n' "$TELEPHONY_FA_PO_SHA256" /opt/frappe/telephony-fa.po | sha256sum -c - \
+    && install -D -m 0644 /opt/frappe/telephony-fa.po apps/telephony/locale/fa.po \
+    && bench compile-po-to-mo --app telephony --locale fa --force \
+    && python /opt/frappe/validate-translations.py sites/assets/locale frappe erpnext helpdesk insights telephony \
     && bench build --apps frappe \
     && bench build --apps erpnext \
     && bench build --apps helpdesk \

@@ -1,0 +1,586 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: telephony\n"
+"Report-Msgid-Bugs-To: https://github.com/frappe/telephony/issues\n"
+"POT-Creation-Date: 2026-11-09 00:00+0000\n"
+"PO-Revision-Date: 2026-11-09 00:00+0000\n"
+"Language: fa_IR\n"
+"Language-Team: Persian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: telephony/hooks.py
+msgid "Telephony"
+msgstr "سامانه تلفنی"
+
+#: telephony/hooks.py
+msgid "Telephony for Frappe apps"
+msgstr "سامانه تلفنی برای اپ‌های Frappe"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "TP Call Log"
+msgstr "گزارش تماس"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Telephony Medium"
+msgstr "بستر تماس"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Manual"
+msgstr "دستی"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "ID"
+msgstr "شناسه"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "From"
+msgstr "از"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "To"
+msgstr "به"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Status"
+msgstr "وضعیت"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Initiated"
+msgstr "آغازشده"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Ringing"
+msgstr "در حال زنگ‌خوردن"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "In Progress"
+msgstr "در حال انجام"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Completed"
+msgstr "تکمیل‌شده"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Failed"
+msgstr "ناموفق"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Busy"
+msgstr "مشغول"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "No Answer"
+msgstr "بدون پاسخ"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Queued"
+msgstr "در صف"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Canceled"
+msgstr "لغوشده"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Duration"
+msgstr "مدت‌زمان"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Call duration in seconds"
+msgstr "مدت تماس برحسب ثانیه"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Medium"
+msgstr "بستر"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Start Time"
+msgstr "زمان شروع"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Type"
+msgstr "نوع"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Incoming"
+msgstr "ورودی"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Outgoing"
+msgstr "خروجی"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Call Received By"
+msgstr "تماس دریافت‌شده توسط"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Caller"
+msgstr "تماس‌گیرنده"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Recording URL"
+msgstr "نشانی ضبط تماس"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "End Time"
+msgstr "زمان پایان"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Links"
+msgstr "پیوندها"
+
+#: telephony/ftelephony/doctype/tp_call_log/tp_call_log.json
+msgid "Dynamic Link"
+msgstr "پیوند پویا"
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.json
+msgid "TP Exotel Settings"
+msgstr "تنظیمات Exotel"
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.json
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid "Enabled"
+msgstr "فعال"
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.json
+msgid "Record Outgoing Calls"
+msgstr "ضبط تماس‌های خروجی"
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.json
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid "Account SID"
+msgstr "شناسه حساب (SID)"
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.json
+msgid "Subdomain"
+msgstr "زیردامنه"
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.json
+msgid "Webhook Verify Token"
+msgstr "توکن تأیید وب‌هوک"
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.json
+msgid "API Key"
+msgstr "کلید API"
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.json
+msgid "API Token"
+msgstr "توکن API"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "TP OTP"
+msgstr "رمز یک‌بارمصرف"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Channel"
+msgstr "کانال"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "SMS"
+msgstr "پیامک"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Email"
+msgstr "ایمیل"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Recipient"
+msgstr "گیرنده"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Purpose"
+msgstr "هدف"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Verification"
+msgstr "تأیید هویت"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Is Verified"
+msgstr "تأیید شده است"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "OTP Hash"
+msgstr "هش رمز یک‌بارمصرف"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Attempts"
+msgstr "تعداد تلاش‌ها"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Expires At"
+msgstr "زمان انقضا"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Verified At"
+msgstr "زمان تأیید"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "Notification Log"
+msgstr "گزارش اعلان"
+
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+msgid "TP SMS Log"
+msgstr "گزارش پیامک"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "TP OTP Settings"
+msgstr "تنظیمات رمز یک‌بارمصرف"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Enable SMS (Twilio)"
+msgstr "فعال‌سازی پیامک (Twilio)"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Enable Email OTP"
+msgstr "فعال‌سازی رمز یک‌بارمصرف ایمیلی"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Sends OTPs over email using Frappe's configured outgoing Email Account, independent of Twilio."
+msgstr "رمزهای یک‌بارمصرف را با استفاده از حساب ایمیل خروجی پیکربندی‌شده در Frappe و مستقل از Twilio ارسال می‌کند."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "SMS From Number"
+msgstr "شماره فرستنده پیامک"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Twilio phone number (with country code) that SMS messages are sent from. Must be an SMS-capable number on the connected Twilio account."
+msgstr "شماره تلفن Twilio همراه با کد کشور که پیامک‌ها از آن ارسال می‌شوند. این شماره باید در حساب متصل‌شدهٔ Twilio قابلیت ارسال پیامک داشته باشد."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Send SMS Rate Limit (per hour)"
+msgstr "محدودیت ارسال پیامک در هر ساعت"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Maximum plain SMS one client may send per hour via send_sms. Set to 0 for no limit — do that only when a trusted backend does the sending. OTP endpoints are limited separately, per recipient."
+msgstr "حداکثر تعداد پیامک معمولی که هر کاربر می‌تواند در هر ساعت از طریق send_sms بفرستد. برای برداشتن محدودیت، مقدار را 0 بگذارید؛ این کار را فقط وقتی انجام دهید که ارسال از یک Backend قابل‌اعتماد انجام می‌شود. محدودیت مسیرهای رمز یک‌بارمصرف برای هر گیرنده جداگانه اعمال می‌شود."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "OTP"
+msgstr "رمز یک‌بارمصرف"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "OTP Length"
+msgstr "طول رمز یک‌بارمصرف"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "OTP Expiry (In Seconds)"
+msgstr "زمان انقضای رمز یک‌بارمصرف (ثانیه)"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Time in seconds before a generated OTP expires."
+msgstr "مدت‌زمان به ثانیه تا انقضای رمز یک‌بارمصرف تولیدشده."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "OTP Max Attempts"
+msgstr "حداکثر تلاش برای رمز یک‌بارمصرف"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Number of incorrect attempts allowed before an OTP is invalidated."
+msgstr "تعداد دفعات مجاز برای واردکردن رمز نادرست پیش از بی‌اعتبارشدن رمز یک‌بارمصرف."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "OTP Message Template"
+msgstr "قالب پیام رمز یک‌بارمصرف"
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Use {otp} and {expiry_minutes} as placeholders. Used for both SMS and Email."
+msgstr "از {otp} و {expiry_minutes} به‌عنوان جای‌نگهدار استفاده کنید. این قالب برای پیامک و ایمیل به کار می‌رود."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.json
+msgid "Email OTP Subject"
+msgstr "موضوع ایمیل رمز یک‌بارمصرف"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "General"
+msgstr "عمومی"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Sent"
+msgstr "ارسال‌شده"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Delivered"
+msgstr "تحویل‌شده"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Undelivered"
+msgstr "تحویل‌نشده"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Message"
+msgstr "پیام"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Twilio SID"
+msgstr "شناسه Twilio (SID)"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Sent By"
+msgstr "ارسال‌کننده"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Sent At"
+msgstr "زمان ارسال"
+
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "Error"
+msgstr "خطا"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "TP Telephony Agent"
+msgstr "کارشناس تلفن"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+#: telephony/ftelephony/doctype/tp_otp/tp_otp.json
+#: telephony/ftelephony/doctype/tp_sms_log/tp_sms_log.json
+msgid "User"
+msgstr "کاربر"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "User Name"
+msgstr "نام کاربری"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Mobile No."
+msgstr "شماره تلفن همراه"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Default Medium"
+msgstr "بستر پیش‌فرض"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Twilio"
+msgstr "Twilio"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Twilio Number"
+msgstr "شماره Twilio"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Device"
+msgstr "دستگاه"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Computer"
+msgstr "رایانه"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Phone"
+msgstr "تلفن"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Exotel"
+msgstr "Exotel"
+
+#: telephony/ftelephony/doctype/tp_telephony_agent/tp_telephony_agent.json
+msgid "Exotel Number"
+msgstr "شماره Exotel"
+
+#: telephony/ftelephony/doctype/tp_telephony_phone/tp_telephony_phone.json
+msgid "TP Telephony Phone"
+msgstr "شماره تلفن کارشناس"
+
+#: telephony/ftelephony/doctype/tp_telephony_phone/tp_telephony_phone.json
+msgid "Number"
+msgstr "شماره"
+
+#: telephony/ftelephony/doctype/tp_telephony_phone/tp_telephony_phone.json
+msgid "Is Primary"
+msgstr "شماره اصلی است"
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid "TP Twilio Settings"
+msgstr "تنظیمات Twilio"
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid "Record Calls"
+msgstr "ضبط تماس‌ها"
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid "Auth Token"
+msgstr "توکن احراز هویت"
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid "TwiML SID"
+msgstr "شناسه TwiML (SID)"
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid "API Secret"
+msgstr "رمز API"
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid " App Name"
+msgstr "نام برنامه"
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.json
+msgid "Twilio Apps"
+msgstr "برنامه‌های Twilio"
+
+#: telephony/email_otp.py
+msgid "Please provide a valid email address."
+msgstr "لطفاً یک نشانی ایمیل معتبر وارد کنید."
+
+#: telephony/email_otp.py
+msgid "Please provide a single email address."
+msgstr "لطفاً فقط یک نشانی ایمیل وارد کنید."
+
+#: telephony/email_otp.py
+msgid "Please enable Email OTP in TP OTP Settings."
+msgstr "لطفاً ارسال رمز یک‌بارمصرف ایمیلی را در تنظیمات آن فعال کنید."
+
+#: telephony/exotel/handler.py
+msgid "Please setup Exotel intergration"
+msgstr "لطفاً یکپارچه‌سازی Exotel را پیکربندی کنید."
+
+#: telephony/exotel/handler.py
+msgid "Integration Not Enabled"
+msgstr "یکپارچه‌سازی فعال نیست"
+
+#: telephony/exotel/handler.py
+msgid "You do not have Exotel Number set in your Telephony Agent"
+msgstr "شماره Exotel برای کارشناس تلفن شما تنظیم نشده است."
+
+#: telephony/exotel/handler.py
+msgid "Exotel Number Missing"
+msgstr "شماره Exotel تنظیم نشده است"
+
+#: telephony/exotel/handler.py
+msgid "Exotel Number {0} is not valid"
+msgstr "شماره Exotel یعنی {0} معتبر نیست."
+
+#: telephony/exotel/handler.py
+msgid "Invalid Exotel Number"
+msgstr "شماره Exotel نامعتبر است"
+
+#: telephony/exotel/handler.py
+msgid "You do not have mobile number set in your Telephony Agent"
+msgstr "شماره تلفن همراه برای کارشناس تلفن شما تنظیم نشده است."
+
+#: telephony/exotel/handler.py
+msgid "Exotel Exception"
+msgstr "خطای Exotel"
+
+#: telephony/exotel/handler.py
+msgid "Mobile Number Missing"
+msgstr "شماره تلفن همراه تنظیم نشده است"
+
+#: telephony/exotel/handler.py
+msgid "Unauthorized request"
+msgstr "درخواست غیرمجاز"
+
+#: telephony/otp.py
+msgid "Purpose cannot be longer than {0} characters."
+msgstr "هدف نباید بیش از {0} نویسه باشد."
+
+#: telephony/otp.py
+msgid "Too many incorrect attempts. Please try again later."
+msgstr "تعداد تلاش‌های ناموفق بیش از حد مجاز است. لطفاً بعداً دوباره تلاش کنید."
+
+#: telephony/otp.py
+msgid "You hit the rate limit because of too many requests. Please try after sometime."
+msgstr "به‌دلیل تعداد زیاد درخواست‌ها به محدودیت نرخ رسیده‌اید. لطفاً کمی بعد دوباره تلاش کنید."
+
+#: telephony/otp.py
+msgid "{0} is not a supported OTP channel. Use one of: {1}."
+msgstr "کانال {0} برای رمز یک‌بارمصرف پشتیبانی نمی‌شود. یکی از این موارد را انتخاب کنید: {1}."
+
+#: telephony/twilio/api.py
+msgid "Twilio is not configured"
+msgstr "Twilio پیکربندی نشده است"
+
+#: telephony/twilio/api.py
+msgid "Invalid Twilio request signature"
+msgstr "امضای درخواست Twilio نامعتبر است"
+
+#: telephony/twilio/api.py
+msgid "Failed to capture Twilio recording"
+msgstr "ضبط تماس Twilio دریافت نشد"
+
+#: telephony/twilio/api.py
+msgid "Failed to update Twilio call status"
+msgstr "به‌روزرسانی وضعیت تماس Twilio انجام نشد"
+
+#: telephony/twilio/sms.py
+msgid "Please enable SMS in TP OTP Settings to send SMS."
+msgstr "برای ارسال پیامک، گزینهٔ پیامک را در تنظیمات رمز یک‌بارمصرف فعال کنید."
+
+#: telephony/twilio/sms.py
+msgid "Please provide a valid phone number."
+msgstr "لطفاً یک شماره تلفن معتبر وارد کنید."
+
+#: telephony/twilio/sms.py
+msgid "Cannot send an empty SMS."
+msgstr "ارسال پیامک خالی امکان‌پذیر نیست."
+
+#: telephony/twilio/sms.py
+msgid "Please enable and configure TP Twilio Settings to send SMS."
+msgstr "برای ارسال پیامک، تنظیمات Twilio را فعال و پیکربندی کنید."
+
+#: telephony/twilio/sms.py
+msgid "Could not send the SMS. Please try again later."
+msgstr "ارسال پیامک انجام نشد. لطفاً بعداً دوباره تلاش کنید."
+
+#: telephony/twilio/twilio_handler.py
+msgid "Please enable twilio to proceed."
+msgstr "برای ادامه، Twilio را فعال کنید."
+
+#: telephony/twilio/twilio_handler.py
+msgid "Agent is unavailable to take the call, please call after some time."
+msgstr "کارشناس برای پاسخ‌گویی به تماس در دسترس نیست؛ لطفاً کمی بعد تماس بگیرید."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "Please enable and configure TP Twilio Settings first."
+msgstr "ابتدا تنظیمات Twilio را فعال و پیکربندی کنید."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "Could not reach Twilio to confirm {0}. Check the Twilio credentials and connectivity, or disable SMS to save."
+msgstr "برای تأیید {0} ارتباط با Twilio برقرار نشد. اطلاعات دسترسی و اتصال را بررسی کنید یا برای ذخیره، پیامک را غیرفعال کنید."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "OTP Length must be at least {0}."
+msgstr "طول رمز یک‌بارمصرف باید دست‌کم {0} رقم باشد."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "OTP Expiry (in seconds) must be at least 1."
+msgstr "زمان انقضای رمز یک‌بارمصرف باید دست‌کم 1 ثانیه باشد."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "OTP Max Attempts must be at least 1."
+msgstr "حداکثر تلاش برای رمز یک‌بارمصرف باید دست‌کم 1 باشد."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "OTP Message Template must contain the {otp} placeholder."
+msgstr "قالب پیام رمز یک‌بارمصرف باید جای‌نگهدار {otp} را داشته باشد."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "OTP Message Template has an unknown placeholder: {0}."
+msgstr "قالب پیام رمز یک‌بارمصرف جای‌نگهدار ناشناخته دارد: {0}."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "OTP Message Template is malformed: {0}."
+msgstr "قالب پیام رمز یک‌بارمصرف نامعتبر است: {0}."
+
+#: telephony/ftelephony/doctype/tp_otp_settings/tp_otp_settings.py
+msgid "{0} is not a phone number on the connected Twilio account."
+msgstr "شماره {0} در حساب Twilio متصل‌شده ثبت نشده است."
+
+#: telephony/ftelephony/doctype/tp_exotel_settings/tp_exotel_settings.py
+msgid "Invalid credentials"
+msgstr "اطلاعات ورود نامعتبر است"
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.py
+msgid "Invalid Account SID or Auth Token."
+msgstr "شناسه حساب یا توکن احراز هویت نامعتبر است."
+
+#: telephony/ftelephony/doctype/tp_twilio_settings/tp_twilio_settings.py
+msgid "Twilio API credential creation error."
+msgstr "ایجاد اطلاعات دسترسی API در Twilio انجام نشد."

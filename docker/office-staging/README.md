@@ -41,10 +41,13 @@ Vazirmatn; English pages reported `en`/LTR. The full Helpdesk suite separately
 has 8 known failures unrelated to localization (161 passed, 8 failed, 7
 skipped); see the test run artifacts before treating the suite as green.
 
-The deployed Telephony revision does not contain the local Persian catalog
-commit `329e76408a1ae6d04c5f70771fe0778936ab2d2e`; GitHub rejected its push to
-`frappe/telephony` with HTTP 403. The image build will compile and validate the
-catalog once an authorized source ref is available.
+The currently deployed Telephony revision does not contain the local Persian
+catalog commit `329e76408a1ae6d04c5f70771fe0778936ab2d2e`; GitHub rejected its
+push to `frappe/telephony` with HTTP 403. The next candidate uses the versioned
+pipeline input `docker/office-staging/telephony-fa.po`, pinned by its SHA-256 in
+both Containerfiles, then copies it into the pinned Telephony source, compiles
+it, and checks it with the image validator. This keeps the catalog reproducible
+without changing the Telephony app pin or its API/database behavior.
 
 The previous Staging image was
 `helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos`
