@@ -44,7 +44,17 @@ print(f"validated {len(frappe_expected)} Frappe Persian translations from {local
 insights_catalog = gettext.translation(
     "insights", localedir=str(locale_root), languages=["fa"], fallback=False
 )
-insights_expected = {"Continue": "ادامه"}
+insights_expected = {
+    "Continue": "ادامه",
+    "No dashboards": "داشبوردی وجود ندارد",
+    "No dashboards found": "داشبوردی پیدا نشد",
+    "Dashboards you create or are shared with you show up here.": (
+        "داشبوردهایی که ایجاد می‌کنید یا با شما به‌اشتراک گذاشته می‌شوند، اینجا نمایش داده می‌شوند."
+    ),
+    "Try a different filter.": "فیلتر دیگری را امتحان کنید.",
+    "No queries": "پرس‌وجویی وجود ندارد",
+    "No charts": "نموداری وجود ندارد",
+}
 insights_missing = {
     message: (insights_catalog.gettext(message), translation)
     for message, translation in insights_expected.items()
