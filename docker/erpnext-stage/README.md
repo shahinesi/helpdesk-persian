@@ -25,7 +25,7 @@ Build from the repository root:
 ```sh
 docker build --progress=plain \
   --file docker/erpnext-stage/Dockerfile \
-  --tag erpnext-jalali:stage-03c7416-rtlfont-rtlfont \
+  --tag erpnext-jalali:stage-03c7416-rtlfont \
   docker/erpnext-stage
 ```
 
