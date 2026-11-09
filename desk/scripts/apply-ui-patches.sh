@@ -25,9 +25,9 @@ fi
 
 if git -C "$framework_ui" rev-parse --verify HEAD >/dev/null 2>&1; then
 	expected_ref="$(tr -d '[:space:]' < "$patch_dir/frappe-ui-source.ref")"
-	actual_ref="$(git -C "$framework_ui" rev-parse HEAD)"
-	if [[ "$actual_ref" != "$expected_ref" ]]; then
-		echo "Unsupported frappe/ui source: $actual_ref (expected $expected_ref)." >&2
+	if ! git -C "$framework_ui" merge-base --is-ancestor "$expected_ref" HEAD; then
+		actual_ref="$(git -C "$framework_ui" rev-parse HEAD)"
+		echo "Unsupported frappe/ui source: $actual_ref is not a descendant of the pinned base $expected_ref." >&2
 		exit 1
 	fi
 fi
