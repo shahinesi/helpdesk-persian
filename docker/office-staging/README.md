@@ -20,9 +20,9 @@ only after compatibility checks.
 ## Current Staging deployment (2026-11-09)
 
 The current image is
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-15ccb407-039cf39f-a5340199-ui0f8d2a1-telephonyfa`
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-a5340199-ui0f8d2a1-telephonyfa-helptitle`
 with immutable image ID/digest
-`sha256:0ad2e1986e2965d7b995ad92b6ed6317d0e68e71a365b26b5aef980fd57b6434`.
+`sha256:9b0795d2a584d16572a5eb71c0e78661651b34231492ad5ba97475774e8cf198`.
 All six application services use this image. The database, Redis services, and
 existing site volume were not recreated, and no migration was run. A local
 deployment attempt briefly used the wrong Compose base, leaving app containers
@@ -33,19 +33,24 @@ are connected to `office-staging_net`, and the internal login endpoint returns
 HTTP 200. Its pinned
 app revisions are Frappe `a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020`, ERPNext
 `ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
-`15ccb40711acba05c195e75c9c4b467793828393`, Telephony
+`c2bbdcf5247d1b6318d02dd78fd093c87bc138f7`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
 `a5340199ec42b04a3e8574e8ad26a3a08f0cddf1`, and Insights' Frappe UI
 `0f8d2a1575ff384182060206c1ab0cb098cb4052`.
 
-Build and image validation passed. Read-only Playwright checks on the isolated
-`helpdesk-e2e.localhost` site passed for Helpdesk's 8 localization checks and
-for the Desk home, ERPNext Accounting workspace (`/app/accounting`), and
-Insights dashboards (`/insights/dashboards`) in both Persian and English, with
-the browser timezone set to `Asia/Tehran`. Persian pages reported `fa`/RTL and
-Vazirmatn; English pages reported `en`/LTR. The full Helpdesk suite separately
-has 8 known failures unrelated to localization (161 passed, 8 failed, 7
-skipped); see the test run artifacts before treating the suite as green.
+Build and image validation passed. Read-only Playwright checks against this
+deployed image loaded `/app`, `/app/accounting`, `/helpdesk/tickets`, and
+`/insights/dashboards` in both locales with browser timezone `Asia/Tehran`.
+All routes returned HTTP 200. Persian reported `fa`/RTL and Vazirmatn; English
+reported `en`/LTR (Insights uses `en-US`). The English `/app` screen displayed
+Helpdesk in English, and none of the four English routes contained Persian
+script text. No Persian or Arabic-Indic digits appeared on the sample routes.
+The translated app-list method returned `هلپ‌دسک` for `fa` and `Helpdesk` for
+`en`.
+These checks cover route loading, locale, direction, font, and app title; they
+do not validate every calendar, chart, date filter, or data-bearing screen.
+The earlier full Helpdesk suite had 161 passes, 8 failures, and 7 skips; those
+failures remain untriaged against this exact image.
 
 The deployed Telephony revision does not contain local Persian catalog commit
 `329e76408a1ae6d04c5f70771fe0778936ab2d2e`; GitHub rejected its push to
@@ -55,11 +60,8 @@ both Containerfiles, copied into the pinned Telephony source, compiled, and
 checked by the image validator. A runtime smoke check confirmed its compiled
 Persian catalog loads. The app pin and API/database behavior are unchanged.
 
-The public hostname returned HTTP 404 during this rollout, so authenticated
-browser validation against the deployed image was not completed. The QA login
-page is available through the internal Staging frontend; Persian/English
-authenticated Browser checks remain pending. The earlier Playwright checks
-listed below apply to the previous image and the isolated QA site only.
+The public hostname returned HTTP 404 during this rollout. Authenticated
+Playwright checks reached Staging through its internal SSH tunnel.
 
 The previous Staging image was
 `helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos`
@@ -121,7 +123,7 @@ It also handles source changes without Python or app-root JavaScript dependency
 changes; other dependency changes use the full
 `Containerfile`.
 
-The deployed `runtime-fa-a3165cb0-ada73d92-15ccb407-039cf39f-a5340199-ui0f8d2a1-pdfpos`
+The deployed `runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-a5340199-ui0f8d2a1-telephonyfa-helptitle`
 candidate build used the prior
 `runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos` image as its
 dependency seed and built directly in that pinned runtime, without copying its 6 GB
@@ -171,7 +173,7 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-15ccb407-039cf39f-a5340199-ui0f8d2a1-pdfpos \
+  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-a5340199-ui0f8d2a1-telephonyfa-helptitle \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -180,11 +182,12 @@ so private source is verified but is not included in an image layer. Remove only
 the temporary `docker/office-staging/frappe-source-a3165cb074.tar.gz` after the
 build completes; preserve the pre-existing `frappe-source.tar.gz` archive.
 
-The candidate still pins Telephony to `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`.
-The local Persian catalog commit `329e76408a1ae6d04c5f70771fe0778936ab2d2e`
-could not be pushed to `frappe/telephony` (GitHub returned 403), so it is not
-present in this image. Once a permitted source ref is available, both Containerfiles
-compile and validate the app's Persian catalog when `telephony/locale/fa.po` exists.
+The candidate pins Telephony source to
+`039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`. Since the local Persian catalog
+commit `329e76408a1ae6d04c5f70771fe0778936ab2d2e` could not be pushed to
+`frappe/telephony` (GitHub returned 403), the catalog is carried as the
+SHA-256-checked source overlay `docker/office-staging/telephony-fa.po`, compiled
+into this image, and validated by the builder.
 
 The update image does not run database migrations. Validate it against the
 separate test site first; only then recreate the intended Staging application
