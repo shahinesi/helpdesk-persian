@@ -55,6 +55,20 @@ if insights_missing:
 
 print(f"validated {len(insights_expected)} Insights Persian translations from {locale_root}")
 
+if "telephony" in apps_to_check:
+    telephony_catalog = gettext.translation(
+        "telephony", localedir=str(locale_root), languages=["fa"], fallback=False
+    )
+    telephony_expected = {"Telephony for Frappe apps": "سامانه تلفنی برای اپ‌های Frappe"}
+    telephony_missing = {
+        message: (telephony_catalog.gettext(message), translation)
+        for message, translation in telephony_expected.items()
+        if telephony_catalog.gettext(message) != translation
+    }
+    if telephony_missing:
+        raise SystemExit(f"Telephony Persian MO catalog is missing expected labels: {telephony_missing}")
+    print(f"validated {len(telephony_expected)} Telephony Persian translations from {locale_root}")
+
 # Rendered numeric strings stay canonical ASCII; Vazirmatn supplies the glyphs.
 # Catch static Persian/Arabic-Indic digits in any app's compiled fa catalog.
 noncanonical_digits = re.compile(r"[\u0660-\u0669\u06F0-\u06F9]")

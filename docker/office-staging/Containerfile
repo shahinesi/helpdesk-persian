@@ -105,6 +105,7 @@ RUN cd apps/helpdesk/desk \
     && bench compile-po-to-mo --app helpdesk --locale fa --force \
     && bench compile-po-to-mo --app insights --locale fa --force \
     && python /opt/frappe/validate-translations.py sites/assets/locale frappe erpnext helpdesk insights \
+    && if test -f apps/telephony/locale/fa.po; then bench compile-po-to-mo --app telephony --locale fa --force && python /opt/frappe/validate-translations.py sites/assets/locale frappe erpnext helpdesk insights telephony; fi \
     && bench build --apps frappe \
     && bench build --apps erpnext \
     && bench build --apps helpdesk \
