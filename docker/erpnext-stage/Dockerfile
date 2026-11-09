@@ -52,4 +52,8 @@ site_packages = pathlib.Path("env/lib/python3.14/site-packages")
 site_packages.joinpath("jalali_shamsi_datepicker.pth").write_text(
     "/home/frappe/frappe-bench/apps/jalali_shamsi_datepicker\n", encoding="utf-8"
 )
+asset_link = pathlib.Path("/home/frappe/frappe-bench/assets/jalali_shamsi_datepicker")
+if asset_link.exists() or asset_link.is_symlink():
+    raise SystemExit("Jalali asset link unexpectedly exists in the base image")
+asset_link.symlink_to(app / "jalali_shamsi_datepicker/public", target_is_directory=True)
 PY

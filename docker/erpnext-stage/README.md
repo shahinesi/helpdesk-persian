@@ -15,6 +15,7 @@ repository is readable but does not grant this account push access.
   lockfile, checked in with the app source, and verified by the unit suite. The
   ERPNext 16 base image otherwise tries to rerun the app build through Yarn,
   where the locked JavaScript dependencies are unavailable offline.
+- The image links app `public` files into `bench/assets`, served by Frappe at `/assets`.
 - No database migration is needed; this change only updates frontend code and a
   font asset. Keep the existing `erpnext-stage_sites` volume attached read-only
   for candidate checks, then reuse it when replacing application containers.
@@ -24,7 +25,7 @@ Build from the repository root:
 ```sh
 docker build --progress=plain \
   --file docker/erpnext-stage/Dockerfile \
-  --tag erpnext-jalali:stage-09d8fad \
+  --tag erpnext-jalali:stage-09d8fad-assets2 \
   docker/erpnext-stage
 ```
 
