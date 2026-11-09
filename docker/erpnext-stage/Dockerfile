@@ -4,8 +4,8 @@ FROM frappe/erpnext@sha256:eee240a179ff494cb82ad067d853c8db3f87171d86324f4b32689
 USER frappe
 WORKDIR /home/frappe/frappe-bench
 
-ARG JALALI_SOURCE_SHA256=154bdca9106ac48e496d0f2ea492f338c52d39290c68aff915400ca86ab7dbc9
-COPY --chown=frappe:frappe jalali_shamsi_datepicker-09d8fad.tar.gz /tmp/jalali_shamsi_datepicker.tar.gz
+ARG JALALI_SOURCE_SHA256=6cd6285cd95776cfff203d3877ec6f3633797649e97c5b97878be5339fdb017d
+COPY --chown=frappe:frappe jalali_shamsi_datepicker-03c7416.tar.gz /tmp/jalali_shamsi_datepicker.tar.gz
 
 RUN python3 - "$JALALI_SOURCE_SHA256" <<'PY'
 import hashlib

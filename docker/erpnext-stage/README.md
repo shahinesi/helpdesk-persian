@@ -2,11 +2,11 @@
 
 This image rebuilds the standalone Jalali Shamsi Datepicker app for the separate
 ERPNext 16 staging site. The app source archive is exported from repository
-commit `09d8fad` and stored with this build recipe because the upstream app
+commit `03c7416` and stored with this build recipe because the upstream app
 repository is readable but does not grant this account push access.
 
 - Base image: `frappe/erpnext@sha256:eee240a179ff494cb82ad067d853c8db3f87171d86324f4b326892654e342144`
-- App source: `Atshan/jalali_shamsi_datepicker` commit `09d8fad`
+- App source: `Atshan/jalali_shamsi_datepicker` commit `03c7416`
 - The Containerfile checks the source archive SHA-256 before extraction.
 - The app has no Python dependencies beyond Frappe, already in the base image;
   the build registers its source path in the virtualenv without downloading a
@@ -25,7 +25,7 @@ Build from the repository root:
 ```sh
 docker build --progress=plain \
   --file docker/erpnext-stage/Dockerfile \
-  --tag erpnext-jalali:stage-09d8fad-assets2 \
+  --tag erpnext-jalali:stage-03c7416-rtlfont-rtlfont \
   docker/erpnext-stage
 ```
 
