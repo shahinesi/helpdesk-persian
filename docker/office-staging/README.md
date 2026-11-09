@@ -17,7 +17,36 @@ refs participate in the cached initialization layer, while final pins
 invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
-The currently deployed Staging image is
+## Current Staging deployment (2026-11-09)
+
+The current image is
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-15ccb407-039cf39f-a5340199-ui0f8d2a1-pdfpos`
+with immutable image ID/digest
+`sha256:ef46df6d2922190fb4bc7015ce430546e49824c1e96911c83ee186b2e243e407`.
+The six application services use this image. The database, Redis services, and
+existing site volume were not recreated, and no migration was run. Its pinned
+app revisions are Frappe `a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020`, ERPNext
+`ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
+`15ccb40711acba05c195e75c9c4b467793828393`, Telephony
+`039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
+`a5340199ec42b04a3e8574e8ad26a3a08f0cddf1`, and Insights' Frappe UI
+`0f8d2a1575ff384182060206c1ab0cb098cb4052`.
+
+Build and image validation passed. Read-only Playwright checks on the isolated
+`helpdesk-e2e.localhost` site passed for Helpdesk's 8 localization checks and
+for the Desk home, ERPNext Accounting workspace (`/app/accounting`), and
+Insights dashboards (`/insights/dashboards`) in both Persian and English, with
+the browser timezone set to `Asia/Tehran`. Persian pages reported `fa`/RTL and
+Vazirmatn; English pages reported `en`/LTR. The full Helpdesk suite separately
+has 8 known failures unrelated to localization (161 passed, 8 failed, 7
+skipped); see the test run artifacts before treating the suite as green.
+
+The deployed Telephony revision does not contain the local Persian catalog
+commit `329e76408a1ae6d04c5f70771fe0778936ab2d2e`; GitHub rejected its push to
+`frappe/telephony` with HTTP 403. The image build will compile and validate the
+catalog once an authorized source ref is available.
+
+The previous Staging image was
 `helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos`
 (image ID/digest `sha256:4baafe9f03bf1fdbdb3c3777e1ce057243f5279eb838484149cb8caaf35320dc`, deployed 2026-11-09).
 Its `PINNED_VERSIONS.json` records Frappe
@@ -77,9 +106,10 @@ It also handles source changes without Python or app-root JavaScript dependency
 changes; other dependency changes use the full
 `Containerfile`.
 
-The next candidate uses the currently deployed
-`runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos` image as its dependency
-seed and builds directly in that pinned runtime, without copying its 6 GB
+The deployed `runtime-fa-a3165cb0-ada73d92-15ccb407-039cf39f-a5340199-ui0f8d2a1-pdfpos`
+candidate build used the prior
+`runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos` image as its
+dependency seed and built directly in that pinned runtime, without copying its 6 GB
 filesystem into a separate builder stage. It verifies
 the seed's app SHAs, proves the Frappe, ERPNext, Helpdesk and Insights Python
 dependencies and app-root JavaScript dependencies did not change, then replaces
