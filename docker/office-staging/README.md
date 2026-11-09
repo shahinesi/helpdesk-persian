@@ -173,7 +173,7 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-a5340199-ui0f8d2a1-telephonyfa-helptitle \
+  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-ins645774b-ui0f8d2a1-telephonyfa-helptitle \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -213,7 +213,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-ins645774b-ui0f8d2a1-telephonyfa-helptitle`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate
 `helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-41ac010-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
@@ -248,3 +248,21 @@ Before accepting the rollout, confirm the login page emits hashed `/assets/...`
 URLs and that every referenced bundle returns HTTP 200. Use the same cache
 invalidation after an image rollback. Do not clear Redis globally or remove any
 volume as an asset-repair step.
+
+### Deployment record — 2026-11-09
+
+The candidate above is deployed to `office-staging`. All six application
+containers (backend, frontend, both queues, scheduler, websocket) run image
+`sha256:5b42cc0363c8bee60ff9fec7539d70e50cfefc39091233a48a78247af296ae56`.
+The database container remained `a2b0a06d3e28` with the existing
+`office-staging_db-data` volume. Only the `assets_json` cache entry and the
+`fa` field of `merged_translations` were invalidated; the backend was restarted.
+
+Read-only Playwright validation used an existing Persian QA account, Chrome,
+and `Asia/Tehran`. `/insights/dashboards` rendered its Persian title and sidebar
+labels with `lang=fa`, `dir=rtl`, and Vazirmatn loaded; all requested assets
+returned HTTP 200. Three Insights data requests returned PermissionError for
+the QA account, so dashboard data/content validation remains incomplete.
+`/app/accounting` returned 200 with a Persian title/sidebar, RTL, and Vazirmatn.
+`/app` and `/helpdesk/tickets` returned 200 but had no visible body text at the
+capture point. English-locale browser validation was not run.
