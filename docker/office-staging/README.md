@@ -17,40 +17,39 @@ refs participate in the cached initialization layer, while final pins
 invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
-## Current Staging deployment (2026-11-09)
+## Current Staging deployment (2026-11-10)
 
 The current image is
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-a5340199-ui0f8d2a1-telephonyfa-helptitle`
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-ins4441e48-ui0f8d2a1-telephonyfa-helptitle`
 with immutable image ID/digest
-`sha256:9b0795d2a584d16572a5eb71c0e78661651b34231492ad5ba97475774e8cf198`.
-All six application services use this image. The database, Redis services, and
-existing site volume were not recreated, and no migration was run. A local
-deployment attempt briefly used the wrong Compose base, leaving app containers
-on a separate network; it was corrected with the real stack files under
-`/srv/office-staging/source/frappe_docker` and the existing
-`/srv/office-staging/compose.office.yaml`. The corrected backend and database
-are connected to `office-staging_net`, and the internal login endpoint returns
-HTTP 200. Its pinned
-app revisions are Frappe `a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020`, ERPNext
+`sha256:3dfd4a7b5b31bbc0dca9784ec6bc5f52058e9fa7f53db65a039f6c55a1b61627`.
+All six application services use this image. The database container remains
+`a2b0a06d3e28` with the existing `office-staging_db-data` volume; no migration
+was run. The QA user has Helpdesk Agent and Insights User access for read-only
+coverage; its locale is restored to `fa` after English regression checks. No
+ticket, report, or business document was created or changed.
+
+The image pins Frappe `a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020`, ERPNext
 `ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
 `c2bbdcf5247d1b6318d02dd78fd093c87bc138f7`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
-`a5340199ec42b04a3e8574e8ad26a3a08f0cddf1`, and Insights' Frappe UI
-`0f8d2a1575ff384182060206c1ab0cb098cb4052`.
+`4441e48902262a35c03b5a197ec35ffdc8cfeafa`, and Insights' Frappe UI
+`0f8d2a1575ff384182060206c1ab0cb098cb4052`. The image build, six app asset
+builds, 66-entry asset manifest validation, Persian catalog validation, and
+ASCII display-digit validation passed. Insights' full frontend suite passed
+61 files / 793 tests; the localization change was included in that run.
 
-Build and image validation passed. Read-only Playwright checks against this
-deployed image loaded `/app`, `/app/accounting`, `/helpdesk/tickets`, and
-`/insights/dashboards` in both locales with browser timezone `Asia/Tehran`.
-All routes returned HTTP 200. Persian reported `fa`/RTL and Vazirmatn; English
-reported `en`/LTR (Insights uses `en-US`). The English `/app` screen displayed
-Helpdesk in English, and none of the four English routes contained Persian
-script text. No Persian or Arabic-Indic digits appeared on the sample routes.
-The translated app-list method returned `هلپ‌دسک` for `fa` and `Helpdesk` for
-`en`.
-These checks cover route loading, locale, direction, font, and app title; they
-do not validate every calendar, chart, date filter, or data-bearing screen.
-The earlier full Helpdesk suite had 161 passes, 8 failures, and 7 skips; those
-failures remain untriaged against this exact image.
+Read-only Playwright checks on the deployed image loaded Helpdesk dashboard
+and ticket list, ERPNext Desk Accounting, and Insights Dashboards in both
+locales. Persian routes reported `fa`/RTL, loaded Vazirmatn with `ss01`, and
+kept display digits ASCII. The Insights empty-dashboard state is now Persian.
+English reported `en`/LTR with Inter and retained English strings. On the
+Helpdesk ticket date filter, the calendar showed the Jalali month, Saturday-first
+weekdays, Vazirmatn/`ss01`, and ASCII day labels. With browser timezone
+`Asia/Tehran`, the Tehran midnight boundary rendered `اسفند 1404` at 23:59:59
+and `فروردین 1405` at 00:00:00. The Desk Accounting home also returned HTTP
+403 for two permission-gated number-card/report requests; no report data was
+used for localization validation.
 
 The deployed Telephony revision does not contain local Persian catalog commit
 `329e76408a1ae6d04c5f70771fe0778936ab2d2e`; GitHub rejected its push to
@@ -249,7 +248,7 @@ URLs and that every referenced bundle returns HTTP 200. Use the same cache
 invalidation after an image rollback. Do not clear Redis globally or remove any
 volume as an asset-repair step.
 
-### Deployment record — 2026-11-09
+### Previous deployment record — 2026-11-09
 
 The candidate above is deployed to `office-staging`. All six application
 containers (backend, frontend, both queues, scheduler, websocket) run image
@@ -258,11 +257,7 @@ The database container remained `a2b0a06d3e28` with the existing
 `office-staging_db-data` volume. Only the `assets_json` cache entry and the
 `fa` field of `merged_translations` were invalidated; the backend was restarted.
 
-Read-only Playwright validation used an existing Persian QA account, Chrome,
-and `Asia/Tehran`. `/insights/dashboards` rendered its Persian title and sidebar
-labels with `lang=fa`, `dir=rtl`, and Vazirmatn loaded; all requested assets
-returned HTTP 200. Three Insights data requests returned PermissionError for
-the QA account, so dashboard data/content validation remains incomplete.
-`/app/accounting` returned 200 with a Persian title/sidebar, RTL, and Vazirmatn.
-`/app` and `/helpdesk/tickets` returned 200 but had no visible body text at the
-capture point. English-locale browser validation was not run.
+At that point, the QA account did not have Insights or agent access, so its
+read-only dashboard data requests returned PermissionError and some pages were
+captured before SPA content mounted. Those limitations were addressed for the
+2026-11-10 candidate using the dedicated QA account described above.
