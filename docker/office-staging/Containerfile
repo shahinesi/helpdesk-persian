@@ -107,7 +107,7 @@ RUN cd apps/helpdesk/desk \
     && bench compile-po-to-mo --app helpdesk --locale fa --force \
     && bench compile-po-to-mo --app insights --locale fa --force \
     && printf '%s  %s\n' "$TELEPHONY_FA_PO_SHA256" /opt/frappe/telephony-fa.po | sha256sum -c - \
-    && install -D -m 0644 /opt/frappe/telephony-fa.po apps/telephony/locale/fa.po \
+    && install -D -m 0644 /opt/frappe/telephony-fa.po apps/telephony/telephony/locale/fa.po \
     && bench compile-po-to-mo --app telephony --locale fa --force \
     && python /opt/frappe/validate-translations.py sites/assets/locale frappe erpnext helpdesk insights telephony \
     && bench build --apps frappe \
