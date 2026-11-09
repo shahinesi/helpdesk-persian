@@ -20,11 +20,17 @@ only after compatibility checks.
 ## Current Staging deployment (2026-11-09)
 
 The current image is
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-15ccb407-039cf39f-a5340199-ui0f8d2a1-pdfpos`
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-15ccb407-039cf39f-a5340199-ui0f8d2a1-telephonyfa`
 with immutable image ID/digest
-`sha256:ef46df6d2922190fb4bc7015ce430546e49824c1e96911c83ee186b2e243e407`.
-The six application services use this image. The database, Redis services, and
-existing site volume were not recreated, and no migration was run. Its pinned
+`sha256:0ad2e1986e2965d7b995ad92b6ed6317d0e68e71a365b26b5aef980fd57b6434`.
+All six application services use this image. The database, Redis services, and
+existing site volume were not recreated, and no migration was run. A local
+deployment attempt briefly used the wrong Compose base, leaving app containers
+on a separate network; it was corrected with the real stack files under
+`/srv/office-staging/source/frappe_docker` and the existing
+`/srv/office-staging/compose.office.yaml`. The corrected backend and database
+are connected to `office-staging_net`, and the internal login endpoint returns
+HTTP 200. Its pinned
 app revisions are Frappe `a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020`, ERPNext
 `ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
 `15ccb40711acba05c195e75c9c4b467793828393`, Telephony
@@ -41,13 +47,19 @@ Vazirmatn; English pages reported `en`/LTR. The full Helpdesk suite separately
 has 8 known failures unrelated to localization (161 passed, 8 failed, 7
 skipped); see the test run artifacts before treating the suite as green.
 
-The currently deployed Telephony revision does not contain the local Persian
-catalog commit `329e76408a1ae6d04c5f70771fe0778936ab2d2e`; GitHub rejected its
-push to `frappe/telephony` with HTTP 403. The next candidate uses the versioned
-pipeline input `docker/office-staging/telephony-fa.po`, pinned by its SHA-256 in
-both Containerfiles, then copies it into the pinned Telephony source, compiles
-it, and checks it with the image validator. This keeps the catalog reproducible
-without changing the Telephony app pin or its API/database behavior.
+The deployed Telephony revision does not contain local Persian catalog commit
+`329e76408a1ae6d04c5f70771fe0778936ab2d2e`; GitHub rejected its push to
+`frappe/telephony` with HTTP 403. Instead, the image includes the versioned
+pipeline input `docker/office-staging/telephony-fa.po`, pinned by SHA-256 in
+both Containerfiles, copied into the pinned Telephony source, compiled, and
+checked by the image validator. A runtime smoke check confirmed its compiled
+Persian catalog loads. The app pin and API/database behavior are unchanged.
+
+The public hostname returned HTTP 404 during this rollout, so authenticated
+browser validation against the deployed image was not completed. The QA login
+page is available through the internal Staging frontend; Persian/English
+authenticated Browser checks remain pending. The earlier Playwright checks
+listed below apply to the previous image and the isolated QA site only.
 
 The previous Staging image was
 `helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos`
