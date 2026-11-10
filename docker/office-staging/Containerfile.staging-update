@@ -254,7 +254,8 @@ RUN test -d apps/helpdesk/desk/node_modules/jalaali-js \
     && test -d apps/insights/frontend/node_modules/jalaali-js \
     && test -d apps/insights/frontend/node_modules/@persian-tools/persian-tools
 
-RUN cd apps/helpdesk/desk \
+RUN sed -i 's/\r$//' /opt/frappe/apply-helpdesk-vite-patch.sh \
+    && cd apps/helpdesk/desk \
     && yarn apply:ui-patches \
     && bash /opt/frappe/apply-helpdesk-vite-patch.sh \
     && cd /home/frappe/frappe-bench \
