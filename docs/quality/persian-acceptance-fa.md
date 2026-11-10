@@ -1,16 +1,15 @@
 # معیار پذیرش فارسی و Build
 
-## وضعیت تأییدشده — ۱۰ نوامبر ۲۰۲۶
+## وضعیت تأییدشده — ۱۰ نوامبر ۲۰۲۶، پس از rollout زبان bootstrap
 
-- **PR #1:** در GitHub Merge شده است. Branch محلی `feat/persian-setup-wizard` روی SHA `9efa5d6d516ef153dcbe322f04bee994d6275ff0` قرار دارد؛ این SHAهای بعد از Merge به‌طور خودکار جزو Merge قبلی محسوب نمی‌شوند.
-- **Runtime:** Image `helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa` با شناسه `sha256:7cd791c2f3f804d77b79b02091ff1f88f4a8cee2115fc5c113180f7ed5f7f967` روی شش سرویس برنامهٔ `office-staging` اجرا شد. DB، Volumeها و سرویس‌های زیرساخت دست‌نخورده ماندند؛ Migration اجرا نشد و imageهای rollback حفظ شدند.
-- **تأیید مرورگر:** حساب QA مجاز با locale واقعی فارسی و سپس انگلیسی وارد شد. فارسی: `lang=fa`، `dir=rtl`، Vazirmatn با `ss01`، متن نمونهٔ Welcome ترجمه‌شده و بدون رقم Unicode فارسی/عربی در DOM. انگلیسی: `lang=en`، `dir=ltr` و متن نمونهٔ اصلی انگلیسی حفظ شد. locale حساب QA به فارسی و timezone آن روی `Asia/Tehran` باقی گذاشته شد. تست فقط خواندنی بود.
-- **تست‌های واحد/کامپوننت:** ۳۳ از ۳۳ موفق؛ شامل timezone تهران و مرز روز، تاریخ‌های جلالی، رقم‌های canonical و رگرسیون نمایش انگلیسی.
-- **اعتبارسنجی Image:** ۶۶ asset mapping معتبر؛ catalogهای ترجمه بررسی و رقم‌های canonical در پنج catalog تأیید شدند.
-- **E2E استاندارد:** اجرا نشد؛ اتصال پایگاه دادهٔ محیط E2E با MariaDB `1045` رد شد. هیچ fixture یا داده‌ای نوشته نشد. سایت عمومی `helpdesk-persian-test` نیز تغییر داده نشد.
-- **Source coverage این نوبت:** روتر منبع شامل ۲۸ رکورد مسیر است؛ `desk/src` شامل ۳۳۰ فایل Vue است. جست‌وجوی ترکیبی Date API، formatter، picker، calendar، `moment()` و `dayjs()`، ۲۰۵ محل در ۳۹ فایل پیدا کرد (این تعداد مسیر مستقل تاریخ نیست). همهٔ ۲۸ Route و تمام روابط فرزند/Shared Component در این نوبت به‌صورت کامل بازبینی نشده‌اند؛ بنابراین پوشش جامع Source و دفتر تعیین‌تکلیف ۶۶ مسیر تاریخ **NOT COMPLETE** است.
-- **ساختار تغییر اخیر:** منطق نمایش محتوای ایمیل نمونهٔ Welcome در لایهٔ نمایش باقی می‌ماند؛ متن ذخیره‌شده، API، دیتابیس، payload پاسخ و زبان انگلیسی تغییر نمی‌کنند. اصلاح‌ها با commitهای `8c4d74b111813366bc8061d6a49d259fcfc51a12` و `9efa5d6d516ef153dcbe322f04bee994d6275ff0` ثبت و روی branch موجود push شدند.
-- **وضعیت Build/Deploy:** Build و Deploy image بالا موفق بودند. `yarn tsc --noEmit` از اجرای قبلی خطاهای متعدد در Helpdesk و `frappe/ui` داشته و در این نوبت دوباره اجرا نشده است؛ وضعیت فعلی این gate **NOT RUN (known prior failure)** است.
+- **PR #1:** در GitHub بسته و Merge شده است. Helpdesk branch `feat/persian-setup-wizard` اکنون روی `f7edbbee5247e744e4e4c8cc5639d05b1e724262` است؛ این commit پس از Merge است و خودبه‌خود جزو PR #1 محسوب نمی‌شود.
+- **Runtime:** Image `helpdesk-persian:runtime-fa-9b6505c2-ada73d92-f7edbbee5-039cf39f-ins4441e48-ui0f8d2a1-bootstrap-locale-fa` با شناسه `sha256:a10a746550e32d9599b23483d7d3940b9f3cf50f8789767187d92bd28a0dff1d` روی شش سرویس برنامهٔ `office-staging` اجرا شد. MariaDB و volume `office-staging_sites` حفظ شدند؛ Migration اجرا نشد و imageهای rollback حفظ شدند.
+- **تأیید مرورگر:** در Playwright مستقل و timezone `Asia/Tehran`، مسیر Helpdesk در فارسی با `fa`/RTL، Vazirmatn و `ss01`، labelهای جلالی، رقم‌های ASCII در DOM و تاریخ Gregorian در درخواست فیلتر API تأیید شد. انگلیسی با `en`/LTR، InterVar و ماه‌های Gregorian تأیید شد. در هر دو حالت خطای صفحه ثبت نشد. این smoke، پوشش همهٔ مسیرها یا همهٔ widgetها نیست.
+- **تست‌های واحد/کامپوننت:** Helpdesk localization suite برابر ۴۰/۴۰ و ERPNext JavaScript suite برابر ۲۱/۲۱ موفق شدند؛ شامل timezone تهران و مرز نیمه‌شب در تست‌های تاریخ Helpdesk.
+- **Build و asset validation:** Build نهایی BuildKit موفق شد؛ catalog پنج اپ، رقم‌های canonical، ۶۶ asset mapping، چهار frontend asset build و hash formatter نسخه‌بندی‌شدهٔ Frappe UI تأیید شدند.
+- **Source coverage:** router منبع ۲۸ رکورد مسیر و `desk/src` شامل ۳۳۰ فایل Vue دارد. جست‌وجوی ترکیبی Date API، formatter، picker، calendar، `moment()` و `dayjs()`، ۲۰۵ محل در ۳۹ فایل پیدا کرد (این تعداد مسیر مستقل تاریخ نیست). همهٔ ۲۸ Route و روابط فرزند/Shared Component هنوز کامل بازبینی نشده‌اند؛ پوشش جامع Source و دفتر تعیین‌تکلیف ۶۶ مسیر تاریخ **NOT COMPLETE** است.
+- **تغییر اخیر:** اصلاح fallback خطای bootstrap بر اساس locale فعال، در commit `f7edbbee5247e744e4e4c8cc5639d05b1e724262` ثبت شد. زبان خطا با locale واقعی انتخاب می‌شود و مسیر خطا دیگر RTL را به‌اجبار اعمال نمی‌کند.
+- **وضعیت Build/Deploy:** Build و Deploy تصویر بالا موفق‌اند. `yarn tsc --noEmit` از اجرای قبلی خطاهای متعدد در Helpdesk و `frappe/ui` داشته و در این نوبت دوباره اجرا نشده است؛ وضعیت فعلی این gate **NOT RUN (known prior failure)** است.
 
 جزئیات زیر snapshot تاریخی ۱۰ اکتبر ۲۰۲۶ هستند و وضعیت زندهٔ فعلی را توصیف نمی‌کنند.
 
