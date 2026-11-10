@@ -3,20 +3,20 @@
 name: office-staging
 services:
   backend:
-    image: helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa
+    image: helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa
     pull_policy: never
   frontend:
-    image: helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa
+    image: helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa
     pull_policy: never
   websocket:
-    image: helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa
+    image: helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa
     pull_policy: never
   queue-short:
-    image: helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa
+    image: helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa
     pull_policy: never
   queue-long:
-    image: helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa
+    image: helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa
     pull_policy: never
   scheduler:
-    image: helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa
+    image: helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa
     pull_policy: never

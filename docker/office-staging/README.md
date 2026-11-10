@@ -46,6 +46,21 @@ for display, preserving user-edited and ordinary email content and the stored
 HTML. The build and rollout reused the existing pipeline branch. No branch,
 pull request, or merge was created for this rollout.
 
+## Next Staging candidate (not yet deployed)
+
+Candidate image:
+`helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa`.
+It advances only Frappe Framework to `9b6505c29a241bc01bb3d0046310fe2924f080ea`;
+ERPNext, Helpdesk, Telephony, Insights, and Insights' Frappe UI retain the
+current pins above. Framework's shared Activity/Notification/Data Import
+timestamps now delegate Persian formatting to its existing date utilities;
+the trial banners use host translations and date-only trial calculations.
+Focused Framework tests passed 4/4, including the English fallback. Insights'
+date, locale, picker, filter, relative-time, and chart-axis suite passed 207/207.
+The Framework production asset build and Insights Vite build completed locally.
+Container build, activation, and runtime checks are pending; no Staging service
+has been changed for this candidate.
+
 ## Previous Staging deployment (2026-11-10)
 
 Before this source update, the running image was
@@ -183,15 +198,15 @@ and transfer that archive to the build host:
 
 ```powershell
 git -C C:\path\to\frappe-persian archive --format=tar `
-  --output=$env:TEMP\frappe-a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020.tar `
-  a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020
-$sourceStream = [System.IO.File]::OpenRead("$env:TEMP\frappe-a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020.tar")
-$compressedStream = [System.IO.File]::Create("$env:TEMP\frappe-a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020.tar.gz")
+  --output=$env:TEMP\frappe-source-9b6505c29a.tar `
+  9b6505c29a241bc01bb3d0046310fe2924f080ea
+$sourceStream = [System.IO.File]::OpenRead("$env:TEMP\frappe-source-9b6505c29a.tar")
+$compressedStream = [System.IO.File]::Create("$env:TEMP\frappe-source-9b6505c29a.tar.gz")
 $gzipStream = [System.IO.Compression.GZipStream]::new($compressedStream, [System.IO.Compression.CompressionLevel]::Optimal, $false)
 try { $sourceStream.CopyTo($gzipStream) } finally { $gzipStream.Dispose(); $sourceStream.Dispose(); $compressedStream.Dispose() }
-Get-FileHash $env:TEMP\frappe-a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020.tar.gz -Algorithm SHA256
-scp $env:TEMP\frappe-a3165cb0740c4fd1f16be8ae7c8f0fe9a668c020.tar.gz `
-  carpet-erp:/home/ubuntu/helpdesk-persian-pipeline/docker/office-staging/frappe-source-a3165cb074.tar.gz
+Get-FileHash $env:TEMP\frappe-source-9b6505c29a.tar.gz -Algorithm SHA256
+scp $env:TEMP\frappe-source-9b6505c29a.tar.gz `
+  carpet-erp:/tmp/office-staging-build-9b6505c29a/docker/office-staging/frappe-source-9b6505c29a.tar.gz
 ```
 
 Build this candidate without touching the running services or their volumes:
@@ -201,14 +216,14 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-78535a17-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa \
+  --tag helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
 The archive is a read-only BuildKit bind mount into this temporary build stage,
 so private source is verified but is not included in an image layer. Remove only
-the temporary `docker/office-staging/frappe-source-a3165cb074.tar.gz` after the
-build completes; preserve the pre-existing `frappe-source.tar.gz` archive.
+the temporary archive in `/tmp/office-staging-build-9b6505c29a` after the build
+completes; preserve the existing deployment checkout and its archives.
 
 The candidate pins Telephony source to
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`. Since the local Persian catalog
@@ -254,7 +269,7 @@ docker compose --project-name office-staging \
 ```
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-78535a17-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate
 `helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-41ac010-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
