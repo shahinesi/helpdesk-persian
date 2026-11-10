@@ -18,6 +18,7 @@ import { spritePlugin } from "frappe-ui/experimental";
 import "./index.css";
 import { loadTranslations, translationPlugin } from "./translation";
 import { isPersianLocale } from "./utils/locale";
+import { bootstrapErrorMessage } from "./utils/bootstrapError";
 import CircleAlert from "~icons/lucide/circle-alert";
 
 const globalComponents = {
@@ -104,9 +105,8 @@ async function bootstrap() {
 function showBootstrapError() {
   const root = document.querySelector("#app");
   if (!root) return;
-  root.textContent =
-    "بارگذاری زبان برنامه ناموفق بود. صفحه را دوباره بارگذاری کنید.";
-  root.setAttribute("dir", "rtl");
+  const locale = window.lang || document.documentElement.lang || "en";
+  root.textContent = bootstrapErrorMessage(locale);
 }
 
 if (import.meta.env.DEV) {
