@@ -8166,6 +8166,10 @@ msgstr ""
 msgid "Welcome to Frappe Helpdesk"
 msgstr ""
 
+#: desk/src/pages/ticket/TicketBreadcrumbs.vue:16
+msgid "Welcome to Helpdesk"
+msgstr ""
+
 #: desk/src/components/banners/TicketFieldPermissionBanner.vue:10
 msgid "What changed:"
 msgstr ""

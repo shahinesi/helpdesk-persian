@@ -52,7 +52,7 @@
           >
             <td class="p-2 py-3 whitespace-nowrap">{{ ticket.name }}</td>
             <td class="p-2 py-3 w-full max-w-0 truncate">
-              {{ ticket.subject }}
+              {{ localizeWelcomeTicketSubject(ticket.subject, __("Welcome to Helpdesk")) }}
             </td>
             <td class="p-2 py-3 min-w-16 truncate">
               {{ displayLinkOption("HD Ticket Status", ticket.status) }}
@@ -172,6 +172,7 @@ import EmptyState from "@/components/EmptyState.vue";
 import TicketPriority from "@/components/TicketPriority.vue";
 import { useView } from "@/composables/useView";
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { formatLocalizedDigits } from "@/utils/number";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import { View } from "@/types";

@@ -120,6 +120,7 @@ import { useConfigStore } from "@/stores/config";
 import { globalStore } from "@/stores/globalStore";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { useUploadTracker } from "@/composables/useUploadTracker";
 import { formatLocalizedDate, isContentEmpty, uploadFunction } from "@/utils";
 import { formatOutsideHoursMessage } from "@/utils/outsideHoursMessage";
@@ -390,7 +391,10 @@ const setValue = createResource({
 const breadcrumbs = computed(() => {
   let items = [{ label: __("Tickets"), route: { name: "TicketsCustomer" } }];
   items.push({
-    label: ticket.data?.subject,
+    label: localizeWelcomeTicketSubject(
+      ticket.data?.subject,
+      __("Welcome to Helpdesk")
+    ),
     route: { name: "TicketCustomer" },
   });
   return items;

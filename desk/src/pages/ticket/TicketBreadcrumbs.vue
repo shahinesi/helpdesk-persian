@@ -10,7 +10,11 @@
             },
           },
           {
-            label: ticket?.data?.subject || title,
+            label:
+              localizeWelcomeTicketSubject(
+                ticket?.data?.subject,
+                __("Welcome to Helpdesk")
+              ) || title,
             route: {
               name: current,
             },
@@ -26,6 +30,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { inject } from "vue";
 import { Breadcrumbs } from "frappe-ui";
 import { PageTitle } from "@/components";

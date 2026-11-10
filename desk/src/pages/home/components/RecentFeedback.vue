@@ -179,7 +179,7 @@
                 </div>
                 <span class="text-ink-gray-4">·</span>
                 <span class="truncate text-ink-gray-7 font-medium">{{
-                  currentFeedback.subject
+                  localizeWelcomeTicketSubject(currentFeedback.subject, __("Welcome to Helpdesk"))
                 }}</span>
               </div>
               <hr class="my-2" />
@@ -310,6 +310,7 @@ import LucideStar from "~icons/lucide/star";
 import { useRouter } from "vue-router";
 import { dayjsLocal } from "frappe-ui";
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import {
   formatLocalizedNumber,
   formatLocalizedRatingScale,

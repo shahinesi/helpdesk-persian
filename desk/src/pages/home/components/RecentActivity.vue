@@ -30,7 +30,7 @@
             />
             <div class="flex flex-col min-w-0 grow gap-1">
               <span class="truncate text-ink-gray-8">
-                {{ activity.subject || __("Untitled") }}
+                {{ localizeWelcomeTicketSubject(activity.subject, __("Welcome to Helpdesk")) || __("Untitled") }}
               </span>
               <span class="truncate text-ink-gray-5">
                 #{{ activity.name }} · {{ label(activity) }}
@@ -79,6 +79,7 @@
 <script setup lang="ts">
 import EmptyState from "@/components/EmptyState.vue";
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { dateTooltipFormat, formatLocalizedDate, timeAgo } from "@/utils";
 import { createResource, Tooltip } from "frappe-ui";
 import { computed, onMounted, ref, type PropType } from "vue";

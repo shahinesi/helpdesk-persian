@@ -89,6 +89,7 @@ import { useAuthStore } from "@/stores/auth";
 import { globalStore } from "@/stores/globalStore";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { View } from "@/types";
 import {
   formatLocalizedDate,
@@ -207,7 +208,7 @@ const options = computed(() => ({
           {
             class: ["truncate flex-1", !isSeen && "font-semibold"],
           },
-          item
+          localizeWelcomeTicketSubject(item, __("Welcome to Helpdesk")) ?? ""
         );
       },
     },

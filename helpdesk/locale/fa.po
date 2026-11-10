@@ -8213,6 +8213,10 @@ msgstr "تعطیلات هفتگی"
 msgid "Welcome to Frappe Helpdesk"
 msgstr "به هلپ‌دسک فارسی خوش آمدید"
 
+#: desk/src/pages/ticket/TicketBreadcrumbs.vue:16
+msgid "Welcome to Helpdesk"
+msgstr "به هلپ‌دسک خوش آمدید"
+
 #: desk/src/components/banners/TicketFieldPermissionBanner.vue:10
 msgid "What changed:"
 msgstr "چه چیزی تغییر کرده است:"

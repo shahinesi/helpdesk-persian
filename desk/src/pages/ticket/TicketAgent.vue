@@ -49,6 +49,7 @@
 
 <script setup lang="ts">
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import LucideArrowLeft from "~icons/lucide/arrow-left";
 import { recordTicketVisit } from "@/components/command-palette/recentTickets";
 import TicketIcon from "@/components/icons/TicketIcon.vue";
@@ -247,7 +248,13 @@ usePageMeta(() => {
   }
 
   return {
-    title: props.ticketId + " - " + (ticket.value?.doc?.subject ?? ""),
+    title:
+      props.ticketId +
+      " - " +
+      (localizeWelcomeTicketSubject(
+        ticket.value?.doc?.subject,
+        __("Welcome to Helpdesk")
+      ) ?? ""),
   };
 });
 </script>

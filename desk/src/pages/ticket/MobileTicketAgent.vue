@@ -257,6 +257,7 @@
 import LucideChevronUp from "~icons/lucide/chevron-up";
 import LucideChevronDown from "~icons/lucide/chevron-down";
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import {
   Breadcrumbs,
@@ -506,7 +507,10 @@ const showSubjectDialog = ref(false);
 const breadcrumbs = computed(() => {
   let items = [{ label: __("Tickets"), route: { name: "TicketsAgent" } }];
   items.push({
-    label: ticket.value.doc?.subject,
+    label: localizeWelcomeTicketSubject(
+      ticket.value.doc?.subject,
+      __("Welcome to Helpdesk")
+    ),
     route: { name: "TicketAgent" },
   });
   return items;
