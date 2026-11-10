@@ -211,6 +211,19 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 `sites` volume and do not mount a separate volume at `sites/assets`; the image
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
+Use the existing `office-staging` Compose project explicitly. This prevents a
+second project from being created when the base Compose files live under
+`frappe_docker`:
+
+```sh
+docker compose --project-name office-staging \
+  --project-directory /srv/office-staging/source/frappe_docker \
+  -f /srv/office-staging/source/frappe_docker/compose.yaml \
+  -f /srv/office-staging/compose.office.yaml \
+  -f /home/ubuntu/helpdesk-persian-pipeline/docker/office-staging/compose.integrated-candidate.yaml \
+  up -d --no-deps backend frontend websocket scheduler queue-long queue-short
+```
+
 `compose.integrated-candidate.yaml` is the versioned Staging override for
 `helpdesk-persian:runtime-fa-a3165cb0-ada73d92-877941cc-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate

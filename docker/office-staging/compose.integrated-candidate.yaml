@@ -1,5 +1,6 @@
 # Versioned override for the Persian ecosystem Staging candidate.
 # Keep the previous integrated image and original seed available for rollback.
+name: office-staging
 services:
   backend:
     image: helpdesk-persian:runtime-fa-a3165cb0-ada73d92-877941cc-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa
