@@ -38,6 +38,20 @@ test("localizes the built-in welcome email for display and keeps its media", () 
   assert.match(displayContent, /sidebarVideo\.mp4/);
 });
 
+test("translates the seeded generic greeting without leaking the word there", () => {
+  const translated = localizeWelcomeTicketContent(
+    "Welcome to Helpdesk",
+    sourceContent.replace("Hey Parisa", "Hey there"),
+    new Map([
+      ["Hey {0} 👋,", "سلام {0} 👋،"],
+      ["Hey there 👋,", "سلام 👋،"],
+    ])
+  );
+
+  assert.match(translated, /سلام 👋،/);
+  assert.doesNotMatch(translated, /Hey there|سلام there/);
+});
+
 test("leaves ordinary ticket email content unchanged", () => {
   assert.equal(
     localizeWelcomeTicketContent("Customer issue", sourceContent),

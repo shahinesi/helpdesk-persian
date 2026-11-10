@@ -192,6 +192,7 @@ const { $socket } = globalStore();
 const ticket = inject(TicketSymbol)!;
 const welcomeTicketSourceText = [
   "Hey {0} 👋,",
+  "Hey there 👋,",
   "We thought we'd use this space to give you a quick walkthrough while you're here. 🙂",
   "This is a sample ticket we created to show you how Frappe Helpdesk works.",
   "Getting started is easy. In the main ",

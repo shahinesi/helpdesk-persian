@@ -8174,6 +8174,10 @@ msgstr ""
 msgid "Hey {0} 👋,"
 msgstr ""
 
+#: desk/src/components/ticket-agent/timeline/TicketTimeline.vue
+msgid "Hey there 👋,"
+msgstr ""
+
 #: desk/src/utils/welcomeTicketContent.ts
 msgid "We thought we'd use this space to give you a quick walkthrough while you're here. 🙂"
 msgstr ""

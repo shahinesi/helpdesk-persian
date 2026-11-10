@@ -12,9 +12,13 @@ export function localizeWelcomeTicketContent(
   const greeting = localized.match(/Hey ([^<,\r\n]+) 👋,/);
   const greetingTemplate = translations.get("Hey {0} 👋,");
   if (greeting && greetingTemplate) {
+    const translatedGreeting =
+      greeting[1].trim().toLowerCase() === "there"
+        ? translations.get("Hey there 👋,")
+        : greetingTemplate.replace("{0}", greeting[1]);
     localized = localized.replace(
       greeting[0],
-      greetingTemplate.replace("{0}", greeting[1])
+      translatedGreeting ?? greetingTemplate.replace("{0}", greeting[1])
     );
   }
 

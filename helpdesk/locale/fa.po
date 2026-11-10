@@ -8221,6 +8221,10 @@ msgstr "به هلپ‌دسک خوش آمدید"
 msgid "Hey {0} 👋,"
 msgstr "سلام {0} 👋،"
 
+#: desk/src/components/ticket-agent/timeline/TicketTimeline.vue
+msgid "Hey there 👋,"
+msgstr "سلام 👋،"
+
 #: desk/src/utils/welcomeTicketContent.ts
 msgid "We thought we'd use this space to give you a quick walkthrough while you're here. 🙂"
 msgstr "برای زمانی که اینجا هستید، این فضا را به یک راهنمای کوتاه اختصاص داده‌ایم. 🙂"
