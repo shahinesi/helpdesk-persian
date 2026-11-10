@@ -19,7 +19,7 @@ ARG ERPNEXT_BASE_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 ARG ERPNEXT_PINNED_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 ARG TELEPHONY_FA_PO_SHA256=64227fa3557495c428a5679bb75977a1d684d02b1bde05f036368f50032d5610
 
-RUN --network=host --mount=type=bind,source=docker/office-staging/frappe-source-9b6505c29a.tar.gz,target=/opt/frappe/frappe-source.tar.gz,readonly python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
+RUN --network=host --mount=type=bind,source=docker/office-staging/frappe-source-9b6505c29a.tar.gz,target=/opt/frappe/frappe-source.tar.gz,readonly GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.version GIT_CONFIG_VALUE_0=HTTP/1.1 python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
 import hashlib
 import json
 import os
