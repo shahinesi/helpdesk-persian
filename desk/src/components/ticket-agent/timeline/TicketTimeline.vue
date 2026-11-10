@@ -144,6 +144,7 @@ import { useUserStore } from "@/stores/user";
 import { __ } from "@/translation";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import { TicketSymbol } from "@/types";
+import { localizeWelcomeTicketContent } from "@/utils/welcomeTicketContent";
 import { copyActivityLink } from "@/utils";
 import {
   ActivityTimeline,
@@ -189,6 +190,33 @@ const authStore = useAuthStore();
 const { getUser } = useUserStore();
 const { $socket } = globalStore();
 const ticket = inject(TicketSymbol)!;
+const welcomeTicketSourceText = [
+  "Hey {0} 👋,",
+  "We thought we'd use this space to give you a quick walkthrough while you're here. 🙂",
+  "This is a sample ticket we created to show you how Frappe Helpdesk works.",
+  "Getting started is easy. In the main ",
+  "Ticket activity area",
+  ", when you reply to a ticket your response shows up directly below in the activity thread. This way you can keep track of all your ticket activities in one single place. ✨",
+  "When it's time to follow up with a user, just click ", "Reply",
+  ". Your message will be sent directly to their inbox, keeping the conversation flowing smoothly.",
+  "Want to discuss a ticket with your team internally? Utilize the ", "Comment",
+  " feature to leave notes that are visible only to your colleagues, ensuring that internal communication remains clear, organized, and private.",
+  "In the ", "Ticket Sidebar",
+  ", you can manage the ticket. You can assign it to yourself or a teammate, set the priority, ticket type and also update the ticket status.",
+  "Inside the ", "Ticket Header",
+  ", you can view the first response and resolution timers. Additionally, you can also see the source of the ticket, whether it came from email or the support portal.",
+  "That's pretty much how it works.", "What you can do next:",
+  "Connect your support email to start receiving real tickets.",
+  "Invite your team and auto-assign tickets using assignment rules.",
+  "Set up SLAs to manage response times for your agents.",
+  "Add a Knowledge Base for self-serve support.", "Check out our documentation at ",
+  "Feel free to click around and explore our product.", "If you need help, reach out to us here: ", "Cheers,", "Team Frappe",
+];
+const welcomeTicketTranslations = new Map<string, string>(
+  welcomeTicketSourceText.map(
+    (source): [string, string] => [source, __(source)]
+  )
+);
 
 const splitCommunication = ref("");
 const timelineRef =
@@ -420,6 +448,11 @@ function withEmailFixups(activity: EmailActivity): EmailActivity {
   if (isPlainText(data.content)) {
     data.content = data.content.replace(/\n/g, "<br>");
   }
+  data.content = localizeWelcomeTicketContent(
+    ticket.value?.doc?.subject,
+    data.content,
+    welcomeTicketTranslations
+  );
   return { ...activity, data };
 }
 

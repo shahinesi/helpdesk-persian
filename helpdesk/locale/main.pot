@@ -8170,6 +8170,122 @@ msgstr ""
 msgid "Welcome to Helpdesk"
 msgstr ""
 
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Hey {0} 👋,"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "We thought we'd use this space to give you a quick walkthrough while you're here. 🙂"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "This is a sample ticket we created to show you how Frappe Helpdesk works."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Getting started is easy. In the main "
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Ticket activity area"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid ", when you reply to a ticket your response shows up directly below in the activity thread. This way you can keep track of all your ticket activities in one single place. ✨"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "When it's time to follow up with a user, just click "
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Reply"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid ". Your message will be sent directly to their inbox, keeping the conversation flowing smoothly."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Want to discuss a ticket with your team internally? Utilize the "
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Comment"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid " feature to leave notes that are visible only to your colleagues, ensuring that internal communication remains clear, organized, and private."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "In the "
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Ticket Sidebar"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid ", you can manage the ticket. You can assign it to yourself or a teammate, set the priority, ticket type and also update the ticket status."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Inside the "
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Ticket Header"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid ", you can view the first response and resolution timers. Additionally, you can also see the source of the ticket, whether it came from email or the support portal."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "That's pretty much how it works."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "What you can do next:"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Connect your support email to start receiving real tickets."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Invite your team and auto-assign tickets using assignment rules."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Set up SLAs to manage response times for your agents."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Add a Knowledge Base for self-serve support."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Check out our documentation at "
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Feel free to click around and explore our product."
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "If you need help, reach out to us here: "
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Cheers,"
+msgstr ""
+
+#: desk/src/utils/welcomeTicketContent.ts
+msgid "Team Frappe"
+msgstr ""
+
 #: desk/src/components/banners/TicketFieldPermissionBanner.vue:10
 msgid "What changed:"
 msgstr ""
