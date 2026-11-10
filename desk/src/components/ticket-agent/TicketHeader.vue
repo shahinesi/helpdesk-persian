@@ -102,6 +102,7 @@ import { CustomizationSymbol, TicketSymbol, View } from "@/types";
 import { HDTicketStatus } from "@/types/doctypes";
 import { getIcon } from "@/utils";
 import { displayLinkOption } from "@/utils/displayLinkOption";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import {
   Breadcrumbs,
   Button,
@@ -175,7 +176,10 @@ const breadcrumbs = computed(() => {
     }
   }
   items.push({
-    label: ticket.value.doc?.subject,
+    label: localizeWelcomeTicketSubject(
+      ticket.value.doc?.subject,
+      __("Welcome to Helpdesk")
+    ),
     onClick: () => {
       showSubjectDialog.value = true;
     },

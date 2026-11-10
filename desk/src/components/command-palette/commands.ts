@@ -13,6 +13,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useTelephonyStore } from "@/stores/telephony";
 import { parseColor } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { useColorScheme } from "frappe-ui";
 import { GROUP, type Command } from "./paletteTypes";
 import { recentTickets } from "./recentTickets";
@@ -70,7 +71,10 @@ export function recentTicketCommands(): Command[] {
     .filter((ticket) => ticket.name !== openTicketId)
     .map((ticket) => ({
       id: `recent-ticket-${ticket.name}`,
-      title: ticket.subject,
+      title: localizeWelcomeTicketSubject(
+        ticket.subject,
+        __("Welcome to Helpdesk")
+      ) ?? "",
       subtitle: `#${ticket.name}`,
       group: GROUP.recent,
       icon: LucideClock,

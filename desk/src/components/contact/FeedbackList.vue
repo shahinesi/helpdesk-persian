@@ -49,7 +49,10 @@
             <p class="min-w-0 flex-1 truncate text-sm">
               <span class="text-ink-gray-5"># {{ ticket.name }}</span>
               <span class="ms-1 font-medium text-ink-gray-7">{{
-                ticket.subject
+                localizeWelcomeTicketSubject(
+                  ticket.subject,
+                  __("Welcome to Helpdesk")
+                )
               }}</span>
             </p>
             <Tooltip
@@ -96,6 +99,7 @@
 
 <script setup lang="ts">
 import { formatLocalizedDate, prettyDate } from "@/utils";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { useContactFeedback } from "@/composables/contact";
 import { __ } from "@/translation";
 import { dayjs, LoadingIndicator, TabButtons, Tooltip } from "frappe-ui";

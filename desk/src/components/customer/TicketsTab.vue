@@ -96,7 +96,12 @@
 
               <!-- Subject -->
               <div class="truncate font-medium max-w-[90%]">
-                {{ ticket.subject }}
+                {{
+                  localizeWelcomeTicketSubject(
+                    ticket.subject,
+                    __("Welcome to Helpdesk")
+                  )
+                }}
               </div>
 
               <!-- Status -->
@@ -167,6 +172,7 @@ import { useScreenSize } from "@/composables/screen";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation";
 import { prettyDate } from "@/utils";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import type { ListResource, Resource } from "@/types";
 import type { HDTicket } from "@/types/doctypes";

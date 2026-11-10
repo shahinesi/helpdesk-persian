@@ -2,6 +2,7 @@ import { useTicket } from "@/composables/useTicket";
 import { router } from "@/router";
 import { capture } from "@/telemetry";
 import { __ } from "@/translation";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { isCustomerPortal } from "@/utils";
 import { useDebounceFn } from "@vueuse/core";
 import { createResource, toast } from "frappe-ui";
@@ -59,7 +60,11 @@ export const context = computed<PaletteContext | null>(() => {
   return {
     id,
     label: `#${id}`,
-    title: useTicket(id).ticket.doc?.subject ?? "",
+    title:
+      localizeWelcomeTicketSubject(
+        useTicket(id).ticket.doc?.subject,
+        __("Welcome to Helpdesk")
+      ) ?? "",
   };
 });
 

@@ -121,7 +121,12 @@
                     <p
                       class="font-base mb-2 truncate text-sm text-ink-gray-9 max-w-[70%]"
                     >
-                      {{ t.subject }}
+                      {{
+                        localizeWelcomeTicketSubject(
+                          t.subject,
+                          __("Welcome to Helpdesk")
+                        )
+                      }}
                     </p>
                     <div class="flex items-center justify-between gap-2">
                       <p class="shrink-0 text-sm text-ink-gray-5">
@@ -162,6 +167,7 @@ import { getMeta } from "@/stores/meta";
 import { useTicketStatusStore } from "@/stores/ticketStatus";
 import { __ } from "@/translation.ts";
 import { formatLocalizedDate } from "@/utils";
+import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
 import { displayLinkOption } from "@/utils/displayLinkOption";
 import {
   AssigneeSymbol,
