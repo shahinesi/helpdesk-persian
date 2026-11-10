@@ -1,4 +1,4 @@
-ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos
+ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa
 FROM ${SEED_RUNTIME_IMAGE} AS builder
 WORKDIR /home/frappe/frappe-bench
 COPY --chown=frappe:frappe docker/office-staging/validate-assets.py /opt/frappe/validate-assets.py
@@ -6,19 +6,19 @@ COPY --chown=frappe:frappe docker/office-staging/validate-translations.py /opt/f
 COPY --chown=frappe:frappe docker/office-staging/telephony-fa.po /opt/frappe/telephony-fa.po
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
-ARG HELPDESK_BASE_SHA=5213e0ac133a1293dd16277c90f4f399ad7bcc3f
-ARG HELPDESK_PINNED_SHA=9efa5d6d516ef153dcbe322f04bee994d6275ff0
-ARG INSIGHTS_BASE_SHA=940928b74038d2eee31e998997ed7d9f3f69feb8
+ARG HELPDESK_BASE_SHA=9efa5d6d516ef153dcbe322f04bee994d6275ff0
+ARG HELPDESK_PINNED_SHA=f7edbbee5247e744e4e4c8cc5639d05b1e724262
+ARG INSIGHTS_BASE_SHA=4441e48902262a35c03b5a197ec35ffdc8cfeafa
 ARG INSIGHTS_PINNED_SHA=4441e48902262a35c03b5a197ec35ffdc8cfeafa
 ARG INSIGHTS_FRAPPE_UI_SHA=0f8d2a1575ff384182060206c1ab0cb098cb4052
-ARG FRAPPE_BASE_SHA=7ece4ec911b46c60c35dfc4fefb5c6530468626a
+ARG FRAPPE_BASE_SHA=9b6505c29a241bc01bb3d0046310fe2924f080ea
 ARG FRAPPE_PINNED_SHA=9b6505c29a241bc01bb3d0046310fe2924f080ea
 ARG FRAPPE_SOURCE_ARCHIVE_SHA256=6BCDF58C26D4616E55BE8E26EC01659C0D79D25EAD2651C796AB3E0E8832E23A
 ARG ERPNEXT_BASE_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 ARG ERPNEXT_PINNED_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 ARG TELEPHONY_FA_PO_SHA256=64227fa3557495c428a5679bb75977a1d684d02b1bde05f036368f50032d5610
 
-RUN --network=host --mount=type=bind,source=docker/office-staging/frappe-source-9b6505c29a.tar.gz,target=/opt/frappe/frappe-source.tar.gz,readonly GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.version GIT_CONFIG_VALUE_0=HTTP/1.1 python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
+RUN --network=host GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.version GIT_CONFIG_VALUE_0=HTTP/1.1 python - "$FRAPPE_BASE_SHA" "$FRAPPE_PINNED_SHA" "$ERPNEXT_BASE_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_BASE_SHA" "$HELPDESK_PINNED_SHA" "$INSIGHTS_BASE_SHA" "$INSIGHTS_PINNED_SHA" "$INSIGHTS_FRAPPE_UI_SHA" "$FRAPPE_SOURCE_ARCHIVE_SHA256" <<'PY'
 import hashlib
 import json
 import os
