@@ -172,7 +172,7 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-877941cc-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa \
+  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-78535a17-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -225,7 +225,7 @@ docker compose --project-name office-staging \
 ```
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-877941cc-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-78535a17-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate
 `helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-41ac010-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
