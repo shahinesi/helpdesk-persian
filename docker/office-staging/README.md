@@ -20,21 +20,31 @@ only after compatibility checks.
 ## Current Staging deployment (2026-11-10)
 
 The candidate image tag is
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa`.
-It pins Helpdesk to
-`9efa5d6d516ef153dcbe322f04bee994d6275ff0`; the source commits for Frappe,
-ERPNext, Insights, and Insights' Frappe UI match the prior candidate. The
-Build and Staging rollout status will be recorded after validation. The
-database container remains
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa`,
+image ID `sha256:7cd791c2f3f804d77b79b02091ff1f88f4a8cee2115fc5c113180f7ed5f7f967`.
+All six application services run this image. It pins Helpdesk to
+`9efa5d6d516ef153dcbe322f04bee994d6275ff0`; Frappe, ERPNext, Insights, and
+Insights' Frappe UI match the prior candidate. The database container remains
 `a2b0a06d3e2844bc7692dc9e7688758bb42f5753591540e814ad5ab6732886cd` with the
-existing `office-staging_db-data` volume. No database migration is planned.
+existing `office-staging_db-data` volume. No migration ran.
+
+BuildKit completed all four app asset builds, catalog checks, canonical ASCII
+digit validation, and the 66-entry asset manifest validator. The Helpdesk
+localization unit/component suite passed 33/33. Read-only browser checks on
+this image verified the translated Persian welcome email body and greeting,
+`fa`/RTL, Vazirmatn with `ss01`, and zero Persian/Arabic digit code points in
+the rendered page. A second check used the QA account's actual English
+preference and verified `en`/LTR plus unchanged English welcome copy; the QA
+account was restored to `fa` and `Asia/Tehran` afterward. The API/database
+contract was not changed, and no business records were edited.
 
 The full E2E setup against `helpdesk-e2e.localhost` was previously blocked by
 its configured MySQL account (MariaDB 1045), before test records were created.
 
 The Helpdesk body localization translates only the exact seeded sample email
 for display, preserving user-edited and ordinary email content and the stored
-HTML. No branch, pull request, or merge was created for this rollout.
+HTML. The build and rollout reused the existing pipeline branch. No branch,
+pull request, or merge was created for this rollout.
 
 ## Previous Staging deployment (2026-11-10)
 
