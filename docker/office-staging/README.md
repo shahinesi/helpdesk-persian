@@ -46,7 +46,7 @@ for display, preserving user-edited and ordinary email content and the stored
 HTML. The build and rollout reused the existing pipeline branch. No branch,
 pull request, or merge was created for this rollout.
 
-## Next Staging candidate (not yet deployed)
+## Framework, billing, and locale candidate — deployed 2026-11-10
 
 Candidate image:
 `helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa`.
@@ -58,8 +58,34 @@ the trial banners use host translations and date-only trial calculations.
 Focused Framework tests passed 4/4, including the English fallback. Insights'
 date, locale, picker, filter, relative-time, and chart-axis suite passed 207/207.
 The Framework production asset build and Insights Vite build completed locally.
-Container build, activation, and runtime checks are pending; no Staging service
-has been changed for this candidate.
+The integrated image build, translation validator (all five catalogs), 66-entry
+asset validator, and all four app asset builds passed. The image is deployed to
+all six application services as
+`helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa`,
+image ID `sha256:fc77754496d95a8cf01bec6ccdd0e45dda099dd9ae2d9bd8c63a0425c222e5a2`.
+The existing `office-staging_sites` volume and MariaDB image/container were
+preserved; no migration or business-record write ran. Only the `assets_json`
+entry and Persian `merged_translations` field were invalidated, then the backend
+was restarted.
+
+Read-only Playwright checks ran with a temporary QA user whose locale was set to
+`fa` and `en`, and whose browser timezone was `Asia/Tehran`. Frappe Desk and
+ERPNext Accounting rendered `fa`/RTL with Vazirmatn and `ss01`, then `en`/LTR
+with the English font. Insights Dashboards rendered both locales; the Persian
+view contained a Jalali month name. Rendered page text contained no Persian or
+Arabic-Indic digit code points. Date-picker/chart interaction and canonical API
+date values were not exercised in this browser pass.
+
+**Helpdesk runtime remains failed:** `/helpdesk/home` and its built JS/CSS
+returned HTTP 200, the auth API reported an active agent with desk access, and
+no browser console or network error remained after tunneling Socket.IO; however,
+the Helpdesk SPA left `#app` empty in both locales. Do not treat Helpdesk browser
+coverage as PASS until that blank mount is resolved. The temporary QA User was
+restored to `fa`, disabled, and its `HD Agent` record deactivated; welcome email
+was disabled and no ticket or other business record was created.
+
+No new branch, PR, or merge was created. The image remains host-local because
+registry authorization is still unavailable.
 
 ## Previous Staging deployment (2026-11-10)
 
