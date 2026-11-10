@@ -202,7 +202,9 @@ this local wheel;
 the wheel is copied only into the intermediate builder stage and is absent from
 the resulting runtime image.
 
-Build the candidate from the repository root after fetching the verified wheel:
+Build the candidate from the repository root after fetching the verified wheel.
+The default index is `https://pypi.org/simple`; override `PIP_INDEX_URL` with a
+trusted mirror only when that endpoint is slow or unavailable:
 
 ```sh
 sh docker/office-staging/fetch-typst-wheel.sh
@@ -212,6 +214,7 @@ docker buildx build --load --progress=plain \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --secret id=github_credentials,src=/path/to/github-credential-store \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
+  --build-arg PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
   --tag helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali \
   --file docker/office-staging/Containerfile .
 ```

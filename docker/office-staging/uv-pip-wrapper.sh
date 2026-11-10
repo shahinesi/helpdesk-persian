@@ -71,7 +71,7 @@ if [[ "${1:-}" == "pip" && "${2:-}" == "install" ]]; then
 		esac
 	done
 	pip_options=(
-		--index-url https://pypi.org/simple
+		--index-url "${PIP_INDEX_URL:-https://pypi.org/simple}"
 		--find-links "${UV_FIND_LINKS:-/opt/frappe}"
 		--timeout "${PIP_DEFAULT_TIMEOUT:-90}"
 		--retries "${PIP_RETRIES:-8}"
