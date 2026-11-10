@@ -8,7 +8,7 @@ COPY --chown=frappe:frappe docker/office-staging/telephony-fa.po /opt/frappe/tel
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/apply-helpdesk-vite-patch.sh /opt/frappe/apply-helpdesk-vite-patch.sh
 
 ARG HELPDESK_BASE_SHA=5213e0ac133a1293dd16277c90f4f399ad7bcc3f
-ARG HELPDESK_PINNED_SHA=78535a177c2084dba4c86c0750bb8d97dd0f290b
+ARG HELPDESK_PINNED_SHA=8c4d74b111813366bc8061d6a49d259fcfc51a12
 ARG INSIGHTS_BASE_SHA=940928b74038d2eee31e998997ed7d9f3f69feb8
 ARG INSIGHTS_PINNED_SHA=4441e48902262a35c03b5a197ec35ffdc8cfeafa
 ARG INSIGHTS_FRAPPE_UI_SHA=0f8d2a1575ff384182060206c1ab0cb098cb4052

@@ -19,34 +19,22 @@ only after compatibility checks.
 
 ## Current Staging deployment (2026-11-10)
 
-The current image is
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-78535a17-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa`
-with immutable image digest
-`sha256:dd056be4c6e45724ba45d69a8b605844d1df4c92637e10f6cf49e2477db7c34e`.
-All six application services run this image. It pins Helpdesk to
-`78535a177c2084dba4c86c0750bb8d97dd0f290b`; the source commits for Frappe,
+The candidate image tag is
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-8c4d74b11-039cf39f-ins4441e48-ui0f8d2a1-welcome-body-fa`.
+It pins Helpdesk to
+`8c4d74b111813366bc8061d6a49d259fcfc51a12`; the source commits for Frappe,
 ERPNext, Insights, and Insights' Frappe UI match the prior candidate. The
+Build and Staging rollout status will be recorded after validation. The
 database container remains
 `a2b0a06d3e2844bc7692dc9e7688758bb42f5753591540e814ad5ab6732886cd` with the
-existing `office-staging_db-data` volume. No database migration ran.
+existing `office-staging_db-data` volume. No database migration is planned.
 
-The image build, all four app asset builds, Persian catalog checks, canonical
-ASCII digit checks, and the 66-entry asset manifest validation passed. The
-Helpdesk localization unit/component suite passed 29/29. A read-only Playwright
-smoke against ticket `0001` verified the Persian welcome title, `fa`/RTL,
-Vazirmatn `ss01`, and ASCII digits. An independent locale regression verified
-English/LTR and the original English welcome title; the QA user's locale and
-timezone were restored to `fa` and `Asia/Tehran`.
+The full E2E setup against `helpdesk-e2e.localhost` was previously blocked by
+its configured MySQL account (MariaDB 1045), before test records were created.
 
-The full E2E setup against `helpdesk-e2e.localhost` remains blocked: its
-configured MySQL account cannot authenticate for that isolated site's database
-(MariaDB 1045). The failed setup stopped before creating test records. Existing
-Staging ticket data was read only; the seeded welcome message body is still
-English and is not covered by the title-only source fix.
-
-The pipeline revision is `bd264dca3`; the Helpdesk revision is
-`78535a177c2084dba4c86c0750bb8d97dd0f290b`. No branch, pull request, or merge
-was created for this rollout.
+The Helpdesk body localization translates only the exact seeded sample email
+for display, preserving user-edited and ordinary email content and the stored
+HTML. No branch, pull request, or merge was created for this rollout.
 
 ## Previous Staging deployment (2026-11-10)
 
