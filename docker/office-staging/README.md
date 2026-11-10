@@ -17,9 +17,9 @@ refs participate in the cached initialization layer, while final pins
 invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
-## Current Staging deployment (2026-11-10)
+## Previous Staging deployment (2026-11-10)
 
-The current image is
+Before this source update, the running image was
 `helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-ins4441e48-ui0f8d2a1-telephonyfa-helptitle`
 with immutable image ID/digest
 `sha256:3dfd4a7b5b31bbc0dca9784ec6bc5f52058e9fa7f53db65a039f6c55a1b61627`.
@@ -172,7 +172,7 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
-  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-ins4441e48-ui0f8d2a1-telephonyfa-helptitle \
+  --tag helpdesk-persian:runtime-fa-a3165cb0-ada73d92-578ed7ec-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa \
   --file docker/office-staging/Containerfile.staging-update .
 ```
 
@@ -212,7 +212,7 @@ Recreate only the application services (`backend`, `frontend`, `queue-long`,
 owns the asset files. Do not run migrations as part of an asset-only rollout.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-c2bbdcf5-039cf39f-ins4441e48-ui0f8d2a1-telephonyfa-helptitle`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-578ed7ec-039cf39f-ins4441e48-ui0f8d2a1-welcome-fa`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate
 `helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-41ac010-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
