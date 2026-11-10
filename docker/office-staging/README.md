@@ -20,9 +20,9 @@ only after compatibility checks.
 ## Current Staging deployment (2026-11-10)
 
 The candidate image tag is
-`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-8c4d74b11-039cf39f-ins4441e48-ui0f8d2a1-welcome-body-fa`.
+`helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa`.
 It pins Helpdesk to
-`8c4d74b111813366bc8061d6a49d259fcfc51a12`; the source commits for Frappe,
+`9efa5d6d516ef153dcbe322f04bee994d6275ff0`; the source commits for Frappe,
 ERPNext, Insights, and Insights' Frappe UI match the prior candidate. The
 Build and Staging rollout status will be recorded after validation. The
 database container remains
