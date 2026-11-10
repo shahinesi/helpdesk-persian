@@ -1,26 +1,7 @@
 <template>
   <PageTitle>
     <template #title>
-      <Breadcrumbs
-        :items="[
-          {
-            label: __('Tickets'),
-            route: {
-              name: parent,
-            },
-          },
-          {
-            label:
-              localizeWelcomeTicketSubject(
-                ticket?.data?.subject,
-                __("Welcome to Helpdesk")
-              ) || title,
-            route: {
-              name: current,
-            },
-          },
-        ]"
-      />
+      <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right>
       <slot name="right" />
@@ -31,7 +12,7 @@
 <script setup lang="ts">
 import { __ } from "@/translation";
 import { localizeWelcomeTicketSubject } from "@/utils/ticketSubject";
-import { inject } from "vue";
+import { computed, inject } from "vue";
 import { Breadcrumbs } from "frappe-ui";
 import { PageTitle } from "@/components";
 import { ITicket } from "./symbols";
@@ -42,8 +23,19 @@ interface P {
   title?: string;
 }
 
-withDefaults(defineProps<P>(), {
+const props = withDefaults(defineProps<P>(), {
   title: "",
 });
 const ticket = inject(ITicket);
+const breadcrumbs = computed(() => [
+  { label: __("Tickets"), route: { name: props.parent } },
+  {
+    label:
+      localizeWelcomeTicketSubject(
+        ticket?.data?.subject,
+        __("Welcome to Helpdesk")
+      ) || props.title,
+    route: { name: props.current },
+  },
+]);
 </script>
