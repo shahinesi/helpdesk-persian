@@ -17,7 +17,42 @@ refs participate in the cached initialization layer, while final pins
 invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
-## Current Staging deployment (2026-11-10)
+## Current Staging deployment — Helpdesk bootstrap locale (2026-11-10)
+
+Image tag:
+`helpdesk-persian:runtime-fa-9b6505c2-ada73d92-f7edbbee5-039cf39f-ins4441e48-ui0f8d2a1-bootstrap-locale-fa`;
+image ID/digest `sha256:a10a746550e32d9599b23483d7d3940b9f3cf50f8789767187d92bd28a0dff1d`.
+The image pins Frappe `9b6505c29a241bc01bb3d0046310fe2924f080ea`, ERPNext
+`ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
+`f7edbbee5247e744e4e4c8cc5639d05b1e724262`, Telephony
+`039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
+`4441e48902262a35c03b5a197ec35ffdc8cfeafa`, and Insights' Frappe UI
+`0f8d2a1575ff384182060206c1ab0cb098cb4052`. The versioned staging recipe was
+updated in pipeline commit `f7f7a6fe9`; the Helpdesk source fix is commit
+`f7edbbee5` on the existing `feat/persian-setup-wizard` branch.
+
+The BuildKit build passed catalog compilation and validation for all five apps,
+canonical ASCII digit checks, the 66-entry asset manifest validator, all four
+frontend asset builds, and the pinned Frappe UI formatter hash check. Helpdesk
+localization tests passed 40/40 and the full ERPNext JavaScript suite passed
+21/21. The browser smoke on the built image ran in `Asia/Tehran`: Persian
+rendered `fa`/RTL with loaded Vazirmatn and `ss01`, Jalali calendar labels,
+ASCII digit code points, and Gregorian ISO date-filter values to the API.
+English rendered `en`/LTR with InterVar and Gregorian month labels. Forced
+translation-load failures showed the locale-appropriate bootstrap message in
+both languages; Playwright recorded zero page errors.
+
+All six application services run this image. Deployment used the existing
+`office-staging` Compose project with `--no-deps`; MariaDB container/image
+`a2b0a06d3e2844bc7692dc9e7688758bb42f5753591540e814ad5ab6732886cd` and volume
+`office-staging_sites` were preserved and healthy. No migration ran. Only the
+shared `assets_json` entry and Persian `merged_translations` field were
+invalidated before restarting the backend. The temporary QA account was
+restored to Persian, disabled, and its HD Agent deactivated. No ticket or other
+business record was created or changed. PR #1 remains closed and merged; no
+new branch, PR, or merge was created.
+
+## Previous integrated deployment before Framework rollout (2026-11-10)
 
 The candidate image tag is
 `helpdesk-persian:runtime-fa-a3165cb0-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-welcome-greeting-fa`,
@@ -46,7 +81,7 @@ for display, preserving user-edited and ordinary email content and the stored
 HTML. The build and rollout reused the existing pipeline branch. No branch,
 pull request, or merge was created for this rollout.
 
-## Framework, billing, and locale candidate — deployed 2026-11-10
+## Previous Framework, billing, and locale candidate — deployed 2026-11-10
 
 Candidate image:
 `helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa`.
@@ -76,13 +111,12 @@ view contained a Jalali month name. Rendered page text contained no Persian or
 Arabic-Indic digit code points. Date-picker/chart interaction and canonical API
 date values were not exercised in this browser pass.
 
-**Helpdesk runtime remains failed:** `/helpdesk/home` and its built JS/CSS
-returned HTTP 200, the auth API reported an active agent with desk access, and
-no browser console or network error remained after tunneling Socket.IO; however,
-the Helpdesk SPA left `#app` empty in both locales. Do not treat Helpdesk browser
-coverage as PASS until that blank mount is resolved. The temporary QA User was
-restored to `fa`, disabled, and its `HD Agent` record deactivated; welcome email
-was disabled and no ticket or other business record was created.
+The initial short-wait check showed an empty `#app`; a subsequent Playwright
+wait-for-mount check on this same image confirmed the Helpdesk SPA mounted after
+loading its large translation catalog, in both Persian and English. This was a
+delayed mount rather than a persistent blank page. The temporary QA User was
+restored to `fa`, disabled, and its `HD Agent` record deactivated; no ticket or
+other business record was created.
 
 No new branch, PR, or merge was created. The image remains host-local because
 registry authorization is still unavailable.
