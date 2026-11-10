@@ -10,7 +10,10 @@ The image pins the Frappe build/base images by digest. `apps.json` selects the
 Git remotes and initial branches; after clone, the builder fetches and checks
 out the exact expected SHA for every app before reconciling dependencies or
 building assets. Supply `docker/office-staging/apps.json` as the BuildKit secret
-`apps_json` and pass its SHA-256 as `APP_MANIFEST_SHA`. The five bootstrap
+`apps_json` and pass its SHA-256 as `APP_MANIFEST_SHA`. When fork remotes are
+private, provide a Git credential-store file as the BuildKit secret
+`github_credentials`; the credential is mounted only during bootstrap and is
+not copied into the image. The five bootstrap
 branch heads and five final app commits are pinned in the `Containerfile`; the
 build rejects any mismatch after checkout. The manifest digest and bootstrap
 refs participate in the cached initialization layer, while final pins
@@ -207,6 +210,7 @@ APP_MANIFEST_SHA="$(sha256sum docker/office-staging/apps.json | cut -d' ' -f1)"
 docker buildx build --load --progress=plain \
   --allow network.host \
   --secret id=apps_json,src=docker/office-staging/apps.json \
+  --secret id=github_credentials,src=/path/to/github-credential-store \
   --build-arg APP_MANIFEST_SHA="$APP_MANIFEST_SHA" \
   --tag helpdesk-persian:runtime-fa-510d7f3-dcf0c15-bdd66f071-i396a7e9-ui61f753a-jalali \
   --file docker/office-staging/Containerfile .

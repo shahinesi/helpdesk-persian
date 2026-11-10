@@ -26,7 +26,15 @@ COPY --chown=frappe:frappe docker/office-staging/telephony-fa.po /opt/frappe/tel
 COPY --chown=frappe:frappe --chmod=755 docker/office-staging/uv-pip-wrapper.sh /opt/frappe/bin/uv
 COPY --chown=frappe:frappe docker/office-staging/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl /opt/frappe/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
 
-RUN --network=host --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0 \
+RUN --network=host \
+    --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0 \
+    --mount=type=secret,id=github_credentials,target=/run/secrets/github-credentials,uid=1000,gid=0,required=false \
+    if [ -s /run/secrets/github-credentials ]; then \
+        export GIT_CONFIG_COUNT=1; \
+        export GIT_CONFIG_KEY_0=credential.helper; \
+        export GIT_CONFIG_VALUE_0='store --file=/run/secrets/github-credentials'; \
+    fi \
+    && \
     test "$(sha256sum /opt/frappe/apps.json | cut -d' ' -f1)" = "$APP_MANIFEST_SHA" \
     && printf '%s  %s\n' "$TYPST_WHEEL_SHA256" /opt/frappe/typst-0.15.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl | sha256sum -c - \
     && UV_FIND_LINKS=/opt/frappe bench init --apps_path=/opt/frappe/apps.json \
