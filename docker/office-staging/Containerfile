@@ -76,7 +76,17 @@ ARG ERPNEXT_PINNED_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 ARG HELPDESK_PINNED_SHA=f7edbbee5247e744e4e4c8cc5639d05b1e724262
 ARG TELEPHONY_PINNED_SHA=039cf39f245d6818ead03cf94eea6ce7f9c1e1f7
 ARG INSIGHTS_PINNED_SHA=4441e48902262a35c03b5a197ec35ffdc8cfeafa
-RUN --network=host python - "$FRAPPE_PINNED_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_PINNED_SHA" "$TELEPHONY_PINNED_SHA" "$INSIGHTS_PINNED_SHA" <<'PY'
+RUN --network=host \
+    --mount=type=secret,id=github_credentials,target=/run/secrets/github-credentials,uid=1000,gid=0,required=false \
+    if [ -s /run/secrets/github-credentials ]; then \
+        cp /run/secrets/github-credentials /tmp/github-credentials; \
+        chmod 600 /tmp/github-credentials; \
+        export GIT_CONFIG_COUNT=1; \
+        export GIT_CONFIG_KEY_0=credential.helper; \
+        export GIT_CONFIG_VALUE_0='store --file=/tmp/github-credentials'; \
+    fi \
+    && trap 'rm -f /tmp/github-credentials' EXIT \
+    && python - "$FRAPPE_PINNED_SHA" "$ERPNEXT_PINNED_SHA" "$HELPDESK_PINNED_SHA" "$TELEPHONY_PINNED_SHA" "$INSIGHTS_PINNED_SHA" <<'PY'
 import json
 import subprocess
 import sys

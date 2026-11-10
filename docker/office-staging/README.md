@@ -13,7 +13,7 @@ building assets. Supply `docker/office-staging/apps.json` as the BuildKit secret
 `apps_json` and pass its SHA-256 as `APP_MANIFEST_SHA`. When fork remotes are
 private, provide a Git credential-store file as the BuildKit secret
 `github_credentials`; the credential is mounted only during bootstrap and is
-not copied into the image. The five bootstrap
+exact pin fetch, then removed before either layer is committed. The five bootstrap
 branch heads and five final app commits are pinned in the `Containerfile`; the
 build rejects any mismatch after checkout. The manifest digest and bootstrap
 refs participate in the cached initialization layer, while final pins
