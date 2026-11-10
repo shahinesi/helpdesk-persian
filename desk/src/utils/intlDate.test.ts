@@ -6,6 +6,12 @@ test("Persian month names remain complete for short date labels", () => {
   assert.equal(getPersianMonthName(1), "فروردین");
 });
 
+test("invalid Jalali month numbers do not produce a label", () => {
+  assert.equal(getPersianMonthName(0), "");
+  assert.equal(getPersianMonthName(13), "");
+  assert.equal(getPersianMonthName(1.5), "");
+});
+
 test("Persian date ranges cross the Jalali new year using canonical digits", () => {
   const from = new Date(Date.UTC(2026, 2, 20, 12));
   const to = new Date(Date.UTC(2026, 2, 21, 12));

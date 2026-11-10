@@ -17,7 +17,7 @@ const PERSIAN_MONTHS = [
 
 export function getPersianMonthName(month: number): string {
   if (!Number.isInteger(month) || month < 1 || month > 12) return "";
-  return PERSIAN_MONTHS[month - 1];
+  return PERSIAN_MONTHS[month - 1] ?? "";
 }
 
 /** Format Gregorian instants as a Jalali date range, keeping digits canonical. */
