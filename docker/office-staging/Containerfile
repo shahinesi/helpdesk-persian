@@ -30,9 +30,11 @@ RUN --network=host \
     --mount=type=secret,id=apps_json,target=/opt/frappe/apps.json,uid=1000,gid=0 \
     --mount=type=secret,id=github_credentials,target=/run/secrets/github-credentials,uid=1000,gid=0,required=false \
     if [ -s /run/secrets/github-credentials ]; then \
+        cp /run/secrets/github-credentials /tmp/github-credentials; \
+        chmod 600 /tmp/github-credentials; \
         export GIT_CONFIG_COUNT=1; \
         export GIT_CONFIG_KEY_0=credential.helper; \
-        export GIT_CONFIG_VALUE_0='store --file=/run/secrets/github-credentials'; \
+        export GIT_CONFIG_VALUE_0='store --file=/tmp/github-credentials'; \
     fi \
     && \
     test "$(sha256sum /opt/frappe/apps.json | cut -d' ' -f1)" = "$APP_MANIFEST_SHA" \
@@ -45,6 +47,7 @@ RUN --network=host \
     --skip-redis-config-generation \
     --skip-assets \
     /home/frappe/frappe-bench \
+    && rm -f /tmp/github-credentials \
     && python - "$FRAPPE_EXPECTED_SHA" "$ERPNEXT_EXPECTED_SHA" "$HELPDESK_EXPECTED_SHA" "$TELEPHONY_EXPECTED_SHA" "$INSIGHTS_EXPECTED_SHA" <<'PY'
 import subprocess
 import sys
