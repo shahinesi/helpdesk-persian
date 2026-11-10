@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.7
 ARG SEED_RUNTIME_IMAGE=helpdesk-persian:runtime-fa-7ece4ec9-ada73d9-5213e0ac-940928b-ui0f8d2a1-pdfpos
 FROM ${SEED_RUNTIME_IMAGE} AS builder
 WORKDIR /home/frappe/frappe-bench
