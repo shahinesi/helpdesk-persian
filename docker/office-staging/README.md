@@ -344,9 +344,15 @@ docker compose --project-name office-staging \
   --project-directory /srv/office-staging/source/frappe_docker \
   -f /srv/office-staging/source/frappe_docker/compose.yaml \
   -f /srv/office-staging/compose.office.yaml \
+  -f /srv/office-staging/compose.office-public.yaml \
   -f /home/ubuntu/helpdesk-persian-pipeline/docker/office-staging/compose.integrated-candidate.yaml \
   up -d --no-deps backend frontend websocket scheduler queue-long queue-short
 ```
+
+`compose.office-public.yaml` is the versioned Traefik overlay for
+`office.ircarpet-r.com`; keep the matching copy at
+`/srv/office-staging/compose.office-public.yaml` and include it on every Compose
+update so the frontend stays attached to the public proxy.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
 `helpdesk-persian:runtime-fa-b3eee4ba-ada73d92-f7edbbee-039cf39f-ins611ca52-ui0f8d2a1`. It uses `pull_policy: never`, so the
