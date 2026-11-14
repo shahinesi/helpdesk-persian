@@ -410,7 +410,9 @@ Only the shared `assets_json` key and Persian `merged_translations` entry were
 invalidated, followed by a backend restart.
 
 Read-only Playwright checks used dedicated Persian and English QA users. Helpdesk
-home, ticket list, ticket `0001`, and Insights dashboards loaded in both locales.
+home, ticket list, and ticket `0001` loaded in both locales. Insights Dashboards
+loaded in Persian; the English Insights route and chart data were not verified
+against this image.
 The Persian UI reported RTL, loaded Vazirmatn with `ss01`, displayed the concise
 `ایجاد` action, relative ticket/SLA dates, and date-range presets. The English
 UI reported LTR and retained `Create`; the Desk Search label remained English
