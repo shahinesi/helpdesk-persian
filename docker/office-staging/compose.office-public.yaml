@@ -1,0 +1,24 @@
+services:
+  frontend:
+    volumes:
+      - /srv/office-staging/config/frappe-template.conf:/templates/nginx/frappe.conf.template:ro
+    networks:
+      - default
+      - access
+      - traefik-public
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik-public
+      traefik.http.routers.office-http.rule: "Host(`office.ircarpet-r.com`)"
+      traefik.http.routers.office-http.entrypoints: http
+      traefik.http.routers.office-http.middlewares: office-https
+      traefik.http.middlewares.office-https.redirectscheme.scheme: https
+      traefik.http.routers.office.rule: "Host(`office.ircarpet-r.com`)"
+      traefik.http.routers.office.entrypoints: https
+      traefik.http.routers.office.tls: "true"
+      traefik.http.routers.office.tls.certresolver: le
+      traefik.http.routers.office.service: office
+      traefik.http.services.office.loadbalancer.server.port: "8080"
+networks:
+  traefik-public:
+    external: true
