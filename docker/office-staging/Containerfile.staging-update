@@ -16,7 +16,7 @@ ARG FRAPPE_PINNED_SHA=b5b797676be375b7269aa7d11ac44e8a9dadf18c
 ARG FRAPPE_SOURCE_ARCHIVE_SHA256=3E78F267573418605CF9DD528DCA7227F7AD378693255FBCC12D0DF51F039B5F
 ARG ERPNEXT_BASE_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
 ARG ERPNEXT_PINNED_SHA=ada73d92f566ccb855927bddedf60ee18d26ae89
-ARG TELEPHONY_FA_PO_SHA256=160229a7926aef194389f56375e8dee720c1848f1aed26e93e98b8c66ccd3027
+ARG TELEPHONY_FA_PO_SHA256=64227fa3557495c428a5679bb75977a1d684d02b1bde05f036368f50032d5610
 
 RUN --network=host \
     --mount=type=bind,source=docker/office-staging/frappe-source.tar.gz,target=/opt/frappe/frappe-source.tar.gz,ro \
@@ -267,6 +267,7 @@ RUN sed -i 's/\r$//' /opt/frappe/apply-helpdesk-vite-patch.sh \
     && bench compile-po-to-mo --app erpnext --locale fa --force \
     && bench compile-po-to-mo --app helpdesk --locale fa --force \
     && bench compile-po-to-mo --app insights --locale fa --force \
+    && sed -i 's/\r$//' /opt/frappe/telephony-fa.po \
     && printf '%s  %s\n' "$TELEPHONY_FA_PO_SHA256" /opt/frappe/telephony-fa.po | sha256sum -c - \
     && install -D -m 0644 /opt/frappe/telephony-fa.po apps/telephony/telephony/locale/fa.po \
     && bench compile-po-to-mo --app telephony --locale fa --force \
