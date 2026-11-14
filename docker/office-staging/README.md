@@ -355,8 +355,9 @@ docker compose --project-name office-staging \
 update so the frontend stays attached to the public proxy.
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-b3eee4ba-ada73d92-f7edbbee-039cf39f-ins611ca52-ui0f8d2a1`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-b5b79767-ada73d92-f7edbbee-039cf39f-ins5f4945e-ui0f8d2a1`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate
+`helpdesk-persian:runtime-fa-b3eee4ba-ada73d92-f7edbbee-039cf39f-ins611ca52-ui0f8d2a1`,
 `helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-41ac010-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-8e6261c8-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
@@ -390,6 +391,36 @@ Before accepting the rollout, confirm the login page emits hashed `/assets/...`
 URLs and that every referenced bundle returns HTTP 200. Use the same cache
 invalidation after an image rollback. Do not clear Redis globally or remove any
 volume as an asset-repair step.
+
+### Current deployment record — 2026-11-14
+
+The candidate above is deployed to `office-staging`. All six application
+containers run image
+`sha256:c089043c75284adae2eca247d76581dc98d8348a787ba1978a25c9c2e5d30f2e`.
+`PINNED_VERSIONS.json` records Frappe `b5b797676be375b7269aa7d11ac44e8a9dadf18c`,
+ERPNext `ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
+`f7edbbee5247e744e4e4c8cc5639d05b1e724262`, Telephony
+`039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
+`5f4945edbbbe5e314cce618b37d13e61f2f2e2a6`, and Insights' Frappe UI
+`0f8d2a1575ff384182060206c1ab0cb098cb4052`.
+
+The database container remained `a2b0a06d3e28` with
+`office-staging_db-data`; `office-staging_sites` was preserved. No migration ran.
+Only the shared `assets_json` key and Persian `merged_translations` entry were
+invalidated, followed by a backend restart.
+
+Read-only Playwright checks used dedicated Persian and English QA users. Helpdesk
+home, ticket list, ticket `0001`, and Insights dashboards loaded in both locales.
+The Persian UI reported RTL, loaded Vazirmatn with `ss01`, displayed the concise
+`ایجاد` action, relative ticket/SLA dates, and date-range presets. The English
+UI reported LTR and retained `Create`; the Desk Search label remained English
+after clearing the isolated test profile's locale storage. The ticket API still
+returned Gregorian values (`creation: 2026-10-12 12:47:43`, `opening_date:
+2026-10-12`). No test ticket, reply, or settings change was made.
+
+Insights data was not available to the read-only Agent role, so its chart axes
+and tooltips remain runtime-unverified. This deployment validates representative
+routes and shared localization, not every page in the ecosystem.
 
 ### Previous deployment record — 2026-11-09
 
