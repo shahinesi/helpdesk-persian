@@ -20,40 +20,53 @@ refs participate in the cached initialization layer, while final pins
 invalidate the checkout/dependency/build layers. Update refs and pins together
 only after compatibility checks.
 
-## Current Staging deployment — Helpdesk bootstrap locale (2026-11-10)
+## Current Staging deployment — integrated ecosystem update (2026-11-14)
 
-Image tag:
-`helpdesk-persian:runtime-fa-9b6505c2-ada73d92-f7edbbee5-039cf39f-ins4441e48-ui0f8d2a1-bootstrap-locale-fa`;
-image ID/digest `sha256:a10a746550e32d9599b23483d7d3940b9f3cf50f8789767187d92bd28a0dff1d`.
-The image pins Frappe `9b6505c29a241bc01bb3d0046310fe2924f080ea`, ERPNext
-`ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
+All six `office-staging` application services run
+`helpdesk-persian:runtime-fa-b3eee4ba-ada73d92-f7edbbee-039cf39f-ins611ca52-ui0f8d2a1`,
+image ID `sha256:b8692759956f5c644cef89c81a96d576d216e2fd2a65baf4584750633fa109c4`.
+`PINNED_VERSIONS.json` records Frappe `b3eee4ba6938ef15530d212f6e20e082c6d4fa4b`,
+ERPNext `ada73d92f566ccb855927bddedf60ee18d26ae89`, Helpdesk
 `f7edbbee5247e744e4e4c8cc5639d05b1e724262`, Telephony
 `039cf39f245d6818ead03cf94eea6ce7f9c1e1f7`, Insights
-`4441e48902262a35c03b5a197ec35ffdc8cfeafa`, and Insights' Frappe UI
-`0f8d2a1575ff384182060206c1ab0cb098cb4052`. The versioned staging recipe was
-updated in pipeline commit `f7f7a6fe9`; the Helpdesk source fix is commit
-`f7edbbee5` on the existing `feat/persian-setup-wizard` branch.
+`611ca527f2e57fb80e64da600b8912d0918ea815`, and Insights' Frappe UI
+`0f8d2a1575ff384182060206c1ab0cb098cb4052`. The versioned updater and Compose
+pin change are pipeline commit `8f6c6e3c0` on the existing
+`codex/office-assets-pipeline` branch.
 
-The BuildKit build passed catalog compilation and validation for all five apps,
-canonical ASCII digit checks, the 66-entry asset manifest validator, all four
-frontend asset builds, and the pinned Frappe UI formatter hash check. Helpdesk
-localization tests passed 40/40 and the full ERPNext JavaScript suite passed
-21/21. The browser smoke on the built image ran in `Asia/Tehran`: Persian
-rendered `fa`/RTL with loaded Vazirmatn and `ss01`, Jalali calendar labels,
-ASCII digit code points, and Gregorian ISO date-filter values to the API.
-English rendered `en`/LTR with InterVar and Gregorian month labels. Forced
-translation-load failures showed the locale-appropriate bootstrap message in
-both languages; Playwright recorded zero page errors.
+The BuildKit build passed all five Persian catalog compilations and validators,
+canonical ASCII digit validation, all four app asset builds, the 66-entry asset
+manifest validator, `pip check`, required `jalaali-js` and
+`@persian-tools/persian-tools` package checks, and the pinned Frappe UI formatter
+hash checks before and after asset compilation. Focused tests in the source
+repositories passed: Frappe 16 date/localization tests, Frappe UI 2,335 tests
+(9 skipped), ERPNext 21 JavaScript and 7 Banking localization tests, Helpdesk
+40 localization and 2 build-tool tests, Insights 793 tests, and the standalone
+Jalali datepicker 8 tests. Frappe UI and all app production asset builds passed.
 
-All six application services run this image. Deployment used the existing
-`office-staging` Compose project with `--no-deps`; MariaDB container/image
-`a2b0a06d3e2844bc7692dc9e7688758bb42f5753591540e814ad5ab6732886cd` and volume
-`office-staging_sites` were preserved and healthy. No migration ran. Only the
-shared `assets_json` entry and Persian `merged_translations` field were
-invalidated before restarting the backend. The temporary QA account was
-restored to Persian, disabled, and its HD Agent deactivated. No ticket or other
-business record was created or changed. PR #1 remains closed and merged; no
-new branch, PR, or merge was created.
+Read-only browser validation on this deployed image used the existing QA account
+and `Asia/Tehran`. Persian Frappe Desk, ERPNext Accounting, Helpdesk ticket
+list/detail, and Insights Dashboards rendered `lang=fa`, RTL, Vazirmatn with
+`ss01`, and no Persian/Arabic Unicode digits in text nodes. The Helpdesk date
+range picker displayed `آبان 1405` and Jalali day values; selecting 23–24 Aban
+produced the Jalali filter label and was then removed. The underlying calendar
+date labels retained Gregorian ISO values. English was selected through the
+QA user's saved locale and the same Desk/ERPNext, Helpdesk ticket, and Insights
+dashboard/workbook paths rendered English `lang=en` and LTR; the preference was
+restored to `fa` and the existing timezone remained `Asia/Tehran`. Insights has
+no dashboard/chart data for this QA user, so chart axes and tooltips were not
+runtime-verified in this pass.
+
+Post-deploy, `/login` returned HTTP 200, all 80 referenced hashed CSS/JS assets
+returned HTTP 200, and `/api/method/ping` returned `pong`. All six app containers
+run the candidate image ID. MariaDB container/image
+`a2b0a06d3e2844bc7692dc9e7688758bb42f5753591540e814ad5ab6732886cd` and the
+existing `office-staging_sites` and `office-staging_db-data` volumes were
+preserved; no migration ran. Only `assets_json` and the Persian
+`merged_translations` entry were invalidated. The existing QA account's locale
+was restored to Persian; no ticket or business record was changed. The previous
+image remains available for rollback. PR #1 remains merged; no new branch, PR,
+or merge was created.
 
 ## Previous integrated deployment before Framework rollout (2026-11-10)
 
@@ -336,7 +349,7 @@ docker compose --project-name office-staging \
 ```
 
 `compose.integrated-candidate.yaml` is the versioned Staging override for
-`helpdesk-persian:runtime-fa-9b6505c2-ada73d92-9efa5d6d5-039cf39f-ins4441e48-ui0f8d2a1-frameworktime-billing-fa`. It uses `pull_policy: never`, so the
+`helpdesk-persian:runtime-fa-b3eee4ba-ada73d92-f7edbbee-039cf39f-ins611ca52-ui0f8d2a1`. It uses `pull_policy: never`, so the
 immutable local image must already exist on the target host. The previous deployed candidate
 `helpdesk-persian:runtime-fa-cceef87b-ada73d9-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
 `helpdesk-persian:runtime-fa-cceef87b-41ac010-efe1cfe1-940928b-ui0f8d2a1-pdfpos`,
